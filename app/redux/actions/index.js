@@ -1,8 +1,8 @@
-import trafficActions from "./trafficActions";
+import vatsimDataActions from "./vatsimDataActions";
 
 
 const allActions = {
-  trafficActions,
+  vatsimDataActions,
 };
 
 export default allActions;

@@ -1,4 +1,4 @@
-import trafficActions from "../redux/actions/trafficActions";
+import trafficActions from "../redux/actions/vatsimDataActions";
 
 const getVatsimTraffic = async () => {
   try {
@@ -17,6 +17,24 @@ const getVatsimTraffic = async () => {
   }
 };
 
+const getVatsimLiveData = async () => {
+  try {
+    let response = await fetch(
+        'http://data.vatsim.net/vatsim-data.json'
+    );
+    let json = await response.json();
+    let result = {
+      general: json.general,
+      aircraft: json.clients.filter(client => client.clienttype === "PILOT"),
+      atc: json.clients.filter(client => client.clienttype === "ATC"),
+      server: json.servers
+    }
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export default {
-  getVatsimTraffic: getVatsimTraffic
+  getVatsimLiveData: getVatsimLiveData
 }

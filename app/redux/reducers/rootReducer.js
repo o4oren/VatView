@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import traffic from "./traffic";
+import vatsimData from "./vatsimDataReducer";
 
 export default combineReducers(
   {
-    traffic,
+    vatsimData: vatsimData,
   });

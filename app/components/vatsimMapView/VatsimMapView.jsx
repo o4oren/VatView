@@ -6,23 +6,23 @@ import vatsimApiService from '../../services/vatsimApiService';
 import allActions from '../../redux/actions';
 
 export default function VatsimMapView() {
-    const traffic = useSelector(state => state.traffic);
+    const vatsimData = useSelector(state => state.vatsimData);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        vatsimApiService.getVatsimTraffic().then(json =>
-            dispatch(allActions.trafficActions.trafficUpdated(json))
+        vatsimApiService.getVatsimLiveData().then(json =>
+            dispatch(allActions.vatsimDataActions.dataUpdated(json))
         );
-        console.log('traffic', traffic);
     }, []);
 
     const addAircraftMarkers = () => {
-        return traffic.aircraft.map(aircraft =>
+        return vatsimData.aircraft.map(aircraft =>
             <Marker
-                coordinate={{latitude: aircraft.lat, longitude: aircraft.lon}}
+                key={aircraft.cid}
+                coordinate={{latitude: aircraft.latitude, longitude: aircraft.longitude}}
                 title={aircraft.callsign}
                 image={require('../../../assets/airplane.png')}
-                rotation={aircraft.hdg}
+                rotation={aircraft.heading}
             />
         )
     }
