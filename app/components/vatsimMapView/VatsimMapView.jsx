@@ -11,7 +11,6 @@ export default function VatsimMapView() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('useeffect called')
         function getVatsimData() {
             vatsimApiService.getVatsimLiveData().then(json =>
                 dispatch(allActions.vatsimLiveDataActions.dataUpdated(json))
@@ -24,11 +23,9 @@ export default function VatsimMapView() {
         }
     }, [])
 
-
     const addAircraftMarkers = () => {
         return vatsimLiveData.clients.map(client => {
                 if(client.clienttype === 'PILOT') {
-                    console.log('planned', client.planned_aircraft)
                     return <Marker
                         key={client.callsign}
                         coordinate={{latitude: client.latitude, longitude: client.longitude}}
