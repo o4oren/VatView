@@ -10,21 +10,52 @@ export default function VatsimMapView() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        vatsimApiService.getVatsimLiveData().then(json =>
-            dispatch(allActions.vatsimDataActions.dataUpdated(json))
-        );
-    }, []);
+        console.log('useeffect called')
+        function getVatsimData() {
+            vatsimApiService.getVatsimLiveData().then(json =>
+                dispatch(allActions.vatsimDataActions.dataUpdated(json))
+            );
+        }
+        getVatsimData()
+        const interval = setInterval(() => getVatsimData(), 60 * 1000)
+        return () => {
+            clearInterval(interval);
+        }
+    }, [])
+
 
     const addAircraftMarkers = () => {
-        return vatsimData.aircraft.map(aircraft =>
-            <Marker
-                key={aircraft.cid}
-                coordinate={{latitude: aircraft.latitude, longitude: aircraft.longitude}}
-                title={aircraft.callsign}
-                image={require('../../../assets/airplane.png')}
-                rotation={aircraft.heading}
-            />
-        )
+        return vatsimData.clients.map(client => {
+                if(client.clienttype === 'PILOT') {
+                    return <Marker
+                        key={client.callsign}
+                        coordinate={{latitude: client.latitude, longitude: client.longitude}}
+                        title={client.callsign}
+                        image={require('../../../assets/airplane.png')}
+                        rotation={client.heading}
+                        anchor={{x: 0.5, y: 0.5}}
+                    />
+                } else if (client.clienttype === 'ATC') {
+                    if(client.callsign.split('_').pop() === 'TWR') {
+                        console.log(client.callsign)
+                        return <Marker
+                            key={client.callsign}
+                            coordinate={{latitude: client.latitude, longitude: client.longitude}}
+                            title={client.callsign}
+                            image={require('../../../assets/tower-128.png')}
+                            anchor={{x: 0.5, y: 0.5}}
+                        />
+                    } else if (client.callsign.split('_').pop() === 'APP' || client.callsign.split('_').pop() === 'DEP') {
+                        return <Circle
+                            center={{latitude: client.latitude, longitude: client.longitude}}
+                            radius = {74000}
+                            title={client.callsign}
+                            strokeColor='#EC1616'
+                            strokeWidth={2}
+                        />
+                    }
+                }
+        });
     }
 
     return (
