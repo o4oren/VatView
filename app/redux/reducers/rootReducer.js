@@ -1,7 +1,10 @@
 import { combineReducers } from "redux";
-import vatsimData from "./vatsimDataReducer";
+import vatsimLiveDataReducer from "./vatsimLiveDataReducer";
+import staticAirspaceDataReducer from "./staticAirspaceDataReducer";
 
 export default combineReducers(
   {
-    vatsimData: vatsimData,
+      vatsimLiveData: vatsimLiveDataReducer,
+      staticAirspaceData: staticAirspaceDataReducer,
+
   });

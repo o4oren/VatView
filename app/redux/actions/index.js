@@ -1,8 +1,8 @@
-import vatsimDataActions from "./vatsimDataActions";
+import vatsimLiveDataActions from "./vatsimLiveDataActions";
 
 
 const allActions = {
-  vatsimDataActions,
+  vatsimLiveDataActions: vatsimLiveDataActions,
 };
 
 export default allActions;

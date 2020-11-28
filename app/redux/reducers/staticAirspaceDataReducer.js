@@ -1,10 +1,10 @@
 import {
   DATA_UPDATED,
   ERROR,
-} from '../actions/vatsimDataActions';
+} from '../actions/vatsimLiveDataActions';
 
-const vatsimData = (state = {general: {}, clients: [], servers: [], prefiles: []},
-                 action) => {
+const vatsimLiveDataReducer = (state = {general: {}, clients: [], servers: [], prefiles: []},
+                               action) => {
   switch (action.type) {
     case DATA_UPDATED:
       return {...state, general: action.payload.data.general, clients: action.payload.data.clients,
@@ -16,4 +16,4 @@ const vatsimData = (state = {general: {}, clients: [], servers: [], prefiles: []
   }
 };
 
-export default vatsimData;
+export default vatsimLiveDataReducer;
