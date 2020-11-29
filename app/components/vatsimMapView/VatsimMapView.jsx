@@ -2,32 +2,27 @@ import React, {useEffect} from "react";
 import MapView, {Circle, Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {StyleSheet, View, Dimensions} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
-import vatsimApiService from '../../services/vatsimApiService';
 import allActions from '../../redux/actions';
 import getAircraftIcon from '../../util/aircraftIconResolver'
+import theme from "./theme";
 
 export default function VatsimMapView() {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        function getVatsimData() {
-            vatsimApiService.getVatsimLiveData().then(json =>
-                dispatch(allActions.vatsimLiveDataActions.dataUpdated(json))
-            );
-        }
-        getVatsimData()
-        const interval = setInterval(() => getVatsimData(), 60 * 1000)
+        dispatch(allActions.vatsimLiveDataActions.updateData);
+        const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000)
         return () => {
             clearInterval(interval);
         }
     }, [])
 
     const addAircraftMarkers = () => {
-        return vatsimLiveData.clients.map(client => {
+        return vatsimLiveData.clients.map((client, index )=> {
                 if(client.clienttype === 'PILOT') {
                     return <Marker
-                        key={client.callsign}
+                        key={index}
                         coordinate={{latitude: client.latitude, longitude: client.longitude}}
                         title={client.callsign}
                         image={getAircraftIcon(client.planned_aircraft)}
@@ -37,18 +32,21 @@ export default function VatsimMapView() {
                 } else if (client.clienttype === 'ATC') {
                     if(client.callsign.split('_').pop() === 'TWR') {
                         return <Marker
-                            key={client.callsign}
+                            key={index}
                             coordinate={{latitude: client.latitude, longitude: client.longitude}}
                             title={client.callsign}
-                            image={require('../../../assets/tower-128.png')}
+                            image={require('../../../assets/tower-96.png')}
                             anchor={{x: 0.5, y: 0.5}}
                         />
                     } else if (client.callsign.split('_').pop() === 'APP' || client.callsign.split('_').pop() === 'DEP') {
                         return <Circle
+                            key={index}
                             center={{latitude: client.latitude, longitude: client.longitude}}
                             radius = {74000}
                             title={client.callsign}
-                            strokeColor='#EC1616'
+                            strokeColor={theme.blueGrey.circleStroke}
+                            fillColor={theme.blueGrey.circleFill}
+
                             strokeWidth={2}
                         />
                     }
@@ -60,7 +58,19 @@ export default function VatsimMapView() {
         <View style={styles.container}>
             <MapView
                 style={styles.mapStyle}
+                customMapStyle={theme.blueGrey.customMapStyle}
                 provider={PROVIDER_GOOGLE}
+                rotateEnabled={false}
+                initialCamera={{
+                    center: {
+                        latitude: 51,
+                        longitude: 0,
+                    },
+                    pitch: 0,
+                    heading: 0,
+                    altitude: 100,
+                    zoom: 3
+                }}
             >
                 {addAircraftMarkers()}
             </MapView>

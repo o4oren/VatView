@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Provider from 'react-redux/lib/components/Provider';
-import {createStore} from "redux";
+import {applyMiddleware, createStore} from "redux";
 import combineReducers from "./app/redux/reducers/rootReducer";
 import { AppLoading } from 'expo';
 import VatsimMapView from './app/components/vatsimMapView/VatsimMapView';
@@ -8,8 +8,11 @@ import {retrieveSavedState} from "./app/services/storageService";
 import {Button, Dimensions, StyleSheet} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import thunkMiddleware from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-const store = createStore(combineReducers);
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware))
+const store = createStore(combineReducers, composedEnhancer);
 
 export default function App() {
   const [state, setState] = useState({isReady: false});
@@ -43,7 +46,7 @@ export default function App() {
                 options={{
                   headerTitle: 'VatView',
                     headerStyle: {
-                        backgroundColor: '#001285',
+                        backgroundColor: '#2A5D99',
                     },
                     headerTintColor: '#ffffff',
                   headerRight: () => (

@@ -1,6 +1,5 @@
-const getAircraftIcon = code => {
-    let icon = require('../../assets/aircraft/black/boeing-737-icon-000000-64.png');
-
+const getAircraftIcon = (code) => {
+    let icon = require('../../assets/aircraft/blue-2A5D99/boeing-737-icon-64.png');
     if(!code)
         return icon
 
@@ -20,61 +19,61 @@ const getAircraftIcon = code => {
 
     b737strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/boeing-737-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/boeing-737-icon-64.png');
         }
     });
 
     b747strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/boeing-747-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/boeing-747-icon-64.png');
         }
     });
 
     a320strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/airbus-a320-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a320-icon-64.png');
         }
     });
 
     gastrings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/cessna-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/cessna-icon-64.png');
         }
     });
 
     a330strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/airbus-a330-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a330-icon-64.png');
         }
     });
 
     a340strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/airbus-a340-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a340-icon-64.png');
         }
     });
 
     a380strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/airbus-a380-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a380-icon-64.png');
         }
     });
 
     b777strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/boeing-777-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/boeing-777-icon-64.png');
         }
     });
 
     b787strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/boeing-787-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/boeing-787-dreamliner-icon-64.png');
         }
     });
 
     bizjetstings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/black/fokker-100-icon-000000-64.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/fokker-100-icon-64.png');
         }
     });
 

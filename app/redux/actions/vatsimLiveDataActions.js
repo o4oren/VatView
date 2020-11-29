@@ -1,5 +1,6 @@
 export const DATA_UPDATED = "DATA_UPDATED";
 export const UPDATE_DATA = "UPDATE_DATA";
+export const DATA_FETCH_ERROR = "DATA_FETCH_ERROR";
 
 const dataUpdated = (data) => {
   return {
@@ -8,14 +9,19 @@ const dataUpdated = (data) => {
   };
 };
 
-const updateData = () => {
-  return {
-    type: UPDATE_DATA,
-  };
+const updateData = async (dispatch, getState) => {
+  try {
+    const response = await fetch(
+        'https://data.vatsim.net/vatsim-data.json'
+    );
+    let json = await response.json();
+    dispatch(dataUpdated(json));
+  } catch (error) {
+    dispatch({type: DATA_FETCH_ERROR});
+  }
 };
-
 
 export default {
   dataUpdated: dataUpdated,
-  updateData: updateData
+  updateData: updateData,
 };
