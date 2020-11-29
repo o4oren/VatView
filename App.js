@@ -12,7 +12,6 @@ import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware))
-const store = createStore(combineReducers, composedEnhancer);
 
 export default function App() {
   const [state, setState] = useState({isReady: false});
@@ -30,12 +29,18 @@ export default function App() {
 
   if(!state.isReady) {
     return (
-        <AppLoading />
+        <AppLoading>Loading</AppLoading>
     );
   }
 
-    const Stack = createStackNavigator();
+  const preloadedState = {
+      settings: {
+          initialRegion: state.savedState.initialRegion.region,
+      }
+  }
 
+  const store = createStore(combineReducers, preloadedState, composedEnhancer);
+    const Stack = createStackNavigator();
     return (
       <Provider store={store}>
         <NavigationContainer>

@@ -8,6 +8,7 @@ import theme from "./theme";
 
 export default function VatsimMapView() {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
+    const settings = useSelector(state => state.settings)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -46,7 +47,6 @@ export default function VatsimMapView() {
                             title={client.callsign}
                             strokeColor={theme.blueGrey.circleStroke}
                             fillColor={theme.blueGrey.circleFill}
-
                             strokeWidth={2}
                         />
                     }
@@ -61,16 +61,8 @@ export default function VatsimMapView() {
                 customMapStyle={theme.blueGrey.customMapStyle}
                 provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
-                initialCamera={{
-                    center: {
-                        latitude: 51,
-                        longitude: 0,
-                    },
-                    pitch: 0,
-                    heading: 0,
-                    altitude: 100,
-                    zoom: 3
-                }}
+                initialRegion={settings.initialRegion}
+                onRegionChangeComplete={region => dispatch(allActions.settingsActions.saveInitialRegion(region))}
             >
                 {addAircraftMarkers()}
             </MapView>
