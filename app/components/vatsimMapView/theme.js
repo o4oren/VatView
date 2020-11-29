@@ -296,8 +296,12 @@ const blueGrey = [
 
 export default {
     blueGrey: { customMapStyle: blueGrey,
-        circleStroke: 'rgb(42,93,153)',
-        circleFill: 'rgba(132,167,226, 0.4)',
+        appCircleStroke: 'rgb(159,8,8)',
+        appCircleFill: 'rgba(227,133,133, 0.4)',
+        appCircleStrokeWidth: 3,
+        ctrStrokeColor: 'rgb(74,142,205)',
+        ctrStrokeWidth: 2,
+        ctrFill: 'rgba(153,203,231, 0.5)',
         aircraftColor: 'blue' },
     googleDefault: {customMapStyle: []}
 };

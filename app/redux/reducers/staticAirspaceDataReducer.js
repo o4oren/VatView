@@ -1,19 +1,20 @@
 import {
-    DATA_UPDATED,
-    ERROR,
-} from '../actions/vatsimLiveDataActions';
+    FIR_BOUNDARIES_UPDATED,
+    VATSPY_DATA_UPDATED
+} from '../actions/staticAirspaceDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: [], servers: [], prefiles: []},
-    action) => {
+const staticAirspaceDataReducer = (state = {firBoundaries: [], countries: [],
+    airports:[], firs: [], uirs: []},
+action) => {
     switch (action.type) {
-    case DATA_UPDATED:
-        return {...state, general: action.payload.data.general, clients: action.payload.data.clients,
-            servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
-    case ERROR:
-        return { ...state, error: action.payload.error };
+    case FIR_BOUNDARIES_UPDATED:
+        return {...state, firBoundaries: action.payload.firBoundaries};
+    case VATSPY_DATA_UPDATED:
+        return {...state, countries: action.payload.countries, airports: action.payload.airports,
+            firs: action.payload.firs, uirs: action.payload.uirs};
     default:
         return state;
     }
 };
 
-export default vatsimLiveDataReducer;
+export default staticAirspaceDataReducer;
