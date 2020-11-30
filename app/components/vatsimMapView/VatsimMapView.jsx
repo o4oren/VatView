@@ -90,7 +90,7 @@ export default function VatsimMapView() {
                             <MapView.Marker
                                 key={client.cid + '-marker-' + fIndex}
                                 coordinate={fir.center}
-                                anchor={{x: 0.5, y: 0.5}}
+                                // anchor={{x: 0.5, y: 0.5}}
                             >
                                 <Text
                                     key={client.cid + '-' + fir.icao + '-' + fIndex}
