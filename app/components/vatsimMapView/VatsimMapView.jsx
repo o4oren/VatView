@@ -50,7 +50,7 @@ export default function VatsimMapView() {
             if(client.clienttype === 'PILOT') {
                 let text = client.callsign;
                 return <Marker
-                    key={index}
+                    key={client.cid + '-aircraft-' + index}
                     coordinate={{latitude: client.latitude, longitude: client.longitude}}
                     title={text}
                     image={getAircraftIcon(client.planned_aircraft)}
@@ -60,7 +60,7 @@ export default function VatsimMapView() {
             } else if (client.clienttype === 'ATC') {
                 if(client.callsign.split('_').pop() === 'TWR') {
                     return <Marker
-                        key={index}
+                        key={client.cid + '-tower-' + index}
                         coordinate={{latitude: client.latitude, longitude: client.longitude}}
                         title={client.callsign}
                         image={require('../../../assets/tower-96.png')}
@@ -68,7 +68,7 @@ export default function VatsimMapView() {
                     />;
                 } else if (client.callsign.split('_').pop() === 'APP' || client.callsign.split('_').pop() === 'DEP') {
                     return <Circle
-                        key={index}
+                        key={client.cid + '-circle-' + index}
                         center={{latitude: client.latitude, longitude: client.longitude}}
                         radius = {80000}
                         title={client.callsign}
@@ -78,27 +78,28 @@ export default function VatsimMapView() {
                     />;
                 } else if (client.callsign.split('_').pop() === 'CTR' || client.callsign.split('_').pop() === 'FSS') {
                     const firs = getFirCoordinates(client.callsign);
-                    return firs.map((fir, fIndex) => <View>
-                        <Polygon
-                            key={10000 + fIndex}
-                            coordinates={fir.points}
-                            strokeColor={theme.blueGrey.ctrStrokeColor}
-                            fillColor={theme.blueGrey.ctrFill}
-                            strokeWidth={theme.blueGrey.ctrStrokeWidth}
-                        />
-                        <MapView.Marker
-                            coordinate={fir.center}
-                            anchor={{x: 0.5, y: 0.5}}
-                        >
-                            <Text
-                                key={20000 + fIndex}
-                                style={theme.blueGrey.firTextStyle}
+                    return firs.map((fir, fIndex) =>
+                        <View key={client.callsign + '-' + fIndex}>
+                            <Polygon
+                                key={client.cid + '-polygon-' + fIndex}
+                                coordinates={fir.points}
+                                strokeColor={theme.blueGrey.ctrStrokeColor}
+                                fillColor={theme.blueGrey.ctrFill}
+                                strokeWidth={theme.blueGrey.ctrStrokeWidth}
+                            />
+                            <MapView.Marker
+                                key={client.cid + '-marker-' + fIndex}
+                                coordinate={fir.center}
+                                anchor={{x: 0.5, y: 0.5}}
                             >
-                                {fir.icao}
-                            </Text>
-                        </MapView.Marker>
-
-                    </View>
+                                <Text
+                                    key={client.cid + '-' + fir.icao + '-' + fIndex}
+                                    style={theme.blueGrey.firTextStyle}
+                                >
+                                    {fir.icao}
+                                </Text>
+                            </MapView.Marker>
+                        </View>
                     );
                 }
             }
