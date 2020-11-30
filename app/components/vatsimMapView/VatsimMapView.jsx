@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Circle, Marker, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
-import {StyleSheet, View, Dimensions} from 'react-native';
+import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import getAircraftIcon from '../../util/aircraftIconResolver';
@@ -35,7 +35,7 @@ export default function VatsimMapView() {
                 if (airport != undefined) {
                     firIcao = airport.fir;
                 } else {
-                    console.log('Not found!', icao);
+                    console.log('Not found!', callsign);
                 }
             }
             firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
@@ -46,21 +46,13 @@ export default function VatsimMapView() {
     };
 
     const updateClientMarkers = () => {
-        // console.log('mapref', mapRef);
-        // if (mapRef.current != null) {
-        //     const atc = mapRef.current.props.children.filter(child => {
-        //         if (child != undefined) {
-        //             return child.type.name != 'MapMarker' && child.type.name != 'MapCircle';
-        //         }
-        //     });
-        //     console.log(atc.length);
-        // }
         return vatsimLiveData.clients.map((client, index )=> {
             if(client.clienttype === 'PILOT') {
+                let text = client.callsign;
                 return <Marker
                     key={index}
                     coordinate={{latitude: client.latitude, longitude: client.longitude}}
-                    title={client.callsign}
+                    title={text}
                     image={getAircraftIcon(client.planned_aircraft)}
                     rotation={client.heading}
                     anchor={{x: 0.5, y: 0.5}}
@@ -86,13 +78,27 @@ export default function VatsimMapView() {
                     />;
                 } else if (client.callsign.split('_').pop() === 'CTR' || client.callsign.split('_').pop() === 'FSS') {
                     const firs = getFirCoordinates(client.callsign);
-                    return firs.map((fir, fIndex) => <Polygon
-                        key={10000 + fIndex}
-                        coordinates={fir.points}
-                        strokeColor={theme.blueGrey.ctrStrokeColor}
-                        fillColor={theme.blueGrey.ctrFill}
-                        strokeWidth={theme.blueGrey.ctrStrokeWidth}
-                    />
+                    return firs.map((fir, fIndex) => <View>
+                        <Polygon
+                            key={10000 + fIndex}
+                            coordinates={fir.points}
+                            strokeColor={theme.blueGrey.ctrStrokeColor}
+                            fillColor={theme.blueGrey.ctrFill}
+                            strokeWidth={theme.blueGrey.ctrStrokeWidth}
+                        />
+                        <MapView.Marker
+                            coordinate={fir.center}
+                            anchor={{x: 0.5, y: 0.5}}
+                        >
+                            <Text
+                                key={20000 + fIndex}
+                                style={theme.blueGrey.firTextStyle}
+                            >
+                                {fir.icao}
+                            </Text>
+                        </MapView.Marker>
+
+                    </View>
                     );
                 }
             }

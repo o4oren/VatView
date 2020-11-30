@@ -302,6 +302,12 @@ export default {
         ctrStrokeColor: 'rgb(74,142,205)',
         ctrStrokeWidth: 2,
         ctrFill: 'rgba(153,203,231, 0.5)',
-        aircraftColor: 'blue' },
+        aircraftColor: 'blue' ,
+        firTextStyle: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: 'rgb(74,142,205)'
+        }
+    },
     googleDefault: {customMapStyle: []}
 };
