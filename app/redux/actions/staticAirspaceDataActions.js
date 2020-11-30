@@ -55,6 +55,7 @@ const getFirBoundaries = async (dispatch, getState) => {
                 latitude: Number(fields[8]),
                 longitude: Number(fields[9])
             };
+            fir.isOceanic = fields[1] === '1' ? true : false;
             const points = [];
             const anchor = i;
             for (let j = 1; j <= fields[3]; j++) {

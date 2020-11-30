@@ -299,15 +299,23 @@ export default {
         appCircleStroke: 'rgb(159,8,8)',
         appCircleFill: 'rgba(227,133,133, 0.4)',
         appCircleStrokeWidth: 3,
-        ctrStrokeColor: 'rgb(74,142,205)',
-        ctrStrokeWidth: 2,
-        ctrFill: 'rgba(153,203,231, 0.5)',
+        firStrokeColor: 'rgb(74,142,205)',
+        firStrokeWidth: 2,
+        firFill: 'rgba(153,203,231, 0.5)',
+        uirStrokeColor: 'rgb(95,161,222)',
+        uirStrokeWidth: 0,
+        uirFill: 'rgba(153,231,175, 0.5)',
         aircraftColor: 'blue' ,
         firTextStyle: {
             fontSize: 16,
             fontWeight: 'bold',
             color: 'rgb(74,142,205)'
-        }
+        },
+        uirTextStyle: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: 'rgb(37,134,13)'
+        },
     },
     googleDefault: {customMapStyle: []}
 };

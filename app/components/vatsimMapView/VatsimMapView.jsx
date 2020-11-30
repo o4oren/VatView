@@ -11,6 +11,7 @@ export default function VatsimMapView() {
     const settings = useSelector(state => state.settings);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
+    const EXCLUDED_CALLSIGNS = ['BICC_FSS'];
 
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
@@ -22,10 +23,21 @@ export default function VatsimMapView() {
         };
     }, []);
 
-    const getFirCoordinates = callsign => {
+    const getAirspaceCoordinates = callsign => {
         const icao = callsign.split('_')[0];
-        let firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
-        if (firs.length == 0) {
+        let airspace = {
+            isUir: false,
+            firs: []
+        };
+
+        // exclude problematic FSSs
+        if (EXCLUDED_CALLSIGNS.includes(callsign)) {
+            return airspace;
+        }
+
+        airspace.firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
+
+        if (airspace.firs.length == 0) {
             let fallbackFir = staticAirspaceData.firs.find(fir => fir.prefix == icao);
             let firIcao;
             if (fallbackFir != undefined) {
@@ -34,15 +46,42 @@ export default function VatsimMapView() {
                 const airport = staticAirspaceData.airports.find(airport => airport.iata == icao);
                 if (airport != undefined) {
                     firIcao = airport.fir;
-                } else {
-                    console.log('Not found!', callsign);
                 }
             }
-            firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
-            if (firs.length == 0)
-                return [];
+            // all
+            // firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
+
+            // non oceanic
+            airspace.firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao && !fir.isOceanic);
+
+            // if we couldn't find FIR by FIR, IATA or aiport - try UIR
+            if (airspace.firs.length == 0) {
+                const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
+                if (uir != undefined) {
+                    // for center of centers
+                    let latitudeSum = 0;
+                    let longitudeSum = 0;
+                    uir.firs.forEach(firIcao => {
+                        const fir = staticAirspaceData.firBoundaries.find(fir => fir.icao === firIcao);
+                        airspace.isUir = true;
+                        airspace.firs.push(fir);
+                        latitudeSum += fir.center.latitude;
+                        longitudeSum += fir.center.longitude;
+                    });
+                    airspace.center = {
+                        latitude: latitudeSum / uir.firs.length,
+                        longitude: longitudeSum / uir.firs.length
+                    };
+                    console.log('airspace firs', airspace.center);
+                }  else {
+                    console.log('Not found!', callsign);
+                    airspace.firs = [];
+                    return airspace;
+                }
+            }
         }
-        return firs;
+
+        return airspace;
     };
 
     const updateClientMarkers = () => {
@@ -77,15 +116,43 @@ export default function VatsimMapView() {
                         strokeWidth={theme.blueGrey.appCircleStrokeWidth}
                     />;
                 } else if (client.callsign.split('_').pop() === 'CTR' || client.callsign.split('_').pop() === 'FSS') {
-                    const firs = getFirCoordinates(client.callsign);
-                    return firs.map((fir, fIndex) =>
+                    const airspace = getAirspaceCoordinates(client.callsign);
+                    if(airspace.isUir) {
+                        const boundaries = airspace.firs.map((fir, fIndex) =>
+                            <Polygon
+                                key={client.cid + '-polygon-' + fIndex}
+                                coordinates={fir.points}
+                                strokeColor={theme.blueGrey.uirStrokeColor}
+                                fillColor={theme.blueGrey.uirFill}
+                                strokeWidth={theme.blueGrey.uirStrokeWidth}
+                            />
+                        );
+
+                        return  (<View key={client.cid + '-uir-v'}>
+                            {boundaries}
+                            <MapView.Marker
+                                key={client.callsign + 'uir-marker-'}
+                                coordinate={airspace.center}
+                                // anchor={{x: 0.5, y: 0.5}}
+                            >
+                                <Text
+                                    key={client.cid + '-uri-text-'}
+                                    style={theme.blueGrey.uirTextStyle}
+                                >
+                                    {client.callsign}
+                                </Text>
+                            </MapView.Marker>
+                        </View>
+                        );
+                    }
+                    return airspace.firs.map((fir, fIndex) =>
                         <View key={client.callsign + '-' + fIndex}>
                             <Polygon
                                 key={client.cid + '-polygon-' + fIndex}
                                 coordinates={fir.points}
-                                strokeColor={theme.blueGrey.ctrStrokeColor}
-                                fillColor={theme.blueGrey.ctrFill}
-                                strokeWidth={theme.blueGrey.ctrStrokeWidth}
+                                strokeColor={theme.blueGrey.firStrokeColor}
+                                fillColor={theme.blueGrey.firFill}
+                                strokeWidth={theme.blueGrey.firStrokeWidth}
                             />
                             <MapView.Marker
                                 key={client.cid + '-marker-' + fIndex}
