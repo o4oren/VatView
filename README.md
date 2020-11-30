@@ -12,5 +12,6 @@ TODO: <br>
 
 2.0:
 * Login to VATSIM and follow me
+* Themes
 * Push notifications when approaching and entering controlled airspace
 * Present flight plan on the map

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Circle, Marker, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,6 +10,8 @@ export default function VatsimMapView() {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const settings = useSelector(state => state.settings);
     const dispatch = useDispatch();
+    const mapRef = useRef(null);
+
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
         dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
@@ -22,8 +24,8 @@ export default function VatsimMapView() {
 
     const getFirCoordinates = callsign => {
         const icao = callsign.split('_')[0];
-        let fir = staticAirspaceData.firBoundaries.find(fir => fir.icao === icao);
-        if (fir == undefined) {
+        let firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
+        if (firs.length == 0) {
             let fallbackFir = staticAirspaceData.firs.find(fir => fir.prefix == icao);
             let firIcao;
             if (fallbackFir != undefined) {
@@ -36,15 +38,23 @@ export default function VatsimMapView() {
                     console.log('Not found!', icao);
                 }
             }
-            fir = staticAirspaceData.firBoundaries.find( fir => fir.icao == firIcao);
-            if (fir != undefined)
-                return fir.points;
-        } else
-            return fir.points;
-        return [];
+            firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
+            if (firs.length == 0)
+                return [];
+        }
+        return firs;
     };
 
-    const addAircraftMarkers = () => {
+    const updateClientMarkers = () => {
+        // console.log('mapref', mapRef);
+        // if (mapRef.current != null) {
+        //     const atc = mapRef.current.props.children.filter(child => {
+        //         if (child != undefined) {
+        //             return child.type.name != 'MapMarker' && child.type.name != 'MapCircle';
+        //         }
+        //     });
+        //     console.log(atc.length);
+        // }
         return vatsimLiveData.clients.map((client, index )=> {
             if(client.clienttype === 'PILOT') {
                 return <Marker
@@ -62,7 +72,7 @@ export default function VatsimMapView() {
                         coordinate={{latitude: client.latitude, longitude: client.longitude}}
                         title={client.callsign}
                         image={require('../../../assets/tower-96.png')}
-                        anchor={{x: 0.5, y: 0.5}}
+                        anchor={{x: 0.5, y: 1}}
                     />;
                 } else if (client.callsign.split('_').pop() === 'APP' || client.callsign.split('_').pop() === 'DEP') {
                     return <Circle
@@ -74,14 +84,16 @@ export default function VatsimMapView() {
                         fillColor={theme.blueGrey.appCircleFill}
                         strokeWidth={theme.blueGrey.appCircleStrokeWidth}
                     />;
-                } else if (client.callsign.split('_').pop() === 'CTR') {
-                    return <Polygon
-                        key={index}
-                        coordinates={getFirCoordinates(client.callsign)}
+                } else if (client.callsign.split('_').pop() === 'CTR' || client.callsign.split('_').pop() === 'FSS') {
+                    const firs = getFirCoordinates(client.callsign);
+                    return firs.map((fir, fIndex) => <Polygon
+                        key={10000 + fIndex}
+                        coordinates={fir.points}
                         strokeColor={theme.blueGrey.ctrStrokeColor}
                         fillColor={theme.blueGrey.ctrFill}
                         strokeWidth={theme.blueGrey.ctrStrokeWidth}
-                    />;
+                    />
+                    );
                 }
             }
         });
@@ -90,6 +102,7 @@ export default function VatsimMapView() {
     return (
         <View style={styles.container}>
             <MapView
+                ref={mapRef}
                 style={styles.mapStyle}
                 customMapStyle={theme.blueGrey.customMapStyle}
                 provider={PROVIDER_GOOGLE}
@@ -97,7 +110,7 @@ export default function VatsimMapView() {
                 initialRegion={settings.initialRegion}
                 onRegionChangeComplete={region => dispatch(allActions.settingsActions.saveInitialRegion(region))}
             >
-                {addAircraftMarkers()}
+                {updateClientMarkers()}
             </MapView>
         </View>
     );
