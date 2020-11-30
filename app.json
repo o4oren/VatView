@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "vatview",
+    "name": "VatView",
     "slug": "vatview",
     "version": "1.0.0",
     "orientation": "default",
@@ -18,16 +18,26 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gevahim.vatview"
+      "bundleIdentifier": "com.gevahim.vatview",
+      "config": {
+        "googleMapsApiKey": "[REAL API KEY]"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "[REAL API KEY]"
+        }
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "VatView is a vatsim map and information app.",
+    "githubUrl": "https://github.com/o4oren/VatView"
   }
 }
