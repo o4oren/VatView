@@ -45,14 +45,13 @@ export default function VatsimMapView() {
     };
 
     const getAirspaceCoordinates = client => {
-        console.log(client.callsign);
         const icao = client.callsign.split('_')[0];
         let airspace = {
             firs: []
         };
 
         // exclude problematic FSSs
-        if (EXCLUDED_CALLSIGNS.includes(client.callsign)) {
+        if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998') {
             return airspace;
         }
 
@@ -79,16 +78,22 @@ export default function VatsimMapView() {
             }
         } else {
             // if client is UIR
+            console.log('uir candidate: ', client);
+
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
             if (uir != undefined) {
                 // for center of centers
+                console.log('uir', uir);
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 uir.firs.forEach(firIcao => {
                     const fir = staticAirspaceData.firBoundaries.find(fir => fir.icao === firIcao);
-                    airspace.firs.push(fir);
-                    latitudeSum += fir.center.latitude;
-                    longitudeSum += fir.center.longitude;
+                    if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
+                        console.log('fir', fir);
+                        airspace.firs.push(fir);
+                        latitudeSum += fir.center.latitude;
+                        longitudeSum += fir.center.longitude;
+                    }
                 });
                 airspace.icao = icao;
                 airspace.callsign = client.callsign;
@@ -102,7 +107,6 @@ export default function VatsimMapView() {
                 return airspace;
             }
         }
-        console.log(airspace);
         return airspace;
     };
 
@@ -185,8 +189,8 @@ export default function VatsimMapView() {
                     );
                 } else if (client.facilitytype === 1) {
                     // FSS
-                    console.log(client.facilitytype + ' ' + client.callsign);
                     const airspace = getAirspaceCoordinates(client);
+                    console.log('airspace', airspace);
                     const boundaries = airspace.firs.map((fir, fIndex) =>
                         <Polygon
                             key={client.cid + '-polygon-' + fIndex}
@@ -196,25 +200,24 @@ export default function VatsimMapView() {
                             strokeWidth={theme.blueGrey.uirStrokeWidth}
                         />
                     );
-                    const uirComponent = (<View key={client.cid + '-uir-v'}>
-                        {boundaries}
-                        <MapView.Marker
-                            key={client.callsign + 'uir-marker-'}
-                            coordinate={airspace.center}
-                            onPress={() => openDetailsSheet(client)}
+                    return (
+                        <View key={client.cid + '-uir-v'}>
+                            {boundaries}
+                            <MapView.Marker
+                                key={client.callsign + 'uir-marker-'}
+                                coordinate={airspace.center}
+                                onPress={() => openDetailsSheet(client)}
                             // anchor={{x: 0.5, y: 0.5}}
-                        >
-                            <Text
-                                key={client.cid + '-uri-text-'}
-                                style={theme.blueGrey.uirTextStyle}
                             >
-                                {client.callsign}
-                            </Text>
-                        </MapView.Marker>
-                    </View>
+                                <Text
+                                    key={client.cid + '-uri-text-'}
+                                    style={theme.blueGrey.uirTextStyle}
+                                >
+                                    {client.callsign}
+                                </Text>
+                            </MapView.Marker>
+                        </View>
                     );
-                    console.log('uir comp', uirComponent);
-                    return  uirComponent;
                 }
             }
         });

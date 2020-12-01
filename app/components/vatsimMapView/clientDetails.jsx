@@ -14,6 +14,11 @@ export default function clientDetails(props) {
                 <View>
                     <Text>Callsign: {props.client.callsign}</Text>
                     <Text>Name: {props.client.realname}</Text>
+                    <Text>Altitude: {props.client.altitude}</Text>
+                    <Text>Ground speed: {props.client.groundspeed}</Text>
+                    <Text>Origin: {props.client.planned_destairport}</Text>
+                    <Text>Dest: {props.client.planned_depairport}</Text>
+                    <Text>Flight plan: {props.client.planned_route}</Text>
                 </View>
             );
         }

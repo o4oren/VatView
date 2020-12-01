@@ -15,6 +15,10 @@ const updateData = async (dispatch, getState) => {
             'https://data.vatsim.net/vatsim-data.json'
         );
         let json = await response.json();
+        // Uncomment to debug FSS when they are not available
+        // json.clients.push(
+        //     {callsign: 'EURS_FSS', clienttype: 'ATC', facilitytype: 1}
+        // );
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

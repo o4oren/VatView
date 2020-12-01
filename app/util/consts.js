@@ -5,4 +5,6 @@ export const INITIAL_REGION = {
     longitudeDelta: 20
 };
 
-export const EXCLUDED_CALLSIGNS = ['BICC_FSS'];
+export const EXCLUDED_CALLSIGNS = [
+    'BICC_FSS',
+];
