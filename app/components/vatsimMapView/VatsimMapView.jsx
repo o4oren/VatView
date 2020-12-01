@@ -5,7 +5,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import getAircraftIcon from '../../util/aircraftIconResolver';
 import theme from './theme';
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
 import {EXCLUDED_CALLSIGNS} from '../../util/consts';
+import ClientDetails from './clientDetailsView';
 
 export default function VatsimMapView() {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
@@ -14,6 +17,8 @@ export default function VatsimMapView() {
     const dispatch = useDispatch();
     const mapRef = useRef(null);
     const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
+    const sheetRef = React.useRef(null);
+    const [selectedClient, setSelectedClient] = useState();
 
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
@@ -27,6 +32,12 @@ export default function VatsimMapView() {
             clearInterval(interval);
         };
     }, []);
+
+    const renderContent = () => (
+        <ClientDetails
+            client={selectedClient}
+        />
+    );
 
     const getAirspaceCoordinates = callsign => {
         const icao = callsign.split('_')[0];
@@ -99,6 +110,10 @@ export default function VatsimMapView() {
                     image={getAircraftIcon(client.planned_aircraft)}
                     rotation={client.heading}
                     anchor={{x: 0.5, y: 0.5}}
+                    onPress={() => {
+                        setSelectedClient(client);
+                        sheetRef.current.snapTo(0);
+                    }}
                 />;
             } else if (client.clienttype === 'ATC') {
                 if(client.callsign.split('_').pop() === 'TWR') {
@@ -190,6 +205,13 @@ export default function VatsimMapView() {
             >
                 {updateClientMarkers()}
             </MapView>
+            <BottomSheet
+                ref={sheetRef}
+                snapPoints={[450, 300, 0]}
+                borderRadius={10}
+                renderContent={renderContent}
+                initialSnap={2}
+            />
         </View>
     );
 }
