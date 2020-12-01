@@ -2,10 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 
 export default function clientDetails(props) {
-    console.log('p', props.client);
-
     // 6 = CTR, 4=TWR,
-
     const renderBody = () => {
         if(props.client === undefined)
             return;

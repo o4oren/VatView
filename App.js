@@ -50,8 +50,6 @@ export default function App() {
         }
     };
 
-    console.log('preloaded', preloadedState);
-
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     const Stack = createStackNavigator();
     return (

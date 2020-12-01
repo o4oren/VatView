@@ -78,18 +78,14 @@ export default function VatsimMapView() {
             }
         } else {
             // if client is UIR
-            console.log('uir candidate: ', client);
-
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
             if (uir != undefined) {
-                // for center of centers
-                console.log('uir', uir);
+                // calclute center of centers
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 uir.firs.forEach(firIcao => {
                     const fir = staticAirspaceData.firBoundaries.find(fir => fir.icao === firIcao);
                     if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
-                        console.log('fir', fir);
                         airspace.firs.push(fir);
                         latitudeSum += fir.center.latitude;
                         longitudeSum += fir.center.longitude;
@@ -190,7 +186,6 @@ export default function VatsimMapView() {
                 } else if (client.facilitytype === 1) {
                     // FSS
                     const airspace = getAirspaceCoordinates(client);
-                    console.log('airspace', airspace);
                     const boundaries = airspace.firs.map((fir, fIndex) =>
                         <Polygon
                             key={client.cid + '-polygon-' + fIndex}
