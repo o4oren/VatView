@@ -103,6 +103,12 @@ export default function VatsimMapView() {
                 return airspace;
             }
         }
+        airspace.firs.forEach(fir => {
+            if(fir.center.latitude == null) {
+                console.log('this fir is null', fir);
+            }
+        });
+        // console.log(client.callsign, airspace);
         return airspace;
     };
 
@@ -156,7 +162,7 @@ export default function VatsimMapView() {
                         onPress={() => openDetailsSheet(client)}
                     />;
                 } else if (client.facilitytype === 6) {
-                    // CTR 
+                    // CTR
                     const airspace = getAirspaceCoordinates(client);
                     return airspace.firs.map((fir, fIndex) =>
                         <View key={client.callsign + '-' + fIndex}>
@@ -195,26 +201,31 @@ export default function VatsimMapView() {
                             strokeWidth={theme.blueGrey.uirStrokeWidth}
                         />
                     );
-                    return (
-                        <View key={client.cid + '-uir-v'}>
-                            {boundaries}
-                            <MapView.Marker
-                                key={client.callsign + 'uir-marker-'}
-                                coordinate={airspace.center}
-                                onPress={() => openDetailsSheet(client)}
-                            // anchor={{x: 0.5, y: 0.5}}
-                            >
-                                <Text
-                                    key={client.cid + '-uri-text-'}
-                                    style={theme.blueGrey.uirTextStyle}
+
+                    if(airspace.center != undefined) {
+                        return (
+                            <View key={client.cid + '-uir-v'}>
+                                {boundaries}
+                                <MapView.Marker
+                                    key={client.callsign + 'uir-marker-'}
+                                    coordinate={airspace.center}
+                                    onPress={() => openDetailsSheet(client)}
+                                    // anchor={{x: 0.5, y: 0.5}}
                                 >
-                                    {client.callsign}
-                                </Text>
-                            </MapView.Marker>
-                        </View>
-                    );
+                                    <Text
+                                        key={client.cid + '-uri-text-'}
+                                        style={theme.blueGrey.uirTextStyle}
+                                    >
+                                        {client.callsign}
+                                    </Text>
+                                </MapView.Marker>
+                            </View>
+                        );
+                    }
                 }
             }
+
+
         });
     };
 
