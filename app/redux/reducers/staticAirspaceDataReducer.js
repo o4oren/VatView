@@ -4,7 +4,7 @@ import {
 } from '../actions/staticAirspaceDataActions';
 
 const staticAirspaceDataReducer = (state = {firBoundaries: [], countries: [],
-    airports:[], firs: [], uirs: []},
+    airports:[], firs: [], uirs: [], lastUpdated: 0},
 action) => {
     switch (action.type) {
     case FIR_BOUNDARIES_UPDATED:

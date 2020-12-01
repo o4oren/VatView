@@ -1,3 +1,5 @@
+import {storeFirBoundaries, storeStaticAirspaceData} from '../../services/storageService';
+
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
 
@@ -15,15 +17,15 @@ const firBoundariesUpdated = (firBoundaries) => {
     };
 };
 
-const vatspyDataUpdated = (countries, airports, firs, uirs) => {
-    // console.log(uirs);
+const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated) => {
     return {
         type: VATSPY_DATA_UPDATED,
         payload: {
             countries: countries,
             airports: airports,
             firs: firs,
-            uirs: uirs
+            uirs: uirs,
+            lastUpdated: lastUpdated
         }
     };
 };
@@ -70,6 +72,7 @@ const getFirBoundaries = async (dispatch, getState) => {
             firBoundaries.push(fir);
         }
     }
+    await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
 };
 
@@ -138,7 +141,15 @@ const getVATSpyData = async (dispatch, getState) => {
             }
         }
     });
-    dispatch(vatspyDataUpdated(countries, airports, firs, uirs));
+    const lastUpdated = Date.now();
+    await storeStaticAirspaceData({
+        countries: countries,
+        airports: airports,
+        firs: firs,
+        uirs: uirs,
+        lastUpdated: lastUpdated
+    });
+    dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated));
 };
 
 export default {

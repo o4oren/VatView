@@ -10,14 +10,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { AsyncStorage } from 'react-native';
+import {INITIAL_REGION} from './app/util/consts';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default function App() {
     const [state, setState] = useState({isReady: false});
-
     useEffect(() => {
         async function loadStateFromStorage() {
+            // AsyncStorage.clear();  // clears local storage
+
             const savedState = await retrieveSavedState();
             setState({
                 isReady: true,
@@ -32,11 +35,22 @@ export default function App() {
             <AppLoading>Loading</AppLoading>
         );
     }
+
     const preloadedState = {
         settings: {
-            initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : {},
+            initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,
+        },
+        staticAirspaceData: {
+            firBoundaries: state.savedState.staticAirspaceData != null ? state.savedState.firBoundaries : [],
+            countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : [],
+            airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : [],
+            firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : [],
+            uirs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.uirs : [],
+            lastUpdated: state.savedState.staticAirspaceData != undefined ? state.savedState.staticAirspaceData.lastUpdated : 0
         }
     };
+
+    console.log('preloaded', preloadedState);
 
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     const Stack = createStackNavigator();

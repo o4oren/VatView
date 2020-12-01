@@ -5,18 +5,23 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import getAircraftIcon from '../../util/aircraftIconResolver';
 import theme from './theme';
+import {EXCLUDED_CALLSIGNS} from '../../util/consts';
+
 export default function VatsimMapView() {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const settings = useSelector(state => state.settings);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
-    const EXCLUDED_CALLSIGNS = ['BICC_FSS'];
+    const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
 
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
-        dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
-        dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
+        const now = Date.now();
+        if(now - staticAirspaceData.lastUpdated > ONE_MONTH) {
+            dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
+            dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
+        }
         const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000);
         return () => {
             clearInterval(interval);
@@ -72,7 +77,6 @@ export default function VatsimMapView() {
                         latitude: latitudeSum / uir.firs.length,
                         longitude: longitudeSum / uir.firs.length
                     };
-                    console.log('airspace firs', airspace.center);
                 }  else {
                     console.log('Not found!', callsign);
                     airspace.firs = [];
