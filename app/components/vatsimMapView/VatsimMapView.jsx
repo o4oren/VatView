@@ -1,13 +1,22 @@
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Circle, Marker, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
+import ClientMarker from './clientMarker';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
-import getAircraftIcon from '../../util/aircraftIconResolver';
 import theme from './theme';
-import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import {EXCLUDED_CALLSIGNS} from '../../util/consts';
+import {
+    APP,
+    ATC, CTR,
+    EXCLUDED_CALLSIGNS,
+    ONE_MIN,
+    ONE_MONTH,
+    PILOT,
+    STATIC_DATA_VERSION,
+    TWR_ATIS,
+    FSS
+} from '../../util/consts';
 import ClientDetails from './clientDetails';
 
 export default function VatsimMapView() {
@@ -16,14 +25,20 @@ export default function VatsimMapView() {
     const settings = useSelector(state => state.settings);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
-    const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
     const sheetRef = React.useRef(null);
     const [selectedClient, setSelectedClient] = useState();
+    const [isMapInitialized, setIsMapInitialized] = useState(true);
+
 
     useEffect(() => {
+        console.log('settings', settings);
+
         dispatch(allActions.vatsimLiveDataActions.updateData);
         const now = Date.now();
-        if(now - staticAirspaceData.lastUpdated > ONE_MONTH) {
+        if(staticAirspaceData.version == undefined
+            || staticAirspaceData.version < STATIC_DATA_VERSION
+            || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
+            console.log('static data fetch called');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
@@ -45,39 +60,44 @@ export default function VatsimMapView() {
     };
 
     const getAirspaceCoordinates = client => {
+        // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         const icao = client.callsign.split('_')[0];
         let airspace = {
-            firs: []
+            isUir: false,
+            firs: [],
+            callsign: client.callsign
         };
 
         // exclude problematic FSSs
         if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998') {
+            console.log('Excluded client: ' + client.callsign, client);
             return airspace;
         }
 
-        // If client is CTR
-        if (client.facilitytype === 6) {
-            airspace.firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
+        // If client is FIR
+        airspace.firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
 
-            if (airspace.firs.length == 0) {
-                let fallbackFir = staticAirspaceData.firs.find(fir => fir.prefix == icao);
-                let firIcao;
-                if (fallbackFir != undefined) {
-                    firIcao = fallbackFir.icao;
-                } else {
-                    const airport = staticAirspaceData.airports.find(airport => airport.iata == icao);
-                    if (airport != undefined) {
-                        firIcao = airport.fir;
-                    }
+        if (airspace.firs.length === 0) {
+            let fallbackFir = staticAirspaceData.firs.find(fir => fir.prefix == icao);
+            let firIcao;
+            if (fallbackFir != undefined) {
+                firIcao = fallbackFir.icao;
+            } else {
+                const airport = staticAirspaceData.airports.find(airport => airport.iata == icao);
+                if (airport != undefined) {
+                    firIcao = airport.fir;
                 }
-                // all
-                // firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
-
-                // non oceanic
-                airspace.firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao && !fir.isOceanic);
             }
-        } else {
-            // if client is UIR
+            // all
+            // firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
+
+            // non oceanic
+            airspace.firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao && !fir.isOceanic);
+        }
+
+        // if we did not resolve firs, we check if UIR
+        if(airspace.firs.length === 0)
+        {
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
             if (uir != undefined) {
                 // calclute center of centers
@@ -92,46 +112,39 @@ export default function VatsimMapView() {
                     }
                 });
                 airspace.icao = icao;
-                airspace.callsign = client.callsign;
                 airspace.center = {
                     latitude: latitudeSum / uir.firs.length,
                     longitude: longitudeSum / uir.firs.length
                 };
-            }  else {
-                console.log('Not found!', client.callsign);
-                airspace.firs = [];
-                return airspace;
+                airspace.isUir = true;
             }
         }
-        airspace.firs.forEach(fir => {
-            if(fir.center.latitude == null) {
-                console.log('this fir is null', fir);
-            }
-        });
-        // console.log(client.callsign, airspace);
+
+        if(airspace.firs.length === 0)
+            console.log('Airspace could not be resolved!', {airspace: airspace, client: client});
         return airspace;
     };
 
     const updateClientMarkers = () => {
         // facilitytype:
         // 0 - OBS, 1 - FSS, 2 - DEL, 3 GND, 4 - TWR/ATIS, 5 - APP, 6 - CTR
-        return vatsimLiveData.clients.map((client, index )=> {
-            if(client.clienttype === 'PILOT') {
-                let text = client.callsign;
-                return <Marker
+        const markers = vatsimLiveData.clients.map((client, index )=> {
+            if(client.clienttype === PILOT) {
+                return <ClientMarker
                     key={client.cid + '-aircraft-' + index}
                     coordinate={{latitude: client.latitude, longitude: client.longitude}}
-                    title={text}
-                    image={getAircraftIcon(client.planned_aircraft)}
+                    title={client.callsign}
+                    image={client.icon}
+                    markerStyle={'AIRCRAFT'}
                     rotation={client.heading}
                     anchor={{x: 0.5, y: 0.5}}
                     onPress={() => openDetailsSheet(client)}
-                />;
-            } else if (client.clienttype === 'ATC') {
-                if(client.facilitytype === 4) {
+                ></ClientMarker>;
+            } else if (client.clienttype === ATC) {
+                if (client.facilitytype === TWR_ATIS) {
                     // TWR / ATIS
-                    if(client.callsign.split('_').pop() === 'ATIS') {
-                        return <Marker
+                    if (client.callsign.split('_').pop() === 'ATIS') {
+                        return <ClientMarker
                             key={client.cid + '-atis-' + index}
                             coordinate={{latitude: client.latitude, longitude: client.longitude}}
                             title={client.callsign}
@@ -140,30 +153,65 @@ export default function VatsimMapView() {
                             onPress={() => openDetailsSheet(client)}
                         />;
                     } else {
-                        return <Marker
+                        return <ClientMarker
                             key={client.cid + '-tower-' + index}
                             coordinate={{latitude: client.latitude, longitude: client.longitude}}
                             title={client.callsign}
-                            image={require('../../../assets/tower-96.png')}
+                            image={client.icon}
+                            markerStyle={'TWR'}
                             anchor={{x: 0.5, y: 1}}
                             onPress={() => openDetailsSheet(client)}
                         />;
                     }
-                } else if (client.facilitytype === 5) {
+                } else if (client.facilitytype === APP) {
                     // APP / DEP
                     return <Circle
                         key={client.cid + '-circle-' + index}
                         center={{latitude: client.latitude, longitude: client.longitude}}
-                        radius = {80000}
+                        radius={80000}
                         title={client.callsign}
                         strokeColor={theme.blueGrey.appCircleStroke}
                         fillColor={theme.blueGrey.appCircleFill}
                         strokeWidth={theme.blueGrey.appCircleStrokeWidth}
                         onPress={() => openDetailsSheet(client)}
                     />;
-                } else if (client.facilitytype === 6) {
+                } else if (client.facilitytype === CTR || client.facilitytype === FSS) {
                     // CTR
                     const airspace = getAirspaceCoordinates(client);
+                    if (airspace.isUir) {
+                        const boundaries = airspace.firs.map((fir, fIndex) =>
+                            <Polygon
+                                key={client.cid + '-polygon-' + fIndex}
+                                coordinates={fir.points}
+                                strokeColor={theme.blueGrey.uirStrokeColor}
+                                fillColor={theme.blueGrey.uirFill}
+                                strokeWidth={theme.blueGrey.uirStrokeWidth}
+                                geodesic={true}
+                                tappable={true}
+                                onPress={() => openDetailsSheet(client)}
+                            />
+                        );
+
+                        return (<View key={client.cid + '-uir-v'}>
+                            {boundaries}
+                            <ClientMarker
+                                key={client.callsign + 'uir-marker-'}
+                                coordinate={airspace.center}
+                                tracksViewChanges={!isMapInitialized}
+                                tracksInfoWindowChanges={!isMapInitialized}
+                                onMapReady = {() => {this.setIsMapInitialized(true);}}
+                                // anchor={{x: 0.5, y: 0.5}}
+                            >
+                                <Text
+                                    key={client.cid + '-uri-text-'}
+                                    style={theme.blueGrey.uirTextStyle}
+                                >
+                                    {client.callsign}
+                                </Text>
+                            </ClientMarker>
+                        </View>
+                        );
+                    }
                     return airspace.firs.map((fir, fIndex) =>
                         <View key={client.callsign + '-' + fIndex}>
                             <Polygon
@@ -172,12 +220,15 @@ export default function VatsimMapView() {
                                 strokeColor={theme.blueGrey.firStrokeColor}
                                 fillColor={theme.blueGrey.firFill}
                                 strokeWidth={theme.blueGrey.firStrokeWidth}
+                                geodesic={true}
+                                tappable={true}
                                 onPress={() => openDetailsSheet(client)}
                             />
-                            <MapView.Marker
+                            <ClientMarker
                                 key={client.cid + '-marker-' + fIndex}
                                 coordinate={fir.center}
-                                onPress={() => openDetailsSheet(client)}
+                                tracksViewChanges={!isMapInitialized}
+                                tracksInfoWindowChanges={!isMapInitialized}
                                 // anchor={{x: 0.5, y: 0.5}}
                             >
                                 <Text
@@ -186,47 +237,13 @@ export default function VatsimMapView() {
                                 >
                                     {fir.icao}
                                 </Text>
-                            </MapView.Marker>
+                            </ClientMarker>
                         </View>
                     );
-                } else if (client.facilitytype === 1) {
-                    // FSS
-                    const airspace = getAirspaceCoordinates(client);
-                    const boundaries = airspace.firs.map((fir, fIndex) =>
-                        <Polygon
-                            key={client.cid + '-polygon-' + fIndex}
-                            coordinates={fir.points}
-                            strokeColor={theme.blueGrey.uirStrokeColor}
-                            fillColor={theme.blueGrey.uirFill}
-                            strokeWidth={theme.blueGrey.uirStrokeWidth}
-                        />
-                    );
-
-                    if(airspace.center != undefined) {
-                        return (
-                            <View key={client.cid + '-uir-v'}>
-                                {boundaries}
-                                <MapView.Marker
-                                    key={client.callsign + 'uir-marker-'}
-                                    coordinate={airspace.center}
-                                    onPress={() => openDetailsSheet(client)}
-                                    // anchor={{x: 0.5, y: 0.5}}
-                                >
-                                    <Text
-                                        key={client.cid + '-uri-text-'}
-                                        style={theme.blueGrey.uirTextStyle}
-                                    >
-                                        {client.callsign}
-                                    </Text>
-                                </MapView.Marker>
-                            </View>
-                        );
-                    }
                 }
             }
-
-
         });
+        return markers;
     };
 
     return (
