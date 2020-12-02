@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native';
 
 const FAVORITES = 'FAVORITES';
-const INITIAL_REGION = 'INITIAL_REGION';
+const SAVED_INITIAL_REGION = 'SAVED_INITIAL_REGION';
 const FIR_BOUNDARIES = 'FIR_BOUNDARIES';
 const STATIC_AIRSPACE_DATA = 'STATIC_AIRSPACE_DATA';
 
@@ -31,24 +31,40 @@ export const storeFirBoundaries = async (firBoundaries) => {
 
 export const storeInitialRegion = async (region) => {
     try {
-        await AsyncStorage.setItem(INITIAL_REGION, JSON.stringify(region));
+        await AsyncStorage.setItem(SAVED_INITIAL_REGION, JSON.stringify(region));
     } catch (err) {
         console.log('Error storing favorites', err);
     }
 };
 
 export const retrieveSavedState = async () => {
+    const retrievedData = {};
     try {
-        const promises = [AsyncStorage.getItem(FAVORITES), AsyncStorage.getItem(INITIAL_REGION),
-            AsyncStorage.getItem(FIR_BOUNDARIES),AsyncStorage.getItem(STATIC_AIRSPACE_DATA)];
-        const [favorites, initialRegion, firBoundaries, staticAirspaceData] = await Promise.all(promises);
-        return {
-            initialRegion: JSON.parse(initialRegion),
-            staticAirspaceData: JSON.parse(staticAirspaceData),
-            firBoundaries: JSON.parse(firBoundaries),
-        };
+        const initialRegion = await AsyncStorage.getItem(SAVED_INITIAL_REGION);
+        if (initialRegion !== null) {
+            retrievedData.initialRegion = initialRegion;
+        }
     } catch (err) {
-        console.log('Error stored preferences', err);
-        return null;
+        console.log('Error retrieving initial region', err);
     }
+
+    try {
+        const firBoundaries = await AsyncStorage.getItem(FIR_BOUNDARIES);
+        if (firBoundaries !== null) {
+            retrievedData.firBoundaries = firBoundaries;
+        }
+    } catch (err) {
+        console.log('Error retrieving fir boudaries', err);
+    }
+
+    try {
+        const staticAirspaceData = await AsyncStorage.getItem(STATIC_AIRSPACE_DATA);
+        if (staticAirspaceData !== null) {
+            retrievedData.staticAirspaceData = staticAirspaceData;
+        }
+    } catch (err) {
+        console.log('Error retrieving static airspace data', err);
+    }
+    console.log('ret', retrievedData);
+    return retrievedData;
 };

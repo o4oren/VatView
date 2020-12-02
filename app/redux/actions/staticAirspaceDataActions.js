@@ -1,4 +1,5 @@
 import {storeFirBoundaries, storeStaticAirspaceData} from '../../services/storageService';
+import {STATIC_DATA_VERSION} from '../../util/consts';
 
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
@@ -17,7 +18,7 @@ const firBoundariesUpdated = (firBoundaries) => {
     };
 };
 
-const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated) => {
+const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated, version) => {
     return {
         type: VATSPY_DATA_UPDATED,
         payload: {
@@ -25,7 +26,8 @@ const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated) => {
             airports: airports,
             firs: firs,
             uirs: uirs,
-            lastUpdated: lastUpdated
+            lastUpdated: lastUpdated,
+            version: version
         }
     };
 };
@@ -63,6 +65,8 @@ const getFirBoundaries = async (dispatch, getState) => {
             const anchor = i;
             for (let j = 1; j <= fields[3]; j++) {
                 const point = lines[anchor + j].split('|');
+                if (point[0] == 90) point[0] = 85;
+                if (point[0] == -90) point[0] = -85;
                 points.push({
                     latitude: Number(point[0]),
                     longitude: Number(point[1])
@@ -73,6 +77,7 @@ const getFirBoundaries = async (dispatch, getState) => {
             firBoundaries.push(fir);
         }
     }
+    console.log('storing fir');
     await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
 };
@@ -143,14 +148,17 @@ const getVATSpyData = async (dispatch, getState) => {
         }
     });
     const lastUpdated = Date.now();
+    console.log('storing airspce data');
+
     await storeStaticAirspaceData({
         countries: countries,
         airports: airports,
         firs: firs,
         uirs: uirs,
-        lastUpdated: lastUpdated
+        lastUpdated: lastUpdated,
+        version: STATIC_DATA_VERSION
     });
-    dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated));
+    dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };
 
 export default {
