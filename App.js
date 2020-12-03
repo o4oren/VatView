@@ -36,6 +36,7 @@ export default function App() {
         );
     }
 
+    console.debug('saved state', state.savedState);
     const preloadedState = {
         settings: {
             initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,

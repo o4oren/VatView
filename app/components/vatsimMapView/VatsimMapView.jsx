@@ -31,14 +31,11 @@ export default function VatsimMapView() {
 
 
     useEffect(() => {
-        console.log('settings', settings);
-
         dispatch(allActions.vatsimLiveDataActions.updateData);
         const now = Date.now();
         if(staticAirspaceData.version == undefined
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
-            console.log('static data fetch called');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
