@@ -4,7 +4,6 @@ import {StyleSheet, Text, View, Dimensions} from 'react-native';
 export default function clientDetails(props) {
     // 6 = CTR, 4=TWR,
     const renderBody = () => {
-        console.debug('client details', props.client);
         if(props.client === undefined)
             return;
         if(props.client.clienttype == 'PILOT') {

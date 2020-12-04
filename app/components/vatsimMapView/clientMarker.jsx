@@ -4,17 +4,18 @@ import MapView, {Circle, Polygon} from 'react-native-maps';
 import {APP, ATC, CTR, DEL, GND, EXCLUDED_CALLSIGNS, FSS, PILOT, TWR_ATIS, OBS} from '../../util/consts';
 import theme from './theme';
 import {useSelector} from 'react-redux';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function clientMarker(props) {
     const APP_RADIUS = 80000;
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const [tracksViewChanges, setTrackViewChanges] = useState(true);
     const client = props.client;
-    let title, image, markerStyle, rotation, anchor;
+    let title, markerStyle, rotation, anchor;
 
     const coordinate={latitude: client.latitude, longitude: client.longitude};
-    const onPress = (client) => props.onPress(client);
+    const onPress = (client) => {
+        props.onPress(client);
+    };
     const stopTracking = () => {
         setTrackViewChanges(false);
     };
@@ -31,7 +32,7 @@ export default function clientMarker(props) {
 
         // exclude problematic FSSs
         if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998') {
-            console.log('Excluded client: ' + client.callsign, client);
+            console.log('Excluded client: ' + client.callsign);
             return airspace;
         }
 
@@ -82,10 +83,10 @@ export default function clientMarker(props) {
         }
 
         if(airspace.firs.length === 0)
-            console.log('Airspace could not be resolved!', {airspace: airspace, client: client});
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facilitytype);
         return airspace;
     };
-    if(client.latitude == undefined || client.longitude == undefined) console.log('undefined', client);
+    if(client.latitude == undefined || client.longitude == undefined) console.log(client.callsign + ' has no lat/long');
 
     if (client.clienttype === PILOT) {
         title=client.callsign;
@@ -195,13 +196,13 @@ export default function clientMarker(props) {
         anchor={anchor}
         // icon={client.image}
         onPress={onPress}
-        tracksViewChanges={false}
+        tracksViewChanges={tracksViewChanges}
         tracksInfoWindowChanges={false}
     >
         <View>
             <Image
                 source={client.image}
-                // onLoad={stopTracking}
+                onLoad={stopTracking}
                 fadeDuration={0}
             />
         </View>

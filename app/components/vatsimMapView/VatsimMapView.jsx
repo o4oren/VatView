@@ -29,6 +29,7 @@ export default function VatsimMapView() {
     const sheetRef = React.useRef(null);
     const [selectedClient, setSelectedClient] = useState();
     const [clientMarkers, setClientMarkers] = useState([]);
+    const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
 
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
@@ -46,8 +47,14 @@ export default function VatsimMapView() {
     }, []);
 
     useEffect(() => {
-        setClientMarkers(updateClientMarkers());
+        console.debug('update markers');
+        const markers = updateClientMarkers();
+        setClientMarkers(markers);
     }, [vatsimLiveData]);
+
+    const updateScreenSize = () => {
+        setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
+    };
 
     const renderContent = () => (
         <ClientDetails
@@ -61,8 +68,6 @@ export default function VatsimMapView() {
     };
 
     const updateClientMarkers = () => {
-        // facilitytype:
-        // 0 - OBS, 1 - FSS, 2 - DEL, 3 GND, 4 - TWR/ATIS, 5 - APP, 6 - CTR
         const markers = vatsimLiveData.clients.map((client, index )=> {
             return <ClientMarker
                 key={client.cid + '-' + client.callsign + '-' + index}
@@ -70,14 +75,19 @@ export default function VatsimMapView() {
                 onPress={openDetailsSheet.bind(this, client)}
             />;
         });
+
         return markers;
     };
 
     return (
-        <View style={styles.container}>
+        <View
+            style={[styles.container, {width: screenSize.wisth, height: setScreenSize.height}]}
+            onLayout={updateScreenSize}
+
+        >
             <MapView
                 ref={mapRef}
-                style={styles.mapStyle}
+                style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
                 customMapStyle={theme.blueGrey.customMapStyle}
                 provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
@@ -105,7 +115,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     mapStyle: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
+        flex:1
+        // width: screen.width,
+        // height: screen.height,
     },
 });

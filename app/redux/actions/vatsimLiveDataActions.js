@@ -26,12 +26,14 @@ const updateData = async (dispatch, getState) => {
         // json.clients.push(
         //     {callsign: 'CZEG_FSS', clienttype: 'ATC', facilitytype: 1}
         // );
-        json.clients.push(
-            {callsign: 'LLBG_DEL', clienttype: 'ATC', facilitytype: DEL, latitude: 32.010556, longitude: 34.877222},
-            {callsign: 'LLBG_TWR', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
-            {callsign: 'LLBG_ATIS', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
-            {callsign: 'LLBG_GND', clienttype: 'ATC', facilitytype: GND, latitude: 32.010556, longitude: 34.877222},
-        );
+        // json.clients.push(
+        //     {callsign: 'LLBG_DEL', clienttype: 'ATC', facilitytype: DEL, latitude: 32.010556, longitude: 34.877222},
+        //     {callsign: 'LLBG_TWR', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
+        //     {callsign: 'LLBG_ATIS', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
+        //     {callsign: 'LLBG_GND', clienttype: 'ATC', facilitytype: GND, latitude: 32.010556, longitude: 34.877222},
+        // );
+
+        var t0 = performance.now();
 
         json.clients.forEach(client => {
             if(client.clienttype == PILOT) {
@@ -48,6 +50,7 @@ const updateData = async (dispatch, getState) => {
                 client.image = require('../../../assets/DEL.png');
             }
         });
+
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});
