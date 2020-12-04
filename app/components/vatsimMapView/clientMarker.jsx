@@ -10,7 +10,7 @@ export default function clientMarker(props) {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const [tracksViewChanges, setTrackViewChanges] = useState(true);
     const client = props.client;
-    let title, markerStyle, rotation, anchor;
+    let title, rotation, anchor;
 
     const coordinate={latitude: client.latitude, longitude: client.longitude};
     const onPress = (client) => {
@@ -208,25 +208,3 @@ export default function clientMarker(props) {
         </View>
     </MapView.Marker>;
 }
-
-const getStyle = (markerType) => {
-    switch (markerType) {
-    case 'AIRCRAFT':
-        return styles.aircraftStyle;
-    case 'TWR':
-        return styles.towerStyle;
-    default:
-        return styles.aircraftStyle;
-    }
-};
-
-const styles = StyleSheet.create({
-    aircraftStyle: {
-        width: 32,
-        height: 32
-    },
-    towerStyle: {
-        width: 32,
-        height: 32
-    }
-});
