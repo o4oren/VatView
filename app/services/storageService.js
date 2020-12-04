@@ -13,7 +13,6 @@ export const storeStaticAirspaceData = async (staticAirspaceData) => {
 
 export const storeFirBoundaries = async (firBoundaries) => {
     try {
-        console.log('storing fir boundaries');
         await AsyncStorage.setItem(FIR_BOUNDARIES, JSON.stringify(firBoundaries));
     } catch (err) {
         console.log('Error storing static fir boundaries', err);

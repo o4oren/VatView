@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../util/aircraftIconResolver';
-import {PILOT, TWR_ATIS} from '../../util/consts';
+import {GND, PILOT, TWR_ATIS, DEL} from '../../util/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const UPDATE_DATA = 'UPDATE_DATA';
@@ -18,14 +18,6 @@ const updateData = async (dispatch, getState) => {
             'https://data.vatsim.net/vatsim-data.json'
         );
         let json = await response.json();
-        const modifiedClients = json.clients.forEach(client => {
-            if(client.clienttype == PILOT) {
-                let icon = getAircraftIcon(client.planned_aircraft);
-                client.icon = icon;
-            } else if(client.facilitytype == TWR_ATIS && client.callsign.split('_').pop() == 'TWR') {
-                client.icon = require('../../../assets/tower-96.png');
-            }
-        });
 
         //Uncomment to debug FSS when they are not available
         // json.clients.push(
@@ -34,6 +26,28 @@ const updateData = async (dispatch, getState) => {
         // json.clients.push(
         //     {callsign: 'CZEG_FSS', clienttype: 'ATC', facilitytype: 1}
         // );
+        json.clients.push(
+            {callsign: 'LLBG_DEL', clienttype: 'ATC', facilitytype: DEL, latitude: 32.010556, longitude: 34.877222},
+            {callsign: 'LLBG_TWR', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
+            {callsign: 'LLBG_ATIS', clienttype: 'ATC', facilitytype: TWR_ATIS, latitude: 32.010556, longitude: 34.877222},
+            {callsign: 'LLBG_GND', clienttype: 'ATC', facilitytype: GND, latitude: 32.010556, longitude: 34.877222},
+        );
+
+        json.clients.forEach(client => {
+            if(client.clienttype == PILOT) {
+                let image = getAircraftIcon(client.planned_aircraft);
+                client.image = image;
+            } else if(client.facilitytype == TWR_ATIS) {
+                if (client.callsign.split('_').pop() == 'TWR')
+                    client.image = require('../../../assets/tower-32.png');
+                else
+                    client.image = require('../../../assets/ATIS.png');
+            } else if(client.facilitytype == GND) {
+                client.image = require('../../../assets/GND.png');
+            } else if(client.facilitytype == DEL) {
+                client.image = require('../../../assets/DEL.png');
+            }
+        });
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

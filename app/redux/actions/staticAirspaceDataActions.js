@@ -77,7 +77,6 @@ const getFirBoundaries = async (dispatch, getState) => {
             firBoundaries.push(fir);
         }
     }
-    console.log('storing fir');
     await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
 };
@@ -148,7 +147,6 @@ const getVATSpyData = async (dispatch, getState) => {
         }
     });
     const lastUpdated = Date.now();
-    console.log('storing airspce data');
 
     await storeStaticAirspaceData({
         countries: countries,
