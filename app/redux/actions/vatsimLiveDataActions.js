@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../util/aircraftIconResolver';
-import {GND, PILOT, TWR_ATIS, DEL} from '../../util/consts';
+import {GND, PILOT, TWR_ATIS, DEL, ATC} from '../../util/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const UPDATE_DATA = 'UPDATE_DATA';
@@ -14,6 +14,7 @@ const dataUpdated = (data) => {
 
 const updateData = async (dispatch, getState) => {
     try {
+        const staticAirspaceData = getState().staticAirspaceData;
         const response = await fetch(
             'https://data.vatsim.net/vatsim-data.json'
         );
@@ -33,23 +34,50 @@ const updateData = async (dispatch, getState) => {
         //     {callsign: 'LLBG_GND', clienttype: 'ATC', facilitytype: GND, latitude: 32.010556, longitude: 34.877222},
         // );
 
-        var t0 = performance.now();
-
+        const modClients = {
+            app: [],
+            ctr: [],
+            fss: [],
+            airportAtc: {},
+            pilots: [],
+            sup: []
+        };
         json.clients.forEach(client => {
             if(client.clienttype == PILOT) {
                 let image = getAircraftIcon(client.planned_aircraft);
                 client.image = image;
-            } else if(client.facilitytype == TWR_ATIS) {
-                if (client.callsign.split('_').pop() == 'TWR')
-                    client.image = require('../../../assets/tower-32.png');
-                else
-                    client.image = require('../../../assets/ATIS.png');
-            } else if(client.facilitytype == GND) {
-                client.image = require('../../../assets/GND.png');
-            } else if(client.facilitytype == DEL) {
-                client.image = require('../../../assets/DEL.png');
+                modClients.pilots.push(client);
+            } else if (client.clienttype == ATC) {
+                let prefix = client.callsign.split('_')[0];
+                if (prefix.length === 3) {
+                    // look for iata code and use it's icao.
+                    console.log('prefix', prefix);
+                    const iataApt = getState().staticAirspaceData.airports.iata[prefix];
+                    if(iataApt != undefined) {
+                        console.log('repalcing ' + prefix + ' with ' + iataApt.icao);
+                        prefix = iataApt.icao;
+                    }
+                }
+                if([TWR_ATIS, GND, DEL].includes(client.facilitytype)) {
+                    if (modClients.airportAtc[prefix] == null) {
+                        modClients.airportAtc[prefix] = {};
+                    }
+                    if(client.facilitytype == GND) {
+                        modClients.airportAtc[prefix].gnd=client;
+                    } else if(client.facilitytype == DEL) {
+                        modClients.airportAtc[prefix].del=client;
+                    } else if (client.callsign.split('_').pop() == 'TWR') {
+                        let image = require('../../../assets/tower-96.png');
+                        client.image = image;
+                        modClients.airportAtc[prefix].twr=client;
+                    } else if (client.callsign.split('_').pop() == 'ATIS') {
+                        modClients.airportAtc[prefix].atis=client;
+                    }
+                }
             }
         });
+
+        console.log('new', modClients);
 
         dispatch(dataUpdated(json));
     } catch (error) {

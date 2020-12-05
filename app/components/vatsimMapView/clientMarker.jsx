@@ -45,7 +45,7 @@ export default function clientMarker(props) {
             if (fallbackFir != undefined) {
                 firIcao = fallbackFir.icao;
             } else {
-                const airport = staticAirspaceData.airports.find(airport => airport.iata == icao);
+                const airport = staticAirspaceData.airports.iata == icao ? staticAirspaceData.airports.iata : undefined;
                 if (airport != undefined) {
                     firIcao = airport.fir;
                 }
@@ -179,6 +179,7 @@ export default function clientMarker(props) {
                         <Text
                             key={client.cid + '-' + fir.icao + '-' + fIndex}
                             style={theme.blueGrey.firTextStyle}
+                            onLoad={stopTracking}
                         >
                             {fir.icao}
                         </Text>

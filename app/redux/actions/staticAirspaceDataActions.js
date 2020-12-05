@@ -87,8 +87,8 @@ const getVATSpyData = async (dispatch, getState) => {
     let body = await response.text();
     const lines = body.split(/\r?\n/);
     let section = COUNTRIES;
-    const countries = [];
-    const airports = [];
+    let countries = {};
+    const airports = {icao: {}, iata: {}};
     const firs = [];
     const uirs = [];
 
@@ -102,14 +102,13 @@ const getVATSpyData = async (dispatch, getState) => {
 
             switch (section) {
             case COUNTRIES:
-                countries.push({
+                countries[tokens[1]]={
                     country: tokens[0],
-                    code: tokens[1],
                     callsign: tokens[2]
-                });
+                };
                 break;
             case AIRPORTS:
-                airports.push(
+                airports.icao[tokens[0]] =
                     {
                         icao: tokens[0],
                         name: tokens[1],
@@ -118,7 +117,17 @@ const getVATSpyData = async (dispatch, getState) => {
                         iata: tokens[4],
                         fir: tokens[5],
                         isPseaudo: tokens[6]
-                    });
+                    };
+                airports.iata[tokens[4]] =
+                    {
+                        icao: tokens[0],
+                        name: tokens[1],
+                        latitude: Number(tokens[2]),
+                        longitude: Number(tokens[3]),
+                        iata: tokens[4],
+                        fir: tokens[5],
+                        isPseaudo: tokens[6]
+                    };
                 break;
             case FIR:
                 firs.push(

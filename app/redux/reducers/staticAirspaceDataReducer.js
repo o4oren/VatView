@@ -3,8 +3,8 @@ import {
     VATSPY_DATA_UPDATED
 } from '../actions/staticAirspaceDataActions';
 
-const staticAirspaceDataReducer = (state = {firBoundaries: [], countries: [],
-    airports:[], firs: [], uirs: [], lastUpdated: 0},
+const staticAirspaceDataReducer = (state = {firBoundaries: [], countries: {},
+    airports: {}, firs: [], uirs: [], lastUpdated: 0},
 action) => {
     switch (action.type) {
     case FIR_BOUNDARIES_UPDATED:

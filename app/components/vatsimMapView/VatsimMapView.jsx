@@ -48,8 +48,7 @@ export default function VatsimMapView() {
 
     useEffect(() => {
         console.debug('update markers');
-        const markers = updateClientMarkers();
-        setClientMarkers(markers);
+        updateClientMarkers().then(markers => setClientMarkers(markers));
     }, [vatsimLiveData]);
 
     const updateScreenSize = () => {
@@ -67,16 +66,14 @@ export default function VatsimMapView() {
         sheetRef.current.snapTo(0);
     };
 
-    const updateClientMarkers = () => {
-        const markers = vatsimLiveData.clients.map((client, index )=> {
+    const updateClientMarkers = async () => {
+        return vatsimLiveData.clients.map((client, index )=> {
             return <ClientMarker
                 key={client.cid + '-' + client.callsign + '-' + index}
                 client={client}
                 onPress={openDetailsSheet.bind(this, client)}
             />;
         });
-
-        return markers;
     };
 
     return (
