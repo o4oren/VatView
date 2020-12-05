@@ -21,7 +21,7 @@ export default function clientMarker(props) {
     const getAirspaceCoordinates = client => {
         // console.log(client);
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
-        const icao = client.callsign.split('_')[0];
+        const callsignPrefix = client.callsign.split('_')[0];
         let airspace = {
             isUir: false,
             firs: [],
@@ -35,39 +35,31 @@ export default function clientMarker(props) {
         }
 
         // If client is FIR
-        if(staticAirspaceData.firBoundaries[icao] != undefined) {
-            airspace.firs.push(staticAirspaceData.firBoundaries[icao]);
+        if(staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
+            airspace.firs.push(staticAirspaceData.firBoundaries[callsignPrefix]);
         }
 
         if (airspace.firs[0] === undefined) {
-            let fallbackFir;
+            let fallbackFirIcao;
             for (let fir in staticAirspaceData.firs) {
-                if (fir.prefix == icao)
-                    fallbackFir = fir;
-            }
-            let firIcao;
-            if (fallbackFir != undefined) {
-                firIcao = fallbackFir.icao;
-            } else {
-                const airport = staticAirspaceData.airports.iata == icao ? staticAirspaceData.airports.iata : undefined;
-                if (airport != undefined) {
-                    firIcao = airport.fir;
+                // console.log('firs from static ', staticAirspaceData.firs[fir]);
+                if (staticAirspaceData.firs[fir].prefix == callsignPrefix || staticAirspaceData.firs[fir].position == callsignPrefix)
+                {
+                    fallbackFirIcao = staticAirspaceData.firs[fir].icao;
+                    console.log('backup icao', fallbackFirIcao);
+                    if (staticAirspaceData.firBoundaries[fallbackFirIcao] != undefined && !staticAirspaceData.firBoundaries[fallbackFirIcao].isOceanic) {
+                        airspace.firs.push(staticAirspaceData.firBoundaries[fallbackFirIcao]);
+                    }
                 }
-            }
-            // all
-            // firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
-
-            // non oceanic
-            if (staticAirspaceData.firBoundaries[icao] != undefined && !staticAirspaceData.firBoundaries[icao].isOceanic) {
-                airspace.firs.push(staticAirspaceData.firBoundaries[icao]);
             }
         }
 
         // if we did not resolve firs, we check if UIR
         if(airspace.firs[0] == undefined)
         {
-            const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
+            const uir = staticAirspaceData.uirs.find(uir => uir.icao == callsignPrefix);
             if (uir != undefined) {
+                airspace.isUir = true;
                 // calclute center of centers
                 let latitudeSum = 0;
                 let longitudeSum = 0;
@@ -79,12 +71,11 @@ export default function clientMarker(props) {
                         longitudeSum += fir.center.longitude;
                     }
                 });
-                airspace.icao = icao;
+                airspace.icao = callsignPrefix;
                 airspace.center = {
                     latitude: latitudeSum / uir.firs.length,
                     longitude: longitudeSum / uir.firs.length
                 };
-                airspace.isUir = true;
             }
         }
 
@@ -127,8 +118,9 @@ export default function clientMarker(props) {
             />;
         } else if (client.facilitytype === CTR || client.facilitytype === FSS) {
             // CTR
-            console.log('calling for as coords', client.callsign);
             const airspace = getAirspaceCoordinates(client);
+            console.log('calling for as coords for ' + client.callsign + ' airspace: ', airspace);
+
             if (airspace.isUir) {
                 const boundaries = airspace.firs.map((fir, fIndex) =>
                     <Polygon
@@ -203,7 +195,7 @@ export default function clientMarker(props) {
         anchor={anchor}
         style={style}
         rotation={rotation}
-        icon={client.image}
+        // icon={client.image}
         onPress={onPress}
         tracksViewChanges={!props.mapReady}
         tracksInfoWindowChanges={false}
