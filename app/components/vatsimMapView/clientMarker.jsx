@@ -8,16 +8,12 @@ import {useSelector} from 'react-redux';
 export default function clientMarker(props) {
     const APP_RADIUS = 80000;
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const [tracksViewChanges, setTrackViewChanges] = useState(true);
     const client = props.client;
     let title, rotation, anchor;
 
     const coordinate={latitude: client.latitude, longitude: client.longitude};
     const onPress = (client) => {
         props.onPress(client);
-    };
-    const stopTracking = () => {
-        setTrackViewChanges(false);
     };
 
     const getAirspaceCoordinates = client => {
@@ -150,15 +146,13 @@ export default function clientMarker(props) {
                     {boundaries}
                     <MapView.Marker
                         coordinate={airspace.center}
-                        tracksViewChanges={tracksViewChanges}
-                        tracksInfoWindowChanges={tracksViewChanges}
-                        onMapReady = {() => {this.setIsMapInitialized(true);}}
+                        tracksViewChanges={!props.mapReady}
+                        tracksInfoWindowChanges={false}
                         // anchor={{x: 0.5, y: 0.5}}
                     >
                         <Text
                             key={client.cid + '-uri-text-'}
                             style={theme.blueGrey.uirTextStyle}
-                            onLoad={stopTracking}
                         >
                             {client.callsign}
                         </Text>
@@ -182,14 +176,13 @@ export default function clientMarker(props) {
                     <MapView.Marker
                         key={client.cid + '-marker-' + fIndex}
                         coordinate={fir.center}
-                        tracksViewChanges={tracksViewChanges}
-                        tracksInfoWindowChanges={tracksViewChanges}
+                        tracksViewChanges={!props.mapReady}
+                        tracksInfoWindowChanges={false}
                         // anchor={{x: 0.5, y: 0.5}}
                     >
                         <Text
                             key={client.cid + '-' + fir.icao + '-' + fIndex}
                             style={theme.blueGrey.firTextStyle}
-                            onLoad={stopTracking}
                         >
                             {fir.icao}
                         </Text>
@@ -207,13 +200,12 @@ export default function clientMarker(props) {
         anchor={anchor}
         // icon={client.image}
         onPress={onPress}
-        tracksViewChanges={tracksViewChanges}
+        tracksViewChanges={!props.mapReady}
         tracksInfoWindowChanges={false}
     >
         <View>
             <Image
                 source={client.image}
-                onLoad={stopTracking}
                 fadeDuration={0}
             />
         </View>

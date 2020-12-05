@@ -10,7 +10,7 @@ const getAircraftIcon = (code) => {
     const a330strings = ['A330', 'A332', 'A333', 'A338', 'A339', 'A350', 'A351', 'A359', 'A306', 'A310'];
     const a340strings = ['A340', 'A342', 'A343', 'A435', 'A346'];
     const b777strings = ['B777', 'B772', 'B773', 'B77W', 'B77L'];
-    const b787strings = ['B787', 'B788', 'B789', 'B78J'];
+    const b787strings = ['B787', 'B788', 'B789', 'B78J', 'B78W'];
     const bizjetstings = ['C25C', 'E190', 'E170', 'C550', 'E195', 'CR9', 'GJ5', 'DF7', 'B721', 'B722',
     ];
 
@@ -19,7 +19,7 @@ const getAircraftIcon = (code) => {
 
     b737strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/boeing-737-icon-24.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/boeing-737-icon-28.png');
         }
     });
 
@@ -31,7 +31,7 @@ const getAircraftIcon = (code) => {
 
     a320strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a320-icon-24.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a320-icon-28.png');
         }
     });
 
@@ -43,7 +43,7 @@ const getAircraftIcon = (code) => {
 
     a330strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a330-icon-32.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a330-icon-24.png');
         }
     });
 
@@ -55,7 +55,7 @@ const getAircraftIcon = (code) => {
 
     a380strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a380-icon-36.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a380-icon-32.png');
         }
     });
 
@@ -73,7 +73,7 @@ const getAircraftIcon = (code) => {
 
     bizjetstings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/fokker-100-icon-24.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/fokker-100-icon-16.png');
         }
     });
 
