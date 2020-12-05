@@ -37,10 +37,16 @@ export default function clientMarker(props) {
         }
 
         // If client is FIR
-        airspace.firs = staticAirspaceData.firBoundaries.filter(fir => fir.icao === icao);
+        if(staticAirspaceData.firBoundaries[icao] != undefined) {
+            airspace.firs.push(staticAirspaceData.firBoundaries[icao]);
+        }
 
-        if (airspace.firs.length === 0) {
-            let fallbackFir = staticAirspaceData.firs.find(fir => fir.prefix == icao);
+        if (airspace.firs[0] === undefined) {
+            let fallbackFir;
+            for (let fir in staticAirspaceData.firs) {
+                if (fir.prefix == icao)
+                    fallbackFir = fir;
+            }
             let firIcao;
             if (fallbackFir != undefined) {
                 firIcao = fallbackFir.icao;
@@ -54,11 +60,13 @@ export default function clientMarker(props) {
             // firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao);
 
             // non oceanic
-            airspace.firs = staticAirspaceData.firBoundaries.filter( fir => fir.icao == firIcao && !fir.isOceanic);
+            if (staticAirspaceData.firBoundaries[icao] != undefined && !staticAirspaceData.firBoundaries[icao].isOceanic) {
+                airspace.firs.push(staticAirspaceData.firBoundaries[icao]);
+            }
         }
 
         // if we did not resolve firs, we check if UIR
-        if(airspace.firs.length === 0)
+        if(airspace.firs[0] == undefined)
         {
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == icao);
             if (uir != undefined) {
@@ -66,7 +74,7 @@ export default function clientMarker(props) {
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 uir.firs.forEach(firIcao => {
-                    const fir = staticAirspaceData.firBoundaries.find(fir => fir.icao === firIcao);
+                    const fir = staticAirspaceData.firBoundaries[firIcao];
                     if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
                         airspace.firs.push(fir);
                         latitudeSum += fir.center.latitude;
@@ -122,6 +130,7 @@ export default function clientMarker(props) {
             />;
         } else if (client.facilitytype === CTR || client.facilitytype === FSS) {
             // CTR
+            console.log('calling for as coords', client.callsign);
             const airspace = getAirspaceCoordinates(client);
             if (airspace.isUir) {
                 const boundaries = airspace.firs.map((fir, fIndex) =>
@@ -157,6 +166,7 @@ export default function clientMarker(props) {
                 </View>
                 );
             }
+
             return airspace.firs.map((fir, fIndex) =>
                 <View key={client.callsign + '-' + fIndex}>
                     <Polygon

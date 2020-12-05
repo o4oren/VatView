@@ -10,7 +10,7 @@ export const EXCLUDED_CALLSIGNS = [
     'BICC_FSS',
 ];
 
-export const STATIC_DATA_VERSION = 14;
+export const STATIC_DATA_VERSION = 15;
 export const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
 export const ONE_MIN = 1000 * 60;
 export const PILOT = 'PILOT';

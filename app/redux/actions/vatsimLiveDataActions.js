@@ -67,7 +67,7 @@ const updateData = async (dispatch, getState) => {
                     } else if(client.facilitytype == DEL) {
                         modClients.airportAtc[prefix].del=client;
                     } else if (client.callsign.split('_').pop() == 'TWR') {
-                        let image = require('../../../assets/tower-96.png');
+                        let image = require('../../../assets/tower-32.png');
                         client.image = image;
                         modClients.airportAtc[prefix].twr=client;
                     } else if (client.callsign.split('_').pop() == 'ATIS') {

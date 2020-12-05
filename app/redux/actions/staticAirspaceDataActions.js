@@ -48,7 +48,7 @@ const getFirBoundaries = async (dispatch, getState) => {
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/FIRBoundaries.dat');
     let body = await response.text();
     const lines = body.split(/\r?\n/);
-    const firBoundaries = [];
+    const firBoundaries = {};
     for (let i=0; i < lines.length; i++) {
         if (!lines[i].match(/^\d/)) {
             let fir = {};
@@ -74,9 +74,10 @@ const getFirBoundaries = async (dispatch, getState) => {
                 i++;
             }
             fir.points = points;
-            firBoundaries.push(fir);
+            firBoundaries[fir.icao] = fir;
         }
     }
+    console.log('fboundaries', firBoundaries);
     await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
 };
