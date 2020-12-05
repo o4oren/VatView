@@ -9,7 +9,9 @@ export default function clientMarker(props) {
     const APP_RADIUS = 80000;
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const client = props.client;
-    let title, rotation, anchor;
+    let title, anchor;
+
+    let rotation = client.heading !== null ? client.heading : 0;
 
     const coordinate={latitude: client.latitude, longitude: client.longitude};
     const onPress = (client) => {
@@ -94,7 +96,6 @@ export default function clientMarker(props) {
 
     if (client.clienttype === PILOT) {
         title=client.callsign;
-        rotation=client.heading;
         anchor={x: 0.5, y: 0.5};
     } else if (client.clienttype === ATC) {
         if (client.facilitytype === OBS) {
@@ -192,13 +193,17 @@ export default function clientMarker(props) {
         }
     }
 
+    const style = Platform.OS === 'ios' ? [
+        { transform: [{ rotate: `${rotation}deg` }] },] : [];
+
     return <MapView.Marker
         // key={'client-at-' + props.coordinate.longitude + ':' + props.coordinate.latitude}
         coordinate={coordinate}
         title={title}
-        rotation={rotation}
         anchor={anchor}
-        // icon={client.image}
+        style={style}
+        rotation={rotation}
+        icon={client.image}
         onPress={onPress}
         tracksViewChanges={!props.mapReady}
         tracksInfoWindowChanges={false}

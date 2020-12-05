@@ -93,7 +93,7 @@ export default function VatsimMapView() {
                 ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
                 customMapStyle={theme.blueGrey.customMapStyle}
-                provider={PROVIDER_GOOGLE}
+                // provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
                 initialRegion={settings.initialRegion}
                 onRegionChangeComplete={region => dispatch(allActions.settingsActions.saveInitialRegion(region))}
