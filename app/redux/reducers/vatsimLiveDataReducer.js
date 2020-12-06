@@ -3,11 +3,11 @@ import {
     ERROR,
 } from '../actions/vatsimLiveDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: [], servers: [], prefiles: []},
+const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {}, servers: [], prefiles: []},
     action) => {
     switch (action.type) {
     case DATA_UPDATED:
-        return {...state, general: action.payload.data.general, clients: action.payload.data.clients,
+        return {...state, general: action.payload.data.general, clients: action.payload.data.clients, modClients: action.payload.data.modClients,
             servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
     case ERROR:
         return { ...state, error: action.payload.error };

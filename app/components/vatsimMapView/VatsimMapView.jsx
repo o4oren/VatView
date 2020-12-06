@@ -29,6 +29,7 @@ export default function VatsimMapView() {
     const sheetRef = React.useRef(null);
     const [selectedClient, setSelectedClient] = useState();
     const [clientMarkers, setClientMarkers] = useState([]);
+
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const [mapReady, setMapReady] = useState(false);
 
@@ -52,7 +53,8 @@ export default function VatsimMapView() {
         updateClientMarkers().then(markers => {
             console.log('updating markers');
             setClientMarkers(markers);
-            setTimeout(() => setMapReady(true), 1000);
+            console.log(markers);
+            setMapReady(true);
         });
     }, [vatsimLiveData]);
 
@@ -72,7 +74,7 @@ export default function VatsimMapView() {
     };
 
     const updateClientMarkers = async () => {
-        const markers = vatsimLiveData.clients.map((client, index )=> {
+        const markers = vatsimLiveData.clients.map((client, index ) => {
             return <ClientMarker
                 key={client.cid + '-' + client.callsign + '-' + index}
                 client={client}

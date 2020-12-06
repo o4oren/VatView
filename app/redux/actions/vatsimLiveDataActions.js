@@ -85,6 +85,7 @@ const updateData = async (dispatch, getState) => {
             }
         });
         console.log(modClients);
+        json.modClients = modClients;
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});
