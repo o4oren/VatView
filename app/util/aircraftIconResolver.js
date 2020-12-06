@@ -4,7 +4,7 @@ const getAircraftIcon = (code) => {
         return icon;
 
     const b737strings = ['B737', 'B732', 'B733', 'B734', 'B735', 'B736', 'B737', 'B738', 'B739'];
-    const b747strings = ['B741', 'B742', 'B744', 'B7', 'B74L', 'B74R'];
+    const b747strings = ['B741', 'B742', 'B744', 'B748', 'B74L', 'B74R'];
     const a320strings = ['A320', 'A321', 'A319', 'A318', 'A21N', 'A20N'];
     const a380strings = ['A380', 'A388', 'A389'];
     const a330strings = ['A330', 'A332', 'A333', 'A338', 'A339', 'A350', 'A351', 'A359', 'A306', 'A310'];
@@ -43,7 +43,7 @@ const getAircraftIcon = (code) => {
 
     a330strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a330-icon-24.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a330-icon-32.png');
         }
     });
 
@@ -55,7 +55,7 @@ const getAircraftIcon = (code) => {
 
     a380strings.forEach(aCode => {
         if (code.includes(aCode)) {
-            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a380-icon-32.png');
+            icon = require('../../assets/aircraft/blue-2A5D99/airbus-a380-icon-36.png');
         }
     });
 

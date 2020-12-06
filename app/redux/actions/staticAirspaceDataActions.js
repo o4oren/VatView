@@ -83,7 +83,6 @@ const getFirBoundaries = async (dispatch, getState) => {
 
     await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
-    console.log('fboundries', firBoundaries);
 };
 
 const getVATSpyData = async (dispatch, getState) => {
