@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../util/aircraftIconResolver';
-import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR} from '../../util/consts';
+import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR, APP, OBS, FSS} from '../../util/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const UPDATE_DATA = 'UPDATE_DATA';
@@ -14,7 +14,6 @@ const dataUpdated = (data) => {
 
 const updateData = async (dispatch, getState) => {
     try {
-        const staticAirspaceData = getState().staticAirspaceData;
         const response = await fetch(
             'https://data.vatsim.net/vatsim-data.json'
         );
@@ -50,7 +49,8 @@ const updateData = async (dispatch, getState) => {
             fss: [],
             airportAtc: {},
             pilots: [],
-            sup: []
+            obs: [],
+            other: []
         };
         json.clients.forEach(client => {
             if(client.clienttype == PILOT) {
@@ -68,21 +68,19 @@ const updateData = async (dispatch, getState) => {
                 }
                 if([TWR_ATIS, GND, DEL].includes(client.facilitytype)) {
                     if (modClients.airportAtc[prefix] == null) {
-                        modClients.airportAtc[prefix] = {};
+                        modClients.airportAtc[prefix] = [];
                     }
-                    if(client.facilitytype == GND) {
-                        modClients.airportAtc[prefix].gnd=client;
-                    } else if(client.facilitytype == DEL) {
-                        modClients.airportAtc[prefix].del=client;
-                    } else if (client.callsign.split('_').pop() == 'TWR') {
-                        let image = require('../../../assets/tower-32.png');
-                        client.image = image;
-                        modClients.airportAtc[prefix].twr=client;
-                    } else if (client.callsign.split('_').pop() == 'ATIS') {
-                        modClients.airportAtc[prefix].atis=client;
-                    }
+                    modClients.airportAtc[prefix].push(client);
                 } else if(client.facilitytype == CTR) {
                     modClients.ctr[prefix]=client;
+                } else if(client.facilitytype == APP) {
+                    modClients.app[prefix]=client;
+                } else if(client.facilitytype == FSS) {
+                    modClients.fss[prefix]=client;
+                } else if(client.facilitytype == OBS) {
+                    modClients.obs[prefix]=client;
+                } else {
+                    modClients.other[prefix]=client;
                 }
             }
         });

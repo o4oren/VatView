@@ -96,7 +96,7 @@ const getVATSpyData = async (dispatch, getState) => {
     const firs = [];
     const uirs = [];
 
-    await lines.forEach((line, index) => {
+    await lines.forEach((line) => {
         if(line.startsWith('['))
         {
             section = line.trim();
@@ -129,7 +129,7 @@ const getVATSpyData = async (dispatch, getState) => {
                         longitude: Number(tokens[3]),
                         iata: tokens[4],
                         fir: tokens[5],
-                        isPseaudo: tokens[6]
+                        isPseudo: tokens[6]
                     };
                 break;
             case FIR:
