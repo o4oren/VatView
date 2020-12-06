@@ -6,7 +6,7 @@ import { AppLoading } from 'expo';
 import VatsimMapView from './app/components/vatsimMapView/VatsimMapView';
 import VatsimListView from './app/components/VatsimListView/VatsimListView';
 
-import {retrieveSavedState} from './app/services/storageService';
+import {retrieveSavedState} from './app/util/storageService';
 import {Button, Dimensions, StyleSheet} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
