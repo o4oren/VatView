@@ -36,22 +36,22 @@ export default function clientMarker(props) {
             console.log('Excluded client: ' + client.callsign);
             return airspace;
         }
-
         // If client is FIR
         if(staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
+
             staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
+                if(fir.icao === callsignPrefix);
                 airspace.firs.push(fir);
             });
         }
 
-        if (airspace.firs[0] === undefined) {
+        if (airspace.firs.length == 0) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
                 // console.log('firs from static ', staticAirspaceData.firs[fir]);
                 if (fir.prefix == callsignPrefix || fir.position == callsignPrefix)
                 {
                     fallbackFirIcao = fir.icao;
-
                     // we have to iterate to prevent fetching the oceanic only
                     staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
                         if (fir != undefined && (isOceanic === true || !fir.isOceanic) && fir.isExtention == false) {
@@ -63,6 +63,7 @@ export default function clientMarker(props) {
         }
 
         // if we did not resolve firs, we check if UIR
+        console.log(airspace.firs[0]);
         if(airspace.firs[0] == undefined)
         {
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == callsignPrefix);

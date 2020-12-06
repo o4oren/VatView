@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../util/aircraftIconResolver';
-import {GND, PILOT, TWR_ATIS, DEL, ATC} from '../../util/consts';
+import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR} from '../../util/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const UPDATE_DATA = 'UPDATE_DATA';
@@ -21,11 +21,21 @@ const updateData = async (dispatch, getState) => {
         let json = await response.json();
 
         //Uncomment to debug FSS when they are not available
+        // json.clients = [];
         // json.clients.push(
         //     {callsign: 'EURS_FSS', clienttype: 'ATC', facilitytype: 1}
         // );
         // json.clients.push(
         //     {callsign: 'CZEG_FSS', clienttype: 'ATC', facilitytype: 1}
+        // );
+        // json.clients.push(
+        //     {callsign: 'NY_1_CTR', clienttype: 'ATC', facilitytype: CTR, isOceanic: false}
+        // );
+        // json.clients.push(
+        //     {callsign: 'LLLL_CTR', clienttype: 'ATC', facilitytype: CTR, isOceanic: false}
+        // );
+        // json.clients.push(
+        //     {callsign: 'DC_1_CTR', clienttype: 'ATC', facilitytype: CTR, isOceanic: false}
         // );
         // json.clients.push(
         //     {callsign: 'LLBG_DEL', clienttype: 'ATC', facilitytype: DEL, latitude: 32.010556, longitude: 34.877222},
@@ -49,8 +59,8 @@ const updateData = async (dispatch, getState) => {
                 modClients.pilots.push(client);
             } else if (client.clienttype == ATC) {
                 let prefix = client.callsign.split('_')[0];
-                if (prefix.length === 3) {
-                    // look for iata code and use it's icao.
+                if (prefix.length < 4) {
+                    // if IATA or some other name is used, we'll use airprots db to find ICAO
                     const iataApt = getState().staticAirspaceData.airports.iata[prefix];
                     if(iataApt != undefined) {
                         prefix = iataApt.icao;
@@ -71,10 +81,12 @@ const updateData = async (dispatch, getState) => {
                     } else if (client.callsign.split('_').pop() == 'ATIS') {
                         modClients.airportAtc[prefix].atis=client;
                     }
+                } else if(client.facilitytype == CTR) {
+                    modClients.ctr[prefix]=client;
                 }
             }
         });
-        console.log(json);
+        console.log(modClients);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});
