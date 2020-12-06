@@ -51,10 +51,8 @@ const updateData = async (dispatch, getState) => {
                 let prefix = client.callsign.split('_')[0];
                 if (prefix.length === 3) {
                     // look for iata code and use it's icao.
-                    console.log('prefix', prefix);
                     const iataApt = getState().staticAirspaceData.airports.iata[prefix];
                     if(iataApt != undefined) {
-                        console.log('repalcing ' + prefix + ' with ' + iataApt.icao);
                         prefix = iataApt.icao;
                     }
                 }
@@ -76,8 +74,6 @@ const updateData = async (dispatch, getState) => {
                 }
             }
         });
-
-        console.log('new', modClients);
 
         dispatch(dataUpdated(json));
     } catch (error) {

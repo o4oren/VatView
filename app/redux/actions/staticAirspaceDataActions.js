@@ -74,12 +74,16 @@ const getFirBoundaries = async (dispatch, getState) => {
                 i++;
             }
             fir.points = points;
-            firBoundaries[fir.icao] = fir;
+            if (firBoundaries[fir.icao] == undefined) {
+                firBoundaries[fir.icao] = [];
+            }
+            firBoundaries[fir.icao].push(fir);
         }
     }
-    console.log('fboundaries', firBoundaries);
+
     await storeFirBoundaries(firBoundaries);
     dispatch(firBoundariesUpdated(firBoundaries));
+    console.log('fboundries', firBoundaries);
 };
 
 const getVATSpyData = async (dispatch, getState) => {
@@ -100,7 +104,6 @@ const getVATSpyData = async (dispatch, getState) => {
         }
         if (!line.startsWith(';') && !line.startsWith('[') && !line=='') {
             const tokens = line.split('|');
-
             switch (section) {
             case COUNTRIES:
                 countries[tokens[1]]={

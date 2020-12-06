@@ -21,7 +21,10 @@ export default function clientMarker(props) {
     const getAirspaceCoordinates = client => {
         // console.log(client);
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
+        let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
+        // TODO proper condition to determine oceanic firs
+
         let airspace = {
             isUir: false,
             firs: [],
@@ -29,27 +32,32 @@ export default function clientMarker(props) {
         };
 
         // exclude problematic FSSs
-        if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998') {
+        if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998' || client.callsign.split('_').pop() == 'OBS') {
             console.log('Excluded client: ' + client.callsign);
             return airspace;
         }
 
         // If client is FIR
         if(staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
-            airspace.firs.push(staticAirspaceData.firBoundaries[callsignPrefix]);
+            staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
+                airspace.firs.push(fir);
+            });
         }
 
         if (airspace.firs[0] === undefined) {
             let fallbackFirIcao;
-            for (let fir in staticAirspaceData.firs) {
+            for (let fir of staticAirspaceData.firs) {
                 // console.log('firs from static ', staticAirspaceData.firs[fir]);
-                if (staticAirspaceData.firs[fir].prefix == callsignPrefix || staticAirspaceData.firs[fir].position == callsignPrefix)
+                if (fir.prefix == callsignPrefix || fir.position == callsignPrefix)
                 {
-                    fallbackFirIcao = staticAirspaceData.firs[fir].icao;
-                    console.log('backup icao', fallbackFirIcao);
-                    if (staticAirspaceData.firBoundaries[fallbackFirIcao] != undefined && !staticAirspaceData.firBoundaries[fallbackFirIcao].isOceanic) {
-                        airspace.firs.push(staticAirspaceData.firBoundaries[fallbackFirIcao]);
-                    }
+                    fallbackFirIcao = fir.icao;
+
+                    // we have to iterate to prevent fetching the oceanic only
+                    staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
+                        if (fir != undefined && (isOceanic === true || !fir.isOceanic)) {
+                            airspace.firs.push(fir);
+                        }
+                    });
                 }
             }
         }
@@ -64,12 +72,14 @@ export default function clientMarker(props) {
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 uir.firs.forEach(firIcao => {
-                    const fir = staticAirspaceData.firBoundaries[firIcao];
-                    if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
-                        airspace.firs.push(fir);
-                        latitudeSum += fir.center.latitude;
-                        longitudeSum += fir.center.longitude;
-                    }
+                    console.log(firIcao);
+                    staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
+                        if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
+                            airspace.firs.push(fir);
+                            latitudeSum += fir.center.latitude;
+                            longitudeSum += fir.center.longitude;
+                        }
+                    });
                 });
                 airspace.icao = callsignPrefix;
                 airspace.center = {
@@ -119,8 +129,6 @@ export default function clientMarker(props) {
         } else if (client.facilitytype === CTR || client.facilitytype === FSS) {
             // CTR
             const airspace = getAirspaceCoordinates(client);
-            console.log('calling for as coords for ' + client.callsign + ' airspace: ', airspace);
-
             if (airspace.isUir) {
                 const boundaries = airspace.firs.map((fir, fIndex) =>
                     <Polygon
@@ -154,6 +162,12 @@ export default function clientMarker(props) {
                 );
             }
 
+            airspace.firs.forEach(f => {
+                if(f.center == undefined)
+                    console.log('undefined center', f);
+            });
+
+            console.log('as', airspace);
             return airspace.firs.map((fir, fIndex) =>
                 <View key={client.callsign + '-' + fIndex}>
                     <Polygon

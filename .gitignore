@@ -14,3 +14,4 @@ web-build/
 *.iml
 .idea
 app.json.prod
+app.json

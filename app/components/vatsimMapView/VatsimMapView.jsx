@@ -50,7 +50,6 @@ export default function VatsimMapView() {
     useEffect(() => {
         console.debug('update markers');
         updateClientMarkers().then(markers => {
-            console.log('updating markers');
             setClientMarkers(markers);
             setTimeout(() => setMapReady(true), 1000);
         });
