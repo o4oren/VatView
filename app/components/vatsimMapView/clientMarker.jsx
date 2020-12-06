@@ -63,7 +63,6 @@ export default function clientMarker(props) {
         }
 
         // if we did not resolve firs, we check if UIR
-        console.log(airspace.firs[0]);
         if(airspace.firs[0] == undefined)
         {
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == callsignPrefix);
