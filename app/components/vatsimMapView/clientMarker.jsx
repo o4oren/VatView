@@ -54,7 +54,7 @@ export default function clientMarker(props) {
 
                     // we have to iterate to prevent fetching the oceanic only
                     staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
-                        if (fir != undefined && (isOceanic === true || !fir.isOceanic)) {
+                        if (fir != undefined && (isOceanic === true || !fir.isOceanic) && fir.isExtention == false) {
                             airspace.firs.push(fir);
                         }
                     });
@@ -72,7 +72,6 @@ export default function clientMarker(props) {
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 uir.firs.forEach(firIcao => {
-                    console.log(firIcao);
                     staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
                         if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
                             airspace.firs.push(fir);
@@ -162,12 +161,6 @@ export default function clientMarker(props) {
                 );
             }
 
-            airspace.firs.forEach(f => {
-                if(f.center == undefined)
-                    console.log('undefined center', f);
-            });
-
-            console.log('as', airspace);
             return airspace.firs.map((fir, fIndex) =>
                 <View key={client.callsign + '-' + fIndex}>
                     <Polygon
