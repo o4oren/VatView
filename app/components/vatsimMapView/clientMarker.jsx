@@ -201,7 +201,6 @@ export default function clientMarker(props) {
         coordinate={coordinate}
         title={title}
         anchor={anchor}
-        style={style}
         rotation={rotation}
         // icon={client.image}
         onPress={onPress}
@@ -212,6 +211,7 @@ export default function clientMarker(props) {
             <Image
                 source={client.image}
                 fadeDuration={0}
+                style={style}
             />
         </View>
     </MapView.Marker>;
