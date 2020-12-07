@@ -53,8 +53,9 @@ const updateData = async (dispatch, getState) => {
         };
         json.clients.forEach(client => {
             if(client.clienttype == PILOT) {
-                let image = getAircraftIcon(client.planned_aircraft);
+                let [image, imageSize] = getAircraftIcon(client.planned_aircraft);
                 client.image = image;
+                client.imageSize = imageSize;
                 modClients.pilots.push(client);
             } else if (client.clienttype == ATC) {
                 let prefix = client.callsign.split('_')[0];

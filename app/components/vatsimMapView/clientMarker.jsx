@@ -1,4 +1,4 @@
-import React, from 'react';
+import React from 'react';
 import {Image, Text, View} from 'react-native';
 import MapView, {Circle, Polygon} from 'react-native-maps';
 import {APP, ATC, CTR, DEL, GND, EXCLUDED_CALLSIGNS, FSS, PILOT, TWR_ATIS, OBS} from '../../util/consts';
@@ -13,7 +13,7 @@ export default function clientMarker(props) {
 
     let rotation = client.heading !== null ? client.heading : 0;
 
-    const coordinate={latitude: client.latitude, longitude: client.longitude};
+    const coordinate = {latitude: client.latitude, longitude: client.longitude};
     const onPress = (client) => {
         props.onPress(client);
     };
@@ -37,10 +37,10 @@ export default function clientMarker(props) {
             return airspace;
         }
         // If client is FIR
-        if(staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
+        if (staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
 
             staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
-                if(fir.icao === callsignPrefix);
+                if (fir.icao === callsignPrefix) ;
                 airspace.firs.push(fir);
             });
         }
@@ -49,22 +49,22 @@ export default function clientMarker(props) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
                 // console.log('firs from static ', staticAirspaceData.firs[fir]);
-                if (fir.prefix == callsignPrefix || fir.position == callsignPrefix)
-                {
+                if (fir.prefix == callsignPrefix || fir.position == callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
-                    staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
-                        if (fir != undefined && (isOceanic === true || !fir.isOceanic) && fir.isExtention == false) {
-                            airspace.firs.push(fir);
-                        }
-                    });
+                    if (staticAirspaceData.firBoundaries[fallbackFirIcao] !== undefined) {
+                        staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
+                            if (fir != undefined && (isOceanic === true || !fir.isOceanic) && fir.isExtention == false) {
+                                airspace.firs.push(fir);
+                            }
+                        });
+                    }
                 }
             }
         }
 
         // if we did not resolve firs, we check if UIR
-        if(airspace.firs[0] == undefined)
-        {
+        if (airspace.firs[0] == undefined) {
             const uir = staticAirspaceData.uirs.find(uir => uir.icao == callsignPrefix);
             if (uir != undefined) {
                 airspace.isUir = true;
@@ -88,32 +88,32 @@ export default function clientMarker(props) {
             }
         }
 
-        if(airspace.firs.length === 0)
+        if (airspace.firs.length === 0)
             console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facilitytype);
         return airspace;
     };
-    if(client.latitude == undefined || client.longitude == undefined) console.log(client.callsign + ' has no lat/long');
+    if (client.latitude == undefined || client.longitude == undefined) console.log(client.callsign + ' has no lat/long');
 
     if (client.clienttype === PILOT) {
-        title=client.callsign;
-        anchor={x: 0.5, y: 0.5};
+        title = client.callsign;
+        anchor = {x: 0.5, y: 0.5};
     } else if (client.clienttype === ATC) {
         if (client.facilitytype === OBS) {
-            return <View />;
+            return <View/>;
         }
         if (client.facilitytype === TWR_ATIS) {
             // TWR / ATIS / GND / DEL
             if (client.callsign.split('_').pop() === 'ATIS') {
-                title=client.callsign;
-                anchor={x: 0.5, y: 1};
+                title = client.callsign;
+                anchor = {x: 0.5, y: 1};
             } else {
-                title=client.callsign;
-                anchor={x: 0.5, y: 1};
+                title = client.callsign;
+                anchor = {x: 0.5, y: 1};
             }
         } else if (client.facilitytype === GND || client.facilitytype === DEL) {
             // TWR / ATIS
-            title=client.callsign;
-            anchor={x: 0.5, y: 1};
+            title = client.callsign;
+            anchor = {x: 0.5, y: 1};
         } else if (client.facilitytype === APP) {
             // APP / DEP
             return <Circle
@@ -192,8 +192,11 @@ export default function clientMarker(props) {
         }
     }
 
-    const style = Platform.OS === 'ios' ? [
-        { transform: [{ rotate: `${rotation}deg` }] },] : [];
+    const styleIos = Platform.OS === 'ios' ?
+        {
+            transform: [{rotate: `${rotation}deg`}],
+        } : {};
+
 
     return <MapView.Marker
         // key={'client-at-' + props.coordinate.longitude + ':' + props.coordinate.latitude}
@@ -206,12 +209,10 @@ export default function clientMarker(props) {
         tracksViewChanges={!props.mapReady}
         tracksInfoWindowChanges={false}
     >
-        <View>
-            <Image
-                source={client.image}
-                fadeDuration={0}
-                style={style}
-            />
-        </View>
+        <Image
+            source={client.image}
+            fadeDuration={0}
+            style={[styleIos, { height: client.imageSize, width: client.imageSize }]}
+        />
     </MapView.Marker>;
 }
