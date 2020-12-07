@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import React, from 'react';
+import {Image, Text, View} from 'react-native';
 import MapView, {Circle, Polygon} from 'react-native-maps';
 import {APP, ATC, CTR, DEL, GND, EXCLUDED_CALLSIGNS, FSS, PILOT, TWR_ATIS, OBS} from '../../util/consts';
 import theme from './theme';

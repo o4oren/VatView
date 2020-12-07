@@ -1,7 +1,6 @@
 import {storeInitialRegion} from '../../util/storageService';
 export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
-export const FAVORITES_SAVED = 'FAVORITES_SAVED';
 
 const initialRegionLoaded = (region) => {
     return {

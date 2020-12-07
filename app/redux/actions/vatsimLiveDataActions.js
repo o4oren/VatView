@@ -2,7 +2,6 @@ import getAircraftIcon from '../../util/aircraftIconResolver';
 import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR, APP, OBS, FSS} from '../../util/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
-export const UPDATE_DATA = 'UPDATE_DATA';
 export const DATA_FETCH_ERROR = 'DATA_FETCH_ERROR';
 
 const dataUpdated = (data) => {

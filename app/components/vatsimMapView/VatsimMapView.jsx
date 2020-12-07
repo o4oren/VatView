@@ -9,15 +9,7 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from './clientDetails';
 
 import {
-    APP,
-    ATC, CTR,
-    EXCLUDED_CALLSIGNS,
-    ONE_MIN,
     ONE_MONTH,
-    PILOT,
-    STATIC_DATA_VERSION,
-    TWR_ATIS,
-    FSS
 } from '../../util/consts';
 
 export default function VatsimMapView() {
