@@ -1,3 +1,5 @@
+import {DefaultTheme} from 'react-native-paper';
+
 const blueGrey = [
     {
         'elementType': 'geometry',
@@ -295,7 +297,17 @@ const blueGrey = [
 ];
 
 export default {
-    blueGrey: { customMapStyle: blueGrey,
+    blueGrey: {
+        customMapStyle: blueGrey,
+        theme: {
+            ...DefaultTheme,
+            roundness: 2,
+            colors: {
+                ...DefaultTheme.colors,
+                primary: '#2a5d99',
+                accent: '#f1b90f',
+            },
+        },
         appCircleStroke: 'rgb(159,8,8)',
         appCircleFill: 'rgba(227,133,133, 0.4)',
         appCircleStrokeWidth: 3,

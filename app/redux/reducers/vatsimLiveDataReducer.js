@@ -1,9 +1,9 @@
 import {
     DATA_UPDATED,
-    ERROR,
+    ERROR, MARKERS_UPDATED,
 } from '../actions/vatsimLiveDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {}, servers: [], prefiles: []},
+const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {}, servers: [], prefiles: [], markers: []},
     action) => {
     switch (action.type) {
     case DATA_UPDATED:
@@ -11,6 +11,8 @@ const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {}
             servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
     case ERROR:
         return { ...state, error: action.payload.error };
+    case MARKERS_UPDATED:
+        return { ...state, markers: action.payload.data };
     default:
         return state;
     }

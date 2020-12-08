@@ -4,23 +4,23 @@ import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import ClientMarker from './clientMarker';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
-import theme from './theme';
+import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from './clientDetails';
 
 import {
-    ONE_MONTH,
-} from '../../util/consts';
+    ONE_MONTH, STATIC_DATA_VERSION,
+} from '../../common/consts';
 
 export default function VatsimMapView() {
-    const vatsimLiveData = useSelector(state => state.vatsimLiveData);
+    const clients = useSelector(state => state.vatsimLiveData.clients);
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const settings = useSelector(state => state.settings);
+    const app = useSelector(state => state.app);
+    const markers = useSelector(state => state.vatsimLiveData.markers);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
     const sheetRef = React.useRef(null);
     const [selectedClient, setSelectedClient] = useState();
-    const [clientMarkers, setClientMarkers] = useState([]);
 
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const [mapReady, setMapReady] = useState(false);
@@ -43,12 +43,11 @@ export default function VatsimMapView() {
     useEffect(() => {
         console.debug('update markers');
         updateClientMarkers().then(markers => {
-            console.log('updating markers');
-            setClientMarkers(markers);
+            dispatch(allActions.vatsimLiveDataActions.markersUpdated(markers));
             console.log(markers);
             setMapReady(true);
         });
-    }, [vatsimLiveData]);
+    }, [clients]);
 
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
@@ -66,7 +65,7 @@ export default function VatsimMapView() {
     };
 
     const updateClientMarkers = async () => {
-        const markers = vatsimLiveData.clients.map((client, index ) => {
+        const markers = clients.map((client, index ) => {
             return <ClientMarker
                 key={client.cid + '-' + client.callsign + '-' + index}
                 client={client}
@@ -89,10 +88,10 @@ export default function VatsimMapView() {
                 customMapStyle={theme.blueGrey.customMapStyle}
                 // provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
-                initialRegion={settings.initialRegion}
-                onRegionChangeComplete={region => dispatch(allActions.settingsActions.saveInitialRegion(region))}
+                initialRegion={app.initialRegion}
+                onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
             >
-                {clientMarkers}
+                {markers}
             </MapView>
             <BottomSheet
                 ref={sheetRef}

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Image, Text, View} from 'react-native';
 import MapView, {Circle, Polygon} from 'react-native-maps';
-import {APP, ATC, CTR, DEL, GND, EXCLUDED_CALLSIGNS, FSS, PILOT, TWR_ATIS, OBS} from '../../util/consts';
-import theme from './theme';
+import {APP, ATC, CTR, DEL, GND, EXCLUDED_CALLSIGNS, FSS, PILOT, TWR_ATIS, OBS} from '../../common/consts';
+import theme from '../../common/theme';
 import {useSelector} from 'react-redux';
 
 export default function clientMarker(props) {

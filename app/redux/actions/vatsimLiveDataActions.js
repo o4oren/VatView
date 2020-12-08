@@ -1,13 +1,21 @@
-import getAircraftIcon from '../../util/aircraftIconResolver';
-import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR, APP, OBS, FSS} from '../../util/consts';
+import getAircraftIcon from '../../common/aircraftIconResolver';
+import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR, APP, OBS, FSS} from '../../common/consts';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
+export const MARKERS_UPDATED = 'MARKERS_UPDATED';
 export const DATA_FETCH_ERROR = 'DATA_FETCH_ERROR';
 
 const dataUpdated = (data) => {
     return {
         type: DATA_UPDATED,
         payload: {data: data}
+    };
+};
+
+const markersUpdated = (markers) => {
+    return {
+        type: MARKERS_UPDATED,
+        payload: {data: markers}
     };
 };
 
@@ -95,4 +103,5 @@ const updateData = async (dispatch, getState) => {
 export default {
     dataUpdated: dataUpdated,
     updateData: updateData,
+    markersUpdated: markersUpdated
 };

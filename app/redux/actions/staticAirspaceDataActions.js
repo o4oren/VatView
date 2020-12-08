@@ -1,5 +1,5 @@
-import {storeFirBoundaries, storeStaticAirspaceData} from '../../util/storageService';
-import {STATIC_DATA_VERSION} from '../../util/consts';
+import {storeFirBoundaries, storeStaticAirspaceData} from '../../common/storageService';
+import {STATIC_DATA_VERSION} from '../../common/consts';
 
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';

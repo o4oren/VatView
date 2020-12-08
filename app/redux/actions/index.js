@@ -1,11 +1,11 @@
 import vatsimLiveDataActions from './vatsimLiveDataActions';
-import settingsActions from './settingsActions';
+import appActions from './appActions';
 import staticAirspaceDataActions from './staticAirspaceDataActions';
 
 const allActions = {
     vatsimLiveDataActions: vatsimLiveDataActions,
     staticAirspaceDataActions: staticAirspaceDataActions,
-    settingsActions: settingsActions
+    appActions: appActions
 };
 
 export default allActions;
