@@ -3,26 +3,23 @@ import Provider from 'react-redux/lib/components/Provider';
 import {applyMiddleware, createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import { AppLoading } from 'expo';
-import { BottomNavigation, Text } from 'react-native-paper';
 import VatsimMapView from './app/components/vatsimMapView/VatsimMapView';
 import VatsimListView from './app/components/VatsimListView/VatsimListView';
-import { Provider as PaperProvider } from 'react-native-paper';
-import {retrieveSavedState} from './app/common/storageService';
+
+import {retrieveSavedState} from './app/util/storageService';
+import {Button, Dimensions, StyleSheet} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import {INITIAL_REGION} from './app/common/consts';
-import theme from './app/common/theme';
+import { AsyncStorage } from 'react-native';
+import {INITIAL_REGION} from './app/util/consts';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default function App() {
     const [state, setState] = useState({isReady: false});
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
-        { key: 'map', title: 'Map', icon: 'map' },
-        { key: 'list', title: 'List', icon: 'format-list-bulleted' },
-    ]);
-
-
     useEffect(() => {
         async function loadStateFromStorage() {
             // AsyncStorage.clear();  // clears local storage
@@ -43,7 +40,7 @@ export default function App() {
     }
 
     const preloadedState = {
-        app: {
+        settings: {
             initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,
         },
         staticAirspaceData: {
@@ -56,23 +53,74 @@ export default function App() {
         }
     };
 
+    const Tab = createMaterialTopTabNavigator();
+
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
-
-    const renderScene = BottomNavigation.SceneMap({
-        map: VatsimMapView,
-        list: VatsimListView,
-    });
-
-
+    const Stack = createStackNavigator();
     return (
         <Provider store={store}>
-            <PaperProvider theme={theme.blueGrey.theme}>
-                <BottomNavigation
-                    navigationState={{ index, routes }}
-                    onIndexChange={setIndex}
-                    renderScene={renderScene}
-                />
-            </PaperProvider>
+            <NavigationContainer>
+                {/*<Tab.Navigator>*/}
+                {/*    <Tab.Screen*/}
+                {/*        name="Map"*/}
+                {/*        component={VatsimMapView}*/}
+                {/*    />*/}
+                {/*    <Tab.Screen*/}
+                {/*        name="List"*/}
+                {/*        component={VatsimListView}*/}
+                {/*    />*/}
+                {/*</Tab.Navigator>*/}
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name="Map"
+                        component={VatsimMapView}
+                        options={{
+                            headerTitle: 'VatView',
+                            headerStyle: {
+                                backgroundColor: '#2A5D99',
+                            },
+                            headerTintColor: '#ffffff',
+                            headerRight: () => (
+                                <Button
+                                    onPress={() => alert('This is a button!')}
+                                    title="Info"
+                                    color='#2A5D99'
+                                    style={styles.button}
+                                />
+                            ),
+                        }}
+                    />
+                    <Stack.Screen
+                        name="List"
+                        component={VatsimListView}
+                        options={{
+                            headerTitle: 'VatView',
+                            headerStyle: {
+                                backgroundColor: '#2A5D99',
+                            },
+                            headerTintColor: '#ffffff',
+                            headerRight: () => (
+                                <Button
+                                    onPress={() => alert('This is a button!')}
+                                    title="Info"
+                                    style={styles.button}
+                                />
+                            ),
+                        }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
         </Provider>
     );
 }
+
+const styles = StyleSheet.create({
+    button: {
+        backgroundColor: '#2A5D99',
+        borderColor: '#2A5D99'
+    },
+    mapStyle: {
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+    },
+});
