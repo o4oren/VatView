@@ -71,15 +71,20 @@ export default function clientMarker(props) {
                 // calclute center of centers
                 let latitudeSum = 0;
                 let longitudeSum = 0;
-                uir.firs.forEach(firIcao => {
-                    staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
-                        if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
-                            airspace.firs.push(fir);
-                            latitudeSum += fir.center.latitude;
-                            longitudeSum += fir.center.longitude;
+                if(uir.firs != undefined) {
+                    uir.firs.forEach(firIcao => {
+                        if(staticAirspaceData.firBoundaries[firIcao] !== undefined) {
+                            staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
+                                if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
+                                    airspace.firs.push(fir);
+                                    latitudeSum += fir.center.latitude;
+                                    longitudeSum += fir.center.longitude;
+                                }
+                            });
                         }
                     });
-                });
+                }
+
                 airspace.icao = callsignPrefix;
                 airspace.center = {
                     latitude: latitudeSum / uir.firs.length,
