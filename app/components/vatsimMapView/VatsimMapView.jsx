@@ -8,13 +8,8 @@ import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from './clientDetails';
 
-import {
-    ONE_MONTH, STATIC_DATA_VERSION,
-} from '../../common/consts';
-
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
-    const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const app = useSelector(state => state.app);
     const markers = useSelector(state => state.vatsimLiveData.markers);
     const dispatch = useDispatch();
@@ -24,21 +19,6 @@ export default function VatsimMapView() {
 
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const [mapReady, setMapReady] = useState(false);
-
-    useEffect(() => {
-        dispatch(allActions.vatsimLiveDataActions.updateData);
-        const now = Date.now();
-        if(staticAirspaceData.version == undefined
-            || staticAirspaceData.version < STATIC_DATA_VERSION
-            || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
-            dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
-            dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
-        }
-        const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000);
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
 
     useEffect(() => {
         console.debug('update markers');
