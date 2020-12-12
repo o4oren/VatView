@@ -13,7 +13,7 @@ import {
 } from '../../common/consts';
 
 export default function VatsimMapView() {
-    const vatsimLiveData = useSelector(state => state.vatsimLiveData);
+    const clients = useSelector(state => state.vatsimLiveData.clients);
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const app = useSelector(state => state.app);
     const markers = useSelector(state => state.vatsimLiveData.markers);
@@ -21,10 +21,12 @@ export default function VatsimMapView() {
     const mapRef = useRef(null);
     const sheetRef = React.useRef(null);
     const [selectedClient, setSelectedClient] = useState();
+
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const [mapReady, setMapReady] = useState(false);
 
     useEffect(() => {
+        dispatch(allActions.vatsimLiveDataActions.updateData);
         const now = Date.now();
         if(staticAirspaceData.version == undefined
             || staticAirspaceData.version < STATIC_DATA_VERSION
@@ -32,28 +34,20 @@ export default function VatsimMapView() {
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
-        dispatch(allActions.vatsimLiveDataActions.updateData);
-        const interval = setInterval(() => {
-            dispatch(allActions.vatsimLiveDataActions.updateData);
-            console.log('MARKERS', markers);
-            console.log('st', staticAirspaceData);
-            console.log('cl', vatsimLiveData.clients);
-
-        }, 60 * 1000);
+        const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000);
         return () => {
             clearInterval(interval);
         };
     }, []);
 
     useEffect(() => {
-        console.log('first', markers);
         console.debug('update markers');
         updateClientMarkers().then(markers => {
             dispatch(allActions.vatsimLiveDataActions.markersUpdated(markers));
             console.log(markers);
             setMapReady(true);
         });
-    }, [vatsimLiveData.clients]);
+    }, [clients]);
 
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
@@ -71,7 +65,7 @@ export default function VatsimMapView() {
     };
 
     const updateClientMarkers = async () => {
-        const markers = vatsimLiveData.clients.map((client, index ) => {
+        const markers = clients.map((client, index ) => {
             return <ClientMarker
                 key={client.cid + '-' + client.callsign + '-' + index}
                 client={client}
