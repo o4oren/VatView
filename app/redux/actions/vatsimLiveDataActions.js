@@ -101,8 +101,8 @@ const updateData = async (dispatch, getState) => {
                 }
             }
         });
-        console.log(modClients);
-        json.modClients = modClients;
+        console.log('Not handled', modClients.other);
+        json.clients = modClients;
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

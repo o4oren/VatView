@@ -12,7 +12,7 @@ import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
 
 export default function VatsimMapView() {
-    const modClients = useSelector(state => state.vatsimLiveData.modClients);
+    const clients = useSelector(state => state.vatsimLiveData.clients);
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
@@ -53,15 +53,15 @@ export default function VatsimMapView() {
             >
                 {/*{markers}*/}
                 <CTRPolygons
-                    ctr={modClients.ctr}
-                    fss={modClients.fss}
+                    ctr={clients.ctr}
+                    fss={clients.fss}
                 />
-                <AppCircles app={modClients.app} />
+                <AppCircles app={clients.app} />
                 {/*// TODO aerodrome markers*/}
                 <PilotMarkers
-                    pilots={modClients.pilots}
+                    pilots={clients.pilots}
                 />
-                <AirportMarkers airports={modClients.airportAtc} />
+                <AirportMarkers airports={clients.airportAtc} />
             </MapView>
             <BottomSheet
                 ref={sheetRef}

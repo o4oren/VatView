@@ -9,7 +9,7 @@ export default function VatsimListView() {
     return <View>
         <ScrollView>
             {
-                clients.map(
+                clients.pilots.map(
                     (client, index) => <Card key={index} style={styles.card}>
                         <Card.Title
                             title = {client.callsign}

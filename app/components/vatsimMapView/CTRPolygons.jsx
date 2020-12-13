@@ -163,6 +163,5 @@ export default function AppCircles(props) {
         });
     }
 
-    console.log('poly', polygons);
     return polygons;
 }
