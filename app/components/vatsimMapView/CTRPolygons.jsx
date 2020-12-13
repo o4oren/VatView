@@ -58,6 +58,7 @@ export default function AppCircles(props) {
 
         // if we did not resolve firs, we check if UIR
         if (airspace.firs[0] == undefined) {
+            console.log('uir', staticAirspaceData.uirs);
             const uir = staticAirspaceData.uirs[callsignPrefix];
             if (uir != undefined) {
                 airspace.isUir = true;
@@ -84,7 +85,7 @@ export default function AppCircles(props) {
         }
 
         if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facilitytype);
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facilitytype, client);
         return airspace;
     };
     
@@ -152,17 +153,18 @@ export default function AppCircles(props) {
         );
     };
 
+    for (let icao in props.fss) {
+        props.fss[icao].forEach(fssClient =>{
+            polygons.push(calculatePolygon(fssClient));
+        });
+    }
+
     for (let icao in props.ctr) {
         props.ctr[icao].forEach(ctrClient =>{
             polygons.push(calculatePolygon(ctrClient));
         });
     }
 
-    for (let icao in props.fss) {
-        props.fss[icao].forEach(fssClient =>{
-            polygons.push(calculatePolygon(fssClient));
-        });
-    }
     console.log('poly', polygons);
     return polygons;
 }

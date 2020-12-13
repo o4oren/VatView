@@ -94,7 +94,7 @@ const getVATSpyData = async (dispatch, getState) => {
     let countries = {};
     const airports = {icao: {}, iata: {}};
     const firs = [];
-    const uirs = [];
+    const uirs = {};
 
     await lines.forEach((line) => {
         if(line.startsWith('['))
@@ -143,13 +143,12 @@ const getVATSpyData = async (dispatch, getState) => {
                 );
                 break;
             case UIR:
-                uirs.push(
+                uirs[tokens[0]] =
                     {
                         icao: tokens[0],
                         name: tokens[1],
                         firs: tokens[2].split(',')
-                    }
-                );
+                    };
                 break;
             case IDL:
                 break;
