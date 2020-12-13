@@ -6,8 +6,6 @@ import {APP_RADIUS} from '../../common/consts';
 
 export default function AppCircles(props) {
 
-    console.log('app', props);
-
     const appCircles = [];
 
     for (let icao in props.app) {

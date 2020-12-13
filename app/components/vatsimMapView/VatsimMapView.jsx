@@ -10,6 +10,7 @@ import ClientDetails from './clientDetails';
 import {PILOT} from '../../common/consts';
 import PilotMarkers from './PilotMarkers';
 import AppCircles from './AppCircles';
+import CTRPolygons from './CTRPolygons';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -80,6 +81,7 @@ export default function VatsimMapView() {
             >
                 {/*{markers}*/}
                 <AppCircles app={modClients.app} />
+                <CTRPolygons ctr={modClients.ctr} fss={modClients.fss}/>
                 <PilotMarkers
                     pilots={modClients.pilots}
                     mapReady={mapReady}
