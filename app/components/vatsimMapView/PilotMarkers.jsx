@@ -17,7 +17,7 @@ export default function PilotMarkers(props) {
             rotation={pilot.heading}
             // icon={client.image}
             onPress={props.onPress}
-            tracksViewChanges={!props.mapReady}
+            tracksViewChanges={false}
             tracksInfoWindowChanges={false}
         >
             <Image

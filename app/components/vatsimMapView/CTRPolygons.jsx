@@ -108,7 +108,7 @@ export default function AppCircles(props) {
                 {boundaries}
                 <MapView.Marker
                     coordinate={airspace.center}
-                    tracksViewChanges={!props.mapReady}
+                    tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                     // anchor={{x: 0.5, y: 0.5}}
                 >
@@ -137,7 +137,7 @@ export default function AppCircles(props) {
                 <MapView.Marker
                     key={client.cid + '-marker-' + fIndex}
                     coordinate={fir.center}
-                    tracksViewChanges={!props.mapReady}
+                    tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                     // anchor={{x: 0.5, y: 0.5}}
                 >
