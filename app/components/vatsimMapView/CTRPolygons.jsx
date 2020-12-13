@@ -7,7 +7,6 @@ import {useSelector} from 'react-redux';
 
 export default function AppCircles(props) {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    console.log('ctr', props);
 
     const polygons = [];
 
@@ -58,7 +57,6 @@ export default function AppCircles(props) {
 
         // if we did not resolve firs, we check if UIR
         if (airspace.firs[0] == undefined) {
-            console.log('uir', staticAirspaceData.uirs);
             const uir = staticAirspaceData.uirs[callsignPrefix];
             if (uir != undefined) {
                 airspace.isUir = true;

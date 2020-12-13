@@ -27,6 +27,5 @@ export default function PilotMarkers(props) {
             />
         </MapView.Marker>;
     });
-    console.log('pilot markers', pilotMarkers);
     return pilotMarkers;
 }

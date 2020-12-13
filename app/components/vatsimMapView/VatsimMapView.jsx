@@ -9,6 +9,7 @@ import ClientDetails from './clientDetails';
 import PilotMarkers from './PilotMarkers';
 import AppCircles from './AppCircles';
 import CTRPolygons from './CTRPolygons';
+import AirportMarkers from './AirportMarkers';
 
 export default function VatsimMapView() {
     const modClients = useSelector(state => state.vatsimLiveData.modClients);
@@ -60,6 +61,7 @@ export default function VatsimMapView() {
                 <PilotMarkers
                     pilots={modClients.pilots}
                 />
+                <AirportMarkers airports={modClients.airportAtc} />
             </MapView>
             <BottomSheet
                 ref={sheetRef}
