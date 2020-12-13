@@ -3,7 +3,7 @@ import {
     ERROR, MARKERS_UPDATED,
 } from '../actions/vatsimLiveDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {pilots: []}, servers: [], prefiles: [], markers: []},
+const vatsimLiveDataReducer = (state = {general: {}, clients: [], modClients: {pilots: [], app: {}}, servers: [], prefiles: [], markers: []},
     action) => {
     switch (action.type) {
     case DATA_UPDATED:

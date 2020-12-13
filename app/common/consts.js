@@ -25,5 +25,7 @@ export const TWR_ATIS = 4;
 export const APP = 5;
 export const CTR = 6;
 
+export const APP_RADIUS = 80 * 1000;
+
 
 

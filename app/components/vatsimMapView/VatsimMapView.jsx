@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import ClientMarker from './clientMarker';
 import {useDispatch, useSelector} from 'react-redux';
@@ -9,6 +9,7 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from './clientDetails';
 import {PILOT} from '../../common/consts';
 import PilotMarkers from './PilotMarkers';
+import AppCircles from './AppCircles';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -78,8 +79,10 @@ export default function VatsimMapView() {
                 onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
             >
                 {/*{markers}*/}
+                <AppCircles app={modClients.app} />
                 <PilotMarkers
-                    pilots={modClients != undefined ? modClients.pilots : []}
+                    pilots={modClients.pilots}
+                    mapReady={mapReady}
                 />
             </MapView>
             <BottomSheet

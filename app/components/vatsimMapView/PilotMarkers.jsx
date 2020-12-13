@@ -4,15 +4,13 @@ import React from 'react';
 
 export default function PilotMarkers(props) {
 
-    console.log('p', props);
-    
     const pilotMarkers = props.pilots.map( pilot => {
         const styleIos = Platform.OS === 'ios' ?
             {
                 transform: [{rotate: `${pilot.heading}deg`}],
             } : {};
         return <MapView.Marker
-            // key={'client-at-' + props.coordinate.longitude + ':' + props.coordinate.latitude}
+            key={pilot.cid}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
@@ -29,5 +27,6 @@ export default function PilotMarkers(props) {
             />
         </MapView.Marker>;
     });
+    console.log('pilot markers', pilotMarkers);
     return pilotMarkers;
 }

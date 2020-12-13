@@ -51,7 +51,7 @@ const updateData = async (dispatch, getState) => {
         // );
 
         const modClients = {
-            app: [],
+            app: {},
             ctr: [],
             fss: [],
             airportAtc: {},
@@ -82,7 +82,10 @@ const updateData = async (dispatch, getState) => {
                 } else if(client.facilitytype == CTR) {
                     modClients.ctr[prefix]=client;
                 } else if(client.facilitytype == APP) {
-                    modClients.app[prefix]=client;
+                    if (modClients.app[prefix] == null) {
+                        modClients.app[prefix] = [];
+                    }
+                    modClients.app[prefix].push(client);
                 } else if(client.facilitytype == FSS) {
                     modClients.fss[prefix]=client;
                 } else if(client.facilitytype == OBS) {
