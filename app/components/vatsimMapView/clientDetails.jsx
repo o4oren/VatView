@@ -4,6 +4,7 @@ import {Text, View} from 'react-native';
 export default function clientDetails(props) {
     // 6 = CTR, 4=TWR,
     const renderBody = () => {
+        console.log(props.client);
         if(props.client === undefined)
             return;
         if(props.client.clienttype == 'PILOT') {
@@ -16,8 +17,8 @@ export default function clientDetails(props) {
                     <Text>Aircraft: {props.client.planned_aircraft}</Text>
                     <Text>Heading: {props.client.heading}</Text>
                     <Text>Ground speed: {props.client.groundspeed}</Text>
-                    <Text>Origin: {props.client.planned_destairport}</Text>
-                    <Text>Dest: {props.client.planned_depairport}</Text>
+                    <Text>Origin: {props.client.planned_depairport}</Text>
+                    <Text>Dest: {props.client.planned_destairport}</Text>
                     <Text>Flight plan: {props.client.planned_route}</Text>
                 </View>
             );

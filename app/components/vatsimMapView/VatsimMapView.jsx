@@ -7,9 +7,13 @@ import allActions from '../../redux/actions';
 import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from './clientDetails';
+import {PILOT} from '../../common/consts';
+import PilotMarkers from './PilotMarkers';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
+    const modClients = useSelector(state => state.vatsimLiveData.modClients);
+
     const app = useSelector(state => state.app);
     const markers = useSelector(state => state.vatsimLiveData.markers);
     const dispatch = useDispatch();
@@ -26,6 +30,7 @@ export default function VatsimMapView() {
             dispatch(allActions.vatsimLiveDataActions.markersUpdated(markers));
             console.log(markers);
             setMapReady(true);
+            console.log('modClients', modClients);
         });
     }, [clients]);
 
@@ -46,12 +51,13 @@ export default function VatsimMapView() {
 
     const updateClientMarkers = async () => {
         const markers = clients.map((client, index ) => {
-            return <ClientMarker
-                key={client.cid + '-' + client.callsign + '-' + index}
-                client={client}
-                mapReady={mapReady}
-                onPress={openDetailsSheet.bind(this, client)}
-            />;
+            if(client.clienttype != PILOT)
+                return <ClientMarker
+                    key={client.cid + '-' + client.callsign + '-' + index}
+                    client={client}
+                    mapReady={mapReady}
+                    onPress={openDetailsSheet.bind(this, client)}
+                />;
         });
         return markers;
     };
@@ -71,7 +77,10 @@ export default function VatsimMapView() {
                 initialRegion={app.initialRegion}
                 onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
             >
-                {markers}
+                {/*{markers}*/}
+                <PilotMarkers
+                    pilots={modClients != undefined ? modClients.pilots : []}
+                />
             </MapView>
             <BottomSheet
                 ref={sheetRef}
