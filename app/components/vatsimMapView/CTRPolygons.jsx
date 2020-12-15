@@ -3,12 +3,17 @@ import {Image, Text, View} from 'react-native';
 import React from 'react';
 import theme from '../../common/theme';
 import {APP_RADIUS, EXCLUDED_CALLSIGNS} from '../../common/consts';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import allActions from '../../redux/actions';
 
 export default function AppCircles(props) {
+    const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-
     const polygons = [];
+
+    let onPress = (client) => {
+        dispatch(allActions.appActions.clientSelected(client));
+    };
 
     const getAirspaceCoordinates = client => {
         // console.log(client);
@@ -99,7 +104,7 @@ export default function AppCircles(props) {
                     strokeWidth={theme.blueGrey.uirStrokeWidth}
                     geodesic={true}
                     tappable={true}
-                    // onPress={onPress}
+                    onPress={() => onPress(client)}
                 />
             );
 
@@ -132,6 +137,7 @@ export default function AppCircles(props) {
                     strokeWidth={theme.blueGrey.firStrokeWidth}
                     geodesic={true}
                     tappable={true}
+                    onPress={() => onPress(client)}
                 />
                 <MapView.Marker
                     key={client.cid + '-marker-' + fIndex}

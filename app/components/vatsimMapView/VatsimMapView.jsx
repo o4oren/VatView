@@ -17,7 +17,7 @@ export default function VatsimMapView() {
     const dispatch = useDispatch();
     const mapRef = useRef(null);
     const sheetRef = React.useRef(null);
-    const [selectedClient, setSelectedClient] = useState();
+    const selectedClient = useSelector(state => state.app.selectedClient);
 
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
 
@@ -31,10 +31,10 @@ export default function VatsimMapView() {
         />
     );
 
-    const openDetailsSheet = (client) => {
-        setSelectedClient(client);
-        sheetRef.current.snapTo(0);
-    };
+    useEffect(() => {
+        if(selectedClient !== undefined)
+            sheetRef.current.snapTo(1);
+    }, [selectedClient]);
 
     return (
         <View
@@ -53,15 +53,23 @@ export default function VatsimMapView() {
             >
                 {/*{markers}*/}
                 <CTRPolygons
+                    style={{zIndex: 4}}
                     ctr={clients.ctr}
                     fss={clients.fss}
                 />
-                <AppCircles app={clients.app} />
+                <AppCircles
+                    app={clients.app}
+                    style={{zIndex: 3}}
+                />
                 {/*// TODO aerodrome markers*/}
                 <PilotMarkers
+                    style={{zIndex: 2}}
                     pilots={clients.pilots}
                 />
-                <AirportMarkers airports={clients.airportAtc} />
+                <AirportMarkers
+                    style={{zIndex: 1}}
+                    airports={clients.airportAtc}
+                />
             </MapView>
             <BottomSheet
                 ref={sheetRef}

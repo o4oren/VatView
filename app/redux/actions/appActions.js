@@ -1,6 +1,8 @@
 import {storeInitialRegion} from '../../common/storageService';
 export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
+export const CLIENT_SELECTED = 'CLIENT_SELECTED';
+
 
 const initialRegionLoaded = (region) => {
     return {
@@ -16,6 +18,13 @@ const regionUpdated = (region) => {
     };
 };
 
+const clientSelected = (client) => {
+    return {
+        type: CLIENT_SELECTED,
+        payload: {selectedClient: client}
+    };
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch, getState) {
         const initialRegion = { region };
@@ -27,5 +36,6 @@ export function saveInitialRegion(region) {
 export default {
     initialRegionLoaded: initialRegionLoaded,
     regionUpdated: regionUpdated,
-    saveInitialRegion: saveInitialRegion
+    saveInitialRegion: saveInitialRegion,
+    clientSelected: clientSelected,
 };

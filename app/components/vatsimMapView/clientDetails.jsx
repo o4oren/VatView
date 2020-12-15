@@ -1,34 +1,36 @@
 import React from 'react';
 import {Text, View} from 'react-native';
+import {useSelector} from 'react-redux';
 
-export default function clientDetails(props) {
+export default function clientDetails() {
+    const selectedClient = useSelector(state => state.app.selectedClient);
     // 6 = CTR, 4=TWR,
     const renderBody = () => {
-        console.log(props.client);
-        if(props.client === undefined)
+        console.log(selectedClient);
+        if(selectedClient === undefined)
             return;
-        if(props.client.clienttype == 'PILOT') {
+        if(selectedClient.clienttype == 'PILOT') {
             return (
                 <View>
-                    <Text>Callsign: {props.client.callsign}</Text>
-                    <Text>{props.client.latitude}:{props.client.longitude}</Text>
-                    <Text>Altitude: {props.client.altitude}</Text>
-                    <Text>Name: {props.client.realname}</Text>
-                    <Text>Aircraft: {props.client.planned_aircraft}</Text>
-                    <Text>Heading: {props.client.heading}</Text>
-                    <Text>Ground speed: {props.client.groundspeed}</Text>
-                    <Text>Origin: {props.client.planned_depairport}</Text>
-                    <Text>Dest: {props.client.planned_destairport}</Text>
-                    <Text>Flight plan: {props.client.planned_route}</Text>
+                    <Text>Callsign: {selectedClient.callsign}</Text>
+                    <Text>{selectedClient.latitude}:{selectedClient.longitude}</Text>
+                    <Text>Altitude: {selectedClient.altitude}</Text>
+                    <Text>Name: {selectedClient.realname}</Text>
+                    <Text>Aircraft: {selectedClient.planned_aircraft}</Text>
+                    <Text>Heading: {selectedClient.heading}</Text>
+                    <Text>Ground speed: {selectedClient.groundspeed}</Text>
+                    <Text>Origin: {selectedClient.planned_depairport}</Text>
+                    <Text>Dest: {selectedClient.planned_destairport}</Text>
+                    <Text>Flight plan: {selectedClient.planned_route}</Text>
                 </View>
             );
         }
 
         return (
             <View>
-                <Text>Callsign: {props.client.callsign}</Text>
-                <Text>Name: {props.client.realname}</Text>
-                <Text>Frequency: {props.client.frequency}</Text>
+                <Text>Callsign: {selectedClient.callsign}</Text>
+                <Text>Name: {selectedClient.realname}</Text>
+                <Text>Frequency: {selectedClient.frequency}</Text>
             </View>
         );
     };
