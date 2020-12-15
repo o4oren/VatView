@@ -108,7 +108,10 @@ export default function AppCircles(props) {
                 />
             );
 
-            return (<View key={client.cid + '-uir-v'}>
+            return (<
+                View key={client.cid + '-uir-v'}
+                style={{zIndex: 2}}
+            >
                 {boundaries}
                 <MapView.Marker
                     coordinate={airspace.center}
@@ -128,7 +131,10 @@ export default function AppCircles(props) {
         }
 
         return airspace.firs.map((fir, fIndex) =>
-            <View key={client.callsign + '-' + fIndex}>
+            <View
+                key={client.callsign + '-' + fIndex}
+                style={{zIndex: 1}}
+            >
                 <Polygon
                     key={client.cid + '-polygon-' + fIndex}
                     coordinates={fir.points}

@@ -14,7 +14,7 @@ export default function PilotMarkers(props) {
                 transform: [{rotate: `${pilot.heading}deg`}],
             } : {};
 
-        let onPress = () => {
+        let onPress = (pilot) => {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
@@ -25,7 +25,7 @@ export default function PilotMarkers(props) {
             anchor={{x: 0.5, y: 0.5}}
             rotation={pilot.heading}
             // icon={client.image}
-            onPress={() => onPress()}
+            onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
         >

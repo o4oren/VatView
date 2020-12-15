@@ -32,8 +32,10 @@ export default function VatsimMapView() {
     );
 
     useEffect(() => {
-        if(selectedClient !== undefined)
+        if(selectedClient !== undefined) {
+            console.log(selectedClient);
             sheetRef.current.snapTo(1);
+        }
     }, [selectedClient]);
 
     return (
