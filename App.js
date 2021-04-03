@@ -2,10 +2,8 @@ import React, {useEffect, useState} from 'react';
 import Provider from 'react-redux/lib/components/Provider';
 import {applyMiddleware, createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
-import { AppLoading } from 'expo';
 import MainApp from './app/components/mainApp/MainApp';
 import { Provider as PaperProvider } from 'react-native-paper';
-
 import {retrieveSavedState} from './app/common/storageService';
 import {Dimensions, StyleSheet} from 'react-native';
 import {Button} from 'react-native-paper';
@@ -15,6 +13,7 @@ import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
+import AppLoading from "expo-app-loading";
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -89,8 +88,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: '#2A5D99',
-        borderColor: '#2A5D99',
+        backgroundColor: '#2a5d99',
+        borderColor: '#2a5d99',
     },
     mapStyle: {
         width: Dimensions.get('window').width,

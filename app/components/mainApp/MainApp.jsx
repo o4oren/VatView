@@ -1,5 +1,4 @@
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
-import {Button} from 'react-native';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import React, {useEffect} from 'react';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';

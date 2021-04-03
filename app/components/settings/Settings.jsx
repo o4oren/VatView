@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, ScrollView,} from 'react-native';
-import { Avatar, Button, Card, Title, Paragraph,} from 'react-native-paper';
+import { Title, Paragraph,} from 'react-native-paper';
 
 export default function Settings() {
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import {useSelector} from 'react-redux';
 import { Avatar, Card, Paragraph } from 'react-native-paper';
+import FilterBar from '../filterBar/FilterBar';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -15,8 +16,11 @@ export default function VatsimListView() {
 
         clients.pilots.forEach(p => aggregatedClients.push(p));
 
-        return aggregatedClients;
-
+        return aggregatedClients.sort(function(a, b){
+            if(a.callsign < b.callsign) { return -1; }
+            if(a.callsign > b.callsign) { return 1; }
+            return 0;
+        });
     };
     const Item = (client)=>(<Card style={styles.card}>
         <Card.Title
@@ -38,6 +42,7 @@ export default function VatsimListView() {
     console.log('ag', aggregatedClient(clients));
 
     return <SafeAreaView style={styles.container}>
+        <FilterBar />
         <FlatList
             data = {aggregatedClient(clients)}
             renderItem={Item}
