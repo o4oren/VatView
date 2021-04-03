@@ -66,6 +66,8 @@ const updateData = async (dispatch, getState) => {
                 client.imageSize = imageSize;
                 modClients.pilots.push(client);
             } else if (client.clienttype == ATC) {
+                client.image = require('../../../assets/radar.png');
+                client.imageSize = 64;
                 let prefix = client.callsign.split('_')[0];
                 if (prefix.length < 4) {
                     // if IATA or some other name is used, we'll use airprots db to find ICAO
@@ -75,6 +77,10 @@ const updateData = async (dispatch, getState) => {
                     }
                 }
                 if([TWR_ATIS, GND, DEL].includes(client.facilitytype)) {
+                    if(client.callsign.endsWith('TWR')) {
+                        client.image = require('../../../assets/tower-64.png');
+                        client.imageSize = 64;
+                    }
                     if (modClients.airportAtc[prefix] == null) {
                         modClients.airportAtc[prefix] = [];
                     }

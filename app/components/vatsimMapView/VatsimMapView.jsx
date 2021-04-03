@@ -47,7 +47,7 @@ export default function VatsimMapView() {
             <MapView
                 ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
-                customMapStyle={theme.blueGrey.customMapStyle}
+                // customMapStyle={theme.blueGrey.customMapStyle}
                 // provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
                 initialRegion={app.initialRegion}

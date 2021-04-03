@@ -6,6 +6,18 @@ import { Avatar, Card, Paragraph } from 'react-native-paper';
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
 
+    const aggregatedClient = (clients) => {
+        const aggregatedClients = [];
+        // aggregatedClients.push(...clients.pilots);
+        Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+        Object.entries(clients.app).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+        Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+
+        clients.pilots.forEach(p => aggregatedClients.push(p));
+
+        return aggregatedClients;
+
+    };
     const Item = (client)=>(<Card style={styles.card}>
         <Card.Title
             title = {client.item.callsign}
@@ -23,11 +35,13 @@ export default function VatsimListView() {
     </Card>
     );
 
+    console.log('ag', aggregatedClient(clients));
+
     return <SafeAreaView style={styles.container}>
         <FlatList
-            data = {clients.pilots}
+            data = {aggregatedClient(clients)}
             renderItem={Item}
-            keyExtractor = {client => client.cid}
+            keyExtractor = {client => client.callsign + client.cid}
         />
     </SafeAreaView>;
 }
