@@ -10,16 +10,21 @@ export default function AppCircles(props) {
 
     for (let icao in props.app) {
         props.app[icao].forEach(approachClient =>{
-            appCircles.push(
-                <Circle
-                    key={approachClient.cid}
-                    center={{latitude: approachClient.latitude, longitude: approachClient.longitude}}
-                    radius={APP_RADIUS}
-                    title={approachClient.callsign}
-                    strokeColor={theme.blueGrey.appCircleStroke}
-                    fillColor={theme.blueGrey.appCircleFill}
-                    strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                />);
+            if(approachClient.latitude == null)
+                console.log('bad app', approachClient);
+            else {
+                appCircles.push(
+                    <Circle
+                        key={approachClient.cid}
+                        center={{latitude: approachClient.latitude, longitude: approachClient.longitude}}
+                        radius={APP_RADIUS}
+                        title={approachClient.callsign}
+                        strokeColor={theme.blueGrey.appCircleStroke}
+                        fillColor={theme.blueGrey.appCircleFill}
+                        strokeWidth={theme.blueGrey.appCircleStrokeWidth}
+                    />);
+            }
+
         });
     }
 

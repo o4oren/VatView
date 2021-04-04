@@ -14,7 +14,6 @@ import AirportMarkers from './AirportMarkers';
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const airports = useSelector(state => state.staticAirspaceData.airports.icao);
-
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
