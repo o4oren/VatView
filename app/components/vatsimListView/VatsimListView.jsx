@@ -6,15 +6,19 @@ import FilterBar from '../filterBar/FilterBar';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
+    const filters = useSelector(state => state.app.filters);
 
     const aggregatedClient = (clients) => {
         const aggregatedClients = [];
         // aggregatedClients.push(...clients.pilots);
-        Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
-        Object.entries(clients.app).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
-        Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+        if(filters.atc) {
+            Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+            Object.entries(clients.app).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+            Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
+        }
 
-        clients.pilots.forEach(p => aggregatedClients.push(p));
+        if(filters.flights)
+            clients.pilots.forEach(p => aggregatedClients.push(p));
 
         return aggregatedClients.sort(function(a, b){
             if(a.callsign < b.callsign) { return -1; }
@@ -38,8 +42,6 @@ export default function VatsimListView() {
         </Card.Content>
     </Card>
     );
-
-    console.log('ag', aggregatedClient(clients));
 
     return <SafeAreaView style={styles.container}>
         <FilterBar />

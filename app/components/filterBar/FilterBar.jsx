@@ -1,19 +1,43 @@
 import React from 'react';
-import {View, ScrollView, StyleSheet,} from 'react-native';
-import { Icon, Button, Title, Paragraph,} from 'react-native-paper';
+import {View, StyleSheet} from 'react-native';
+import {ToggleButton,} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import allActions from '../../redux/actions';
 
 export default function FilterBar() {
+    const filters = useSelector(state => state.app.filters);
+    const dispatch = useDispatch();
+
+    const flightsFilterClicked = () => {
+        dispatch(allActions.appActions.flightsFilterClicked());
+    };
+
+    const atcFilterCLicked = () => {
+        dispatch(allActions.appActions.atcFilterClicked());
+    };
 
     return <View style={styles.container}>
-        <Button style={styles.button} icon='airplane' mode="contained">Aircraft</Button>
-        <Button style={styles.button} icon='radar' mode="contained">ATC</Button>
-        <Button style={styles.button} icon='earth' mode="contained">Country</Button>
+        <ToggleButton
+            style={styles.button}
+            icon='airplane'
+            onPress={flightsFilterClicked}
+            color="white"
+            status={filters.flights ? 'checked' : 'unchecked'}
+        />
+        <ToggleButton
+            style={styles.button}
+            icon='radar' status='unchecked'
+            onPress={atcFilterCLicked}
+            color="white"
+            status={filters.atc ? 'checked' : 'unchecked'}
+        />
+        {/*<ToggleButton style={styles.button} icon='earth' status='checked' color="white"></ToggleButton>*/}
     </View>;
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#7095c1',
+        backgroundColor: '#4d7199',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         flexDirection: 'row',

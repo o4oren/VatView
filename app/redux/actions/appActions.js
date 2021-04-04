@@ -2,7 +2,8 @@ import {storeInitialRegion} from '../../common/storageService';
 export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
-
+export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
+export const FLIGHTS_FILTER_CLICKED = 'FLIGHTS_FILTER_CLICKED';
 
 const initialRegionLoaded = (region) => {
     return {
@@ -25,6 +26,18 @@ const clientSelected = (client) => {
     };
 };
 
+const atcFilterClicked = () => {
+    return {
+        type: ATC_FILTER_CLICKED
+    };
+};
+
+const flightsFilterClicked = () => {
+    return {
+        type: FLIGHTS_FILTER_CLICKED
+    };
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch, getState) {
         const initialRegion = { region };
@@ -38,4 +51,6 @@ export default {
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
+    atcFilterClicked: atcFilterClicked,
+    flightsFilterClicked: flightsFilterClicked
 };
