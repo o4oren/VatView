@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import MapView, { Circle, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -13,6 +13,8 @@ import AirportMarkers from './AirportMarkers';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
+    const airports = useSelector(state => state.staticAirspaceData.airports.icao);
+
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
@@ -32,11 +34,44 @@ export default function VatsimMapView() {
         />
     );
 
+    const renderFromPath = () => {
+        if(selectedClient !== undefined) {
+            const depAirport = airports[selectedClient.planned_depairport];
+            if(depAirport && depAirport.latitude) {
+                return 	<Polyline
+                    coordinates={[
+                        { latitude: depAirport.latitude, longitude: depAirport.longitude },
+                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
+                    ]}
+                    strokeColor="red"
+                    geodesic={true}
+                    strokeWidth={3}
+                />;
+            }
+        }
+    };
+
+    const renderToPath = () => {
+        if(selectedClient !== undefined) {
+            const destAirport = airports[selectedClient.planned_destairport];
+            if(destAirport && destAirport.latitude) {
+                return 	<Polyline
+                    coordinates={[
+                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
+                        { latitude: destAirport.latitude, longitude: destAirport.longitude }
+                    ]}
+                    strokeColor="green"
+                    geodesic={true}
+                    strokeWidth={3}
+                />;
+            }
+        }
+    };
+
     useEffect(() => {
         if(selectedClient !== undefined) {
             console.log(selectedClient);
             sheetRef.current.snapTo(1);
-            // mapRef.animateCamera({center: {latitude: selectedClient.latitude, longitude: selectedClient.longitude}}, 500);
         }
     }, [selectedClient]);
 
@@ -73,6 +108,8 @@ export default function VatsimMapView() {
                     style={{zIndex: 1}}
                     airports={clients.airportAtc}
                 />
+                {renderFromPath()}
+                {renderToPath()}
             </MapView>
             <BottomSheet
                 ref={sheetRef}
