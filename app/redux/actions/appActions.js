@@ -4,6 +4,7 @@ export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
 export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
 export const FLIGHTS_FILTER_CLICKED = 'FLIGHTS_FILTER_CLICKED';
+export const SEARCH_QUERY_CHANGED = 'SEARCH_QUERY_CHANGED';
 
 const initialRegionLoaded = (region) => {
     return {
@@ -38,6 +39,13 @@ const flightsFilterClicked = () => {
     };
 };
 
+const searchQueryChanged = (searchQuery) => {
+    return {
+        type: SEARCH_QUERY_CHANGED,
+        payload: searchQuery
+    };
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch, getState) {
         const initialRegion = { region };
@@ -52,5 +60,6 @@ export default {
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
     atcFilterClicked: atcFilterClicked,
-    flightsFilterClicked: flightsFilterClicked
+    flightsFilterClicked: flightsFilterClicked,
+    searchQueryChanged: searchQueryChanged
 };

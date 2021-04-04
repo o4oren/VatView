@@ -9,7 +9,7 @@ export default function VatsimListView() {
     const filters = useSelector(state => state.app.filters);
 
     const aggregatedClient = (clients) => {
-        const aggregatedClients = [];
+        let aggregatedClients = [];
         // aggregatedClients.push(...clients.pilots);
         if(filters.atc) {
             Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
@@ -20,6 +20,17 @@ export default function VatsimListView() {
         if(filters.flights)
             clients.pilots.forEach(p => aggregatedClients.push(p));
 
+        if(filters.searchQuery.trim() != '') {
+            aggregatedClients = aggregatedClients.filter(c => {
+                if((c.callsign && c.callsign.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
+                    (c.realname && c.realname.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim()))||
+                    (c.cid && c.cid == filters.searchQuery.trim()) ||
+                    (c.aircraft && c.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())))
+                    return true;
+                else
+                    return false;
+            });
+        }
         return aggregatedClients.sort(function(a, b){
             if(a.callsign < b.callsign) { return -1; }
             if(a.callsign > b.callsign) { return 1; }
@@ -48,7 +59,7 @@ export default function VatsimListView() {
         <FlatList
             data = {aggregatedClient(clients)}
             renderItem={Item}
-            keyExtractor = {client => client.callsign + client.cid}
+            keyExtractor = {(client, i) => client.callsign + client.cid + '_' + i}
         />
     </SafeAreaView>;
 }
