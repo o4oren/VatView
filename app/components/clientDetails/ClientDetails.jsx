@@ -38,7 +38,7 @@ export default function ClientDetails(props) {
     };
 
     const renderBody = () => {
-        console.log('props', props.client);
+        // console.log('props', props.client);
         if(props.client === undefined)
             return;
         if(props.client.clienttype === 'PILOT') {

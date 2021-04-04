@@ -27,12 +27,12 @@ export default function VatsimMapView() {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     };
 
-    const renderContent = () => (
-        <ClientDetails
-            client={selectedClient}
+    const renderContent = (client) => {
+        return <ClientDetails
+            client={client}
             showAtis={true}
-        />
-    );
+        />;
+    };
 
     const renderFromPath = () => {
         if(selectedClient !== undefined) {
@@ -75,6 +75,15 @@ export default function VatsimMapView() {
         }
     }, [selectedClient]);
 
+    // if selected client is not null, we update it with the one from the new update
+    useEffect(() => {
+        if(selectedClient !== undefined) {
+            const newClient = clients.pilots.filter(p => p.cid == selectedClient.cid);
+            if(newClient.length > 0)
+                dispatch(allActions.appActions.clientSelected(newClient[0]));
+        }
+    }, [clients]);
+
     return (
         <View
             style={[styles.container, {width: screenSize.wisth, height: setScreenSize.height}]}
@@ -115,7 +124,10 @@ export default function VatsimMapView() {
                 ref={sheetRef}
                 snapPoints={[450, 300, 0]}
                 borderRadius={10}
-                renderContent={renderContent}
+                renderContent={() => (<ClientDetails
+                    client={selectedClient}
+                    showAtis={true}
+                />)}
                 initialSnap={2}
             />
         </View>
