@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Avatar, Card, Paragraph} from 'react-native-paper';
+import {Avatar, Card} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 
 export default function ClientDetails(props) {
@@ -25,18 +25,18 @@ export default function ClientDetails(props) {
         console.log('props', props.client);
         if(props.client === undefined)
             return;
-        if(props.client.clienttype == 'PILOT') {
+        if(props.client.clienttype === 'PILOT') {
             return (
                 <View>
                     <Card.Title
                         title = {props.client.callsign}
                         subtitle = {props.client.realname + ' (' + props.client.cid +')'}
                         left = {() => <Avatar.Image source={props.client.image} size={32} style={styles.avatar} />}
+                        right = {() => <Text>{props.client.planned_aircraft}</Text>}
                     />
                     <Card.Content>
                         <Text>Position: {props.client.latitude}:{props.client.longitude}</Text>
                         <Text>Altitude: {props.client.altitude}</Text>
-                        <Text>Aircraft: {props.client.planned_aircraft}</Text>
                         <Text>Heading: {props.client.heading}</Text>
                         <Text>Ground speed: {props.client.groundspeed}</Text>
                         <Text>Departure: {getDate(props.client.planned_deptime).toUTCString()}</Text>
