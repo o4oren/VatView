@@ -3,6 +3,7 @@ import {StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import {useSelector} from 'react-redux';
 import { Avatar, Card, Paragraph } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
+import ClientDetails from '../clientDetails/ClientDetails';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -20,8 +21,14 @@ export default function VatsimListView() {
         if(filters.flights)
             clients.pilots.forEach(p => aggregatedClients.push(p));
 
+        aggregatedClients.sort(function(a, b){
+            if(a.callsign < b.callsign) { return -1; }
+            if(a.callsign > b.callsign) { return 1; }
+            return 0;
+        });
+
         if(filters.searchQuery.trim() != '') {
-            aggregatedClients = aggregatedClients.filter(c => {
+            return aggregatedClients.filter(c => {
                 if((c.callsign && c.callsign.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.realname && c.realname.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim()))||
                     (c.cid && c.cid == filters.searchQuery.trim()) ||
@@ -31,28 +38,11 @@ export default function VatsimListView() {
                     return false;
             });
         }
-        return aggregatedClients.sort(function(a, b){
-            if(a.callsign < b.callsign) { return -1; }
-            if(a.callsign > b.callsign) { return 1; }
-            return 0;
-        });
+        return aggregatedClients;
     };
-    const Item = (client)=>(<Card style={styles.card}>
-        <Card.Title
-            title = {client.item.callsign}
-            subtitle = {client.item.realname}
-            left = {() => <Avatar.Image source={client.item.image} size={32} style={styles.avatar} />}
-        />
-        <Card.Content>
-            <Paragraph>
-                    Altitude: {client.item.altitude}{'\n'}
-                    Ground speed: {client.item.groundspeed} kts{'\n'}
-                    Aircraft: {client.item.planned_aircraft}{'\n'}
-                {client.item.planned_depairport} -&gt {client.item.planned_destairport}{'\n'}
-            </Paragraph>
-        </Card.Content>
-    </Card>
-    );
+    const Item = (client)=>(<Card>
+        <ClientDetails client = {client.item} />
+    </Card>);
 
     return <SafeAreaView style={styles.container}>
         <FilterBar />

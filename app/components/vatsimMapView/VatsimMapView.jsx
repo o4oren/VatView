@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
-import ClientDetails from './clientDetails';
+import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
 import AppCircles from './AppCircles';
 import CTRPolygons from './CTRPolygons';
@@ -28,6 +28,7 @@ export default function VatsimMapView() {
     const renderContent = () => (
         <ClientDetails
             client={selectedClient}
+            showAtis={true}
         />
     );
 
@@ -35,6 +36,7 @@ export default function VatsimMapView() {
         if(selectedClient !== undefined) {
             console.log(selectedClient);
             sheetRef.current.snapTo(1);
+            // mapRef.animateCamera({center: {latitude: selectedClient.latitude, longitude: selectedClient.longitude}}, 500);
         }
     }, [selectedClient]);
 
@@ -95,5 +97,5 @@ const styles = StyleSheet.create({
         flex:1
         // width: screen.width,
         // height: screen.height,
-    },
+    }
 });

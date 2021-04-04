@@ -28,7 +28,7 @@ const appReducer = (state = {
     case SEARCH_QUERY_CHANGED:
         return {...state, filters: {
             searchQuery: action.payload,
-            atc: !state.filters.atc,
+            atc: state.filters.atc,
             flights: state.filters.flights}
         };
     default:

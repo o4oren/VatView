@@ -11,7 +11,7 @@ export default function FilterBar() {
     const flightsFilterClicked = () => dispatch(allActions.appActions.flightsFilterClicked());
     const atcFilterCLicked = () => dispatch(allActions.appActions.atcFilterClicked());
     const onChangeSearch = (text) => dispatch(allActions.appActions.searchQueryChanged(text));
-    console.log(filters);
+
     return <View style={styles.container}>
         <ToggleButton
             style={styles.button}
@@ -43,17 +43,17 @@ export default function FilterBar() {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#4d7199',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'flex-start',
         flexDirection: 'row',
-        padding: 5,
-        paddingTop: 10,
-        paddingBottom: 10,
+        padding: 5
     },
     button: {
         marginEnd: 10,
     },
     textInput: {
         flex: 1,
+        borderRadius: 25,
+        maxWidth: 300
     }
 });

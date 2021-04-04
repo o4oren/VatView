@@ -81,6 +81,10 @@ const updateData = async (dispatch, getState) => {
                         client.image = require('../../../assets/tower-64.png');
                         client.imageSize = 64;
                     }
+                    if(client.callsign.endsWith('ATIS')) {
+                        client.image = require('../../../assets/radio-antenna.png');
+                        client.imageSize = 64;
+                    }
                     if (modClients.airportAtc[prefix] == null) {
                         modClients.airportAtc[prefix] = [];
                     }
