@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Avatar, Card} from 'react-native-paper';
+import {StyleSheet, View} from 'react-native';
+import {Avatar, Card, Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {getDistanceFromLatLonInNm} from '../../common/distance';
 
@@ -73,6 +73,7 @@ export default function ClientDetails(props) {
                     title = {props.client.callsign}
                     subtitle = {props.client.realname}
                     left = {() => <Avatar.Image source={props.client.image} size={32} style={styles.avatar} />}
+                    right = {() => <Text>{props.client.frequency}</Text>}
                 />
                 <Card.Content>
                     <Text>{props.showAtis ? 'ATIS message: ' + props.client.atis_message : ''}</Text>
