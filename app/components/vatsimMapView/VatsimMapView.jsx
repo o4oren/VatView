@@ -44,7 +44,6 @@ export default function VatsimMapView() {
         <View
             style={[styles.container, {width: screenSize.wisth, height: setScreenSize.height}]}
             onLayout={updateScreenSize}
-
         >
             <MapView
                 ref={mapRef}

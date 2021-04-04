@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Avatar, Card} from 'react-native-paper';
 import {useSelector} from 'react-redux';
+import {getDistanceFromLatLonInNm} from '../../common/distance';
 
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports.icao);
@@ -19,6 +20,21 @@ export default function ClientDetails(props) {
         date.setUTCHours(hours);
         date.setUTCMinutes(min);
         return date;
+    };
+
+    const getDistanceFromAirport = (icao) => {
+        const airport = airports[icao];
+
+        if(airport && airport.latitude) {
+            return <Text>{getDistanceFromLatLonInNm({
+                lat: airport.latitude,
+                lon: airport.longitude
+            }, {
+                lat: props.client.latitude,
+                lon: props.client.longitude
+            })} nm</Text>;
+        }
+        return <Text />;
     };
 
     const renderBody = () => {
@@ -42,6 +58,8 @@ export default function ClientDetails(props) {
                         <Text>Departure: {getDate(props.client.planned_deptime).toUTCString()}</Text>
                         <Text>Origin: {props.client.planned_depairport + ' ' + getAirportName(props.client.planned_depairport)}</Text>
                         <Text>Dest: {props.client.planned_destairport + ' ' + getAirportName(props.client.planned_destairport) }</Text>
+                        <Text>Distance flown: {getDistanceFromAirport(props.client.planned_depairport)}</Text>
+                        <Text>Distance remaining: {getDistanceFromAirport(props.client.planned_destairport)}</Text>
                         <Text>Flight plan: {props.client.planned_route}</Text>
                         <Text>Remarks: {props.client.planned_remarks}</Text>
                     </Card.Content>
