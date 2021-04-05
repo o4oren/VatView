@@ -82,7 +82,7 @@ export default function ClientDetails(props) {
                     right = {() => <Text>{props.client.frequency}</Text>}
                 />
                 <Card.Content>
-                    {props.client.text_atis !=null ? props.client.text_atis.map(line => <Text>{line}</Text>) : ''}
+                    {(props.client.text_atis !=null) && props.client.text_atis.map((line, i) => <Text key={i}>{line}</Text>)}
                 </Card.Content>
             </View>
         );
