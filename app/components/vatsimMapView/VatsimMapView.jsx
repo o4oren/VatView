@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import MapView, { Circle, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
+import MapView, { Polyline } from 'react-native-maps';
+import {StyleSheet, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -24,13 +24,6 @@ export default function VatsimMapView() {
 
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    };
-
-    const renderContent = (client) => {
-        return <ClientDetails
-            client={client}
-            showAtis={true}
-        />;
     };
 
     const renderFromPath = () => {
@@ -69,7 +62,6 @@ export default function VatsimMapView() {
 
     useEffect(() => {
         if(selectedClient !== undefined) {
-            console.log(selectedClient);
             sheetRef.current.snapTo(1);
         }
     }, [selectedClient]);

@@ -10,6 +10,7 @@ export default function VatsimListView() {
     const filters = useSelector(state => state.app.filters);
     const aggregatedClient = (clients) => {
         let aggregatedClients = [];
+
         // aggregatedClients.push(...clients.pilots);
         if(filters.atc) {
             Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));

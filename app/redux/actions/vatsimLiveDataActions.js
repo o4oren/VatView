@@ -22,7 +22,6 @@ const markersUpdated = (markers) => {
 
 const updateData = async (dispatch, getState) => {
     const airports = getState().staticAirspaceData.airports;
-    const firs = getState().staticAirspaceData.firs;
 
     const resolveAiport = (prefix) => {
         // console.log(airports);
@@ -80,7 +79,7 @@ const updateData = async (dispatch, getState) => {
                     clients.airportAtc[prefix].push(client);
                 }
                 else {
-                    console.log('null apt', client);
+                    console.log('Unknown APT', client);
                 }
             } else if(client.facility == CTR) {
                 if (clients.ctr[prefix] == null) {
@@ -88,15 +87,17 @@ const updateData = async (dispatch, getState) => {
                 }
                 clients.ctr[prefix].push(client);
             } else if(client.facility == APP) {
-                client.latitude = airport.latitude;
-                client.longitude = airport.longitude;
-                if (clients.app[prefix] == null) {
-                    clients.app[prefix] = [];
-                }
-                if(airport == null)
-                    console.log('null app', client);
-                else
+                if(airport === undefined) {
+                    console.log('Unknown APP', client);
+                } else {
+                    client.latitude = airport.latitude;
+                    client.longitude = airport.longitude;
+
+                    if (client.latitude && clients.app[prefix] == null) {
+                        clients.app[prefix] = [];
+                    }
                     clients.app[prefix].push(client);
+                }
             } else if(client.facility == FSS) {
                 if (clients.fss[prefix] == null) {
                     clients.fss[prefix] = [];
@@ -120,7 +121,6 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
-        console.log(json);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

@@ -6,44 +6,19 @@ import {getDistanceFromLatLonInNm} from '../../common/distance';
 import {StyleSheet, View} from 'react-native';
 
 export default function FlightStatus(props) {
-    const airports = useSelector(state => state.staticAirspaceData.airports);
     const pilot = props.pilot;
-    
-    const departure = getAirportByCode(pilot.flight_plan.departure, airports);
-    const arrival = getAirportByCode(pilot.flight_plan.arrival, airports);
-
-    const routeDistance = getDistanceFromLatLonInNm({
-        lat: departure.latitude,
-        lon: departure.longitude
-    },
-    {
-        lat: arrival.latitude,
-        lon: arrival.longitude
-    });
-
-    const distanceTraveled = getDistanceFromLatLonInNm({
-        lat: departure.latitude,
-        lon: departure.longitude
-    },
-    {
-        lat: pilot.latitude,
-        lon: pilot.longitude
-    });
-
-    const percentTraveled = distanceTraveled / routeDistance;
-    console.log('p', percentTraveled);
     return <View style={styles.container}>
         <View style={styles.textContainer}>
-            <Text>{departure.icao}</Text>
-            <Text>{arrival.icao}</Text>
+            <Text>{props.depAirport.icao}</Text>
+            <Text>{props.arrAirport.icao}</Text>
         </View>
         <ProgressBar
             style={styles.progress}
-            progress={percentTraveled}
+            progress={pilot.flown / pilot.distance}
         />
         <View style={styles.textContainer}>
-            <Caption style={styles.name}>{departure.name}</Caption>
-            <Caption style={styles.name}>{arrival.name}</Caption>
+            <Caption style={styles.name}>{props.depAirport.name}</Caption>
+            <Caption style={styles.name}>{props.depAirport.name}</Caption>
         </View>
         <View style={styles.textContainer}>
             <View>
@@ -52,9 +27,9 @@ export default function FlightStatus(props) {
                 <Text>Speed: {pilot.groundspeed} kts</Text>
             </View>
             <View>
-                <Text>Trip: {routeDistance} nm</Text>
-                <Text>Flown: {distanceTraveled} nm</Text>
-                <Text>Remaining: {routeDistance - distanceTraveled} nm</Text>
+                <Text>Trip: {pilot.distance} nm</Text>
+                <Text>Flown: {pilot.flown} nm</Text>
+                <Text>Remaining: {pilot.distance - pilot.flown} nm</Text>
             </View>
         </View>
     </View>;
@@ -63,7 +38,6 @@ export default function FlightStatus(props) {
 const styles = StyleSheet.create({
     progress: {
         flexGrow: 1,
-        minWidth: 200
     },
     container: {
     },
