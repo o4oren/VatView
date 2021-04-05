@@ -95,7 +95,8 @@ const updateData = async (dispatch, getState) => {
                 }
                 if(airport == null)
                     console.log('null app', client);
-                clients.app[prefix].push(client);
+                else
+                    clients.app[prefix].push(client);
             } else if(client.facility == FSS) {
                 if (clients.fss[prefix] == null) {
                     clients.fss[prefix] = [];
@@ -119,7 +120,7 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
-        // console.log(json);
+        console.log(json);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

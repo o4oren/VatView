@@ -1,17 +1,12 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Avatar, Card, Text} from 'react-native-paper';
+import {Avatar, Caption, Card, Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
-import {getDistanceFromLatLonInNm} from '../../common/distance';
+import {calculateDistanceFromAirport, getAirportNameByCode} from '../../common/airportTools';
+import FlightStatus from './FlightStatus';
 
 export default function ClientDetails(props) {
-    const airports = useSelector(state => state.staticAirspaceData.airports.icao);
-
-    const getAirportName = (icao) => {
-        if(airports[icao]  !== undefined)
-            return(airports[icao].name);
-        return '';
-    };
+    const airports = useSelector(state => state.staticAirspaceData.airports);
 
     const getDate = time => {
         const min = time % 100;
@@ -23,40 +18,30 @@ export default function ClientDetails(props) {
     };
 
     const getDistanceFromAirport = (icao) => {
-        const airport = airports[icao];
-
+        const airport = airports.icao[icao];
+        let distance;
         if(airport && airport.latitude) {
-            return <Text>{getDistanceFromLatLonInNm({
-                lat: airport.latitude,
-                lon: airport.longitude
-            }, {
-                lat: props.client.latitude,
-                lon: props.client.longitude
-            })} nm</Text>;
+            distance = calculateDistanceFromAirport(props.client, airport);
         }
-        return <Text />;
+        if(distance)
+            return <Text>{distance} nm</Text>;
     };
 
     const getFlightDetails = () => {
         if(props.client.flight_plan != null) {
             return <Card.Content>
-                <Text>Position: {props.client.latitude}:{props.client.longitude}</Text>
-                <Text>Altitude: {props.client.altitude}</Text>
-                <Text>Heading: {props.client.heading}</Text>
-                <Text>Ground speed: {props.client.groundspeed}</Text>
-                <Text>Departure: {getDate(props.client.flight_plan.deptime).toUTCString()}</Text>
-                <Text>Origin: {props.client.flight_plan.departure + ' ' + getAirportName(props.client.flight_plan.departure)}</Text>
-                <Text>Dest: {props.client.flight_plan.arrival + ' ' + getAirportName(props.client.flight_plan.arrival) }</Text>
-                <Text>Distance flown: {getDistanceFromAirport(props.client.flight_plan.departure)}</Text>
-                <Text>Distance remaining: {getDistanceFromAirport(props.client.flight_plan.arrival)}</Text>
-                <Text>Flight plan: {props.client.flight_plan.route}</Text>
-                <Text>Remarks: {props.client.flight_plan.remarks}</Text>
+                <FlightStatus pilot={props.client} />
+                <Text>Flight plan:</Text>
+                <Caption>{props.client.flight_plan.route}</Caption>
+                <Text>Remarks:</Text>
+                <Caption>{props.client.flight_plan.remarks}</Caption>
             </Card.Content>;
         }
     };
 
     const renderBody = () => {
-        if(props.client === undefined)
+        console.log(props.client);
+        if(props.client == null)
             return;
         if(props.client.facility == null) {
             return (
@@ -107,5 +92,8 @@ export default function ClientDetails(props) {
 const styles = StyleSheet.create({
     avatar: {
         backgroundColor: 'white',
+    },
+    status: {
+        flex: 1
     }
 });

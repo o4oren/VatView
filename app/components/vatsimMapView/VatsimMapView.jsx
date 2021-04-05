@@ -34,7 +34,7 @@ export default function VatsimMapView() {
     };
 
     const renderFromPath = () => {
-        if(selectedClient !== undefined && selectedClient.flight_plan !== undefined && selectedClient.flight_plan.departure) {
+        if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
             const depAirport = airports[selectedClient.flight_plan.departure];
             if(depAirport && depAirport.latitude) {
                 return 	<Polyline
@@ -51,7 +51,7 @@ export default function VatsimMapView() {
     };
 
     const renderToPath = () => {
-        if(selectedClient !== undefined && selectedClient.flight_plan !== undefined && selectedClient.flight_plan.arrival) {
+        if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
             const destAirport = airports[selectedClient.flight_plan.arrival];
             if(destAirport && destAirport.latitude) {
                 return 	<Polyline
@@ -69,7 +69,7 @@ export default function VatsimMapView() {
 
     useEffect(() => {
         if(selectedClient !== undefined) {
-            // console.log(selectedClient);
+            console.log(selectedClient);
             sheetRef.current.snapTo(1);
         }
     }, [selectedClient]);
@@ -85,7 +85,7 @@ export default function VatsimMapView() {
 
     return (
         <View
-            style={[styles.container, {width: screenSize.wisth, height: setScreenSize.height}]}
+            style={[styles.container, {width: screenSize.width, height: setScreenSize.height}]}
             onLayout={updateScreenSize}
         >
             <MapView
