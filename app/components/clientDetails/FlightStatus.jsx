@@ -18,7 +18,7 @@ export default function FlightStatus(props) {
         />
         <View style={styles.textContainer}>
             <Caption style={styles.name}>{props.depAirport.name}</Caption>
-            <Caption style={styles.name}>{props.depAirport.name}</Caption>
+            <Caption style={styles.name}>{props.arrAirport.name}</Caption>
         </View>
         <View style={styles.textContainer}>
             <View>
