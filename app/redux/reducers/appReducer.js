@@ -23,13 +23,13 @@ const appReducer = (state = {
         return {...state, filters: {
             searchQuery: state.filters.searchQuery,
             atc: !state.filters.atc,
-            flights: state.filters.pilots}
+            pilots: state.filters.pilots}
         };
     case SEARCH_QUERY_CHANGED:
         return {...state, filters: {
             searchQuery: action.payload,
             atc: state.filters.atc,
-            flights: state.filters.pilots}
+            pilots: state.filters.pilots}
         };
     default:
         return state;

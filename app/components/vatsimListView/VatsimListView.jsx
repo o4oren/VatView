@@ -8,7 +8,6 @@ import ClientDetails from '../clientDetails/ClientDetails';
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
-
     const aggregatedClient = (clients) => {
         let aggregatedClients = [];
         // aggregatedClients.push(...clients.pilots);

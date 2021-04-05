@@ -8,7 +8,7 @@ export default function FilterBar() {
     const filters = useSelector(state => state.app.filters);
     const dispatch = useDispatch();
 
-    const flightsFilterClicked = () => dispatch(allActions.appActions.pilotsFilterClicked());
+    const pilotsFilterClicked = () => dispatch(allActions.appActions.pilotsFilterClicked());
     const atcFilterCLicked = () => dispatch(allActions.appActions.atcFilterClicked());
     const onChangeSearch = (text) => dispatch(allActions.appActions.searchQueryChanged(text));
 
@@ -16,13 +16,13 @@ export default function FilterBar() {
         <ToggleButton
             style={styles.button}
             icon='airplane'
-            onPress={flightsFilterClicked}
+            onPress={pilotsFilterClicked}
             color="white"
-            status={filters.flights ? 'checked' : 'unchecked'}
+            status={filters.pilots ? 'checked' : 'unchecked'}
         />
         <ToggleButton
             style={styles.button}
-            icon='radar' status='unchecked'
+            icon='radar'
             onPress={atcFilterCLicked}
             color="white"
             status={filters.atc ? 'checked' : 'unchecked'}

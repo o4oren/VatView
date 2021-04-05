@@ -56,7 +56,6 @@ export default function ClientDetails(props) {
     };
 
     const renderBody = () => {
-        // console.log('props', props.client);
         if(props.client === undefined)
             return;
         if(props.client.facility == null) {
@@ -82,7 +81,10 @@ export default function ClientDetails(props) {
                     right = {() => <Text>{props.client.frequency}</Text>}
                 />
                 <Card.Content>
-                    {(props.client.text_atis !=null) && props.client.text_atis.map((line, i) => <Text key={i}>{line}</Text>)}
+                    {(props.client.text_atis !=null) && <Text>Message:</Text>}
+                    {(props.client.text_atis !=null) && (
+                        props.client.text_atis.map((line, i) => <Text key={i}>{line}</Text>)
+                    )}
                 </Card.Content>
             </View>
         );
