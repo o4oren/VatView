@@ -23,7 +23,6 @@ const markersUpdated = (markers) => {
 const updateData = async (dispatch, getState) => {
     const airports = getState().staticAirspaceData.airports;
     const firs = getState().staticAirspaceData.firs;
-    console.log('firs', firs);
 
     const resolveAiport = (prefix) => {
         // console.log(airports);
@@ -46,10 +45,17 @@ const updateData = async (dispatch, getState) => {
             ctr: {},
             fss: {},
             airportAtc: {},
-            pilots: json.pilots,
+            pilots: [],
             obs: [],
             other: []
         };
+
+        json.pilots.forEach((pilot, i) => {
+            const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
+            pilot.image = image;
+            pilot.imageSize = imageSize;
+            clients.pilots.push(pilot);
+        });
 
         json.controllers.forEach(client => {
             client.image = require('../../../assets/radar.png');
@@ -74,7 +80,7 @@ const updateData = async (dispatch, getState) => {
                     clients.airportAtc[prefix].push(client);
                 }
                 else {
-                    console.log('nill apt', client);
+                    console.log('null apt', client);
                 }
             } else if(client.facility == CTR) {
                 if (clients.ctr[prefix] == null) {
@@ -113,7 +119,7 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
-        console.log(json);
+        // console.log(json);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

@@ -6,7 +6,7 @@ import {TWR_ATIS} from '../../common/consts';
 export default function AirportMarkers(props) {
     const airportMarkers = [];
     for (let icao in props.airports) {
-        const tower = props.airports[icao].filter(client => client.facilitytype === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
+        const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
         if (tower.length > 0 ) {
             airportMarkers.push(
                 <MapView.Marker

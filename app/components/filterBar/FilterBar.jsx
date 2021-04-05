@@ -8,7 +8,7 @@ export default function FilterBar() {
     const filters = useSelector(state => state.app.filters);
     const dispatch = useDispatch();
 
-    const flightsFilterClicked = () => dispatch(allActions.appActions.flightsFilterClicked());
+    const flightsFilterClicked = () => dispatch(allActions.appActions.pilotsFilterClicked());
     const atcFilterCLicked = () => dispatch(allActions.appActions.atcFilterClicked());
     const onChangeSearch = (text) => dispatch(allActions.appActions.searchQueryChanged(text));
 

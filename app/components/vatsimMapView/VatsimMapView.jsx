@@ -34,8 +34,8 @@ export default function VatsimMapView() {
     };
 
     const renderFromPath = () => {
-        if(selectedClient !== undefined) {
-            const depAirport = airports[selectedClient.planned_depairport];
+        if(selectedClient !== undefined && selectedClient.flight_plan !== undefined && selectedClient.flight_plan.departure) {
+            const depAirport = airports[selectedClient.flight_plan.departure];
             if(depAirport && depAirport.latitude) {
                 return 	<Polyline
                     coordinates={[
@@ -51,8 +51,8 @@ export default function VatsimMapView() {
     };
 
     const renderToPath = () => {
-        if(selectedClient !== undefined) {
-            const destAirport = airports[selectedClient.planned_destairport];
+        if(selectedClient !== undefined && selectedClient.flight_plan !== undefined && selectedClient.flight_plan.arrival) {
+            const destAirport = airports[selectedClient.flight_plan.arrival];
             if(destAirport && destAirport.latitude) {
                 return 	<Polyline
                     coordinates={[
@@ -69,7 +69,7 @@ export default function VatsimMapView() {
 
     useEffect(() => {
         if(selectedClient !== undefined) {
-            console.log(selectedClient);
+            // console.log(selectedClient);
             sheetRef.current.snapTo(1);
         }
     }, [selectedClient]);

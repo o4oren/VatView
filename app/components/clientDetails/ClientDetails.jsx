@@ -37,32 +37,38 @@ export default function ClientDetails(props) {
         return <Text />;
     };
 
+    const getFlightDetails = () => {
+        if(props.client.flight_plan != null) {
+            return <Card.Content>
+                <Text>Position: {props.client.latitude}:{props.client.longitude}</Text>
+                <Text>Altitude: {props.client.altitude}</Text>
+                <Text>Heading: {props.client.heading}</Text>
+                <Text>Ground speed: {props.client.groundspeed}</Text>
+                <Text>Departure: {getDate(props.client.flight_plan.deptime).toUTCString()}</Text>
+                <Text>Origin: {props.client.flight_plan.departure + ' ' + getAirportName(props.client.flight_plan.departure)}</Text>
+                <Text>Dest: {props.client.flight_plan.arrival + ' ' + getAirportName(props.client.flight_plan.arrival) }</Text>
+                <Text>Distance flown: {getDistanceFromAirport(props.client.flight_plan.departure)}</Text>
+                <Text>Distance remaining: {getDistanceFromAirport(props.client.flight_plan.arrival)}</Text>
+                <Text>Flight plan: {props.client.flight_plan.route}</Text>
+                <Text>Remarks: {props.client.flight_plan.remarks}</Text>
+            </Card.Content>;
+        }
+    };
+
     const renderBody = () => {
         // console.log('props', props.client);
         if(props.client === undefined)
             return;
-        if(props.client.clienttype === 'PILOT') {
+        if(props.client.facility == null) {
             return (
                 <View>
                     <Card.Title
                         title = {props.client.callsign}
-                        subtitle = {props.client.realname + ' (' + props.client.cid +')'}
+                        subtitle = {props.client.name + ' (' + props.client.cid +')'}
                         left = {() => <Avatar.Image source={props.client.image} size={32} style={styles.avatar} />}
-                        right = {() => <Text>{props.client.planned_aircraft}</Text>}
+                        right = {() => <Text>{props.client.flight_plan != null ? props.client.flight_plan.aircraft_short : ''}</Text>}
                     />
-                    <Card.Content>
-                        <Text>Position: {props.client.latitude}:{props.client.longitude}</Text>
-                        <Text>Altitude: {props.client.altitude}</Text>
-                        <Text>Heading: {props.client.heading}</Text>
-                        <Text>Ground speed: {props.client.groundspeed}</Text>
-                        <Text>Departure: {getDate(props.client.planned_deptime).toUTCString()}</Text>
-                        <Text>Origin: {props.client.planned_depairport + ' ' + getAirportName(props.client.planned_depairport)}</Text>
-                        <Text>Dest: {props.client.planned_destairport + ' ' + getAirportName(props.client.planned_destairport) }</Text>
-                        <Text>Distance flown: {getDistanceFromAirport(props.client.planned_depairport)}</Text>
-                        <Text>Distance remaining: {getDistanceFromAirport(props.client.planned_destairport)}</Text>
-                        <Text>Flight plan: {props.client.planned_route}</Text>
-                        <Text>Remarks: {props.client.planned_remarks}</Text>
-                    </Card.Content>
+                    {getFlightDetails()}
                 </View>
             );
         }
@@ -76,7 +82,7 @@ export default function ClientDetails(props) {
                     right = {() => <Text>{props.client.frequency}</Text>}
                 />
                 <Card.Content>
-                    <Text>{props.showAtis ? 'ATIS message: ' + props.client.atis_message : ''}</Text>
+                    {props.client.text_atis !=null ? props.client.text_atis.map(line => <Text>{line}</Text>) : ''}
                 </Card.Content>
             </View>
         );

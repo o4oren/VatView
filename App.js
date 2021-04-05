@@ -41,7 +41,7 @@ export default function App() {
     const preloadedState = {
         app: {
             initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,
-            filters: {flights: true, atc: true, searchQuery: ''}
+            filters: {pilots: true, atc: true, searchQuery: ''}
         },
         staticAirspaceData: {
             firBoundaries: state.savedState.staticAirspaceData != null ? state.savedState.firBoundaries : [],

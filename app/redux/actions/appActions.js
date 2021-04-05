@@ -3,7 +3,7 @@ export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
 export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
-export const FLIGHTS_FILTER_CLICKED = 'FLIGHTS_FILTER_CLICKED';
+export const PILOTS_FILTER_CLICKED = 'FLIGHTS_FILTER_CLICKED';
 export const SEARCH_QUERY_CHANGED = 'SEARCH_QUERY_CHANGED';
 
 const initialRegionLoaded = (region) => {
@@ -33,9 +33,9 @@ const atcFilterClicked = () => {
     };
 };
 
-const flightsFilterClicked = () => {
+const pilotsFilterClicked = () => {
     return {
-        type: FLIGHTS_FILTER_CLICKED
+        type: PILOTS_FILTER_CLICKED
     };
 };
 
@@ -60,6 +60,6 @@ export default {
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
     atcFilterClicked: atcFilterClicked,
-    flightsFilterClicked: flightsFilterClicked,
+    pilotsFilterClicked: pilotsFilterClicked,
     searchQueryChanged: searchQueryChanged
 };

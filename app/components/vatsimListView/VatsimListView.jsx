@@ -18,7 +18,7 @@ export default function VatsimListView() {
             Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
         }
 
-        if(filters.flights)
+        if(filters.pilots)
             clients.pilots.forEach(p => aggregatedClients.push(p));
 
         aggregatedClients.sort(function(a, b){
