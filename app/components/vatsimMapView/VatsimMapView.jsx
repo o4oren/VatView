@@ -117,7 +117,6 @@ export default function VatsimMapView() {
                 borderRadius={10}
                 renderContent={() => (<ClientDetails
                     client={selectedClient}
-                    showAtis={true}
                 />)}
                 initialSnap={2}
             />

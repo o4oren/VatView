@@ -11,9 +11,10 @@ export default function AirportMarkers(props) {
 
     const airportMarkers = [];
 
-    // let onPress = (airport) => {
-    //     dispatch(allActions.appActions.clientSelected(airport));
-    // };
+    let onPress = (airport) => {
+        console.log('a', airport);
+        dispatch(allActions.appActions.clientSelected(airport));
+    };
 
     for (let icao in props.airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
@@ -25,7 +26,7 @@ export default function AirportMarkers(props) {
                     coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
                     title={airport.icao}
                     anchor={{x: 0.5, y: 1}}
-                    // onPress={onPress(icao)}
+                    onPress={() => onPress(airport)}
                     tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                 >
