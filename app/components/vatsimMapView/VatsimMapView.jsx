@@ -106,7 +106,7 @@ export default function VatsimMapView() {
                 />
                 <AirportMarkers
                     style={{zIndex: 1}}
-                    airports={clients.airportAtc}
+                    airportAtc={clients.airportAtc}
                 />
                 {renderFromPath()}
                 {renderToPath()}

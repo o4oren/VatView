@@ -1,20 +1,31 @@
 import MapView from 'react-native-maps';
 import {Image} from 'react-native';
 import React from 'react';
-import {TWR_ATIS} from '../../common/consts';
+import {useDispatch, useSelector} from 'react-redux';
+import allActions from '../../redux/actions';
+import {getAirportByCode} from '../../common/airportTools';
 
 export default function AirportMarkers(props) {
+    const airports = useSelector(state => state.staticAirspaceData.airports);
+    const dispatch = useDispatch();
+
     const airportMarkers = [];
-    for (let icao in props.airports) {
-        const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
-        if (tower.length > 0 ) {
+
+    // let onPress = (airport) => {
+    //     dispatch(allActions.appActions.clientSelected(airport));
+    // };
+
+    for (let icao in props.airportAtc) {
+        // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
+        const airport = getAirportByCode(icao, airports);
+        if (airports != null) {
             airportMarkers.push(
                 <MapView.Marker
                     key={icao}
-                    coordinate={{latitude: tower[0].latitude, longitude: tower[0].longitude}}
-                    title={tower[0].callsign}
+                    coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
+                    title={airport.icao}
                     anchor={{x: 0.5, y: 1}}
-                    // onPress={props.onPress}
+                    // onPress={onPress(icao)}
                     tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                 >
