@@ -69,7 +69,7 @@ const updateData = async (dispatch, getState) => {
                         client.imageSize = 64;
                     }
                     if(client.callsign.endsWith('ATIS')) {
-                        client.image = require('../../../assets/radio-antenna.png');
+                        client.image = require('../../../assets/radio-antenna-64.png');
                         client.imageSize = 64;
                     }
                     if (clients.airportAtc[prefix] == null) {
@@ -99,7 +99,7 @@ const updateData = async (dispatch, getState) => {
 
         json.atis.forEach(atis => {
             let prefix = atis.callsign.split('_')[0];
-            atis.image = require('../../../assets/radio-antenna.png');
+            atis.image = require('../../../assets/radio-antenna-64.png');
             atis.imageSize = 64;
             if (clients.airportAtc[prefix] == null) {
                 clients.airportAtc[prefix] = [];

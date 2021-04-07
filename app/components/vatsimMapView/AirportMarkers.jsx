@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import AppCircles from './AppCircles';
-import {APP, APP_RADIUS} from '../../common/consts';
+import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 
 export default function AirportMarkers(props) {
@@ -22,21 +22,55 @@ export default function AirportMarkers(props) {
     for (let icao in props.airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
         const airport = getAirportByCode(icao, airports);
+        let delivery = false;
+        let ground = false;
+        let tower = false;
+        let app = false;
+        let atis = false;
+
         if (airport != null) {
             props.airportAtc[icao].forEach(atc => {
-                if (atc.facility === APP)
+                switch (atc.facility) {
+                case APP:
+                    app = true;
                     airportMarkers.push(
                         <Circle
-                            key={props.airportAtc.cid}
+                            key={icao + '_APP_' + atc.cid}
                             center={{latitude: airport.latitude, longitude: airport.longitude}}
                             radius={APP_RADIUS}
-                            title={props.airportAtc.callsign}
+                            title={atc.callsign}
                             strokeColor={theme.blueGrey.appCircleStroke}
                             fillColor={theme.blueGrey.appCircleFill}
                             strokeWidth={theme.blueGrey.appCircleStrokeWidth}
                         />
                     );
+                    break;
+                case DEL:
+                    delivery = true;
+                    break;
+                case GND:
+                    ground = true;
+                    break;
+                case TWR_ATIS:
+                    if(atc.callsign.endsWith('ATIS'))
+                        atis = true;
+                    else
+                        tower = true;
+                    break;
+                default:
+                    break;
+                }
             });
+
+
+            let image = require('../../../assets/tower-32.png');
+            if(app && !ground && !tower)
+            {
+                console.log('here');
+                image = require('../../../assets/radar-32.png');
+
+            }
+
             airportMarkers.push(
                 <MapView.Marker
                     key={icao}
@@ -48,7 +82,7 @@ export default function AirportMarkers(props) {
                     tracksInfoWindowChanges={false}
                 >
                     <Image
-                        source={require('../../../assets/tower-32.png')}
+                        source={image}
                         fadeDuration={0}
                     />
                 </MapView.Marker>
