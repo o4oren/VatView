@@ -5,7 +5,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "lint": "eslint *.js **/*.js src/**/*.js"
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.10",
@@ -38,8 +39,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
-    "eslint": "^7.14.0",
-    "eslint-plugin-react": "^7.21.5",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.23.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "^3.10.0"
   },
   "plugins": [
