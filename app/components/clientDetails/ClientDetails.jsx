@@ -11,16 +11,13 @@ import AtcDetails from './AtcDetails';
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports);
 
-
-
     const renderBody = () => {
         if(props.client == null)
-            return;
+            return null;
 
         // if airport
         if(props.client.icao != null) {
             const airport = props.client;
-            console.log('c', airport);
 
             if(airport != null && airport.icao != null)
                 return <AirportAtcDetils
@@ -42,6 +39,7 @@ export default function ClientDetails(props) {
         return (
             <AtcDetails
                 atc={props.client}
+                showAtis={props.showAtis ? true : false}
             />
         );
     };

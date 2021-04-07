@@ -61,7 +61,7 @@ export default function VatsimMapView() {
     };
 
     useEffect(() => {
-        if(selectedClient !== undefined) {
+        if(selectedClient != null) {
             sheetRef.current.snapTo(1);
         }
     }, [selectedClient]);
@@ -72,6 +72,8 @@ export default function VatsimMapView() {
             const newClient = clients.pilots.filter(p => p.cid == selectedClient.cid);
             if(newClient.length > 0)
                 dispatch(allActions.appActions.clientSelected(newClient[0]));
+            else
+                dispatch(allActions.appActions.clientSelected(null));
         }
     }, [clients]);
 
@@ -94,10 +96,6 @@ export default function VatsimMapView() {
                     style={{zIndex: 4}}
                     ctr={clients.ctr}
                     fss={clients.fss}
-                />
-                <AppCircles
-                    app={clients.app}
-                    style={{zIndex: 3}}
                 />
                 {/*// TODO aerodrome markers*/}
                 <PilotMarkers

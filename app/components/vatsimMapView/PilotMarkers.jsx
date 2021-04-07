@@ -3,6 +3,7 @@ import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
+import {Platform} from 'react-native';
 
 export default function PilotMarkers(props) {
 
@@ -18,22 +19,29 @@ export default function PilotMarkers(props) {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
+        const getImageForIos = () => {
+            if(Platform.OS === 'ios')
+                return <Image
+                    source={pilot.image}
+                    fadeDuration={0}
+                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                />;
+            return null;
+        };
+
+
         return <MapView.Marker
             key={pilot.cid}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
             rotation={pilot.heading}
-            // icon={client.image}
+            icon={Platform.OS !== 'ios' ? pilot.image : null}
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
         >
-            <Image
-                source={pilot.image}
-                fadeDuration={0}
-                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-            />
+            {getImageForIos()}
         </MapView.Marker>;
     });
     return pilotMarkers;

@@ -14,7 +14,6 @@ export default function VatsimListView() {
         // aggregatedClients.push(...clients.pilots);
         if(filters.atc) {
             Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
-            Object.entries(clients.app).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
             Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
         }
 
@@ -41,7 +40,10 @@ export default function VatsimListView() {
         return aggregatedClients;
     };
     const Item = (client)=>(<Card>
-        <ClientDetails client = {client.item} />
+        <ClientDetails
+            client = {client.item}
+            showAtis={true}
+        />
     </Card>);
 
     return <SafeAreaView style={styles.container}>

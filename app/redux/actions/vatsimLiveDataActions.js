@@ -40,7 +40,6 @@ const updateData = async (dispatch, getState) => {
         let json = await response.json();
 
         const clients = {
-            app: {},
             ctr: {},
             fss: {},
             airportAtc: {},
@@ -61,7 +60,7 @@ const updateData = async (dispatch, getState) => {
             client.imageSize = 64;
             let prefix = client.callsign.split('_')[0];
             const airport = resolveAiport(prefix);
-            if([TWR_ATIS, GND, DEL].includes(client.facility)) {
+            if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
                 if(airport != null) {
                     client.latitude = airport.latitude;
                     client.longitude = airport.longitude;
@@ -86,18 +85,6 @@ const updateData = async (dispatch, getState) => {
                     clients.ctr[prefix] = [];
                 }
                 clients.ctr[prefix].push(client);
-            } else if(client.facility == APP) {
-                if(airport === undefined) {
-                    console.log('Unknown APP', client);
-                } else {
-                    client.latitude = airport.latitude;
-                    client.longitude = airport.longitude;
-
-                    if (client.latitude && clients.app[prefix] == null) {
-                        clients.app[prefix] = [];
-                    }
-                    clients.app[prefix].push(client);
-                }
             } else if(client.facility == FSS) {
                 if (clients.fss[prefix] == null) {
                     clients.fss[prefix] = [];
@@ -121,6 +108,7 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
+        // console.log(json);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

@@ -6,7 +6,6 @@ import {StyleSheet, View} from 'react-native';
 export default function PilotDetails(props) {
     const renderFlightDetails = () => {
         let flown, distance;
-        console.log(props);
         if(props.depAirport && props.arrAirport) {
             distance = getDistanceFromLatLonInNm({
                 lat: props.depAirport.latitude,

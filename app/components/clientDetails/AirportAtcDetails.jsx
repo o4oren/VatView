@@ -1,36 +1,39 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {Caption, Text} from 'react-native-paper';
+import {Avatar, Card, Text} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import AtcDetails from './AtcDetails';
+import {TWR_ATIS} from '../../common/consts';
 
 export default function AirportAtcDetils(props) {
     const airport = props.airport;
     const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc);
 
     const getAtcClients =  () => {
-        console.log('in', airportAtc[airport.icao]);
-        return airportAtc[airport.icao].map(atc => {
-            // return <View>
-            //     <Text>{atc.name}</Text>
-            //     <View style={styles.textContainer}>
-            //         <Text>{atc.callsign}</Text>
-            //         <Text>{atc.frequency}</Text>
-            //     </View>
-            // </View>;
-            return <AtcDetails
-                atc={atc}
-            />;
-        });
+        let atisExists = false;
+        return airportAtc[airport.icao]
+            .sort((a, b) => {
+                if(a.callsign.endsWith('ATIS')) {
+                    atisExists = true;
+                    return 1;
+                }
+                return b.facility - a.facility;
+            })
+            .map((atc, index) => {
+                return <AtcDetails
+                    atc={atc}
+                    showAtis={(!atisExists || atc.callsign.endsWith('ATIS')) ? true : false}
+                    key={atc.cid + '_' + index}
+                />;
+            });
     };
 
-    if(airportAtc[airport.icao] != null) 
-
+    if(airportAtc[airport.icao] != null)
         return <View style={styles.container}>
-            <View style={styles.textContainer}>
-                <Text>{airport.icao}</Text>
-                <Text>{airport.name}</Text>
-            </View>
+            <Card.Title
+                title = {airport.icao}
+                subtitle = {airport.name}
+            />
             {getAtcClients()}
         </View>;
 
