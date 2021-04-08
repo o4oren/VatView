@@ -66,10 +66,10 @@ export default function AirportMarkers(props) {
             let image = require('../../../assets/tower-32.png');
             if(app && !ground && !tower)
             {
-                console.log('here');
                 image = require('../../../assets/radar-32.png');
-
             }
+            if(atis && !tower && !ground && !delivery)
+                image = require('../../../assets/radio-antenna-32.png');
 
             airportMarkers.push(
                 <MapView.Marker

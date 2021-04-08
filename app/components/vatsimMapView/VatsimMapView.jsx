@@ -19,7 +19,7 @@ export default function VatsimMapView() {
     const mapRef = useRef(null);
     const sheetRef = React.useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
-
+    const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
 
     const updateScreenSize = () => {
@@ -61,9 +61,17 @@ export default function VatsimMapView() {
     };
 
     useEffect(() => {
-        if(selectedClient != null) {
+        console.log('a', selectedClient);
+        console.log('b', prevSelectedClient);
+        if (selectedClient == null)
+            sheetRef.current.snapTo(2);
+        else if(prevSelectedClient == null || (
+            (selectedClient.cid != null && selectedClient.cid !== prevSelectedClient.cid) ||
+            (selectedClient.icao != null && selectedClient.icao !== prevSelectedClient.icao)
+        )) {
             sheetRef.current.snapTo(1);
         }
+        setPrevSelectedClient(selectedClient);
     }, [selectedClient]);
 
     // if selected client is not null, we update it with the one from the new update
@@ -73,7 +81,7 @@ export default function VatsimMapView() {
             if(newClient.length > 0)
                 dispatch(allActions.appActions.clientSelected(newClient[0]));
             else
-                dispatch(allActions.appActions.clientSelected(null));
+                dispatch(allActions.appActions.clientSelected(selectedClient));
         }
     }, [clients]);
 

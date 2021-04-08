@@ -1,8 +1,8 @@
-import MapView, {Circle, Polygon} from 'react-native-maps';
-import {Image, Text, View} from 'react-native';
+import MapView, {Polygon} from 'react-native-maps';
+import {Text, View} from 'react-native';
 import React from 'react';
 import theme from '../../common/theme';
-import {APP_RADIUS, EXCLUDED_CALLSIGNS} from '../../common/consts';
+import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 

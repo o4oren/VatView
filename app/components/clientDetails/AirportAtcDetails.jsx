@@ -1,9 +1,8 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {Avatar, Card, Text} from 'react-native-paper';
+import {Card, Text} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import AtcDetails from './AtcDetails';
-import {TWR_ATIS} from '../../common/consts';
 
 export default function AirportAtcDetils(props) {
     const airport = props.airport;
