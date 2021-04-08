@@ -8,15 +8,15 @@ iOS            |  Android
 
 TODO: <br>
 1.0:
--[x] Cache static data in storage
--[x] Add detail views for Pilots and ATC
--[x] Add table view with area / callsign filter
+- [x] Cache static data in storage
+- [x] Add detail views for Pilots and ATC
+- [x] Add table view with area / callsign filter
 
 2.0:
--[ ] Login to VATSIM and follow me
--[ ] Themes
--[ ] Push notifications when approaching and entering controlled airspace
--[ ] Present flight plan on the map
+- [ ] Login to VATSIM and follow me
+- [ ] Themes
+- [ ] Push notifications when approaching and entering controlled airspace
+- [ ] Present flight plan on the map
 
 Assets attribution
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
