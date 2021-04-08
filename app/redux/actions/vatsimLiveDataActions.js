@@ -1,6 +1,6 @@
 import getAircraftIcon from '../../common/aircraftIconResolver';
-import {GND, PILOT, TWR_ATIS, DEL, ATC, CTR, APP, OBS, FSS} from '../../common/consts';
-import {useSelector} from 'react-redux';
+import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
+import {getAirportByCode} from '../../common/airportTools';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const MARKERS_UPDATED = 'MARKERS_UPDATED';
@@ -22,16 +22,6 @@ const markersUpdated = (markers) => {
 
 const updateData = async (dispatch, getState) => {
     const airports = getState().staticAirspaceData.airports;
-
-    const resolveAiport = (prefix) => {
-        // console.log(airports);
-        if(airports.icao[prefix] != null) {
-            return airports.icao[prefix];
-        }
-        if(airports.iata[prefix] != null) {
-            return airports.iata[prefix];
-        }
-    };
 
     try {
         const response = await fetch(
@@ -59,7 +49,7 @@ const updateData = async (dispatch, getState) => {
             client.image = require('../../../assets/radar.png');
             client.imageSize = 64;
             let prefix = client.callsign.split('_')[0];
-            const airport = resolveAiport(prefix);
+            const airport = getAirportByCode(prefix, airports);
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
                 if(airport != null) {
                     client.latitude = airport.latitude;
@@ -72,10 +62,10 @@ const updateData = async (dispatch, getState) => {
                         client.image = require('../../../assets/radio-antenna-64.png');
                         client.imageSize = 64;
                     }
-                    if (clients.airportAtc[prefix] == null) {
-                        clients.airportAtc[prefix] = [];
+                    if (clients.airportAtc[airport.icao] == null) {
+                        clients.airportAtc[airport.icao] = [];
                     }
-                    clients.airportAtc[prefix].push(client);
+                    clients.airportAtc[airport.icao].push(client);
                 }
                 else {
                     console.log('Unknown APT', client);

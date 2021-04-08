@@ -7,11 +7,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import theme from '../../common/theme';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {StyleSheet} from 'react-native';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-
+    const barHeight = Platform.OS === 'ios' ? 90 : 60;
     // Kick start api calls to get data
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
@@ -41,7 +40,11 @@ export default function mainApp() {
             tabStyle: {
                 padding: 10   //Padding 0 here
             },
-            style: {height: 60}
+            style: {
+                height: barHeight,
+                backgroundColor: theme.blueGrey.theme.colors.primary,
+
+            }
         }}
     >
         <Tab.Screen
@@ -55,7 +58,6 @@ export default function mainApp() {
                         color={color}
                     />
                 ),
-                // paddingBotton: 36
             }}
         />
         <Tab.Screen

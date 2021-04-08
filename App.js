@@ -78,6 +78,7 @@ export default function App() {
                                         Info
                                     </Button>
                                 ),
+                                safeAreaInsets: { bottom: 100, top: 0 }
                             }}
                         />
                     </Stack.Navigator>
