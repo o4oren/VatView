@@ -1,11 +1,13 @@
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import React, {useEffect} from 'react';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import theme from '../../common/theme';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {StyleSheet} from 'react-native';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
@@ -26,27 +28,48 @@ export default function mainApp() {
         };
     }, []);
 
-    const Tab = createMaterialBottomTabNavigator();
+    // const Tab = createMaterialBottomTabNavigator();
+    const Tab = createBottomTabNavigator();
 
 
     return <Tab.Navigator
-        barStyle={{
-            backgroundColor: theme.blueGrey.theme.colors.primary,
+        tabBarOptions={{
+            activeBackgroundColor: theme.blueGrey.theme.colors.primary,
+            inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
+            activeTintColor: 'white',
+            inactiveTintColor: theme.blueGrey.theme.colors.onBackground,
+            tabStyle: {
+                padding: 10   //Padding 0 here
+            },
+            style: {height: 60}
         }}
     >
         <Tab.Screen
             name="Map"
             component={VatsimMapView}
             options={{
-                tabBarIcon: 'map',
-                paddingBotton: 36
+                tabBarIcon: ({ color, size }) => (
+                    <MaterialCommunityIcons
+                        name="map"
+                        size={size}
+                        color={color}
+                    />
+                ),
+                // paddingBotton: 36
             }}
         />
         <Tab.Screen
             name="List"
             component={VatsimListView}
             options={{
-                tabBarIcon: 'format-list-bulleted',
+                tabBarIcon: ({color, size}) => (
+                    <MaterialCommunityIcons
+                        name="format-list-bulleted"
+                        size={theme.blueGrey.bottomBarIconSize}
+                        size={size}
+                        color={color}
+                    />
+                ),
             }}
         />
     </Tab.Navigator>;

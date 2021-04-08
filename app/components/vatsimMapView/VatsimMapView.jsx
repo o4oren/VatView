@@ -42,6 +42,7 @@ export default function VatsimMapView() {
         }
     };
 
+
     const renderToPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
             const destAirport = airports[selectedClient.flight_plan.arrival];
@@ -120,8 +121,9 @@ export default function VatsimMapView() {
                 borderRadius={10}
                 renderContent={() => (<ClientDetails
                     client={selectedClient}
+                    fill={true}
                 />)}
-                initialSnap={2}
+                initialSnap={1}
             />
         </View>
     );
@@ -136,7 +138,5 @@ const styles = StyleSheet.create({
     },
     mapStyle: {
         flex:1
-        // width: screen.width,
-        // height: screen.height,
     }
 });

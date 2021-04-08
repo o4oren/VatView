@@ -5,10 +5,11 @@ import {getAirportByCode} from '../../common/airportTools';
 import PilotDetails from './PilotDetails';
 import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports);
-
+    const bottomBarHeight = useBottomTabBarHeight();
     const renderBody = () => {
         if(props.client == null)
             return null;
@@ -41,13 +42,14 @@ export default function ClientDetails(props) {
             />
         );
     };
+
     return (
         <View
             style={
                 {
                     backgroundColor: 'white',
-                    padding: 16,
-                    // height: 450,
+                    paddingBottom: props.fill ? bottomBarHeight : 20,
+                    height: props.fill ? 450 : null
                 }
             }
         >
