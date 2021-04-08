@@ -14,6 +14,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import AppLoading from "expo-app-loading";
+import {SafeAreaProvider} from "react-native-safe-area-context/src/SafeAreaContext";
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -58,31 +59,32 @@ export default function App() {
     return (
         <Provider store={store}>
             <PaperProvider theme={theme.blueGrey.theme}>
-                <NavigationContainer>
-                    <Stack.Navigator>
-                        <Stack.Screen
-                            name="MainApp"
-                            component={MainApp}
-                            options={{
-                                headerTitle: 'VatView',
-                                headerStyle: {
-                                    backgroundColor: '#2A5D99',
-                                },
-                                headerTintColor: '#ffffff',
-                                headerRight: () => (
-                                    <Button
-                                        onPress={() => alert('This is a button!')}
-                                        mode='text'
-                                        color={'white'}
-                                    >
-                                        Info
-                                    </Button>
-                                ),
-                                safeAreaInsets: { bottom: 100, top: 0 }
-                            }}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
+                <SafeAreaProvider>
+                    <NavigationContainer>
+                        <Stack.Navigator>
+                            <Stack.Screen
+                                name="MainApp"
+                                component={MainApp}
+                                options={{
+                                    headerTitle: 'VatView',
+                                    headerStyle: {
+                                        backgroundColor: '#2A5D99',
+                                    },
+                                    headerTintColor: '#ffffff',
+                                    headerRight: () => (
+                                        <Button
+                                            onPress={() => alert('This is a button!')}
+                                            mode='text'
+                                            color={'white'}
+                                        >
+                                            Info
+                                        </Button>
+                                    ),
+                                }}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </SafeAreaProvider>
             </PaperProvider>
         </Provider>
     );
