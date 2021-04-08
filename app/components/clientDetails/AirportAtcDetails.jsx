@@ -1,6 +1,6 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {Card, Text} from 'react-native-paper';
+import {Card} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import AtcDetails from './AtcDetails';
 

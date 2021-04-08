@@ -1,5 +1,4 @@
-import MapView, {Circle} from 'react-native-maps';
-import {Image} from 'react-native';
+import {Circle} from 'react-native-maps';
 import React from 'react';
 import theme from '../../common/theme';
 import {APP_RADIUS} from '../../common/consts';

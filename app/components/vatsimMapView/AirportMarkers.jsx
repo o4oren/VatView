@@ -4,7 +4,6 @@ import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
-import AppCircles from './AppCircles';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 

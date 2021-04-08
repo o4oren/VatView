@@ -1,10 +1,8 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Avatar, Caption, Card, Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
 import PilotDetails from './PilotDetails';
-import {getDistanceFromLatLonInNm} from '../../common/distance';
 import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
 

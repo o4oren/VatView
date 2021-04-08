@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {ToggleButton, TextInput, Searchbar} from 'react-native-paper';
+import {ToggleButton, Searchbar} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 

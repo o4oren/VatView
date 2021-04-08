@@ -7,7 +7,6 @@ import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
-import AppCircles from './AppCircles';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
 
@@ -61,8 +60,6 @@ export default function VatsimMapView() {
     };
 
     useEffect(() => {
-        console.log('a', selectedClient);
-        console.log('b', prevSelectedClient);
         if (selectedClient == null)
             sheetRef.current.snapTo(2);
         else if(prevSelectedClient == null || (

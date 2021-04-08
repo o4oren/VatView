@@ -1,4 +1,3 @@
-import {Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from './distance';
 import React from 'react';
 

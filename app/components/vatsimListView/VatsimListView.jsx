@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import {useSelector} from 'react-redux';
-import { Avatar, Card, Paragraph } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
 import ClientDetails from '../clientDetails/ClientDetails';
 
