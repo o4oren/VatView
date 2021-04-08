@@ -50,7 +50,7 @@ export default function ClientDetails(props) {
                     backgroundColor: 'white',
                     // paddingBottom: props.fill ? bottomBarHeight : 20,
                     paddingHorizontal: 20,
-                    height: props.fill ? 550 : null
+                    height: props.fill ? 450 + bottomBarHeight: null
                 }
             }
         >

@@ -34,6 +34,10 @@ export default function PilotDetails(props) {
                 <Text>Remarks:</Text>
                 <Caption>{props.pilot.flight_plan.remarks}</Caption>
             </Card.Content>;
+        } else {
+            return <Card.Content>
+                <Text>Flight plan not filed</Text>
+            </Card.Content>;
         }
     };
 
@@ -58,9 +62,18 @@ export default function PilotDetails(props) {
                     <Text>Speed: {props.pilot.groundspeed} kts</Text>
                 </View>
                 <View>
-                    <Text>Distance: {distance} nm</Text>
-                    <Text>Flown: {flown} nm</Text>
-                    <Text>Remaining: {distance - flown} nm</Text>
+                    <View style={styles.textContainer}>
+                        <Text>Distance:</Text>
+                        <Text>{distance} nm</Text>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <Text>Flown:</Text>
+                        <Text>{flown} nm</Text>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <Text>Reamining: </Text>
+                        <Text>{distance - flown} nm</Text>
+                    </View>
                 </View>
             </View>
         </View>;
@@ -88,10 +101,11 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     container: {
+        marginBottom: 1
     },
     textContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     title: {
         paddingRight: 16
