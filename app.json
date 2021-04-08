@@ -16,11 +16,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "androidStatusBar": {
+      "barStyle": "light-content"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
       "config": {
-        "googleMapsApiKey": "[REAL API KEY]"
+        "googleMapsApiKey": "[REPLACE]"
       }
     },
     "android": {
@@ -30,14 +33,16 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[REAL API KEY]"
+          "apiKey": "[REPLACE]"
         }
-      }
+      },
+      "permissions": [],
+      "package": "com.gevahim.vatview"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "VatView is a vatsim map and information app.",
+    "description": "VatView is a Vatsim map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView"
   }
 }

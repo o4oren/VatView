@@ -67,7 +67,6 @@ export default function mainApp() {
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons
                         name="format-list-bulleted"
-                        size={theme.blueGrey.bottomBarIconSize}
                         size={size}
                         color={color}
                     />

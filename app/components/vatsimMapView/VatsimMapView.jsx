@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, { Polyline } from 'react-native-maps';
-import {StyleSheet, View, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -10,6 +10,7 @@ import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -21,7 +22,9 @@ export default function VatsimMapView() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    const bottomBarHeight = useBottomTabBarHeight();
+    // const bottomBarHeight = useBottomTabBarHeight();
+    const bottomBarHeight = 60;
+
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     };
@@ -85,7 +88,7 @@ export default function VatsimMapView() {
     }, [clients]);
 
     return (
-        <View
+        <SafeAreaView
             style={[styles.container, {width: screenSize.width, height: setScreenSize.height}]}
             onLayout={updateScreenSize}
         >
@@ -126,7 +129,7 @@ export default function VatsimMapView() {
                 />)}
                 initialSnap={1}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
