@@ -48,9 +48,9 @@ export default function ClientDetails(props) {
             style={
                 {
                     backgroundColor: 'white',
-                    paddingBottom: props.fill ? bottomBarHeight : 20,
+                    // paddingBottom: props.fill ? bottomBarHeight : 20,
                     paddingHorizontal: 20,
-                    height: props.fill ? 450 : null
+                    height: props.fill ? 550 : null
                 }
             }
         >
