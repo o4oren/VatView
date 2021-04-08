@@ -69,6 +69,7 @@ export default function PilotDetails(props) {
     return (
         <View>
             <Card.Title
+                style = {styles.title}
                 title = {props.pilot.callsign}
                 subtitle = {props.pilot.name + ' (' + props.pilot.cid +')'}
                 left = {() => <Avatar.Image source={props.pilot.image} size={32} style={styles.avatar} />}
@@ -91,5 +92,8 @@ const styles = StyleSheet.create({
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    title: {
+        paddingRight: 16
     }
 });

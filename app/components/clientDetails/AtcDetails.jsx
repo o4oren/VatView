@@ -6,6 +6,7 @@ export default function AtcDetails(props) {
     return (
         <View>
             <Card.Title
+                style = {styles.title}
                 title = {props.atc.callsign}
                 subtitle = {props.atc.name + ' (' + props.atc.cid +')'}
                 left = {() => <Avatar.Image source={props.atc.image} size={32} style={styles.avatar} />}
@@ -22,5 +23,8 @@ export default function AtcDetails(props) {
 const styles = StyleSheet.create({
     avatar: {
         backgroundColor: 'white',
+    },
+    title: {
+        paddingRight: 16
     }
 });
