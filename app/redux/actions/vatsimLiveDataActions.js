@@ -46,7 +46,7 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.controllers.forEach(client => {
-            client.image = require('../../../assets/radar.png');
+            client.image = require('../../../assets/atc/radar.png');
             client.imageSize = 64;
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
@@ -55,11 +55,11 @@ const updateData = async (dispatch, getState) => {
                     client.latitude = airport.latitude;
                     client.longitude = airport.longitude;
                     if(client.callsign.endsWith('TWR')) {
-                        client.image = require('../../../assets/tower-64.png');
+                        client.image = require('../../../assets/atc/tower-64.png');
                         client.imageSize = 64;
                     }
                     if(client.callsign.endsWith('ATIS')) {
-                        client.image = require('../../../assets/radio-antenna-64.png');
+                        client.image = require('../../../assets/atc/radio-antenna-64.png');
                         client.imageSize = 64;
                     }
                     if (clients.airportAtc[airport.icao] == null) {
@@ -89,7 +89,7 @@ const updateData = async (dispatch, getState) => {
 
         json.atis.forEach(atis => {
             let prefix = atis.callsign.split('_')[0];
-            atis.image = require('../../../assets/radio-antenna-64.png');
+            atis.image = require('../../../assets/atc/radio-antenna-64.png');
             atis.imageSize = 64;
             if (clients.airportAtc[prefix] == null) {
                 clients.airportAtc[prefix] = [];
