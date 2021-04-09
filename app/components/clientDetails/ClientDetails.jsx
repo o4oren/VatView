@@ -47,7 +47,7 @@ export default function ClientDetails(props) {
                 {
                     backgroundColor: 'white',
                     paddingHorizontal: 20,
-                    minHeight: 450
+                    minHeight: props.fill ? 450 : null
                 }
             }
         >
