@@ -12,9 +12,7 @@ export const clearStorage = () => {
 
 export const storeStaticAirspaceData = async (staticAirspaceData) => {
     try {
-        // await AsyncStorage.setItem(STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
         await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
-        console.log('stored static', staticAirspaceData);
     } catch (err) {
         console.log('Error storing static airspace data', err);
     }
@@ -64,8 +62,6 @@ export const retrieveSavedState = async () => {
     try {
         // const staticAirspaceData = await AsyncStorage.getItem(STATIC_AIRSPACE_DATA);
         const staticAirspaceData = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA);
-
-        console.log('s',staticAirspaceData);
         if (staticAirspaceData != null) {
             retrievedData.staticAirspaceData = JSON.parse(staticAirspaceData);
         } else {
@@ -74,6 +70,5 @@ export const retrieveSavedState = async () => {
     } catch (err) {
         console.log('Error retrieving static airspace data', err);
     }
-    console.log('r', retrievedData);
     return retrievedData;
 };

@@ -86,6 +86,8 @@ export default function AirportMarkers(props) {
                     />
                 </MapView.Marker>
             );
+        } else {
+            console.log('cannot add marker', airport);
         }
     }
     return airportMarkers;
