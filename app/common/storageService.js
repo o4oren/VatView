@@ -48,7 +48,10 @@ export const retrieveSavedState = async () => {
     }
 
     try {
+        console.log('t',staticAirspaceData);
+
         const staticAirspaceData = await AsyncStorage.getItem(STATIC_AIRSPACE_DATA);
+        console.log('s',staticAirspaceData);
         if (staticAirspaceData !== null) {
             retrievedData.staticAirspaceData = JSON.parse(staticAirspaceData);
         }
