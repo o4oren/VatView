@@ -18,7 +18,7 @@ const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 export default function App() {
     const [state, setState] = useState({isReady: false});
 
-    clearStorage();
+    // clearStorage();
 
     useEffect(() => {
         async function loadStateFromStorage() {
@@ -48,12 +48,11 @@ export default function App() {
             airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : {},
             firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : [],
             uirs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.uirs : [],
-            lastUpdated: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.lastUpdated : 0
+            lastUpdated: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.lastUpdated : 0,
+            version: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.version : 0
         }
     };
 
-    console.log('preloaded', preloadedState);
-    
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     const Stack = createStackNavigator();
     return (

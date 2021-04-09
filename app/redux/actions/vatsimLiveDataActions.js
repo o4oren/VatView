@@ -22,7 +22,7 @@ const markersUpdated = (markers) => {
 
 const updateData = async (dispatch, getState) => {
     const airports = getState().staticAirspaceData.airports;
-
+    console.log('fetching vatsim data feed');
     try {
         const response = await fetch(
             'https://data.vatsim.net/v3/vatsim-data.json'
@@ -49,8 +49,8 @@ const updateData = async (dispatch, getState) => {
             client.image = require('../../../assets/radar.png');
             client.imageSize = 64;
             let prefix = client.callsign.split('_')[0];
-            const airport = getAirportByCode(prefix, airports);
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
+                const airport = getAirportByCode(prefix, airports);
                 if(airport != null) {
                     client.latitude = airport.latitude;
                     client.longitude = airport.longitude;
@@ -98,7 +98,6 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
-        // console.log(json);
         dispatch(dataUpdated(json));
     } catch (error) {
         dispatch({type: DATA_FETCH_ERROR});

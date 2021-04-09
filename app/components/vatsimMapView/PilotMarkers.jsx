@@ -31,7 +31,7 @@ export default function PilotMarkers(props) {
 
 
         return <MapView.Marker
-            key={pilot.cid}
+            key={pilot.cid + '_' + pilot.callsign}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}

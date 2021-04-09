@@ -88,7 +88,6 @@ const getFirBoundaries = async (dispatch, getState) => {
 const getVATSpyData = async (dispatch, getState) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/VATSpy.dat');
-    console.log(response.statusText);
     let body = await response.text();
     const lines = body.split(/\r?\n/);
     let section = COUNTRIES;

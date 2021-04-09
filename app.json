@@ -22,8 +22,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
+      "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "[replace]"
+        "googleMapsApiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
       }
     },
     "android": {
@@ -33,11 +34,12 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[replace]"
+          "apiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
         }
       },
-      "permissions": [],
-      "package": "com.gevahim.vatview"
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
+      "package": "com.gevahim.vatview",
+      "versionCode": 5
     },
     "web": {
       "favicon": "./assets/favicon.png"

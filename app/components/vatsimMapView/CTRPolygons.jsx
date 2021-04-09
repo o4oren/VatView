@@ -6,7 +6,7 @@ import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 
-export default function AppCircles(props) {
+export default function CTRPolygons(props) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
