@@ -68,7 +68,7 @@ const updateData = async (dispatch, getState) => {
                     clients.airportAtc[airport.icao].push(client);
                 }
                 else {
-                    console.log('Unknown APT', client);
+                    console.log('Unknown APT', client.callsign);
                 }
             } else if(client.facility == CTR) {
                 if (clients.ctr[prefix] == null) {
