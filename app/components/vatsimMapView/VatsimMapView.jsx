@@ -9,8 +9,6 @@ import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -22,7 +20,6 @@ export default function VatsimMapView() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    // const bottomBarHeight = useBottomTabBarHeight();
     const bottomBarHeight = 60;
 
     const updateScreenSize = () => {

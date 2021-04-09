@@ -11,13 +11,18 @@ export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const barHeight = Platform.OS === 'ios' ? 90 : 60;
+
     // Kick start api calls to get data
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
         const now = Date.now();
         if(staticAirspaceData.version == null
+            || staticAirspaceData.firBoundaries.length == 0
+            || staticAirspaceData.firs.length == 0
+            || staticAirspaceData.version == 0
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
+            console.log('getting vatspy data!');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
