@@ -10,6 +10,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "assets/atc/**/*",
+      "assets/aircraft/**/*"
+    ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
