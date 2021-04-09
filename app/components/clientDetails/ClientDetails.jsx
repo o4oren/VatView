@@ -17,13 +17,16 @@ export default function ClientDetails(props) {
             const airport = props.client;
 
             if(airport != null && airport.icao != null)
-                return <AirportAtcDetils
-                    airport = {airport}
-                />;
+                console.log('airport');
+            return <AirportAtcDetils
+                airport = {airport}
+            />;
         }
 
         // if pilot
         if(props.client.facility == null) {
+            console.log('pilot');
+
             const pilot = props.client;
             const depAirport = pilot.flight_plan && getAirportByCode(pilot.flight_plan.departure, airports);
             const arrAirport = pilot.flight_plan && getAirportByCode(pilot.flight_plan.arrival, airports);

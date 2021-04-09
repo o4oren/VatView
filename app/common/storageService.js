@@ -12,6 +12,7 @@ export const clearStorage = () => {
 
 export const storeStaticAirspaceData = async (staticAirspaceData) => {
     try {
+        console.log('storing STATIC_AIRSPACE_DATA');
         await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
     } catch (err) {
         console.log('Error storing static airspace data', err);
@@ -20,7 +21,7 @@ export const storeStaticAirspaceData = async (staticAirspaceData) => {
 
 export const storeFirBoundaries = async (firBoundaries) => {
     try {
-        // await AsyncStorage.setItem(FIR_BOUNDARIES, JSON.stringify(firBoundaries));
+        console.log('storing FIR_BOUNDARIES');
         await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + FIR_BOUNDARIES, JSON.stringify(firBoundaries));
 
     } catch (err) {

@@ -1,9 +1,9 @@
 const getAircraftIcon = (code) => {
     let icon = require('../../assets/aircraft/blue-2A5D99/boeing-737-icon-64.png');
-    const JUMBO_SIZE = 36;
-    const LARGE_SIZE = 32;
-    const MED_SIZE = 28;
-    const SMALL_SIZE = 24;
+    const JUMBO_SIZE = 32;
+    const LARGE_SIZE = 28;
+    const MED_SIZE = 24;
+    const SMALL_SIZE = 20;
     const EXTRA_SMALL_SIZE = 16;
 
     let size = MED_SIZE;
