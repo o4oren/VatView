@@ -15,7 +15,7 @@ export default function mainApp() {
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateData);
         const now = Date.now();
-        if(staticAirspaceData.version == undefined
+        if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
@@ -29,7 +29,6 @@ export default function mainApp() {
 
     // const Tab = createMaterialBottomTabNavigator();
     const Tab = createBottomTabNavigator();
-
 
     return <Tab.Navigator
         tabBarOptions={{

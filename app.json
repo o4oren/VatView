@@ -23,7 +23,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
       "config": {
-        "googleMapsApiKey": "[REPLACE]"
+        "googleMapsApiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
       }
     },
     "android": {
@@ -33,7 +33,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[REPLACE]"
+          "apiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
         }
       },
       "permissions": [],
