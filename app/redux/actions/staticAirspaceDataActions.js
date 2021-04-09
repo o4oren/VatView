@@ -166,6 +166,7 @@ const getVATSpyData = async (dispatch, getState) => {
         lastUpdated: lastUpdated,
         version: STATIC_DATA_VERSION
     });
+    console.log('vatspyDataUpdated');
     dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };
 
