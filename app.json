@@ -24,7 +24,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
+        "googleMapsApiKey": "[replace]"
       }
     },
     "android": {
@@ -34,12 +34,12 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDHiQD33QokcnGVW4CnNhhqIbK0kH_Ye5g"
+          "apiKey": "[replace]"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
       "package": "com.gevahim.vatview",
-      "versionCode": 5
+      "versionCode": 7
     },
     "web": {
       "favicon": "./assets/favicon.png"
