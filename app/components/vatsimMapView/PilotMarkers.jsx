@@ -19,16 +19,15 @@ export default function PilotMarkers(props) {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
-        // const getImageForIos = () => {
-        //     if(Platform.OS === 'ios')
-        //         return <Image
-        //             source={pilot.image}
-        //             fadeDuration={0}
-        //             style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-        //         />;
-        //     return null;
-        // };
-
+        const getImageForIos = () => {
+            if(Platform.OS === 'ios')
+                return <Image
+                    source={pilot.image}
+                    fadeDuration={0}
+                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                />;
+            return null;
+        };
 
         return <MapView.Marker
             key={pilot.cid + '_' + pilot.callsign}
@@ -36,17 +35,17 @@ export default function PilotMarkers(props) {
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
             rotation={pilot.heading}
-            // icon={pilot.image}
+            image={pilot.b64Image}
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
         >
-            {/*{getImageForIos()}*/}
-            <Image
-                source={pilot.image}
-                fadeDuration={0}
-                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-            />
+            {getImageForIos()}
+            {/*<Image*/}
+            {/*    source={pilot.image}*/}
+            {/*    fadeDuration={0}*/}
+            {/*    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}*/}
+            {/*/>*/}
         </MapView.Marker>;
     });
     return pilotMarkers;
