@@ -60,9 +60,11 @@ export default function App() {
             <PaperProvider theme={theme.blueGrey.theme}>
                 <SafeAreaProvider>
                     <NavigationContainer>
-                        <Stack.Navigator>
+                        <Stack.Navigator
+                            headerMode={'none'}
+                        >
                             <Stack.Screen
-                                name="MainApp"
+                                name="VatView"
                                 component={MainApp}
                                 options={{
                                     headerTitle: 'VatView',

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, { Polyline } from 'react-native-maps';
-import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -9,6 +9,7 @@ import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
+import AppBar from '../AppBar/AppBar';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -85,10 +86,11 @@ export default function VatsimMapView() {
     }, [clients]);
 
     return (
-        <SafeAreaView
-            style={[styles.container, {width: screenSize.width, height: setScreenSize.height}]}
+        <View
+            style={[styles.container, {width: screenSize.width, flex: 1}]}
             onLayout={updateScreenSize}
         >
+            <AppBar></AppBar>
             <MapView
                 ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
@@ -125,7 +127,7 @@ export default function VatsimMapView() {
                 />)}
                 initialSnap={1}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
