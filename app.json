@@ -10,10 +10,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "assets/atc/**/*",
-      "assets/aircraft/**/*"
-    ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -28,7 +24,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "[replace]"
+        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       }
     },
     "android": {
@@ -38,12 +34,12 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[replace]"
+          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
       "package": "com.gevahim.vatview",
-      "versionCode": 7
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png"
