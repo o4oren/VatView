@@ -46,7 +46,7 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.controllers.forEach(client => {
-            client.image = require('../../../assets/atc/radar.png');
+            client.image = require('../../../assets/atc/radar-64.png');
             client.imageSize = 64;
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
