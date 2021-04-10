@@ -122,6 +122,7 @@ export default function CTRPolygons(props) {
                     <Text
                         key={client.cid + '-uri-text-'}
                         style={theme.blueGrey.uirTextStyle}
+                        onPress={() => onPress(client)}
                     >
                         {client.callsign}
                     </Text>
@@ -155,6 +156,7 @@ export default function CTRPolygons(props) {
                     <Text
                         key={client.cid + '-' + fir.icao + '-' + fIndex}
                         style={theme.blueGrey.firTextStyle}
+                        onPress={() => onPress(client)}
                     >
                         {fir.icao}
                     </Text>

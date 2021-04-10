@@ -98,7 +98,6 @@ export default function VatsimMapView() {
                 initialRegion={app.initialRegion}
                 onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
             >
-                {/*{markers}*/}
                 <CTRPolygons
                     style={{zIndex: 4}}
                     ctr={clients.ctr}
