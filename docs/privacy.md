@@ -1,4 +1,4 @@
-###Privacy Policy
+### Privacy Policy
 
 VatView is a VATSIM activity map application with many useful features you can use while flying on Microsoft Flight Simulator or X-plane while connected to Vatsim.
 
