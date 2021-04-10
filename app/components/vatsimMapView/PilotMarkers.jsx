@@ -35,7 +35,7 @@ export default function PilotMarkers(props) {
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
             rotation={pilot.heading}
-            image={pilot.b64Image}
+            image={Platform.OS === 'ios' ? null : pilot.b64Image}
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
