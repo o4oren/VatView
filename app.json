@@ -14,7 +14,9 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "**/*",
+      "assets/aircraft/blue-2A5D99/*.png",
+      "assets/atc/*.png"
     ],
     "androidStatusBar": {
       "barStyle": "light-content"
