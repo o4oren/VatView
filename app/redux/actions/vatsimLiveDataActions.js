@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../common/aircraftIconResolver';
-import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
+import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS, radarB64, towerB64, radioAntennaB64} from '../../common/consts';
 import {getAirportByCode} from '../../common/airportTools';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
@@ -49,6 +49,7 @@ const updateData = async (dispatch, getState) => {
         json.controllers.forEach(client => {
             client.image = require('../../../assets/atc/radar.png');
             client.imageSize = 64;
+            client.b64Image = radarB64;
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
                 const airport = getAirportByCode(prefix, airports);
@@ -58,9 +59,11 @@ const updateData = async (dispatch, getState) => {
                     if(client.callsign.endsWith('TWR')) {
                         client.image = require('../../../assets/atc/tower-64.png');
                         client.imageSize = 64;
+                        client.b64Image = towerB64;
                     }
                     if(client.callsign.endsWith('ATIS')) {
                         client.image = require('../../../assets/atc/radio-antenna-64.png');
+                        client.b64Image = radioAntennaB64;
                         client.imageSize = 64;
                     }
                     if (clients.airportAtc[airport.icao] == null) {
@@ -91,6 +94,7 @@ const updateData = async (dispatch, getState) => {
         json.atis.forEach(atis => {
             let prefix = atis.callsign.split('_')[0];
             atis.image = require('../../../assets/atc/radio-antenna-64.png');
+            atis.b64Image = radioAntennaB64;
             atis.imageSize = 64;
             if (clients.airportAtc[prefix] == null) {
                 clients.airportAtc[prefix] = [];

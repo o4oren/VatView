@@ -9,6 +9,7 @@ import {getAirportByCode} from '../../common/airportTools';
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
+    const airports = useSelector(state => state.staticAirspaceData.airports);
 
     const aggregatedClient = (clients) => {
         let aggregatedClients = [];
@@ -34,7 +35,7 @@ export default function VatsimListView() {
                     (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim()))||
                     (c.cid && c.cid == filters.searchQuery) ||
                     (c.flight_plan && c.flight_plan.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    (getAirportByCode(filters.searchQuery.toLowerCase().substr(0,3)) != null)
+                    ((filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0,3), airports) != null))
                 )
                     return true;
                 else
