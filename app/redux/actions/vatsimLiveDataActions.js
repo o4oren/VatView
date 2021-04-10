@@ -39,17 +39,15 @@ const updateData = async (dispatch, getState) => {
         };
 
         json.pilots.forEach((pilot, i) => {
-            const [image, imageSize, b64image] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
+            const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
             pilot.image = image;
             pilot.imageSize = imageSize;
-            pilot.b64Image = b64image;
             clients.pilots.push(pilot); // workaround for disappearing icons on android
         });
 
         json.controllers.forEach(client => {
             client.image = require('../../../assets/atc/radar.png');
             client.imageSize = 64;
-            client.b64Image = radarB64;
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
                 const airport = getAirportByCode(prefix, airports);
@@ -59,11 +57,9 @@ const updateData = async (dispatch, getState) => {
                     if(client.callsign.endsWith('TWR')) {
                         client.image = require('../../../assets/atc/tower-64.png');
                         client.imageSize = 64;
-                        client.b64Image = towerB64;
                     }
                     if(client.callsign.endsWith('ATIS')) {
                         client.image = require('../../../assets/atc/radio-antenna-64.png');
-                        client.b64Image = radioAntennaB64;
                         client.imageSize = 64;
                     }
                     if (clients.airportAtc[airport.icao] == null) {
@@ -94,7 +90,6 @@ const updateData = async (dispatch, getState) => {
         json.atis.forEach(atis => {
             let prefix = atis.callsign.split('_')[0];
             atis.image = require('../../../assets/atc/radio-antenna-64.png');
-            atis.b64Image = radioAntennaB64;
             atis.imageSize = 64;
             if (clients.airportAtc[prefix] == null) {
                 clients.airportAtc[prefix] = [];
