@@ -10,19 +10,21 @@ import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
 
-export default function VatsimMapView({ navigation }) {
+export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const airports = useSelector(state => state.staticAirspaceData.airports.icao);
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
-    const sheetRef = React.useRef(null);
+    const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     };
+
+    console.log('clients updated in vatsimviewmap');
 
     const renderFromPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
@@ -40,7 +42,6 @@ export default function VatsimMapView({ navigation }) {
             }
         }
     };
-
 
     const renderToPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
