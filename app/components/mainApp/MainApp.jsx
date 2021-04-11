@@ -41,28 +41,29 @@ export default function mainApp() {
     const Stack = createStackNavigator();
 
     return  <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={({ navigation, route }) => ({
+                headerTitle: 'VatView',
+                headerStyle: {
+                    backgroundColor: '#2A5D99',
+                },
+                headerTintColor: '#ffffff',
+                headerRight: () => (
+                    <IconButton
+                        icon='dots-vertical'
+                        color={'white'}
+                        size={20}
+                        onPress={() => navigation.navigate('About')}
+                    />
+                ),
+                // headerLeft: () => (
+                //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
+                // )
+            })}
+        >
             <Stack.Screen
                 name="VatView"
                 component={MainTabNavigator}
-                options={{
-                    headerTitle: 'VatView',
-                    headerStyle: {
-                        backgroundColor: '#2A5D99',
-                    },
-                    headerTintColor: '#ffffff',
-                    headerRight: () => (
-                        <IconButton
-                            icon="dots-vertical"
-                            color={'white'}
-                            size={20}
-                            onPress={() => alert(About())}
-                        />
-                    ),
-                    // headerLeft: () => (
-                    //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
-                    // )
-                }}
             />
             <Stack.Screen
                 name="About"
