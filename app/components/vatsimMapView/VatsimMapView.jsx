@@ -24,8 +24,6 @@ export default function VatsimMapView({ navigation }) {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     };
 
-    console.log('v', navigation);
-
     const renderFromPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
             const depAirport = airports[selectedClient.flight_plan.departure];
