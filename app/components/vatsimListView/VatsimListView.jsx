@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, FlatList, SafeAreaView} from 'react-native';
+import {StyleSheet, FlatList, SafeAreaView, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import { Card } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
@@ -54,19 +54,19 @@ export default function VatsimListView({ navigation }) {
 
     return <SafeAreaView style={theme.blueGrey.safeAreaView}>
         <FilterBar />
-        <FlatList
-            data = {aggregatedClient(clients)}
-            renderItem={Item}
-            keyExtractor = {(client, i) => client.callsign + client.cid + '_' + i}
-        />
+        <View style={styles.container}>
+            <FlatList
+                data = {aggregatedClient(clients)}
+                renderItem={Item}
+                keyExtractor = {(client, i) => client.callsign + client.cid + '_' + i}
+            />
+        </View>
     </SafeAreaView>;
 }
 
 const styles = StyleSheet.create({
-    avatar: {
+    container: {
         backgroundColor: 'white',
-    },
-    card: {
-        margin: 10,
-    },
+        flex: 1
+    }
 });
