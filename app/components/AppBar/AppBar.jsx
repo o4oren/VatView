@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Appbar, Divider, Menu} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import {useState} from 'react';
+import {StatusBar} from 'expo-status-bar';
 
 const AppBar = () => {
     const [showMenu, setShowMenu] = useState(false);
@@ -11,6 +12,7 @@ const AppBar = () => {
 
     return (
         <Appbar.Header style={styles.appbar} dark={true}>
+            <StatusBar style="light"/>
             <Appbar.Content title="VatView" dark={true}/>
             <Menu
                 visible={showMenu}
@@ -29,7 +31,7 @@ const AppBar = () => {
 
 const styles = StyleSheet.create({
     appbar: {
-        alignSelf: 'flex-start'
+        alignSelf: 'center'
     }
 });
 

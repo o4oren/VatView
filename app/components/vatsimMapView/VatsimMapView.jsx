@@ -21,7 +21,6 @@ export default function VatsimMapView() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    const bottomBarHeight = 60;
 
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
@@ -86,11 +85,12 @@ export default function VatsimMapView() {
     }, [clients]);
 
     return (
-        <View
+        <SafeAreaView
             style={[styles.container, {width: screenSize.width, flex: 1}]}
             onLayout={updateScreenSize}
         >
             <AppBar></AppBar>
+
             <MapView
                 ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
@@ -119,22 +119,22 @@ export default function VatsimMapView() {
             </MapView>
             <BottomSheet
                 ref={sheetRef}
-                snapPoints={[450 + bottomBarHeight, 214 + bottomBarHeight, 0]}
+                snapPoints={[400, 300, 0]}
                 borderRadius={10}
                 renderContent={() => (<ClientDetails
                     client={selectedClient}
                     fill={true}
                 />)}
-                initialSnap={1}
+                initialSnap={2}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.blueGrey.theme.colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },

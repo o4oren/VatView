@@ -84,7 +84,9 @@ export default function PilotDetails(props) {
             <Card.Title
                 style = {styles.title}
                 title = {props.pilot.callsign}
-                subtitle = {props.pilot.name + ' (' + props.pilot.cid +')'}
+                // subtitle = {props.pilot.name + ' (' + props.pilot.cid +')'}
+                subtitle = {'Oren Geva (825051)'}
+
                 left = {() => <Avatar.Image source={props.pilot.image} size={32} style={styles.avatar} />}
                 right = {() => <Text>{props.pilot.flight_plan != null ? props.pilot.flight_plan.aircraft_short : ''}</Text>}
             />
