@@ -8,9 +8,7 @@ export default function AtcDetails(props) {
             <Card.Title
                 style = {styles.title}
                 title = {props.atc.callsign}
-                // subtitle = {props.atc.name + ' (' + props.atc.cid +')'}
-                subtitle = {'Oren Geva (825051)'}
-
+                subtitle = {props.atc.name + ' (' + props.atc.cid +')'}
                 left = {() => <Avatar.Image source={props.atc.image} size={32} style={styles.avatar} />}
                 right = {() => <Text>{props.atc.frequency}</Text>}
             />
