@@ -1,14 +1,11 @@
 import * as React from 'react';
-import {Divider,Text} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {StyleSheet, Image, View, SafeAreaView} from 'react-native';
 
-import AppBar from './AppBar';
 import theme from '../../common/theme';
 
-const About = ({ navigation }) => {
-    console.log('a',navigation);
+const About = () => {
     return <SafeAreaView style={theme.blueGrey.safeAreaView}>
-        <AppBar navigation={navigation} />
         <View style={styles.container}>
             <Text>
                 VatView is a

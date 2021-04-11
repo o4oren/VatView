@@ -57,9 +57,7 @@ export default function App() {
     return (
         <Provider store={store}>
             <PaperProvider theme={theme.blueGrey.theme}>
-                <SafeAreaProvider>
-                    <MainApp />
-                </SafeAreaProvider>
+                <MainApp />
             </PaperProvider>
         </Provider>
     );
