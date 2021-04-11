@@ -5,6 +5,8 @@ import { Card } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
 import ClientDetails from '../clientDetails/ClientDetails';
 import {getAirportByCode} from '../../common/airportTools';
+import theme from '../../common/theme';
+import AppBar from '../AppBar/AppBar';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -52,6 +54,7 @@ export default function VatsimListView() {
     </Card>);
 
     return <SafeAreaView style={styles.container}>
+        <AppBar></AppBar>
         <FilterBar />
         <FlatList
             data = {aggregatedClient(clients)}
@@ -64,6 +67,7 @@ export default function VatsimListView() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: theme.blueGrey.theme.colors.primary,
     },
     avatar: {
         backgroundColor: 'white',
