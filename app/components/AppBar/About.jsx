@@ -14,7 +14,7 @@ const About = ({ navigation }) => {
                 VatView is a
             </Text>
             <Image
-                source={require('../../../assets/icon-32.png')}
+                source={require('../../../assets/icon-512.png')}
                 style={styles.icon}
             />
             <Text>

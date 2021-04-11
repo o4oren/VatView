@@ -10,6 +10,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -20,6 +21,11 @@
     ],
     "androidStatusBar": {
       "barStyle": "light-content"
+    },
+    "androidNavigationBar": {
+      "visible": true,
+      "barStyle": "light-content",
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
