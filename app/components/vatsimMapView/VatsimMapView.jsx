@@ -11,7 +11,7 @@ import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
 import AppBar from '../AppBar/AppBar';
 
-export default function VatsimMapView() {
+export default function VatsimMapView({ navigation }) {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const airports = useSelector(state => state.staticAirspaceData.airports.icao);
     const app = useSelector(state => state.app);
@@ -21,10 +21,11 @@ export default function VatsimMapView() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     };
+
+    console.log('v', navigation);
 
     const renderFromPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
@@ -86,10 +87,12 @@ export default function VatsimMapView() {
 
     return (
         <SafeAreaView
-            style={[styles.container, {width: screenSize.width, flex: 1}]}
+            style={[theme.blueGrey.safeAreaView, {width: screenSize.width, flex: 1}]}
             onLayout={updateScreenSize}
         >
-            <AppBar></AppBar>
+            <AppBar
+                navigation={navigation}
+            />
 
             <MapView
                 ref={mapRef}
@@ -132,12 +135,6 @@ export default function VatsimMapView() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.blueGrey.theme.colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     mapStyle: {
         flex:1
     }

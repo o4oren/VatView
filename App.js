@@ -54,39 +54,11 @@ export default function App() {
     };
 
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
-    const Stack = createStackNavigator();
     return (
         <Provider store={store}>
             <PaperProvider theme={theme.blueGrey.theme}>
                 <SafeAreaProvider>
-                    <NavigationContainer>
-                        <Stack.Navigator
-                            headerMode={'none'}
-                        >
-                            <Stack.Screen
-                                name="VatView"
-                                component={MainApp}
-                                options={{
-                                    headerTitle: 'VatView',
-                                    headerStyle: {
-                                        backgroundColor: '#2A5D99',
-                                    },
-                                    headerTintColor: '#ffffff',
-                                    headerRight: () => (
-                                        <IconButton
-                                            icon="dots-vertical"
-                                            color={'white'}
-                                            size={20}
-                                            onPress={() => console.log('Pressed')}
-                                        />
-                                    ),
-                                    // headerLeft: () => (
-                                    //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
-                                    // )
-                                }}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
+                    <MainApp />
                 </SafeAreaProvider>
             </PaperProvider>
         </Provider>

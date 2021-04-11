@@ -1,16 +1,14 @@
-import VatsimMapView from '../vatsimMapView/VatsimMapView';
-import VatsimListView from '../vatsimListView/VatsimListView';
 import React, {useEffect} from 'react';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
-import theme from '../../common/theme';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import MainTabNavigator from './MainTabNavigator';
+import About from '../AppBar/About';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const barHeight = Platform.OS === 'ios' ? 90 : 60;
 
     // Kick start api calls get static data as needed
     useEffect(() => {
@@ -39,50 +37,21 @@ export default function mainApp() {
         }
     }, [staticAirspaceData]);
 
-    // const Tab = createMaterialBottomTabNavigator();
-    const Tab = createBottomTabNavigator();
+    const Stack = createStackNavigator();
 
-    return <Tab.Navigator
-        tabBarOptions={{
-            activeBackgroundColor: theme.blueGrey.theme.colors.primary,
-            inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
-            activeTintColor: 'white',
-            inactiveTintColor: theme.blueGrey.theme.colors.onBackground,
-            tabStyle: {
-                padding: 10   //Padding 0 here
-            },
-            style: {
-                height: barHeight,
-                backgroundColor: theme.blueGrey.theme.colors.primary,
+    return  <NavigationContainer>
+        <Stack.Navigator
+            headerMode={'none'}
+        >
+            <Stack.Screen
+                name="VatView"
+                component={MainTabNavigator}
+            />
+            <Stack.Screen
+                name="About"
+                component={About}
+            />
+        </Stack.Navigator>
+    </NavigationContainer>;
 
-            }
-        }}
-    >
-        <Tab.Screen
-            name="Map"
-            component={VatsimMapView}
-            options={{
-                tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons
-                        name="map"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
-        />
-        <Tab.Screen
-            name="List"
-            component={VatsimListView}
-            options={{
-                tabBarIcon: ({color, size}) => (
-                    <MaterialCommunityIcons
-                        name="format-list-bulleted"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
-        />
-    </Tab.Navigator>;
 }
