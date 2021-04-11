@@ -6,11 +6,14 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../AppBar/About';
-import {IconButton} from 'react-native-paper';
+import {Divider, IconButton, Menu} from 'react-native-paper';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-
+    const [showMenu, setShowMenu] = React.useState(false);
+    const openMenu = () => setShowMenu(true);
+    const closeMenu = () => setShowMenu(false);
+    
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
@@ -49,12 +52,24 @@ export default function mainApp() {
                 },
                 headerTintColor: '#ffffff',
                 headerRight: () => (
-                    <IconButton
-                        icon='dots-vertical'
-                        color={'white'}
-                        size={20}
-                        onPress={() => navigation.navigate('About')}
-                    />
+                    <Menu
+                        visible={showMenu}
+                        onDismiss={closeMenu}
+                        anchor={                    
+                            <IconButton
+                                icon='dots-vertical'
+                                color={'white'}
+                                size={20}
+                                onPress={() => openMenu()}
+                            />
+                        }>
+                        <Menu.Item onPress={() => {}} icon="cog" title="Settings" />
+                        <Divider />
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('About');
+                            closeMenu();
+                        }} icon="information-variant" title="About" />
+                    </Menu>
                 ),
                 // headerLeft: () => (
                 //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
