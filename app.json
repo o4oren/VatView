@@ -2,7 +2,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -31,7 +31,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "[REPLACE]"
+        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       }
     },
     "android": {
@@ -41,7 +41,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[REPLACE]"
+          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
