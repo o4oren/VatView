@@ -48,5 +48,7 @@ export default function PilotMarkers(props) {
             />
         </MapView.Marker>;
     });
+    // console.log('pm',pilotMarkers.sort((a,b) => (a.key > b.key) ? 1 : ((b.key > a.key) ? -1 : 0)));
+
     return pilotMarkers;
 }

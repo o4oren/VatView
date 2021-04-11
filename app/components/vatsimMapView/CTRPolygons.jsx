@@ -120,7 +120,7 @@ export default function CTRPolygons(props) {
                     // anchor={{x: 0.5, y: 0.5}}
                 >
                     <Text
-                        key={client.cid + '-uri-text-'}
+                        key={client.cid + '-uir-text'}
                         style={theme.blueGrey.uirTextStyle}
                         onPress={() => onPress(client)}
                     >
