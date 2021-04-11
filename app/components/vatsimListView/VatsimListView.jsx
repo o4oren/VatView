@@ -6,7 +6,6 @@ import FilterBar from '../filterBar/FilterBar';
 import ClientDetails from '../clientDetails/ClientDetails';
 import {getAirportByCode} from '../../common/airportTools';
 import theme from '../../common/theme';
-import AppBar from '../AppBar/AppBar';
 
 export default function VatsimListView({ navigation }) {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -54,9 +53,6 @@ export default function VatsimListView({ navigation }) {
     </Card>);
 
     return <SafeAreaView style={theme.blueGrey.safeAreaView}>
-        <AppBar
-            navigation={navigation}
-        />
         <FilterBar />
         <FlatList
             data = {aggregatedClient(clients)}

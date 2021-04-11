@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../AppBar/About';
+import {IconButton} from 'react-native-paper';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
@@ -40,12 +41,28 @@ export default function mainApp() {
     const Stack = createStackNavigator();
 
     return  <NavigationContainer>
-        <Stack.Navigator
-            headerMode={'none'}
-        >
+        <Stack.Navigator>
             <Stack.Screen
                 name="VatView"
                 component={MainTabNavigator}
+                options={{
+                    headerTitle: 'VatView',
+                    headerStyle: {
+                        backgroundColor: '#2A5D99',
+                    },
+                    headerTintColor: '#ffffff',
+                    headerRight: () => (
+                        <IconButton
+                            icon="dots-vertical"
+                            color={'white'}
+                            size={20}
+                            onPress={() => alert(About())}
+                        />
+                    ),
+                    // headerLeft: () => (
+                    //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
+                    // )
+                }}
             />
             <Stack.Screen
                 name="About"

@@ -9,7 +9,6 @@ import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
-import AppBar from '../AppBar/AppBar';
 
 export default function VatsimMapView({ navigation }) {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -90,10 +89,6 @@ export default function VatsimMapView({ navigation }) {
             style={[theme.blueGrey.safeAreaView, {width: screenSize.width, flex: 1}]}
             onLayout={updateScreenSize}
         >
-            <AppBar
-                navigation={navigation}
-            />
-
             <MapView
                 ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
