@@ -8,7 +8,7 @@ import {getAirportByCode} from '../../common/airportTools';
 import theme from '../../common/theme';
 import AppBar from '../AppBar/AppBar';
 
-export default function VatsimListView() {
+export default function VatsimListView({ navigation }) {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
     const airports = useSelector(state => state.staticAirspaceData.airports);
@@ -53,8 +53,10 @@ export default function VatsimListView() {
         />
     </Card>);
 
-    return <SafeAreaView style={styles.container}>
-        <AppBar></AppBar>
+    return <SafeAreaView style={theme.blueGrey.safeAreaView}>
+        <AppBar
+            navigation={navigation}
+        />
         <FilterBar />
         <FlatList
             data = {aggregatedClient(clients)}
@@ -65,10 +67,6 @@ export default function VatsimListView() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.blueGrey.theme.colors.primary,
-    },
     avatar: {
         backgroundColor: 'white',
     },

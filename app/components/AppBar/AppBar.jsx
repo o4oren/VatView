@@ -4,15 +4,15 @@ import {StyleSheet, View} from 'react-native';
 import {useState} from 'react';
 import {StatusBar} from 'expo-status-bar';
 
-const AppBar = () => {
+const AppBar = ({ navigation }) => {
     const [showMenu, setShowMenu] = useState(false);
-
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
 
     return (
         <Appbar.Header style={styles.appbar} dark={true}>
             <StatusBar style="light"/>
+            {/*<Appbar.BackAction onPress={navigation.goBack()} />*/}
             <Appbar.Content title="VatView" dark={true}/>
             <Menu
                 visible={showMenu}
@@ -22,7 +22,7 @@ const AppBar = () => {
                 }
             >
                 <Divider />
-                <Menu.Item onPress={() => {}} title="About" />
+                <Menu.Item onPress={() => {navigation.navigate('About');}} title="About" />
             </Menu>
         </Appbar.Header>
     );
