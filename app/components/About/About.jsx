@@ -4,14 +4,16 @@ import {StyleSheet, View, Image, ScrollView, Linking} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 
 const colors=['#b4becb', '#e1e8f5'];
+const start = { x: 0, y: 0 };
+const end = { x: 1, y: 1 };
 
 const About = () => {
 
     return <View style={styles.container}>
         <LinearGradient
             colors = {colors}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            start={start}
+            end={end}
             style={[styles.container, styles.rotate]}>
             <ScrollView style={styles.textArea}>
                 <Title>About VatView</Title>

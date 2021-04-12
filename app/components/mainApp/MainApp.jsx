@@ -5,15 +5,16 @@ import {useDispatch, useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
-import About from '../AppBar/About';
+import About from '../About/About';
 import {Divider, IconButton, Menu} from 'react-native-paper';
+import Settings from '../settings/Settings';
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const [showMenu, setShowMenu] = React.useState(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
-    
+
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
@@ -63,8 +64,11 @@ export default function mainApp() {
                                 onPress={() => openMenu()}
                             />
                         }>
-                        <Menu.Item onPress={() => {}} icon="cog" title="Settings" />
-                        <Divider />
+                        {/*<Menu.Item onPress={() => {*/}
+                        {/*    navigation.navigate('Settings');*/}
+                        {/*    closeMenu();*/}
+                        {/*}} icon="cog" title="Settings" />*/}
+                        {/*<Divider />*/}
                         <Menu.Item onPress={() => {
                             navigation.navigate('About');
                             closeMenu();
@@ -83,6 +87,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="About"
                 component={About}
+            />
+            <Stack.Screen
+                name="Settings"
+                component={Settings}
             />
         </Stack.Navigator>
     </NavigationContainer>;

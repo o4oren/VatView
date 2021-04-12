@@ -14,7 +14,7 @@ export default function AppCircles(props) {
             else {
                 appCircles.push(
                     <Circle
-                        key={approachClient.cid}
+                        key={approachClient.key}
                         center={{latitude: approachClient.latitude, longitude: approachClient.longitude}}
                         radius={APP_RADIUS}
                         title={approachClient.callsign}

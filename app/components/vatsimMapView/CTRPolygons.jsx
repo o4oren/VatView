@@ -44,7 +44,6 @@ export default function generateCtrPolygons(ctr, fss) {
         if (airspace.firs.length === 0) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
-                // console.log('firs from static ', staticAirspaceData.firs[fir]);
                 if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
@@ -95,9 +94,9 @@ export default function generateCtrPolygons(ctr, fss) {
         const airspace = getAirspaceCoordinates(client);
 
         if (airspace.isUir) {
-            const boundaries = airspace.firs.map((fir) =>
+            const boundaries = airspace.firs.map((fir, i) =>
                 <Polygon
-                    key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
+                    key={client.cid + '-uir--polygon-' + i}
                     coordinates={fir.points}
                     strokeColor={theme.blueGrey.uirStrokeColor}
                     fillColor={theme.blueGrey.uirFill}
@@ -131,9 +130,9 @@ export default function generateCtrPolygons(ctr, fss) {
             );
         }
 
-        return airspace.firs.map((fir) =>
+        return airspace.firs.map((fir, i) =>
             <View
-                key={client.callsign + '-' + fir.center.latitude + '_' + fir.center.longitude}
+                key={client.callsign + '-' + i}
                 style={{zIndex: 1}}
             >
                 <Polygon
