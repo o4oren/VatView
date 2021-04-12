@@ -29,29 +29,28 @@ export default function CTRPolygons(props) {
         };
 
         // exclude problematic FSSs
-        if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency == '199.998' || client.callsign.split('_').pop() == 'OBS') {
+        if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency === '199.998' || client.callsign.split('_').pop() === 'OBS') {
             console.log('Excluded client: ' + client.callsign);
             return airspace;
         }
         // If client is FIR
-        if (staticAirspaceData.firBoundaries[callsignPrefix] != undefined) {
+        if (staticAirspaceData.firBoundaries[callsignPrefix] != null) {
 
             staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
-                if (fir.icao === callsignPrefix) ;
                 airspace.firs.push(fir);
             });
         }
 
-        if (airspace.firs.length == 0) {
+        if (airspace.firs.length === 0) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
                 // console.log('firs from static ', staticAirspaceData.firs[fir]);
-                if (fir.prefix == callsignPrefix || fir.position == callsignPrefix) {
+                if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
                     if (staticAirspaceData.firBoundaries[fallbackFirIcao] !== undefined) {
                         staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
-                            if (fir != undefined && (isOceanic === true || !fir.isOceanic) && fir.isExtention == false) {
+                            if (fir != null && (isOceanic === true || !fir.isOceanic) && fir.isExtention === false) {
                                 airspace.firs.push(fir);
                             }
                         });
@@ -61,9 +60,9 @@ export default function CTRPolygons(props) {
         }
 
         // if we did not resolve firs, we check if UIR
-        if (airspace.firs[0] == undefined) {
+        if (airspace.firs[0] == null) {
             const uir = staticAirspaceData.uirs[callsignPrefix];
-            if (uir != undefined) {
+            if (uir) {
                 airspace.isUir = true;
                 // calclute center of centers
                 let latitudeSum = 0;
@@ -71,7 +70,7 @@ export default function CTRPolygons(props) {
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
                         staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
-                            if (fir != undefined) {     // preventing crash when not every fir in UIR can be resolved
+                            if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
                                 latitudeSum += fir.center.latitude;
                                 longitudeSum += fir.center.longitude;
@@ -88,13 +87,12 @@ export default function CTRPolygons(props) {
         }
 
         if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facilitytype, client);
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility, client);
         return airspace;
     };
     
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
-        console.log('a', airspace);
 
         if (airspace.isUir) {
             const boundaries = airspace.firs.map((fir) =>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
 import PilotDetails from './PilotDetails';
@@ -55,9 +55,3 @@ export default function ClientDetails(props) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    avatar: {
-        backgroundColor: '#ffffff',
-    }
-});

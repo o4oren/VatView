@@ -32,15 +32,11 @@ export default function VatsimListView() {
 
         if(filters.searchQuery.trim()) {
             return aggregatedClients.filter(c => {
-                if((c.callsign && c.callsign.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim()))||
+                return !!((c.callsign && c.callsign.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
+                    (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.cid && c.cid == filters.searchQuery) ||
                     (c.flight_plan && c.flight_plan.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    ((filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0,3), airports) != null))
-                )
-                    return true;
-                else
-                    return false;
+                    ((filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0, 3), airports) != null)));
             });
         }
         return aggregatedClients;
