@@ -5,7 +5,7 @@ import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {Platform, View} from 'react-native';
 
-export default function generatePilotMarkers(pilots, pilotsSet) {
+export default function generatePilotMarkers(pilots) {
 
     const dispatch = useDispatch();
 
@@ -20,26 +20,23 @@ export default function generatePilotMarkers(pilots, pilotsSet) {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
-
-        return <View key={pilot.key}>
-            {pilotsSet.has(pilot.key) ?
-                <MapView.Marker
-                    coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-                    title={pilot.callsign}
-                    anchor={{x: 0.5, y: 0.5}}
-                    rotation={pilot.heading}
-                    onPress={() => onPress(pilot)}
-                    tracksViewChanges={false}
-                    tracksInfoWindowChanges={false}
-                >
-                    <Image
-                        source={pilot.image}
-                        fadeDuration={0}
-                        style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-                    />
-                </MapView.Marker> : null
-            }
-        </View>;
+        return<MapView.Marker
+            key={pilot.key}
+            coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+            title={pilot.callsign}
+            anchor={{x: 0.5, y: 0.5}}
+            rotation={pilot.heading}
+            onPress={() => onPress(pilot)}
+            tracksViewChanges={false}
+            tracksInfoWindowChanges={false}
+        >
+            <Image
+                source={pilot.image}
+                fadeDuration={0}
+                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+            />
+        </MapView.Marker>;
+            
     });
 
     return pilotMarkers;

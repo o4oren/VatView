@@ -12,7 +12,7 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
-    const pilotsSet = new Set(clients.pilots.map(p => p.key));
+
     const renderFromPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
             const depAirport = airports.icao[selectedClient.flight_plan.departure];
@@ -25,6 +25,7 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
                     strokeColor="red"
                     geodesic={true}
                     strokeWidth={3}
+                    key={`${selectedClient.callsign}_path`}
                 />;
             }
         }
@@ -47,8 +48,11 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
         }
     };
 
-    // if(mapRef) console.log(mapRef);
-    // console.log('keys', mapRef.current.props.children[1].map(c => c.key).sort());
+    // if(mapRef && mapRef.current) console.log(mapRef.current.props.children[0].sort((a,b) => {
+    //     return (a.key > b.key) ? 1 : ((b.key > a.key) ? -1 : 0);
+    // }));
+    // if(mapRef)
+    //     console.log('keys', mapRef.current.props.children[1].map(c => c.key).sort());
     return <MapView
         ref={mapRef}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
@@ -58,9 +62,16 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
         initialRegion={app.initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {generateCtrPolygons(clients.ctr, clients.fss)}
-        {generatePilotMarkers(clients.pilots, pilotsSet)}
-        {generateAirportMarkers(clients.airportAtc, airports)}
+        {
+            [
+                generateCtrPolygons(clients.ctr, clients.fss),
+                generatePilotMarkers(clients.pilots),
+                generateAirportMarkers(clients.airportAtc, airports),
+            ].flat(1)
+        }
+        {/*{generateCtrPolygons(clients.ctr, clients.fss)}*/}
+        {/*{generatePilotMarkers(clients.pilots, pilotsSet)}*/}
+        {/*{generateAirportMarkers(clients.airportAtc, airports)}*/}
         {renderFromPath()}
         {renderToPath()}
     </MapView>;

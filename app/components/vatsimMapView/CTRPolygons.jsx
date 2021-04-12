@@ -34,8 +34,7 @@ export default function generateCtrPolygons(ctr, fss) {
             return airspace;
         }
         // If client is FIR
-        if (staticAirspaceData.firBoundaries[callsignPrefix] != null) {
-
+        if (staticAirspaceData.firBoundaries[callsignPrefix]) {
             staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
@@ -47,7 +46,7 @@ export default function generateCtrPolygons(ctr, fss) {
                 if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
-                    if (staticAirspaceData.firBoundaries[fallbackFirIcao] !== undefined) {
+                    if (staticAirspaceData.firBoundaries[fallbackFirIcao]) {
                         staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
                             if (fir != null && (isOceanic === true || !fir.isOceanic) && fir.isExtention === false) {
                                 airspace.firs.push(fir);
@@ -59,7 +58,7 @@ export default function generateCtrPolygons(ctr, fss) {
         }
 
         // if we did not resolve firs, we check if UIR
-        if (airspace.firs[0] == null) {
+        if (!airspace.firs[0]) {
             const uir = staticAirspaceData.uirs[callsignPrefix];
             if (uir) {
                 airspace.isUir = true;
@@ -107,61 +106,64 @@ export default function generateCtrPolygons(ctr, fss) {
                 />
             );
 
-            return (<
-                View key={client.cid + '-uir-v'}
-                style={{zIndex: 2}}
-            >
-                {boundaries}
-                <MapView.Marker
-                    coordinate={airspace.center}
-                    tracksViewChanges={false}
-                    tracksInfoWindowChanges={false}
-                    // anchor={{x: 0.5, y: 0.5}}
+            return (
+                <View key={client.callsign + '_' + client.cid + '-uir-v'}
+                    style={{zIndex: 2}}
                 >
-                    <Text
-                        key={client.cid + '-uir-text'}
-                        style={theme.blueGrey.uirTextStyle}
-                        onPress={() => onPress(client)}
+                    {boundaries}
+                    <MapView.Marker
+                        key={client.callsign + '_' + client.cid + '-marker'}
+                        coordinate={airspace.center}
+                        tracksViewChanges={false}
+                        tracksInfoWindowChanges={false}
+                    // anchor={{x: 0.5, y: 0.5}}
                     >
-                        {client.callsign}
-                    </Text>
-                </MapView.Marker>
-            </View>
+                        <Text
+                            key={client.cid + '-uir-text'}
+                            style={theme.blueGrey.uirTextStyle}
+                            onPress={() => onPress(client)}
+                        >
+                            {client.callsign}
+                        </Text>
+                    </MapView.Marker>
+                </View>
             );
-        }
-
-        return airspace.firs.map((fir, i) =>
-            <View
-                key={client.callsign + '-' + i}
-                style={{zIndex: 1}}
-            >
-                <Polygon
-                    key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
-                    coordinates={fir.points}
-                    strokeColor={theme.blueGrey.firStrokeColor}
-                    fillColor={theme.blueGrey.firFill}
-                    strokeWidth={theme.blueGrey.firStrokeWidth}
-                    geodesic={true}
-                    tappable={true}
-                    onPress={() => onPress(client)}
-                />
-                <MapView.Marker
-                    key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
-                    coordinate={fir.center}
-                    tracksViewChanges={false}
-                    tracksInfoWindowChanges={false}
-                    // anchor={{x: 0.5, y: 0.5}}
-                >
-                    <Text
-                        key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
-                        style={theme.blueGrey.firTextStyle}
-                        onPress={() => onPress(client)}
+        } else {
+            return <View key={client.callsign + '-' + client.cid}>
+                {airspace.firs.map((fir, i) =>
+                    <View
+                        key={client.callsign + '-' + i}
+                        style={{zIndex: 1}}
                     >
-                        {fir.icao}
-                    </Text>
-                </MapView.Marker>
-            </View>
-        );
+                        <Polygon
+                            key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
+                            coordinates={fir.points}
+                            strokeColor={theme.blueGrey.firStrokeColor}
+                            fillColor={theme.blueGrey.firFill}
+                            strokeWidth={theme.blueGrey.firStrokeWidth}
+                            geodesic={true}
+                            tappable={true}
+                            onPress={() => onPress(client)}
+                        />
+                        <MapView.Marker
+                            key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
+                            coordinate={fir.center}
+                            tracksViewChanges={false}
+                            tracksInfoWindowChanges={false}
+                            // anchor={{x: 0.5, y: 0.5}}
+                        >
+                            <Text
+                                key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
+                                style={theme.blueGrey.firTextStyle}
+                                onPress={() => onPress(client)}
+                            >
+                                {fir.icao}
+                            </Text>
+                        </MapView.Marker>
+                    </View>
+                )}
+            </View>;
+        }
     };
 
     for (let icao in fss) {
