@@ -7,7 +7,7 @@ import ClientDetails from '../clientDetails/ClientDetails';
 import {getAirportByCode} from '../../common/airportTools';
 import theme from '../../common/theme';
 
-export default function VatsimListView({ navigation }) {
+export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
     const airports = useSelector(state => state.staticAirspaceData.airports);
@@ -30,7 +30,7 @@ export default function VatsimListView({ navigation }) {
             return 0;
         });
 
-        if(filters.searchQuery.trim() != '') {
+        if(filters.searchQuery.trim()) {
             return aggregatedClients.filter(c => {
                 if((c.callsign && c.callsign.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim()))||
