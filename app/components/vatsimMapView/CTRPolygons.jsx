@@ -94,10 +94,12 @@ export default function CTRPolygons(props) {
     
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
+        console.log('a', airspace);
+
         if (airspace.isUir) {
-            const boundaries = airspace.firs.map((fir, fIndex) =>
+            const boundaries = airspace.firs.map((fir) =>
                 <Polygon
-                    key={client.cid + '-polygon-' + fIndex}
+                    key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
                     coordinates={fir.points}
                     strokeColor={theme.blueGrey.uirStrokeColor}
                     fillColor={theme.blueGrey.uirFill}
@@ -131,13 +133,13 @@ export default function CTRPolygons(props) {
             );
         }
 
-        return airspace.firs.map((fir, fIndex) =>
+        return airspace.firs.map((fir) =>
             <View
-                key={client.callsign + '-' + fIndex}
+                key={client.callsign + '-' + fir.center.latitude + '_' + fir.center.longitude}
                 style={{zIndex: 1}}
             >
                 <Polygon
-                    key={client.cid + '-polygon-' + fIndex}
+                    key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
                     coordinates={fir.points}
                     strokeColor={theme.blueGrey.firStrokeColor}
                     fillColor={theme.blueGrey.firFill}
@@ -147,14 +149,14 @@ export default function CTRPolygons(props) {
                     onPress={() => onPress(client)}
                 />
                 <MapView.Marker
-                    key={client.cid + '-marker-' + fIndex}
+                    key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
                     coordinate={fir.center}
                     tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                     // anchor={{x: 0.5, y: 0.5}}
                 >
                     <Text
-                        key={client.cid + '-' + fir.icao + '-' + fIndex}
+                        key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
                         style={theme.blueGrey.firTextStyle}
                         onPress={() => onPress(client)}
                     >
