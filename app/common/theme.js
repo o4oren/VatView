@@ -318,7 +318,7 @@ export default {
             colors: {
                 ...DefaultTheme.colors,
                 primary: '#2a5d99',
-                accent: '#f1b90f',
+                accent: '#2a5d99',
                 text: '#000',
                 onBackground: 'rgba(255,255,255,0.6)',
             },

@@ -1,64 +1,23 @@
 import React, {Children, useEffect, useRef, useState} from 'react';
-import MapView, { Polyline } from 'react-native-maps';
-import {StyleSheet, SafeAreaView, Dimensions, Platform, Image} from 'react-native';
+import {SafeAreaView, Dimensions, Platform, Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
 import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from '../clientDetails/ClientDetails';
-import PilotMarkers from './PilotMarkers';
-import CTRPolygons from './CTRPolygons';
-import AirportMarkers from './AirportMarkers';
-import generatePilotMarkers from './PilotMarkers';
-import generateAirportMarkers from './AirportMarkers';
-import generateCtrPolygons from './CTRPolygons';
+import MapComponent from './MapComponent';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
+    // const [clients, setClients] = useState(liveCLients);
     const airports = useSelector(state => state.staticAirspaceData.airports);
-    const app = useSelector(state => state.app);
     const dispatch = useDispatch();
     const sheetRef = useRef(null);
-
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    };
-
-    const renderFromPath = () => {
-        if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
-            const depAirport = airports.icao[selectedClient.flight_plan.departure];
-            if(depAirport && depAirport.latitude) {
-                return 	<Polyline
-                    coordinates={[
-                        { latitude: depAirport.latitude, longitude: depAirport.longitude },
-                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
-                    ]}
-                    strokeColor="red"
-                    geodesic={true}
-                    strokeWidth={3}
-                />;
-            }
-        }
-    };
-
-    const renderToPath = () => {
-        if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
-            const destAirport = airports.icao[selectedClient.flight_plan.arrival];
-            if(destAirport && destAirport.latitude) {
-                return 	<Polyline
-                    coordinates={[
-                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
-                        { latitude: destAirport.latitude, longitude: destAirport.longitude }
-                    ]}
-                    strokeColor="green"
-                    geodesic={true}
-                    strokeWidth={3}
-                />;
-            }
-        }
     };
 
     useEffect(() => {
@@ -89,21 +48,12 @@ export default function VatsimMapView() {
             style={[theme.blueGrey.safeAreaView, {width: screenSize.width, flex: 1}]}
             onLayout={updateScreenSize}
         >
-            <MapView
-                style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
-                customMapStyle={theme.blueGrey.customMapStyle}
-                // provider={PROVIDER_GOOGLE}
-                rotateEnabled={false}
-                clinets={clients}
-                initialRegion={app.initialRegion}
-                onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
-            >
-                {generateCtrPolygons(clients.ctr, clients.fss)}
-                {generatePilotMarkers(clients.pilots)}
-                {generateAirportMarkers(clients.airportAtc, airports)}
-                {renderFromPath()}
-                {renderToPath()}
-            </MapView>
+            <MapComponent
+                clients={clients}
+                selectedClient={selectedClient}
+                airports={airports}
+                screenSize={screenSize}
+            />
             <BottomSheet
                 ref={sheetRef}
                 snapPoints={[400, 300, 0]}
@@ -118,8 +68,3 @@ export default function VatsimMapView() {
     );
 }
 
-const styles = StyleSheet.create({
-    mapStyle: {
-        flex:1
-    }
-});

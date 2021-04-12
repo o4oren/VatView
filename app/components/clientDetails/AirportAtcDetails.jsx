@@ -22,7 +22,7 @@ export default function AirportAtcDetils(props) {
                 return <AtcDetails
                     atc={atc}
                     showAtis={(!atisExists || atc.callsign.endsWith('ATIS'))}
-                    key={atc.callsign + '_' + atc.cid}
+                    key={atc.key}
                 />;
             });
     };

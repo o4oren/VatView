@@ -3,9 +3,9 @@ import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
-import {Platform} from 'react-native';
+import {Platform, View} from 'react-native';
 
-export default function generatePilotMarkers(pilots) {
+export default function generatePilotMarkers(pilots, pilotsSet) {
 
     const dispatch = useDispatch();
 
@@ -16,25 +16,30 @@ export default function generatePilotMarkers(pilots) {
             } : {};
 
         let onPress = (pilot) => {
+            // console.log('pilot pressed', pilot);
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
-        return <MapView.Marker
-            key={pilot.cid + '_' + pilot.callsign}
-            coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-            title={pilot.callsign}
-            anchor={{x: 0.5, y: 0.5}}
-            rotation={pilot.heading}
-            onPress={() => onPress(pilot)}
-            tracksViewChanges={false}
-            tracksInfoWindowChanges={false}
-        >
-            <Image
-                source={pilot.image}
-                fadeDuration={0}
-                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-            />
-        </MapView.Marker>;
+
+        return <View key={pilot.key}>
+            {pilotsSet.has(pilot.key) ?
+                <MapView.Marker
+                    coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+                    title={pilot.callsign}
+                    anchor={{x: 0.5, y: 0.5}}
+                    rotation={pilot.heading}
+                    onPress={() => onPress(pilot)}
+                    tracksViewChanges={false}
+                    tracksInfoWindowChanges={false}
+                >
+                    <Image
+                        source={pilot.image}
+                        fadeDuration={0}
+                        style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                    />
+                </MapView.Marker> : null
+            }
+        </View>;
     });
 
     return pilotMarkers;

@@ -35,7 +35,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     app = true;
                     airportMarkers.push(
                         <Circle
-                            key={icao + '_APP_' + atc.cid}
+                            key={atc.key}
                             center={{latitude: airport.latitude, longitude: airport.longitude}}
                             radius={APP_RADIUS}
                             title={atc.callsign}
