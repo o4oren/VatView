@@ -18,11 +18,11 @@ export default function AirportAtcDetils(props) {
                 }
                 return b.facility - a.facility;
             })
-            .map((atc, index) => {
+            .map((atc) => {
                 return <AtcDetails
                     atc={atc}
-                    showAtis={(!atisExists || atc.callsign.endsWith('ATIS')) ? true : false}
-                    key={atc.cid + '_' + index}
+                    showAtis={(!atisExists || atc.callsign.endsWith('ATIS'))}
+                    key={atc.callsign + '_' + atc.cid}
                 />;
             });
     };
