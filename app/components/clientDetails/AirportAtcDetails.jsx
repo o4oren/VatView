@@ -27,16 +27,14 @@ export default function AirportAtcDetils(props) {
             });
     };
 
-    if(airportAtc[airport.icao] != null)
-        return <View style={styles.container}>
-            <Card.Title
-                title = {airport.icao}
-                subtitle = {airport.name}
-            />
-            {getAtcClients()}
-        </View>;
-
-    return null;
+    if(!airportAtc[airport.icao]) return null;
+    return <View style={styles.container}>
+        <Card.Title
+            title = {airport.icao}
+            subtitle = {airport.name}
+        />
+        {getAtcClients()}
+    </View>;
 }
 
 const styles = StyleSheet.create({

@@ -36,7 +36,7 @@ export default function ClientDetails(props) {
         return (
             <AtcDetails
                 atc={props.client}
-                showAtis={props.showAtis ? true : false}
+                showAtis={!!props.showAtis}
             />
         );
     };

@@ -12,10 +12,10 @@ export default function AtcDetails(props) {
                 left = {() => <Avatar.Image source={props.atc.image} size={32} style={styles.avatar} />}
                 right = {() => <Text>{props.atc.frequency}</Text>}
             />
-            {(props.showAtis && props.atc.text_atis !=null) && <Card.Content>
+            {(props.showAtis && props.atc.text_atis) ? <Card.Content>
                 <Text>Message:</Text>
                 {props.atc.text_atis.map((line, i) => <Text key={i}>{line}</Text>)}
-            </Card.Content>}
+            </Card.Content> : null}
         </View>
     );
 }

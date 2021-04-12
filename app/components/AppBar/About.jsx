@@ -3,12 +3,13 @@ import {Paragraph, Avatar, Text, Title} from 'react-native-paper';
 import {StyleSheet, View, Image, ScrollView} from 'react-native';
 
 import {LinearGradient} from 'expo-linear-gradient';
+const colors=['#93a2c1', '#dddddd'];
 
 const About = () => {
+
     return <View style={styles.container}>
         <LinearGradient
-            // Button Linear Gradient
-            colors={['#93a2c1', '#dddddd']}
+            colors = {colors}
             style={styles.container}>
             <ScrollView style={styles.textArea}>
                 <Title>About VatView</Title>
