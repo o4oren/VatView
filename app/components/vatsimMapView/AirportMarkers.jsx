@@ -1,14 +1,15 @@
 import MapView, {Circle} from 'react-native-maps';
 import {Image} from 'react-native';
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 
-export default function AirportMarkers(props) {
-    const airports = useSelector(state => state.staticAirspaceData.airports);
+export default function generateAirportMarkers(airportAtc, airports) {
+    if(!airports || airports.icao.length === 0)
+        return null;
 
     const dispatch = useDispatch();
 
@@ -18,7 +19,7 @@ export default function AirportMarkers(props) {
         dispatch(allActions.appActions.clientSelected(airport));
     };
 
-    for (let icao in props.airportAtc) {
+    for (let icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
         const airport = getAirportByCode(icao, airports);
         let delivery = false;
@@ -28,7 +29,7 @@ export default function AirportMarkers(props) {
         let atis = false;
 
         if (airport != null) {
-            props.airportAtc[icao].forEach(atc => {
+            airportAtc[icao].forEach(atc => {
                 switch (atc.facility) {
                 case APP:
                     app = true;

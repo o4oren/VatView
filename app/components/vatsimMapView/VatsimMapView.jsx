@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {Children, useEffect, useRef, useState} from 'react';
 import MapView, { Polyline } from 'react-native-maps';
-import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView, Dimensions, Platform, Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -9,14 +9,17 @@ import ClientDetails from '../clientDetails/ClientDetails';
 import PilotMarkers from './PilotMarkers';
 import CTRPolygons from './CTRPolygons';
 import AirportMarkers from './AirportMarkers';
+import generatePilotMarkers from './PilotMarkers';
+import generateAirportMarkers from './AirportMarkers';
+import generateCtrPolygons from './CTRPolygons';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
-    const airports = useSelector(state => state.staticAirspaceData.airports.icao);
+    const airports = useSelector(state => state.staticAirspaceData.airports);
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
-    const mapRef = useRef(null);
     const sheetRef = useRef(null);
+
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
@@ -26,7 +29,7 @@ export default function VatsimMapView() {
 
     const renderFromPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
-            const depAirport = airports[selectedClient.flight_plan.departure];
+            const depAirport = airports.icao[selectedClient.flight_plan.departure];
             if(depAirport && depAirport.latitude) {
                 return 	<Polyline
                     coordinates={[
@@ -43,7 +46,7 @@ export default function VatsimMapView() {
 
     const renderToPath = () => {
         if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
-            const destAirport = airports[selectedClient.flight_plan.arrival];
+            const destAirport = airports.icao[selectedClient.flight_plan.arrival];
             if(destAirport && destAirport.latitude) {
                 return 	<Polyline
                     coordinates={[
@@ -87,28 +90,17 @@ export default function VatsimMapView() {
             onLayout={updateScreenSize}
         >
             <MapView
-                ref={mapRef}
                 style={[styles.mapStyle, {width: screenSize.width, height: setScreenSize.height}]}
                 customMapStyle={theme.blueGrey.customMapStyle}
                 // provider={PROVIDER_GOOGLE}
                 rotateEnabled={false}
+                clinets={clients}
                 initialRegion={app.initialRegion}
                 onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
             >
-                <CTRPolygons
-                    style={{zIndex: 4}}
-                    ctr={clients.ctr}
-                    fss={clients.fss}
-                />
-                {/*// TODO aerodrome markers*/}
-                <PilotMarkers
-                    style={{zIndex: 2}}
-                    pilots={clients.pilots}
-                />
-                <AirportMarkers
-                    style={{zIndex: 1}}
-                    airportAtc={clients.airportAtc}
-                />
+                {generateCtrPolygons(clients.ctr, clients.fss)}
+                {generatePilotMarkers(clients.pilots)}
+                {generateAirportMarkers(clients.airportAtc, airports)}
                 {renderFromPath()}
                 {renderToPath()}
             </MapView>

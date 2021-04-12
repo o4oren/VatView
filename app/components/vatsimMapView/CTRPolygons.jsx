@@ -6,7 +6,7 @@ import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 
-export default function CTRPolygons(props) {
+export default function generateCtrPolygons(ctr, fss) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
@@ -165,14 +165,14 @@ export default function CTRPolygons(props) {
         );
     };
 
-    for (let icao in props.fss) {
-        props.fss[icao].forEach(fssClient =>{
+    for (let icao in fss) {
+        fss[icao].forEach(fssClient =>{
             polygons.push(calculatePolygon(fssClient));
         });
     }
 
-    for (let icao in props.ctr) {
-        props.ctr[icao].forEach(ctrClient =>{
+    for (let icao in ctr) {
+        ctr[icao].forEach(ctrClient =>{
             polygons.push(calculatePolygon(ctrClient));
         });
     }
