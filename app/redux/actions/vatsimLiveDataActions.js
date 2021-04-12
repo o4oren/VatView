@@ -42,7 +42,7 @@ const updateData = async (dispatch, getState) => {
             const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
             pilot.image = image;
             pilot.imageSize = imageSize;
-            clients.pilots.push(pilot); // workaround for disappearing icons on android
+            clients.pilots.push(pilot);
         });
 
         json.controllers.forEach(client => {
