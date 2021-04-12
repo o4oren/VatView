@@ -1,5 +1,5 @@
 import getAircraftIcon from '../../common/aircraftIconResolver';
-import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS, radarB64, towerB64, radioAntennaB64} from '../../common/consts';
+import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import {getAirportByCode} from '../../common/airportTools';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
@@ -38,7 +38,7 @@ const updateData = async (dispatch, getState) => {
             other: []
         };
 
-        json.pilots.forEach((pilot, i) => {
+        json.pilots.forEach((pilot) => {
             const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
             pilot.image = image;
             pilot.imageSize = imageSize;
@@ -70,17 +70,17 @@ const updateData = async (dispatch, getState) => {
                 else {
                     console.log('Unknown APT', client.callsign);
                 }
-            } else if(client.facility == CTR) {
+            } else if(client.facility === CTR) {
                 if (clients.ctr[prefix] == null) {
                     clients.ctr[prefix] = [];
                 }
                 clients.ctr[prefix].push(client);
-            } else if(client.facility == FSS) {
+            } else if(client.facility === FSS) {
                 if (clients.fss[prefix] == null) {
                     clients.fss[prefix] = [];
                 }
                 clients.fss[prefix].push(client);
-            } else if(client.facility == OBS) {
+            } else if(client.facility === OBS) {
                 clients.obs[prefix]=client;
             } else {
                 clients.other[prefix]=client;

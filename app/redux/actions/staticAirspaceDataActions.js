@@ -43,7 +43,7 @@ const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated, version
 // 7 - Max Lon
 // 8 - Center Lat
 // 9 - Center Lon
-const getFirBoundaries = async (dispatch, getState) => {
+const getFirBoundaries = async (dispatch) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/FIRBoundaries.dat');
     let body = await response.text();
@@ -59,8 +59,8 @@ const getFirBoundaries = async (dispatch, getState) => {
                 latitude: Number(fields[8]),
                 longitude: Number(fields[9])
             };
-            fir.isOceanic = fields[1] === '1' ? true : false;
-            fir.isExtention = fields[2] === '1' ? true : false;
+            fir.isOceanic = fields[1] === '1';
+            fir.isExtention = fields[2] === '1';
             const points = [];
             const anchor = i;
             for (let j = 1; j <= fields[3]; j++) {
@@ -74,7 +74,7 @@ const getFirBoundaries = async (dispatch, getState) => {
                 i++;
             }
             fir.points = points;
-            if (firBoundaries[fir.icao] == undefined) {
+            if (firBoundaries[fir.icao] == null) {
                 firBoundaries[fir.icao] = [];
             }
             firBoundaries[fir.icao].push(fir);
@@ -85,7 +85,7 @@ const getFirBoundaries = async (dispatch, getState) => {
     dispatch(firBoundariesUpdated(firBoundaries));
 };
 
-const getVATSpyData = async (dispatch, getState) => {
+const getVATSpyData = async (dispatch) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/VATSpy.dat');
     let body = await response.text();

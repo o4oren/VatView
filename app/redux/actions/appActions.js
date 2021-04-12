@@ -47,7 +47,7 @@ const searchQueryChanged = (searchQuery) => {
 };
 
 export function saveInitialRegion(region) {
-    return async function saveRegion(dispatch, getState) {
+    return async function saveRegion(dispatch) {
         const initialRegion = { region };
         await storeInitialRegion(initialRegion);
         dispatch(regionUpdated(initialRegion));

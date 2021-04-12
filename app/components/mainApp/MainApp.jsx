@@ -19,8 +19,8 @@ export default function mainApp() {
         const now = Date.now();
 
         if(staticAirspaceData.version == null
-            || staticAirspaceData.firBoundaries.length == 0
-            || staticAirspaceData.firs.length == 0
+            || staticAirspaceData.firBoundaries.length === 0
+            || staticAirspaceData.firs.length === 0
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
             console.log('Fetching vatspy static data!');
@@ -45,7 +45,7 @@ export default function mainApp() {
 
     return  <NavigationContainer>
         <Stack.Navigator
-            screenOptions={({ navigation, route }) => ({
+            screenOptions={({ navigation }) => ({
                 headerTitle: 'VatView',
                 headerStyle: {
                     backgroundColor: '#2A5D99',

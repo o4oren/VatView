@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, { Polyline } from 'react-native-maps';
-import {StyleSheet, SafeAreaView, View, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -73,7 +73,7 @@ export default function VatsimMapView() {
     // if selected client is not null, we update it with the one from the new update
     useEffect(() => {
         if(selectedClient !== undefined) {
-            const newClient = clients.pilots.filter(p => p.cid == selectedClient.cid);
+            const newClient = clients.pilots.filter(p => p.cid === selectedClient.cid);
             if(newClient.length > 0)
                 dispatch(allActions.appActions.clientSelected(newClient[0]));
             else
