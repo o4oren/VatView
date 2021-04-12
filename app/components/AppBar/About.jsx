@@ -1,16 +1,18 @@
 import * as React from 'react';
-import {Paragraph, Avatar, Text, Title} from 'react-native-paper';
-import {StyleSheet, View, Image, ScrollView} from 'react-native';
-
+import {Paragraph, Avatar, Text, Title, Divider} from 'react-native-paper';
+import {StyleSheet, View, Image, ScrollView, Linking} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
-const colors=['#93a2c1', '#dddddd'];
+
+const colors=['#b4becb', '#e1e8f5'];
 
 const About = () => {
 
     return <View style={styles.container}>
         <LinearGradient
             colors = {colors}
-            style={styles.container}>
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.container, styles.rotate]}>
             <ScrollView style={styles.textArea}>
                 <Title>About VatView</Title>
                 <Paragraph>
@@ -21,13 +23,27 @@ const About = () => {
                     to add useful features to it, for the benefit of the community.
                     I am not affiliated with VATSIM in any way, other than being an avid member.
                 </Paragraph>
-                <Avatar.Image size={256} source={require('../../../assets/icon-256.png')} />
+                <Avatar.Image style={styles.image} size={256} source={require('../../../assets/icon-256.png')} />
                 <Image style={styles.image} source={require('../../../assets/VATSIM_Logo_Official_500px.png')} />
 
-                <Text>
-                    Some icons were made by Freepik from www.flaticon.com
-                </Text>
-                <Text style={styles.bottom}>Copyright (c) Oren Geva 2021</Text>
+                <Divider style={styles.divider}/>
+
+                <Paragraph>
+                    <Text>Some icons were made by </Text>
+                    <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com/authors/freepik')}}>Freepik</Text>
+                    <Text> from </Text>
+                    <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com')}}>www.flaticon.com</Text>
+                </Paragraph>
+
+                <Paragraph>
+                    <Text>The VatView Logo is based on a logo created by </Text>
+                    <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com/authors/roundicons')}}>Roundicons</Text>
+                    <Text> from </Text>
+                    <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com')}}>www.flaticon.com</Text>
+                </Paragraph>
+
+                <Divider style={styles.divider}/>
+                <Text>Copyright (c) Oren Geva 2021</Text>
             </ScrollView>
         </LinearGradient>
     </View>;
@@ -39,13 +55,22 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     textArea: {
-        margin: 20
+        margin: 20,
+        flex: 1
     },
     image: {
         // flex: 1,
         maxWidth: 256,
         maxHeight: 256,
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        marginTop: 10
+    },
+    link: {
+        color: 'blue',
+        textDecorationLine: 'underline'
+    },
+    divider: {
+        margin: 10
     }
 });
 export default About;
