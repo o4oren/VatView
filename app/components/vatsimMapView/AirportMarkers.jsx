@@ -8,7 +8,7 @@ import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 
 export default function generateAirportMarkers(airportAtc, airports) {
-    if(!airports || airports.icao.length === 0)
+    if(!airports || !airports.icao || airports.icao.length === 0)
         return null;
 
     const dispatch = useDispatch();
