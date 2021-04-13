@@ -29,7 +29,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+        "googleMapsApiKey": "[REPLACE]"
       }
     },
     "android": {
@@ -39,7 +39,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+          "apiKey": "[REPLACE]"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
