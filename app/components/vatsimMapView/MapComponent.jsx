@@ -8,6 +8,8 @@ import {StyleSheet} from 'react-native';
 import React, {useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
+let prevMarkers = [];
+
 const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
@@ -52,7 +54,15 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
     //     return (a.key > b.key) ? 1 : ((b.key > a.key) ? -1 : 0);
     // }));
     // if(mapRef)
-    //     console.log('keys', mapRef.current.props.children[1].map(c => c.key).sort());
+    // {
+    //     console.log('prev', prevMarkers);
+    //     const currentMarkers = mapRef.current.props.children[1].map(c => c.key).sort();
+    //     console.log('keys', );
+    //     prevMarkers.forEach(marker => {
+    //         if(marker.key )
+    //     })
+    //     prevMarkers = [];
+    // }
     return <MapView
         ref={mapRef}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
