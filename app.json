@@ -2,9 +2,9 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -29,7 +29,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.0.0",
       "config": {
-        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+        "googleMapsApiKey": "[replace]"
       }
     },
     "android": {
@@ -39,7 +39,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+          "apiKey": "[replace]"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
@@ -49,7 +49,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "VatView is a Vatsim map and information app.",
+    "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView"
   }
 }

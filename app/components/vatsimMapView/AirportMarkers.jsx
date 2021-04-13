@@ -63,13 +63,13 @@ export default function generateAirportMarkers(airportAtc, airports) {
             });
 
 
-            let image = require('../../../Graphics/atc/tower-32.png');
+            let image = require('../../../graphics/atc/tower-32.png');
             if(app && !ground && !tower)
             {
-                image = require('../../../Graphics/atc/radar-32.png');
+                image = require('../../../graphics/atc/radar-32.png');
             }
             if(atis && !tower && !ground && !delivery)
-                image = require('../../../Graphics/atc/radio-antenna-32.png');
+                image = require('../../../graphics/atc/radio-antenna-32.png');
 
             airportMarkers.push(
                 <MapView.Marker

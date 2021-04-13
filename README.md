@@ -4,7 +4,7 @@ Vatview is a cross-platform mobile vatsim tracker and map application.
 
 iOS            |  Android
 :-------------------------:|:-------------------------:
-<img src="https://raw.githubusercontent.com/o4oren/VatView/master/Graphics/screenshots/screenshot2.png" width="300"/>|  <img src="https://raw.githubusercontent.com/o4oren/VatView/master/Graphics/screenshots/screenshot4.png" width="260"/>
+<img src="https://raw.githubusercontent.com/o4oren/VatView/master/graphics/screenshots/screenshot2.png" width="300"/>|  <img src="https://raw.githubusercontent.com/o4oren/VatView/master/graphics/screenshots/screenshot4.png" width="260"/>
 
 TODO: <br>
 1.0:
