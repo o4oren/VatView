@@ -4,8 +4,8 @@ Vatview is a cross-platform mobile vatsim tracker and map application.
 
 <img src="https://raw.githubusercontent.com/o4oren/VatView/master/graphics/store/graphic.png"/>
 
-<a href='https://apps.apple.com/us/app/vatview/id1562497035'><img src="https://raw.githubusercontent.com/o4oren/VatView/master/graphics/store/appstore.png" alt='Get it on the Apple appstore' style="width:200"></a>
-<a href='https://play.google.com/store/apps/details?id=com.gevahim.vatview&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width:200"/></a>
+<a href='https://apps.apple.com/us/app/vatview/id1562497035'><img src="https://raw.githubusercontent.com/o4oren/VatView/master/graphics/store/appstore.png" alt='Get it on the Apple appstore' style="max-width: 300px;"></a>
+<a href='https://play.google.com/store/apps/details?id=com.gevahim.vatview&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="max-width: 300px;"/></a>
 
 TODO: <br>
 1.0:
