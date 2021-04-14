@@ -85,7 +85,7 @@ export default function generateCtrPolygons(ctr, fss) {
         }
 
         if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility, client);
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility);
         return airspace;
     };
     

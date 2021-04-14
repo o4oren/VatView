@@ -1,5 +1,5 @@
-import React, {Children, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, Dimensions, Platform, Image} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {SafeAreaView, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
@@ -9,11 +9,11 @@ import MapComponent from './MapComponent';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
-    // const [clients, setClients] = useState(liveCLients);
     const airports = useSelector(state => state.staticAirspaceData.airports);
     const dispatch = useDispatch();
     const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
+    const initialRegion = useSelector(state => state.app.initialRegion);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const updateScreenSize = () => {
@@ -49,6 +49,7 @@ export default function VatsimMapView() {
             onLayout={updateScreenSize}
         >
             <MapComponent
+                initialRegion={initialRegion}
                 clients={clients}
                 selectedClient={selectedClient}
                 airports={airports}
