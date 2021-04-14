@@ -8,8 +8,6 @@ import {StyleSheet} from 'react-native';
 import React, {useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-let prevMarkers = [];
-
 const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
     const app = useSelector(state => state.app);
     const dispatch = useDispatch();
@@ -72,16 +70,16 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
         initialRegion={app.initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {/*{*/}
-        {/*    [*/}
-        {/*        generateCtrPolygons(clients.ctr, clients.fss),*/}
-        {/*        generatePilotMarkers(clients.pilots),*/}
-        {/*        generateAirportMarkers(clients.airportAtc, airports),*/}
-        {/*    ].flat(1)*/}
-        {/*}*/}
-        {generateCtrPolygons(clients.ctr, clients.fss)}
-        {generatePilotMarkers(clients.pilots)}
-        {generateAirportMarkers(clients.airportAtc, airports)}
+        {
+            [
+                generateCtrPolygons(clients.ctr, clients.fss),
+                generatePilotMarkers(clients.pilots),
+                generateAirportMarkers(clients.airportAtc, airports),
+            ].flat(1)
+        }
+        {/*{generateCtrPolygons(clients.ctr, clients.fss)}*/}
+        {/*{generatePilotMarkers(clients.pilots)}*/}
+        {/*{generateAirportMarkers(clients.airportAtc, airports)}*/}
         {renderFromPath()}
         {renderToPath()}
     </MapView>;
