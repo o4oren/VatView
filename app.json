@@ -2,7 +2,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
@@ -44,7 +44,7 @@
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
       "package": "com.gevahim.vatview",
-      "versionCode": 10
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png"
