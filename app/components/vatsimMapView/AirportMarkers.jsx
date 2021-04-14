@@ -63,12 +63,12 @@ export default function generateAirportMarkers(airportAtc, airports) {
             });
 
 
-            let image = require('../../../graphics/atc/tower-32.png');
-            if(app && !ground && !tower)
+            let image = require('../../../graphics/atc/radar-32.png');
+            if(!app && (ground || tower))
             {
-                image = require('../../../graphics/atc/radar-32.png');
+                image = require('../../../graphics/atc/tower-32.png');
             }
-            if(atis && !tower && !ground && !delivery)
+            if((!tower && !ground  && !app) && (atis || delivery))
                 image = require('../../../graphics/atc/radio-antenna-32.png');
 
             airportMarkers.push(
