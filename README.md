@@ -1,4 +1,4 @@
-##VATVIEW
+## VATVIEW
 
 Vatview is a cross-platform mobile vatsim tracker and map application.
 
