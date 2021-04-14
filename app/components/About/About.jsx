@@ -36,14 +36,16 @@ const About = () => {
                     <Text> from </Text>
                     <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com')}}>www.flaticon.com</Text>
                 </Paragraph>
-
                 <Paragraph>
-                    <Text>The VatView Logo is based on a logo created by </Text>
+                    <Text>The VatView Logo is based on an icon created by </Text>
                     <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com/authors/roundicons')}}>Roundicons</Text>
                     <Text> from </Text>
                     <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://www.flaticon.com')}}>www.flaticon.com</Text>
                 </Paragraph>
-
+                <Paragraph>
+                    <Text>The VatView app uses (but does not include or distribute) data from the </Text>
+                    <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://github.com/vatsimnetwork/vatspy-data-project')}}>VAT-Spy Client Data Update Project</Text>
+                </Paragraph>
                 <Divider style={styles.divider}/>
                 <Text>Copyright (c) Oren Geva 2021</Text>
             </ScrollView>
