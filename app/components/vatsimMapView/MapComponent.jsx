@@ -72,16 +72,16 @@ const MapComponent = ({clients, selectedClient, airports, screenSize}) => {
         initialRegion={app.initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {
-            [
-                generateCtrPolygons(clients.ctr, clients.fss),
-                generatePilotMarkers(clients.pilots),
-                generateAirportMarkers(clients.airportAtc, airports),
-            ].flat(1)
-        }
-        {/*{generateCtrPolygons(clients.ctr, clients.fss)}*/}
-        {/*{generatePilotMarkers(clients.pilots, pilotsSet)}*/}
-        {/*{generateAirportMarkers(clients.airportAtc, airports)}*/}
+        {/*{*/}
+        {/*    [*/}
+        {/*        generateCtrPolygons(clients.ctr, clients.fss),*/}
+        {/*        generatePilotMarkers(clients.pilots),*/}
+        {/*        generateAirportMarkers(clients.airportAtc, airports),*/}
+        {/*    ].flat(1)*/}
+        {/*}*/}
+        {generateCtrPolygons(clients.ctr, clients.fss)}
+        {generatePilotMarkers(clients.pilots)}
+        {generateAirportMarkers(clients.airportAtc, airports)}
         {renderFromPath()}
         {renderToPath()}
     </MapView>;
