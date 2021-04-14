@@ -8,4 +8,3 @@ Get it on the mobile appstores:
 <a href='https://play.google.com/store/apps/details?id=com.gevahim.vatview&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 [Privacy policy](https://o4oren.github.io/VatView/privacy)
 
-[!https://raw.githubusercontent.com/o4oren/VatView/master/graphics/store/appstore.png]
