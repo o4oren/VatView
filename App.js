@@ -3,22 +3,18 @@ import Provider from 'react-redux/lib/components/Provider';
 import {applyMiddleware, createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
-import {IconButton, Provider as PaperProvider} from 'react-native-paper';
-import {clearStorage, retrieveSavedState} from './app/common/storageService';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {retrieveSavedState} from './app/common/storageService';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import AppLoading from 'expo-app-loading';
-import {SafeAreaProvider} from 'react-native-safe-area-context/src/SafeAreaContext';
+
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default function App() {
     const [state, setState] = useState({isReady: false});
-
-    // clearStorage();
 
     useEffect(() => {
         async function loadStateFromStorage() {
