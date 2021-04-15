@@ -20,7 +20,7 @@ export default function generatePilotMarkers(pilots) {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
-        return <View key={pilot.key}>
+        return <View key={pilot.key} last_updated={pilot.last_updated}>
             <MapView.Marker
                 coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
                 title={pilot.callsign}

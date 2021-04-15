@@ -27,6 +27,8 @@ export default function generateAirportMarkers(airportAtc, airports) {
         let tower = false;
         let app = false;
         let atis = false;
+        let lastUpdated = null;
+        let image = null;
 
         if (airport != null) {
             airportAtc[icao].forEach(atc => {
@@ -62,9 +64,12 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 default:
                     break;
                 }
+
+                // update last updated to the last station in this icao so that react reconciliation will detect the change
+                lastUpdated = atc.last_updated;
             });
 
-            let image = null;
+
             if(app) {
                 image = require('../../../assets/atc/radar-32.png');
                 if ((ground || tower))
@@ -81,7 +86,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
 
 
             airportMarkers.push(
-                <View key={icao}>
+                <View key={icao} lastUpdated={lastUpdated}>
                     <MapView.Marker
                         coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
                         title={airport.icao}
