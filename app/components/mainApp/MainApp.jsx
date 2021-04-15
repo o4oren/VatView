@@ -75,9 +75,6 @@ export default function mainApp() {
                         }} icon="information-variant" title="About" />
                     </Menu>
                 ),
-                // headerLeft: () => (
-                //     <Avatar.Image size={24} source={require('./assets/icon-32.png')} />
-                // )
             })}
         >
             <Stack.Screen
