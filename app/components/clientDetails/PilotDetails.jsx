@@ -71,7 +71,7 @@ export default function PilotDetails(props) {
                         <Text>{flown} nm</Text>
                     </View>
                     <View style={styles.textContainer}>
-                        <Text>Reamining: </Text>
+                        <Text>Remaining: </Text>
                         <Text>{distance - flown} nm</Text>
                     </View>
                 </View>

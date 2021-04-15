@@ -20,22 +20,23 @@ export default function generatePilotMarkers(pilots) {
             dispatch(allActions.appActions.clientSelected(pilot));
         };
 
-        return<MapView.Marker
-            key={pilot.key}
-            coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-            title={pilot.callsign}
-            anchor={{x: 0.5, y: 0.5}}
-            rotation={pilot.heading}
-            onPress={() => onPress(pilot)}
-            tracksViewChanges={false}
-            tracksInfoWindowChanges={false}
-        >
-            <Image
-                source={pilot.image}
-                fadeDuration={0}
-                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-            />
-        </MapView.Marker>;
+        return <View key={pilot.key}>
+            <MapView.Marker
+                coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+                title={pilot.callsign}
+                anchor={{x: 0.5, y: 0.5}}
+                rotation={pilot.heading}
+                onPress={() => onPress(pilot)}
+                tracksViewChanges={false}
+                tracksInfoWindowChanges={false}
+            >
+                <Image
+                    source={pilot.image}
+                    fadeDuration={0}
+                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                />
+            </MapView.Marker>
+        </View>;
             
     });
 
