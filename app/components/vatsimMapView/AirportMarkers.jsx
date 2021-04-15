@@ -1,5 +1,5 @@
 import MapView, {Circle} from 'react-native-maps';
-import {Image} from 'react-native';
+import {Image, View} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -34,15 +34,17 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 case APP:
                     app = true;
                     airportMarkers.push(
-                        <Circle
-                            key={atc.key}
-                            center={{latitude: airport.latitude, longitude: airport.longitude}}
-                            radius={APP_RADIUS}
-                            title={atc.callsign}
-                            strokeColor={theme.blueGrey.appCircleStroke}
-                            fillColor={theme.blueGrey.appCircleFill}
-                            strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                        />
+                        <View key={atc.key}>
+                            <Circle
+                                key={atc.key}
+                                center={{latitude: airport.latitude, longitude: airport.longitude}}
+                                radius={APP_RADIUS}
+                                title={atc.callsign}
+                                strokeColor={theme.blueGrey.appCircleStroke}
+                                fillColor={theme.blueGrey.appCircleFill}
+                                strokeWidth={theme.blueGrey.appCircleStrokeWidth}
+                            />
+                        </View>
                     );
                     break;
                 case DEL:
@@ -62,7 +64,6 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 }
             });
 
-
             let image = require('../../../graphics/atc/radar-32.png');
             if(!app && (ground || tower))
             {
@@ -72,20 +73,21 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 image = require('../../../graphics/atc/radio-antenna-32.png');
 
             airportMarkers.push(
-                <MapView.Marker
-                    key={icao}
-                    coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
-                    title={airport.icao}
-                    anchor={{x: 0.5, y: 1}}
-                    onPress={() => onPress(airport)}
-                    tracksViewChanges={false}
-                    tracksInfoWindowChanges={false}
-                >
-                    <Image
-                        source={image}
-                        fadeDuration={0}
-                    />
-                </MapView.Marker>
+                <View key={icao}>
+                    <MapView.Marker
+                        coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
+                        title={airport.icao}
+                        anchor={{x: 0.5, y: 1}}
+                        onPress={() => onPress(airport)}
+                        tracksViewChanges={false}
+                        tracksInfoWindowChanges={false}
+                    >
+                        <Image
+                            source={image}
+                            fadeDuration={0}
+                        />
+                    </MapView.Marker>
+                </View>
             );
         } else {
             console.log('cannot add marker', airport);

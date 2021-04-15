@@ -18,6 +18,8 @@
     "@react-navigation/stack": "^5.12.8",
     "expo": "^40.0.0",
     "expo-app-loading": "^1.0.1",
+    "expo-file-system": "~9.3.0",
+    "expo-linear-gradient": "~8.4.0",
     "expo-status-bar": "~1.0.3",
     "lz-string": "^1.4.4",
     "react": "16.13.1",
@@ -36,9 +38,7 @@
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
-    "redux-thunk": "^2.3.0",
-    "expo-file-system": "~9.3.0",
-    "expo-linear-gradient": "~8.4.0"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

@@ -4,7 +4,7 @@ import allActions from '../../redux/actions';
 import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 
@@ -41,17 +41,18 @@ const renderFromPath = (airports, selectedClient) => {
     if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
         const depAirport = airports.icao[selectedClient.flight_plan.departure];
         if(depAirport && depAirport.latitude) {
-            return 	<Polyline
-                key={selectedClient.callsign + '_from_path'}
-                coordinates={[
-                    { latitude: depAirport.latitude, longitude: depAirport.longitude },
-                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
-                ]}
-                strokeColor="red"
-                geodesic={true}
-                strokeWidth={3}
-                key={`${selectedClient.callsign}_path`}
-            />;
+            return 	<View key={selectedClient.key + '_from_path'}>
+                <Polyline
+                    coordinates={[
+                        { latitude: depAirport.latitude, longitude: depAirport.longitude },
+                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
+                    ]}
+                    strokeColor="red"
+                    geodesic={true}
+                    strokeWidth={3}
+                    key={`${selectedClient.callsign}_path`}
+                />
+            </View>;
         }
     }
 };
@@ -60,16 +61,17 @@ const renderToPath = (airports, selectedClient) => {
     if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
         const destAirport = airports.icao[selectedClient.flight_plan.arrival];
         if(destAirport && destAirport.latitude) {
-            return 	<Polyline
-                key={selectedClient.callsign + '_to_path'}
-                coordinates={[
-                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
-                    { latitude: destAirport.latitude, longitude: destAirport.longitude }
-                ]}
-                strokeColor="green"
-                geodesic={true}
-                strokeWidth={3}
-            />;
+            return 	<View key={selectedClient.key + '_to_path'}>
+                <Polyline
+                    coordinates={[
+                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
+                        { latitude: destAirport.latitude, longitude: destAirport.longitude }
+                    ]}
+                    strokeColor="green"
+                    geodesic={true}
+                    strokeWidth={3}
+                />
+            </View>;
         }
     }
 };
