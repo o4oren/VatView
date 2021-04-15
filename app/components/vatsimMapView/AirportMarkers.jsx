@@ -64,13 +64,21 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 }
             });
 
-            let image = require('../../../graphics/atc/radar-32.png');
-            if(!app && (ground || tower))
-            {
-                image = require('../../../graphics/atc/tower-32.png');
+            let image = null;
+            if(app) {
+                image = require('../../../assets/atc/radar-32.png');
+                if ((ground || tower))
+                    image = require('../../../assets/atc/tower-radar-32.png');
+                else if (atis || delivery)
+                    image = require('../../../assets/atc/antenna-radar-32.png');
+            } else {
+                if (ground || tower)
+                    image = require('../../../assets/atc/tower-32.png');
+                else if (atis || delivery)
+                    image = require('../../../assets/atc/radio-antenna-32.png');
             }
-            if((!tower && !ground  && !app) && (atis || delivery))
-                image = require('../../../graphics/atc/radio-antenna-32.png');
+
+
 
             airportMarkers.push(
                 <View key={icao}>
