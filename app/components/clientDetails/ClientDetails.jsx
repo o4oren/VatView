@@ -5,9 +5,13 @@ import {getAirportByCode} from '../../common/airportTools';
 import PilotDetails from './PilotDetails';
 import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
+import CtrDetails from './CtrDetails';
+import {CTR} from '../../common/consts';
 
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports);
+    const centers = useSelector(state => state.vatsimLiveData.clients.ctr);
+
     const renderBody = () => {
         if(props.client == null)
             return null;
@@ -19,6 +23,18 @@ export default function ClientDetails(props) {
             if(airport != null && airport.icao != null)
                 return <AirportAtcDetils
                     airport = {airport}
+                />;
+        }
+
+
+        // if CTR
+        if(props.client.facility === CTR) {
+            const prefix = props.client.callsign.split('_')[0];
+
+            if(centers[prefix] != null)
+                return <CtrDetails
+                    ctr={centers[prefix]}
+                    prefix={prefix}
                 />;
         }
 

@@ -4,7 +4,7 @@ import {StyleSheet, View} from 'react-native';
 
 export default function AtcDetails(props) {
     return (
-        <View>
+        <View key={props.prefix}>
             <Card.Title
                 style = {styles.title}
                 title = {props.atc.callsign}
