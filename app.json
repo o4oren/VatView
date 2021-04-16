@@ -29,7 +29,7 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.1.0",
       "config": {
-        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk]"
+        "googleMapsApiKey": "REPLACE"
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },
@@ -40,7 +40,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+          "apiKey": "REPLACE"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
@@ -51,8 +51,8 @@
       "favicon": "./assets/favicon.png",
       "config": {
         "firebase": {
-          "apiKey": "AIzaSyDOP1CEX52YZxis0Lp0xm1FX247Oc96L-U",
-          "measurementId": "G-C7CHC7DF09"
+          "apiKey": "REPLACE",
+          "measurementId": "REPLACE"
         }
       }
     },
