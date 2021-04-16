@@ -19,6 +19,7 @@
     "expo": "^40.0.0",
     "expo-app-loading": "^1.0.1",
     "expo-file-system": "~9.3.0",
+    "expo-firebase-analytics": "~2.6.0",
     "expo-linear-gradient": "~8.4.0",
     "expo-status-bar": "~1.0.3",
     "lz-string": "^1.4.4",
