@@ -5,13 +5,16 @@ import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
-import React from 'react';
+import React, {useRef} from 'react';
 import {useDispatch} from 'react-redux';
 
 const MapComponent = ({clients, selectedClient, airports, screenSize, initialRegion}) => {
     const dispatch = useDispatch();
+    const ref = useRef(null);
 
+    // console.log(ref);
     return <MapView
+        ref={ref}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
         customMapStyle={theme.blueGrey.customMapStyle}
         // provider={PROVIDER_GOOGLE}
