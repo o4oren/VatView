@@ -12,6 +12,7 @@ export default function generateCtrPolygons(ctr, fss) {
     const polygons = [];
 
     let onPress = (client) => {
+        console.log(client);
         dispatch(allActions.appActions.clientSelected(client));
     };
 
@@ -88,7 +89,7 @@ export default function generateCtrPolygons(ctr, fss) {
             console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility);
         return airspace;
     };
-    
+
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
 
@@ -116,7 +117,7 @@ export default function generateCtrPolygons(ctr, fss) {
                         coordinate={airspace.center}
                         tracksViewChanges={false}
                         tracksInfoWindowChanges={false}
-                    // anchor={{x: 0.5, y: 0.5}}
+                        // anchor={{x: 0.5, y: 0.5}}
                     >
                         <Text
                             key={client.cid + '-uir-text'}

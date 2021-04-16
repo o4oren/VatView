@@ -7,6 +7,7 @@ import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
 import CtrDetails from './CtrDetails';
 import {CTR} from '../../common/consts';
+import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports);
@@ -26,11 +27,10 @@ export default function ClientDetails(props) {
                 />;
         }
 
-
         // if CTR
         if(props.client.facility === CTR) {
-            const prefix = props.client.callsign.split('_')[0];
 
+            const prefix = props.client.callsign.split('_')[0];
             if(centers[prefix] != null)
                 return <CtrDetails
                     ctr={centers[prefix]}
