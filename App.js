@@ -48,7 +48,7 @@ export default function App() {
             version: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.version : 0
         }
     };
-    console.log(preloadedState);
+    // console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
         <Provider store={store}>

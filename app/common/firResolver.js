@@ -11,5 +11,6 @@ export function getFirCountry(fir, countries) {
     console.log(fir);
     if(!fir || !countries)
         return null;
-    return countries[fir.icao.substr(0,2)];
+    console.log('fir', fir);
+    return countries[fir.substr(0,2)];
 }
