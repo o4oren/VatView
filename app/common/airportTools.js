@@ -8,10 +8,12 @@ import React from 'react';
  * @returns {null|*}
  */
 export const getAirportByCode = (code, airports) => {
-    if (airports.icao[code] !== undefined)
-        return airports.icao[code];
+    if(!code || !airports)
+        return null;
     if (airports.iata[code] !== undefined)
         return (airports.iata[code]);
+    if (airports.icao[code] !== undefined)
+        return airports.icao[code];
     console.log('null airport', code);
     return null;
 };

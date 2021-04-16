@@ -7,7 +7,6 @@ import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
 import CtrDetails from './CtrDetails';
 import {CTR} from '../../common/consts';
-import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 
 export default function ClientDetails(props) {
     const airports = useSelector(state => state.staticAirspaceData.airports);

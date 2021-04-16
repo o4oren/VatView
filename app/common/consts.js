@@ -25,6 +25,44 @@ export const TWR_ATIS = 4;
 export const APP = 5;
 export const CTR = 6;
 
+export const facilities = [
+    {
+        id: 0,
+        short: 'OBS',
+        long: 'Observer'
+    },
+    {
+        id: 1,
+        short: 'FSS',
+        long: 'Flight Service Station'
+    },
+    {
+        id: 2,
+        short: 'DEL',
+        long: 'Clearance Delivery'
+    },
+    {
+        id: 3,
+        short: 'GND',
+        long: 'Ground'
+    },
+    {
+        id: 4,
+        short: 'TWR',
+        long: 'Tower'
+    },
+    {
+        id: 5,
+        short: 'APP',
+        long: 'Approach/Departure'
+    },
+    {
+        id: 6,
+        short: 'CTR',
+        long: 'Enroute'
+    }
+];
+
 export const APP_RADIUS = 80 * 1000;
 
 
