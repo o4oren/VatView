@@ -1,7 +1,7 @@
 import React from 'react';
 import {Avatar, Card, Text} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
-import {CTR, TWR, APP, GND, DEL, facilities, TWR_ATIS} from '../../common/consts';
+import {CTR, TWR, APP, GND, DEL, facilities, TWR_ATIS, FSS} from '../../common/consts';
 import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 import {getAirportByCode} from '../../common/airportTools';
 import {useSelector} from 'react-redux';
@@ -18,12 +18,12 @@ const resolveAtcCallsign = (atc, countries, firs, airports) => {
         const airport = getAirportByCode(prefix, airports);
         country = airport ? getFirCountry(airport.fir, countries) : null;
         if(!airport || !country) return null;
-        return <Text>{airport.name + ', ' + facilities[atc.facility].long}</Text>;
-    } else {
-        if(fir) {
-            return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
-        }
+        return <Text>{airport.name + ', ' + atc.callsing.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long}</Text>;
+    } else if(atc.facility == FSS) {
+        // TODO check uir name
+        return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
     }
+    return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
 };
 
 export default function AtcDetails(props) {

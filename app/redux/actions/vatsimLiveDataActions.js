@@ -1,4 +1,4 @@
-import getAircraftIcon from '../../common/aircraftIconResolver';
+import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import {getAirportByCode} from '../../common/airportTools';
 import createKey from '../../common/createKey';
@@ -48,8 +48,8 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.controllers.forEach(client => {
-            client.image = require('../../../assets/atc/radar-64.png');
-            client.imageSize = 64;
+            client.image = mapIcons.radar;
+            client.imageSize = iconSizes.BUILDING_SIZE;
             client.key = createKey(client);
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
@@ -58,12 +58,12 @@ const updateData = async (dispatch, getState) => {
                     client.latitude = airport.latitude;
                     client.longitude = airport.longitude;
                     if(client.callsign.endsWith('TWR')) {
-                        client.image = require('../../../assets/atc/tower-64.png');
-                        client.imageSize = 64;
+                        client.image = mapIcons.tower;
+                        client.imageSize = iconSizes.BUILDING_SIZE;
                     }
                     if(client.callsign.endsWith('ATIS')) {
-                        client.image = require('../../../assets/atc/radio-antenna-64.png');
-                        client.imageSize = 64;
+                        client.image = mapIcons.antenna;
+                        client.imageSize = iconSizes.BUILDING_SIZE;
                     }
                     if (clients.airportAtc[airport.icao] == null) {
                         clients.airportAtc[airport.icao] = [];
@@ -93,8 +93,8 @@ const updateData = async (dispatch, getState) => {
         json.atis.forEach(atis => {
             atis.key=createKey(atis);
             let prefix = atis.callsign.split('_')[0];
-            atis.image = require('../../../assets/atc/radio-antenna-64.png');
-            atis.imageSize = 64;
+            atis.image = mapIcons.antenna;
+            atis.imageSize = iconSizes.BUILDING_SIZE;
             if (clients.airportAtc[prefix] == null) {
                 clients.airportAtc[prefix] = [];
             }

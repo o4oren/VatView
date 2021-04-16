@@ -6,6 +6,7 @@ import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
+import {mapIcons} from '../../common/iconsHelper';
 
 export default function generateAirportMarkers(airportAtc, airports) {
     if(!airports || !airports.icao || airports.icao.length === 0)
@@ -69,24 +70,21 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 lastUpdated = atc.last_updated;
             });
 
-
             if(app) {
-                image = require('../../../assets/atc/radar-32.png');
+                image = mapIcons.mapRadar;
                 if ((ground || tower))
-                    image = require('../../../assets/atc/tower-radar-32.png');
+                    image = mapIcons.mapTowerRadar;
                 else if (atis || delivery)
-                    image = require('../../../assets/atc/antenna-radar-32.png');
+                    image = mapIcons.mapAntennaRadar;
             } else {
                 if (ground || tower)
-                    image = require('../../../assets/atc/tower-32.png');
+                    image = mapIcons.mapTower;
                 else if (atis || delivery)
-                    image = require('../../../assets/atc/radio-antenna-32.png');
+                    image = mapIcons.mapAntenna;
             }
 
-
-
             airportMarkers.push(
-                <View key={icao} lastUpdated={lastUpdated}>
+                <View key={icao + '_' + lastUpdated}>
                     <MapView.Marker
                         coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
                         title={airport.icao}
