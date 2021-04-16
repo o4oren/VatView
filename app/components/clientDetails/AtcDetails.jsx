@@ -1,24 +1,28 @@
 import React from 'react';
 import {Avatar, Card, Text} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
-import {CTR, facilities} from '../../common/consts';
+import {CTR, TWR, APP, GND, DEL, facilities, TWR_ATIS} from '../../common/consts';
 import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 import {getAirportByCode} from '../../common/airportTools';
 import {useSelector} from 'react-redux';
 
 const resolveAtcCallsign = (atc, countries, firs, airports) => {
     const prefix = atc.callsign.split('_')[0];
+    const fir = getFirFromPrefix(prefix, firs);
+    let country = fir ? getFirCountry(fir.icao, countries) : null;
+
     if(atc.facility == CTR) {
-        const fir = getFirFromPrefix(prefix, firs);
-        const country = getFirCountry(fir.icao, countries);
         if(!fir || !country) return null;
         return <Text>{fir ? (fir.name + ' ' + ((country.callsign) ? country.callsign : 'Center')) : null}</Text>;
-    } else {
+    } else if([APP, TWR_ATIS, GND, DEL].includes(atc.facility)){
         const airport = getAirportByCode(prefix, airports);
-        const country = getFirCountry(airport.fir, countries);
-
+        country = airport ? getFirCountry(airport.fir, countries) : null;
         if(!airport || !country) return null;
         return <Text>{airport.name + ', ' + facilities[atc.facility].long}</Text>;
+    } else {
+        if(fir) {
+            return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
+        }
     }
 };
 
