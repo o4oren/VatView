@@ -29,8 +29,9 @@
       "bundleIdentifier": "com.gevahim.vatview",
       "buildNumber": "1.1.0",
       "config": {
-        "googleMapsApiKey": "[replace]"
-      }
+        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk]"
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -39,7 +40,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[replace]"
+          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
@@ -47,7 +48,13 @@
       "versionCode": 18
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyDOP1CEX52YZxis0Lp0xm1FX247Oc96L-U",
+          "measurementId": "G-C7CHC7DF09"
+        }
+      }
     },
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView"
