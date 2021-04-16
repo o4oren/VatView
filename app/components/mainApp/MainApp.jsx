@@ -21,7 +21,7 @@ export default function mainApp() {
 
         if(staticAirspaceData.version == null
             || staticAirspaceData.firBoundaries.length === 0
-            || staticAirspaceData.firs.length === 0
+            || Object.keys(staticAirspaceData.firs).length
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
             console.log('Fetching vatspy static data!');
@@ -32,7 +32,7 @@ export default function mainApp() {
 
 
     useEffect(() => {
-        if(staticAirspaceData.firBoundaries != null && staticAirspaceData.firs.length > 0) {
+        if(staticAirspaceData.firBoundaries != null && Object.keys(staticAirspaceData.firs).length) {
             console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
             const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000);

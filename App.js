@@ -42,13 +42,13 @@ export default function App() {
             firBoundaries: state.savedState.staticAirspaceData != null ? state.savedState.firBoundaries : [],
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
             airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : {},
-            firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : [],
-            uirs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.uirs : [],
+            firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : {},
+            uirs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.uirs : {},
             lastUpdated: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.lastUpdated : 0,
             version: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.version : 0
         }
     };
-
+    console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
         <Provider store={store}>

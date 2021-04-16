@@ -3,17 +3,23 @@ import {Card} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import AtcDetails from './AtcDetails';
 import {useSelector} from 'react-redux';
+import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 
 export default function CtrDetails({ctr, prefix}) {
-    const firs = useSelector(state => state.staticAirspaceData.firs);
-    const fir = firs.find(f => f.icao === prefix);
+    const data = useSelector(state => state.staticAirspaceData);
+    const fir = getFirFromPrefix(prefix, data.firs);
+    const country = getFirCountry(fir, data.countries);
 
     return <View style={styles.container}>
         <Card.Title
-            title = {prefix}
-            subtitle = {fir ? fir.name : null}
+            title = {fir ? (fir.name + ' ' + (country.callsign ? country.callsign : 'Center')) : null}
         />
-        {ctr.map(c => <AtcDetails atc={c} key={c.key} />)}
+        {ctr.map(c => <AtcDetails
+            atc={c}
+            key={c.key}
+            country={country}
+            fir={fir}
+        />)}
     </View>;
 }
 
