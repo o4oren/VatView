@@ -18,7 +18,7 @@ const resolveAtcCallsign = (atc, countries, firs, airports) => {
         const airport = getAirportByCode(prefix, airports);
         country = airport ? getFirCountry(airport.fir, countries) : null;
         if(!airport || !country) return null;
-        return <Text>{airport.name + ', ' + atc.callsing.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long}</Text>;
+        return <Text>{airport.name + ', ' + atc.callsign.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long}</Text>;
     } else if(atc.facility == FSS) {
         // TODO check uir name
         return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;

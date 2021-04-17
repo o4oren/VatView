@@ -1,12 +1,12 @@
 import MapView from 'react-native-maps';
 import {Image} from 'react-native';
 import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {Platform, View} from 'react-native';
 
 export default function generatePilotMarkers(pilots) {
-
+    const selectedClient = useSelector(state => state.app.selectedClient);
     const dispatch = useDispatch();
 
     const pilotMarkers = pilots.map( pilot => {
@@ -17,7 +17,11 @@ export default function generatePilotMarkers(pilots) {
 
         let onPress = (pilot) => {
             // console.log('pilot pressed', pilot);
-            dispatch(allActions.appActions.clientSelected(pilot));
+            if(selectedClient && pilot.callsign == selectedClient.callsign) {
+                dispatch(allActions.appActions.clientSelected(null));
+            } else {
+                dispatch(allActions.appActions.clientSelected(pilot));
+            }
         };
 
         return <View key={pilot.key} last_updated={pilot.last_updated}>
