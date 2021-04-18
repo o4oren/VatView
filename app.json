@@ -2,7 +2,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
@@ -27,9 +27,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
-      "buildNumber": "1.1.0",
+      "buildNumber": "1.2.1",
       "config": {
-        "googleMapsApiKey": "REPLACE"
+        "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },
@@ -40,19 +40,20 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "REPLACE"
+          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
       "package": "com.gevahim.vatview",
-      "versionCode": 18
+      "versionCode": 22,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "config": {
         "firebase": {
-          "apiKey": "REPLACE",
-          "measurementId": "REPLACE"
+          "apiKey": "AIzaSyDOP1CEX52YZxis0Lp0xm1FX247Oc96L-U",
+          "measurementId": "G-C7CHC7DF09"
         }
       }
     },
