@@ -10,13 +10,12 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import AppLoading from 'expo-app-loading';
-import * as Analytics from 'expo-firebase-analytics';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default function App() {
     const [state, setState] = useState({isReady: false});
-    Analytics.logEvent('session_start');
+
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();
