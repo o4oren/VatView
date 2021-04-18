@@ -11,6 +11,7 @@ const resolveAtcCallsign = (atc, countries, firs, airports, uirs) => {
     const fir = getFirFromPrefix(prefix, firs);
     let country = fir ? getFirCountry(fir.icao, countries) : null;
 
+
     if(atc.facility == CTR) {
         if(!fir || !country) return null;
         return <Text>{fir ? (fir.name + ' ' + ((country.callsign) ? country.callsign : 'Center')) : null}</Text>;
@@ -18,7 +19,7 @@ const resolveAtcCallsign = (atc, countries, firs, airports, uirs) => {
         const airport = getAirportByCode(prefix, airports);
         country = airport ? getFirCountry(airport.fir, countries) : null;
         if(!airport || !country) return null;
-        return <Text>{airport.name + ', ' + atc.callsign.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long}</Text>;
+        return <Text>{airport.name + ', ' + (atc.callsign.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long)}</Text>;
     } else if(atc.facility == FSS) {
         return <Text>{(uirs[prefix] ? uirs[prefix].name  + ', ' : '') + facilities[atc.facility].long}</Text>;
     }
