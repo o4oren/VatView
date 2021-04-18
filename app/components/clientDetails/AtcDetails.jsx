@@ -6,7 +6,7 @@ import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 import {getAirportByCode} from '../../common/airportTools';
 import {useSelector} from 'react-redux';
 
-const resolveAtcCallsign = (atc, countries, firs, airports) => {
+const resolveAtcCallsign = (atc, countries, firs, airports, uirs) => {
     const prefix = atc.callsign.split('_')[0];
     const fir = getFirFromPrefix(prefix, firs);
     let country = fir ? getFirCountry(fir.icao, countries) : null;
@@ -20,8 +20,7 @@ const resolveAtcCallsign = (atc, countries, firs, airports) => {
         if(!airport || !country) return null;
         return <Text>{airport.name + ', ' + atc.callsign.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long}</Text>;
     } else if(atc.facility == FSS) {
-        // TODO check uir name
-        return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
+        return <Text>{(uirs[prefix] ? uirs[prefix].name  + ', ' : '') + facilities[atc.facility].long}</Text>;
     }
     return <Text>{fir.name + ', ' + facilities[atc.facility].long}</Text>;
 };
@@ -37,7 +36,7 @@ export default function AtcDetails(props) {
                 left = {() => <Avatar.Image source={props.atc.image} size={32} style={styles.avatar} />}
                 right = {() => <Text>{props.atc.frequency}</Text>}
             />
-            {resolveAtcCallsign(props.atc, data.countries, data.firs, data.airports)}
+            {resolveAtcCallsign(props.atc, data.countries, data.firs, data.airports, data.uirs)}
             <Text>Logged in at: {new Date(props.atc.logon_time).toUTCString()}</Text>
             {(props.showAtis && props.atc.text_atis) ? <Card.Content>
                 <Text>Message:</Text>

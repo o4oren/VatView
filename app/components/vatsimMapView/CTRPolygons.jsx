@@ -12,7 +12,6 @@ export default function generateCtrPolygons(ctr, fss) {
     const polygons = [];
 
     let onPress = (client) => {
-        console.log(client);
         dispatch(allActions.appActions.clientSelected(client));
     };
 
@@ -56,6 +55,10 @@ export default function generateCtrPolygons(ctr, fss) {
                     }
                 }
             }
+        }
+
+        if(client.callsign==='UKR_CTR') {
+            console.log(airspace);
         }
 
         // if we did not resolve firs, we check if UIR
