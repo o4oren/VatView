@@ -16,7 +16,7 @@ const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default function App() {
     const [state, setState] = useState({isReady: false});
-    Analytics.logEvent('App started');
+    Analytics.logEvent('session_start');
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();

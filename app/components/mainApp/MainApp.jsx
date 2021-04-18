@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
@@ -8,6 +8,8 @@ import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
+import * as Analytics from 'expo-firebase-analytics';
+
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
@@ -43,8 +45,26 @@ export default function mainApp() {
     }, [staticAirspaceData]);
 
     const Stack = createStackNavigator();
+    const navigationRef = useRef();
+    const routeNameRef = useRef();
 
-    return  <NavigationContainer>
+    return  <NavigationContainer
+        ref={navigationRef}
+        onReady={() =>
+            (routeNameRef.current = navigationRef.current.getCurrentRoute().name)
+        }
+        onStateChange={async () => {
+            const previousRouteName = routeNameRef.current;
+            const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+            if (previousRouteName !== currentRouteName) {
+                await Analytics.setCurrentScreen(currentRouteName, currentRouteName);
+            }
+
+            // Save the current route name for later comparison
+            routeNameRef.current = currentRouteName;
+        }}
+    >
         <Stack.Navigator
             screenOptions={({ navigation }) => ({
                 headerTitle: 'VatView',
@@ -64,11 +84,11 @@ export default function mainApp() {
                                 onPress={() => openMenu()}
                             />
                         }>
-                        {/*<Menu.Item onPress={() => {*/}
-                        {/*    navigation.navigate('Settings');*/}
-                        {/*    closeMenu();*/}
-                        {/*}} icon="cog" title="Settings" />*/}
-                        {/*<Divider />*/}
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('Settings');
+                            closeMenu();
+                        }} icon="cog" title="Settings" />
+                        <Divider />
                         <Menu.Item onPress={() => {
                             navigation.navigate('About');
                             closeMenu();
@@ -85,10 +105,10 @@ export default function mainApp() {
                 name="About"
                 component={About}
             />
-            <Stack.Screen
-                name="Settings"
-                component={Settings}
-            />
+            {/*<Stack.Screen*/}
+            {/*    name="Settings"*/}
+            {/*    component={Settings}*/}
+            {/*/>*/}
         </Stack.Navigator>
     </NavigationContainer>;
 
