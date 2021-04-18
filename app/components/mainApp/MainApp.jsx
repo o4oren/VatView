@@ -84,11 +84,11 @@ export default function mainApp() {
                                 onPress={() => openMenu()}
                             />
                         }>
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('Settings');
-                            closeMenu();
-                        }} icon="cog" title="Settings" />
-                        <Divider />
+                        {/*<Menu.Item onPress={() => {*/}
+                        {/*    navigation.navigate('Settings');*/}
+                        {/*    closeMenu();*/}
+                        {/*}} icon="cog" title="Settings" />*/}
+                        {/*<Divider />*/}
                         <Menu.Item onPress={() => {
                             navigation.navigate('About');
                             closeMenu();
@@ -105,10 +105,10 @@ export default function mainApp() {
                 name="About"
                 component={About}
             />
-            {/*<Stack.Screen*/}
-            {/*    name="Settings"*/}
-            {/*    component={Settings}*/}
-            {/*/>*/}
+            <Stack.Screen
+                name="Settings"
+                component={Settings}
+            />
         </Stack.Navigator>
     </NavigationContainer>;
 
