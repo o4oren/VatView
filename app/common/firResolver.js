@@ -8,9 +8,7 @@ export function getFirFromPrefix(prefix, firs) {
 }
 
 export function getFirCountry(fir, countries) {
-    console.log(fir);
     if(!fir || !countries)
         return null;
-    console.log('fir', fir);
     return countries[fir.substr(0,2)];
 }

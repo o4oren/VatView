@@ -57,10 +57,6 @@ export default function generateCtrPolygons(ctr, fss) {
             }
         }
 
-        if(client.callsign==='UKR_CTR') {
-            console.log(airspace);
-        }
-
         // if we did not resolve firs, we check if UIR
         if (!airspace.firs[0]) {
             const uir = staticAirspaceData.uirs[callsignPrefix];
