@@ -23,9 +23,13 @@ export default function mainApp() {
 
         if(staticAirspaceData.version == null
             || staticAirspaceData.firBoundaries.length === 0
-            || Object.keys(staticAirspaceData.firs).length
+            || Object.keys(staticAirspaceData.firs).length === 0
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
+            console.log('ver', staticAirspaceData.version);
+            console.log('l', Object.keys(staticAirspaceData.firs).length);
+            console.log('static', STATIC_DATA_VERSION);
+
             console.log('Fetching vatspy static data!');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
