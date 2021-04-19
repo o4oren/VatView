@@ -5,6 +5,7 @@ export const CLIENT_SELECTED = 'CLIENT_SELECTED';
 export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
 export const PILOTS_FILTER_CLICKED = 'PILOTS_FILTER_CLICKED';
 export const SEARCH_QUERY_CHANGED = 'SEARCH_QUERY_CHANGED';
+export const AIRPORT_SELECTED = 'AIRPORT_SELECTED';
 
 const initialRegionLoaded = (region) => {
     return {
@@ -24,6 +25,13 @@ const clientSelected = (client) => {
     return {
         type: CLIENT_SELECTED,
         payload: {selectedClient: client}
+    };
+};
+
+const airportSelected = (airport) => {
+    return {
+        type: AIRPORT_SELECTED,
+        payload: {selectedAirport: airport}
     };
 };
 
@@ -59,6 +67,7 @@ export default {
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
+    airportSelected: airportSelected,
     atcFilterClicked: atcFilterClicked,
     pilotsFilterClicked: pilotsFilterClicked,
     searchQueryChanged: searchQueryChanged

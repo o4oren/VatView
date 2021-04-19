@@ -1,4 +1,4 @@
-import {CLIENT_SELECTED, INITIAL_REGION_LOADED,
+import {CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
     ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED} from '../actions/appActions';
 
 const appReducer = (state = {
@@ -6,6 +6,7 @@ const appReducer = (state = {
     theme: {},
     navigation: {},
     selectedClient: undefined,
+    selectedAirport: undefined,
     filters: {pilots: true, atc: true, searchQuery: ''}
 }, action) => {
     switch (action.type) {
@@ -13,6 +14,8 @@ const appReducer = (state = {
         return {...state, initialRegion: action.payload.initialRegion};
     case CLIENT_SELECTED:
         return {...state, selectedClient: action.payload.selectedClient};
+    case AIRPORT_SELECTED:
+        return {...state, selectedAirport: action.payload.selectedAirport};
     case PILOTS_FILTER_CLICKED:
         return {...state, filters: {
             searchQuery: state.filters.searchQuery,

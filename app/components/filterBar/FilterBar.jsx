@@ -35,7 +35,6 @@ export default function FilterBar() {
             dense='true'
             onChangeText={onChangeSearch}
             value={filters.searchQuery}
-            // onChangeText={text => setText(text)}
         />
     </View>;
 }

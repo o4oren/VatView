@@ -4,6 +4,7 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AirportDetailsView from '../airportView/AirportDetailsView';
 
 export default function MainTabNavigator() {
     const Tab = createBottomTabNavigator();
@@ -45,6 +46,19 @@ export default function MainTabNavigator() {
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons
                         name="format-list-bulleted"
+                        size={size}
+                        color={color}
+                    />
+                ),
+            }}
+        />
+        <Tab.Screen
+            name="Airports"
+            component={AirportDetailsView}
+            options={{
+                tabBarIcon: ({color, size}) => (
+                    <MaterialCommunityIcons
+                        name="airport"
                         size={size}
                         color={color}
                     />

@@ -1,5 +1,4 @@
 import {getDistanceFromLatLonInNm} from './distance';
-import React from 'react';
 
 /**
  * A function that accepts the airports object and a code and returns an airport object if the code exits in icao/iata
@@ -18,6 +17,23 @@ export const getAirportByCode = (code, airports) => {
     return null;
 };
 
+/**
+ * A function that accepts the airports object and the start of an airport name and returns an airport object if the code exits in icao/iata
+ * @param code
+ * @param airports
+ * @returns {null|*}
+ */
+export const findAirportsByNamePrefix = (searchTerm, airports) => {
+    if(!searchTerm || !airports)
+        return [];
+    searchTerm = searchTerm.toLowerCase();
+    const list = Object.entries(airports.icao).filter(([, airport]) => {
+        return airport.name.toLowerCase().startsWith(searchTerm) ||
+            airport.icao.toLowerCase().startsWith(searchTerm) ||
+            airport.iata.toLowerCase().startsWith(searchTerm);
+    }).map(airport => airport[1]);
+    return list;
+};
 
 /**
  * A null safe function to return airport code from icao or iata code

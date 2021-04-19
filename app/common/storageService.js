@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system';
 const SAVED_INITIAL_REGION = 'SAVED_INITIAL_REGION';
 const FIR_BOUNDARIES = 'FIR_BOUNDARIES';
 const STATIC_AIRSPACE_DATA = 'STATIC_AIRSPACE_DATA';
+const SELECTED_AIRPORT = 'SELECTED_AIRPORT';
 
 export const clearStorage = () => {
     AsyncStorage.clear();
@@ -37,6 +38,14 @@ export const storeInitialRegion = async (region) => {
     }
 };
 
+export const storeSelectedAirport = async (selectedAirport) => {
+    try {
+        await AsyncStorage.setItem(SELECTED_AIRPORT, JSON.stringify(selectedAirport));
+    } catch (err) {
+        console.log('Error storing selected Airport', err);
+    }
+};
+
 export const retrieveSavedState = async () => {
     const retrievedData = {};
     try {
@@ -47,6 +56,16 @@ export const retrieveSavedState = async () => {
         }
     } catch (err) {
         console.log('Error retrieving initial region', err);
+    }
+
+    try {
+        const selectedAirport = await AsyncStorage.getItem(SELECTED_AIRPORT);
+
+        if (selectedAirport !== null) {
+            retrievedData.initialRegion = JSON.parse(selectedAirport);
+        }
+    } catch (err) {
+        console.log('Error retrieving selectedAirport', err);
     }
 
     try {
