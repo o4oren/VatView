@@ -1,6 +1,6 @@
 import React from 'react';
 import {Avatar, Caption, Card, ProgressBar, Text} from 'react-native-paper';
-import {getDistanceFromLatLonInNm} from '../../common/distance';
+import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
 import {StyleSheet, View} from 'react-native';
 
 export default function PilotDetails(props) {
