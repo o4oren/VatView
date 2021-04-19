@@ -40,7 +40,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+          "apiKey": "[REPLACE]"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
@@ -52,7 +52,7 @@
       "favicon": "./assets/favicon.png",
       "config": {
         "firebase": {
-          "apiKey": "AIzaSyDOP1CEX52YZxis0Lp0xm1FX247Oc96L-U",
+          "apiKey": "[REPLACE]",
           "measurementId": "G-C7CHC7DF09"
         }
       }
