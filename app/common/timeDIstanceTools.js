@@ -13,3 +13,24 @@ export const getDistanceFromLatLonInNm = (point1, point2) => {
     const d = R * c; // Distance in km
     return Math.trunc(d);
 };
+
+export const getDateFromString = (timeString) => {
+    return new Date(timeString);
+};
+
+/**
+ * Notice - accepts a Date object
+ * @param Date date
+ * @returns {string}
+ */
+export const getZuluTimeFromDate = (date) => {
+    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + 'Z';
+};
+
+export const addTimeToDate = (date, timeString) => {
+    const hours = timeString % 100;
+    const  minutes = timeString / 100;
+    const d =  new Date(timeString);
+    d.setHours(d.getHours() + hours, d.getMinutes() + minutes);
+    return d;
+};

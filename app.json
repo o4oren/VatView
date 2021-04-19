@@ -40,7 +40,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "[REPLACE]"
+          "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],

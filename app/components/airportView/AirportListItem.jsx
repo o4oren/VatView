@@ -1,13 +1,77 @@
-import {Card, Paragraph, Text} from 'react-native-paper';
-import React from 'react';
+import {Card, Text, List, Avatar} from 'react-native-paper';
+import React, {useState} from 'react';
+import { MaterialIcons } from '@expo/vector-icons';
+import theme from '../../common/theme';
+import {StyleSheet} from 'react-native';
+import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
+
+const generateAtcList = (airportAtc) => {
+    return airportAtc.map(atc =>
+        <List.Item
+            key={airportAtc.callsign + '_' airportAtc.cid}
+            title={atc.callsign + ' - ' + atc.name}
+            description={'Frequency: ' + atc.frequency}
+            left={() => <Avatar.Image source={atc.image} size={32} style={styles.avatar}/>}
+        />);
+};
+
+const generateFlightsList = (flights) => {
+
+    return flights.map(flight => {
+        const eta = addTimeToDate(getDateFromString(flight.flight_plan.deptime), flight.flight_plan.enroute_time);
+        return <List.Item
+            key={flight.callsign + '_' + flight.cid}
+            title={flight.callsign + ' - ' + flight.name}
+            left={() => <Avatar.Image source={flight.image} size={flight.imageSize} style={styles.avatar}/>}
+            description={
+                flight.flight_plan.aircraft_short + ' from ' + flight.flight_plan.departure + ' to ' + flight.flight_plan.arrival +'\n'
+                + 'Departure time: ' + getZuluTimeFromDate(getDateFromString(flight.flight_plan.deptime)) + '   ETA: ' + getZuluTimeFromDate(eta)
+            }
+        />;});
+};
 
 export default function AirportListItem({airport, country, airportAtc, flights}) {
-    console.log('f', flights);
+    const [expandedArrivals, setExpandedArrivals] = React.useState(false);
+    const [expandedDepartures, setExpandedDepartures] = React.useState(false);
+    const [expandedAtc, setExpandedAtc] = React.useState(false);
+
+    const pressArrivals = () => setExpandedArrivals(!expandedArrivals);
+    const pressDepartures = () => setExpandedDepartures(!expandedDepartures);
+    const pressAtc = () => setExpandedAtc(!expandedAtc);
+
     return <Card>
         <Card.Title title={airport.icao} subtitle={airport.name +', ' + country} />
         <Card.Content>
-            <Text>ATC: {airportAtc ? airportAtc.length : null}</Text>
-            <Text>Departures: {flights.departures.length} Arrival: {flights.arrivals.length}</Text>
+            <List.Accordion
+                key={1}
+                title={(airportAtc ? airportAtc.length : 0) + ' ATC positions'}
+                left={props => <MaterialIcons name={'flight-takeoff'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
+                expanded={expandedAtc}
+                onPress={pressAtc}>
+                {airportAtc ? generateAtcList(airportAtc) : null}
+            </List.Accordion>
+            <List.Accordion
+                key={2}
+                title={flights.departures.length + ' Departing flights'}
+                left={props => <MaterialIcons name={'flight-takeoff'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
+                expanded={expandedDepartures}
+                onPress={pressDepartures}>
+                {generateFlightsList(flights.departures)}
+            </List.Accordion>
+            <List.Accordion
+                key={3}
+                title={flights.arrivals.length + ' Arriving flights'}
+                left={props => <MaterialIcons name={'flight-land'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
+                expanded={expandedArrivals}
+                onPress={pressArrivals}>
+                {generateFlightsList(flights.arrivals)}
+            </List.Accordion>
         </Card.Content>
     </Card>;
 }
+
+const styles = StyleSheet.create({
+    avatar: {
+        backgroundColor: 'transparent'
+    }
+});

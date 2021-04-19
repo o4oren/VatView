@@ -1,4 +1,4 @@
-import {getDistanceFromLatLonInNm} from './distance';
+import {getDistanceFromLatLonInNm} from './timeDIstanceTools';
 
 /**
  * A function that accepts the airports object and a code and returns an airport object if the code exits in icao/iata
@@ -35,6 +35,7 @@ export const findAirportsByNamePrefix = (searchTerm, airports) => {
     return list;
 };
 
+
 /**
  * A null safe function to return airport code from icao or iata code
  * @param code
@@ -49,6 +50,18 @@ export const getAirportNameByCode = (code, airports) => {
     console.log('null airport', code);
     return '';
 };
+
+/**
+ * Finds the airport's country for code
+ * @param icao
+ * @param countries
+ * @returns {null|*}
+ */
+export function getAirportCountryFromIcao(icao, countries) {
+    if(!icao || !countries)
+        return null;
+    return countries[icao.substr(0,2)];
+}
 
 /**
  * Gets pilot and airport objects and calculates distance in NM
