@@ -1,3 +1,6 @@
+
+const now = new Date();
+
 function deg2rad(deg) {
     return deg * (Math.PI / 180);
 }
@@ -14,8 +17,18 @@ export const getDistanceFromLatLonInNm = (point1, point2) => {
     return Math.trunc(d);
 };
 
+/**
+ * Accepts VATSIM time string (xxxx) and returns a date object
+ * @param timeString
+ * @returns Date
+ */
 export const getDateFromString = (timeString) => {
-    return new Date(timeString);
+    console.log(timeString);
+    const hours = timeString / 100;
+    const minutes = timeString % 100;
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDay(), hours, minutes));
+    console.log(d);
+    return d;
 };
 
 /**
@@ -30,7 +43,8 @@ export const getZuluTimeFromDate = (date) => {
 export const addTimeToDate = (date, timeString) => {
     const hours = timeString % 100;
     const  minutes = timeString / 100;
-    const d =  new Date(timeString);
+    const d = new Date(date);
     d.setHours(d.getHours() + hours, d.getMinutes() + minutes);
+    console.log('add', date, timeString);
     return d;
 };
