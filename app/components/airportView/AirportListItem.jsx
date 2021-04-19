@@ -8,7 +8,7 @@ import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../commo
 const generateAtcList = (airportAtc) => {
     return airportAtc.map(atc =>
         <List.Item
-            key={airportAtc.callsign + '_' airportAtc.cid}
+            key={airportAtc.callsign + '_' + airportAtc.cid}
             title={atc.callsign + ' - ' + atc.name}
             description={'Frequency: ' + atc.frequency}
             left={() => <Avatar.Image source={atc.image} size={32} style={styles.avatar}/>}
