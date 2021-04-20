@@ -93,8 +93,12 @@ export const getAircraftIcon = (code) => {
         return [icon, size];
 
     for (const [, value] of Object.entries(aircraftCodes)) {
-        if(value.codes.includes(code))
-            return [value.icon, value.size];
+        value.codes.forEach(aCode => {
+            if(code.includes(aCode)) {
+                icon = value.icon;
+                size = value.size;
+            }
+        });
     }
 
     return [icon, size];
