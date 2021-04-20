@@ -27,7 +27,6 @@ export const getDateFromString = (timeString) => {
     const hours = timeString / 100;
     const minutes = timeString % 100;
     const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDay(), hours, minutes));
-    console.log(d);
     return d;
 };
 
@@ -45,6 +44,5 @@ export const addTimeToDate = (date, timeString) => {
     const  minutes = timeString / 100;
     const d = new Date(date);
     d.setHours(d.getHours() + hours, d.getMinutes() + minutes);
-    console.log('add', date, timeString);
     return d;
 };
