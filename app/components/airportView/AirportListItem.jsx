@@ -8,7 +8,7 @@ import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../commo
 const generateAtcList = (airportAtc) => {
     return airportAtc.map(atc =>
         <List.Item
-            key={airportAtc.callsign + '_' airportAtc.cid}
+            key={airportAtc.callsign + '_' + airportAtc.cid}
             title={atc.callsign + ' - ' + atc.name}
             description={'Frequency: ' + atc.frequency}
             left={() => <Avatar.Image source={atc.image} size={32} style={styles.avatar}/>}
@@ -16,18 +16,19 @@ const generateAtcList = (airportAtc) => {
 };
 
 const generateFlightsList = (flights) => {
-
     return flights.map(flight => {
-        const eta = addTimeToDate(getDateFromString(flight.flight_plan.deptime), flight.flight_plan.enroute_time);
+        const depTime = getDateFromString(flight.flight_plan.deptime);
+        const eta = addTimeToDate(depTime, flight.flight_plan.enroute_time);
         return <List.Item
             key={flight.callsign + '_' + flight.cid}
             title={flight.callsign + ' - ' + flight.name}
             left={() => <Avatar.Image source={flight.image} size={flight.imageSize} style={styles.avatar}/>}
             description={
-                flight.flight_plan.aircraft_short + ' from ' + flight.flight_plan.departure + ' to ' + flight.flight_plan.arrival +'\n'
-                + 'Departure time: ' + getZuluTimeFromDate(getDateFromString(flight.flight_plan.deptime)) + '   ETA: ' + getZuluTimeFromDate(eta)
+                flight.flight_plan.aircraft_short + ' from ' + flight.flight_plan.departure + ' to ' + flight.flight_plan.arrival + '\n'
+                + 'Departure time: ' + getZuluTimeFromDate(depTime) + '   ETA: ' + getZuluTimeFromDate(eta)
             }
-        />;});
+        />;
+    });
 };
 
 export default function AirportListItem({airport, country, airportAtc, flights}) {
