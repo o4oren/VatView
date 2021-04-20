@@ -44,7 +44,6 @@ export default function AirportSearchList() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const renderItem = (item) =>{
-        console.log(item);
         return <AirportListItem
             key={item.item.icao}
             airport = {item.item}

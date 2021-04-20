@@ -6,9 +6,10 @@ import {StyleSheet} from 'react-native';
 import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
 
 const generateAtcList = (airportAtc) => {
+    console.log(airportAtc);
     return airportAtc.map(atc =>
         <List.Item
-            key={airportAtc.callsign + '_' + airportAtc.cid}
+            key={atc.callsign + '_' + atc.cid}
             title={atc.callsign + ' - ' + atc.name}
             description={'Frequency: ' + atc.frequency}
             left={() => <Avatar.Image source={atc.image} size={32} style={styles.avatar}/>}
@@ -19,6 +20,7 @@ const generateFlightsList = (flights) => {
     return flights.map(flight => {
         const depTime = getDateFromString(flight.flight_plan.deptime);
         const eta = addTimeToDate(depTime, flight.flight_plan.enroute_time);
+
         return <List.Item
             key={flight.callsign + '_' + flight.cid}
             title={flight.callsign + ' - ' + flight.name}

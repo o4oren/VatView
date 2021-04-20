@@ -23,7 +23,6 @@ export const getDistanceFromLatLonInNm = (point1, point2) => {
  * @returns Date
  */
 export const getDateFromString = (timeString) => {
-    console.log(timeString);
     const hours = timeString / 100;
     const minutes = timeString % 100;
     const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDay(), hours, minutes));
@@ -36,13 +35,13 @@ export const getDateFromString = (timeString) => {
  * @returns {string}
  */
 export const getZuluTimeFromDate = (date) => {
-    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + 'Z';
+    const s = date.getUTCHours().toString().padStart(2, '0') + ':' + date.getUTCMinutes().toString().padStart(2, '0') + 'Z';
+    return s;
 };
 
 export const addTimeToDate = (date, timeString) => {
-    const hours = timeString % 100;
-    const  minutes = timeString / 100;
-    const d = new Date(date);
-    d.setHours(d.getHours() + hours, d.getMinutes() + minutes);
+    const hours = Math.floor(timeString / 100);
+    const  minutes = timeString % 100;
+    const d = new Date(Date.UTC(date.getFullYear(), date.getUTCMonth(), date.getUTCDay(),date.getUTCHours() + hours, date.getUTCMinutes() + minutes));
     return d;
 };
