@@ -7,6 +7,7 @@ import {getAirportByCode} from '../../common/airportTools';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
+import * as Analytics from 'expo-firebase-analytics';
 
 export default function generateAirportMarkers(airportAtc, airports) {
     if(!airports || !airports.icao || airports.icao.length === 0)
@@ -17,6 +18,10 @@ export default function generateAirportMarkers(airportAtc, airports) {
     const airportMarkers = [];
 
     let onPress = (airport) => {
+        Analytics.logEvent('SelectAirport', {
+            callsign: airport.icao,
+            purpose: 'Clicking an airport atc',
+        });
         dispatch(allActions.appActions.clientSelected(airport));
     };
 
