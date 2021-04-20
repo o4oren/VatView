@@ -5,6 +5,7 @@ import theme from '../../common/theme';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
+import * as Analytics from 'expo-firebase-analytics';
 
 export default function generateCtrPolygons(ctr, fss) {
     const dispatch = useDispatch();
@@ -12,6 +13,10 @@ export default function generateCtrPolygons(ctr, fss) {
     const polygons = [];
 
     let onPress = (client) => {
+        Analytics.logEvent('SelectAirport', {
+            callsign: client.callsign,
+            purpose: 'Clicking a CTR polygon',
+        });
         dispatch(allActions.appActions.clientSelected(client));
     };
 
