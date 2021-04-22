@@ -32,7 +32,7 @@ export const iconSizes = {
 
 const aircraftCodes = {
     b737codes: {
-        codes: ['B737', 'B764', 'B733', 'B734', 'B735', 'B736', 'B737', 'B738', 'B739'],
+        codes: ['B737', 'B764', 'B733', 'B734', 'B735', 'B736', 'B737', 'B738', 'B739', ],
         icon: mapIcons.B737,
         size: iconSizes.MED_SIZE
     },
@@ -53,7 +53,7 @@ const aircraftCodes = {
         size: iconSizes.JUMBO_SIZE
     },
     a330codes: {
-        codes: ['A330', 'A364', 'A333', 'A338', 'A339', 'A350', 'A351', 'A359', 'A306', 'A310'],
+        codes: ['A330', 'A364', 'A333', 'A336', 'A338', 'A339', 'A350', 'A351', 'A359', 'A35K', 'A306', 'A310'],
         icon: mapIcons.A330,
         size: iconSizes.LARGE_SIZE
     },
@@ -73,13 +73,13 @@ const aircraftCodes = {
         size: iconSizes.LARGE_SIZE
     },
     bizjetcodes: {
-        codes: ['C25C', 'E190', 'E170', 'C550', 'E195', 'CR9', 'GJ5', 'DF7', 'B721', 'B722'],
+        codes: ['C25C', 'C510', 'C560', 'E190', 'E170', 'C550', 'E195', 'CR9', 'GJ5', 'DF7', 'FA50', 'F27', 'F28', 'B721', 'B722'],
         icon: mapIcons.F100,
         size: iconSizes.SMALL_SIZE
     },
     gacodes: {
-        codes: ['C172', 'C182', 'C152', 'PA22', 'C208', 'V206', 'CRJ1', 'CRJ2', 'CRJX', 'C25B', 'C56X', 'C500', 'C510',
-            'C560', 'F2TH', 'E120'],
+        codes: ['C172', 'C182', 'C152', 'PA22', 'C210', 'C208', 'V206', 'CRJ1', 'CRJ2', 'CRJX', 'C25B', 'C56X', 'C500', 'C510',
+            'C560', 'F2TH', 'E120', 'P28', 'P31', 'P44'],
         icon: mapIcons.C172,
         size: iconSizes.EXTRA_SMALL_SIZE
     },
