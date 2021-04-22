@@ -28,7 +28,8 @@ export default function VatsimMapView() {
             (selectedClient.icao != null && selectedClient.icao !== prevSelectedClient.icao)
         )) {
             sheetRef.current.snapTo(1);
-        }
+        } else if(selectedClient.cid == prevSelectedClient.cid || selectedClient.icao !== prevSelectedClient.icao)
+            return;
         setPrevSelectedClient(selectedClient);
     }, [selectedClient]);
 
