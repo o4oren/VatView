@@ -1,6 +1,6 @@
 import {
     DATA_UPDATED,
-    ERROR, MARKERS_UPDATED,
+    ERROR
 } from '../actions/vatsimLiveDataActions';
 
 const vatsimLiveDataReducer = (state = {general: {}, clients: {pilots: [], app: {}}, servers: [], prefiles: []},
