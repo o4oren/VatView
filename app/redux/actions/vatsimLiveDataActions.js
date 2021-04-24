@@ -14,13 +14,6 @@ const dataUpdated = (data) => {
     };
 };
 
-const markersUpdated = (markers) => {
-    return {
-        type: MARKERS_UPDATED,
-        payload: {data: markers}
-    };
-};
-
 const updateData = async (dispatch, getState) => {
     const airports = getState().staticAirspaceData.airports;
     console.log('fetching vatsim data feed');
@@ -113,6 +106,5 @@ const updateData = async (dispatch, getState) => {
 
 export default {
     dataUpdated: dataUpdated,
-    updateData: updateData,
-    markersUpdated: markersUpdated
+    updateData: updateData
 };
