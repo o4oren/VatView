@@ -11,8 +11,6 @@ const vatsimLiveDataReducer = (state = {general: {}, clients: {pilots: [], app: 
             servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
     case ERROR:
         return { ...state, error: action.payload.error };
-    case MARKERS_UPDATED:
-        return { ...state, markers: action.payload.data };
     default:
         return state;
     }
