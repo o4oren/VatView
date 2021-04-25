@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
-import {Searchbar, Text} from 'react-native-paper';
+import {Searchbar} from 'react-native-paper';
 import {findAirportsByNamePrefix, getAirportCountryFromIcao} from '../../common/airportTools';
 import AirportListItem from './AirportListItem';
-import theme from '../../common/theme';
 
 const calculateFlights = (airportIcao, pilots, prefiles) => {
     const departures = [];
@@ -42,12 +41,19 @@ export default function AirportSearchList() {
 
     const [filteredAirportList, setFilteredAirportList] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        onChangeSearch(searchTerm);
+        setIsReady(true);
+    }, [isReady]);
 
     const renderItem = (item) =>{
+        const country = getAirportCountryFromIcao(item.item.icao, countries);
         return <AirportListItem
             key={item.item.icao}
             airport = {item.item}
-            country = {getAirportCountryFromIcao(item.item.icao, countries).country}
+            country = {country ? country.country : ''}
             airportAtc = {(airportAtc[item.item.icao] && airportAtc[item.item.icao].length > 0) ? airportAtc[item.item.icao] : null}
             flights = {calculateFlights(item.item.icao, pilots, prefiles)}
         />;
@@ -59,7 +65,10 @@ export default function AirportSearchList() {
         if(searchTerm.length > 1) {
             setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
         } else {
-            setFilteredAirportList([]);
+            const list = Object.keys(airports.icao).filter(a => {
+                return Object.keys(airportAtc).includes(a);
+            }).map(icao => airports.icao[icao]);
+            setFilteredAirportList(list);
         }
     };
 
@@ -74,11 +83,11 @@ export default function AirportSearchList() {
             />
         </View>
         {
-            searchTerm ? <FlatList
+            <FlatList
                 data={filteredAirportList}
                 renderItem={renderItem}
                 keyExtractor={item => item.icao}
-            /> : <Text style={styles.placeholder}>Type and airport name or code</Text>
+            />
         }
 
     </View>;
