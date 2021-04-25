@@ -6,7 +6,6 @@ import {StyleSheet} from 'react-native';
 import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
 
 const generateAtcList = (airportAtc) => {
-    console.log(airportAtc);
     return airportAtc.map(atc =>
         <List.Item
             key={atc.callsign + '_' + atc.cid}
