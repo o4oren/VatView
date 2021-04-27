@@ -9,6 +9,7 @@ import About from '../About/About';
 import {Divider, IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
 import * as Analytics from 'expo-firebase-analytics';
+import NetworkStatus from '../networkStatus/newworkStatus';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -97,6 +98,10 @@ export default function mainApp() {
                             navigation.navigate('About');
                             closeMenu();
                         }} icon="information-variant" title="About" />
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('Network status');
+                            closeMenu();
+                        }} icon="cloud-outline" title="Network status" />
                     </Menu>
                 ),
             })}
@@ -112,6 +117,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="Settings"
                 component={Settings}
+            />
+            <Stack.Screen
+                name="Network status"
+                component={NetworkStatus}
             />
         </Stack.Navigator>
     </NavigationContainer>;
