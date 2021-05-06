@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Paragraph, Avatar, Text, Title, Divider, Card} from 'react-native-paper';
-import {StyleSheet, View, Image, ScrollView, Linking} from 'react-native';
+import {Text, Title, Card} from 'react-native-paper';
+import {StyleSheet, View, Image, ScrollView} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {useSelector} from 'react-redux';
 
