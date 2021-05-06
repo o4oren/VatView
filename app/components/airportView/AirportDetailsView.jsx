@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
-import {StyleSheet, FlatList, SafeAreaView, View} from 'react-native';
-import {useSelector} from 'react-redux';
+import React from 'react';
+import {StyleSheet, SafeAreaView, View} from 'react-native';
 import theme from '../../common/theme';
 import AirportSearchList from './AirportSearchList';
 

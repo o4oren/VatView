@@ -1,5 +1,5 @@
-import {Card, Text, List, Avatar} from 'react-native-paper';
-import React, {useState} from 'react';
+import {Card, List, Avatar} from 'react-native-paper';
+import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import theme from '../../common/theme';
 import {StyleSheet} from 'react-native';
