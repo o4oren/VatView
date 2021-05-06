@@ -36,7 +36,7 @@ export default function VatsimListView() {
                     (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.cid && c.cid == filters.searchQuery) ||
                     (c.flight_plan && c.flight_plan.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    ((filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0, 3), airports) != null)));
+                    (filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0, 3), airports) != null));
             });
         }
         return aggregatedClients;

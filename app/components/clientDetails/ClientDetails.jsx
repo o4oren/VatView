@@ -19,11 +19,9 @@ export default function ClientDetails(props) {
         // if airport
         if(props.client.icao != null) {
             const airport = props.client;
-
-            if(airport != null && airport.icao != null)
-                return <AirportAtcDetils
-                    airport = {airport}
-                />;
+            return <AirportAtcDetils
+                airport = {airport}
+            />;
         }
 
         // if CTR
