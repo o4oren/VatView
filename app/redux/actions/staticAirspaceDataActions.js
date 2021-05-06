@@ -101,7 +101,7 @@ const getVATSpyData = async (dispatch) => {
         {
             section = line.trim();
         }
-        if (!line.startsWith(';') && !line.startsWith('[') && !line=='') {
+        if (!line.startsWith(';') && !line.startsWith('[') && shortline != '') {
             const tokens = line.split('|');
             switch (section) {
             case COUNTRIES:

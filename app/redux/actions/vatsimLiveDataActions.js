@@ -4,7 +4,7 @@ import {getAirportByCode} from '../../common/airportTools';
 import createKey from '../../common/createKey';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
-export const MARKERS_UPDATED = 'MARKERS_UPDATED';
+export const ERROR = 'ERROR';
 export const DATA_FETCH_ERROR = 'DATA_FETCH_ERROR';
 
 const dataUpdated = (data) => {
@@ -106,5 +106,5 @@ const updateData = async (dispatch, getState) => {
 
 export default {
     dataUpdated: dataUpdated,
-    updateData: updateData
+    updateData: updateData,
 };
