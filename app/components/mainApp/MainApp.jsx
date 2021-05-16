@@ -10,6 +10,7 @@ import {IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
 import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/newworkStatus';
+import EventDetailsView from '../EventsView/EventDetailsView';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -126,6 +127,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="Network status"
                 component={NetworkStatus}
+            />
+            <Stack.Screen
+                name="Event Details"
+                component={EventDetailsView}
             />
         </Stack.Navigator>
     </NavigationContainer>;

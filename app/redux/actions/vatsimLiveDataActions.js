@@ -104,7 +104,7 @@ const updateData = async (dispatch, getState) => {
 
         json.clients = clients;
 
-        console.log('json', json);
+        // console.log('json', json);
 
         dispatch(dataUpdated(json));
     } catch (error) {
