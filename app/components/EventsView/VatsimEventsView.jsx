@@ -7,6 +7,7 @@ import {Searchbar} from 'react-native-paper';
 
 export default function VatsimEventsView({navigation}) {
     const events = useSelector(state => state.vatsimLiveData.events);
+    const [filteredEvents, setFilteresEvents] = useState(events);
     const [searchTerm, setSearchTerm] = useState('');
     const [isReady, setIsReady] = useState(false);
 
@@ -17,17 +18,17 @@ export default function VatsimEventsView({navigation}) {
 
     const onChangeSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
-        if(searchTerm.length > 1) {
-            // setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
+        if(searchTerm.length > 2) {
+            const list = events.filter(event => {
+                return event.name.includes(searchTerm)
+                || (event.airports && (event.airports.filter(a => {return a.icao == searchTerm.toUpperCase();}) > 0));
+            });
+            setFilteresEvents(list);
         } else {
-            // const list = Object.keys(airports.icao).filter(a => {
-            //     return Object.keys(airportAtc).includes(a);
-            // }).map(icao => airports.icao[icao]);
-            // setFilteredAirportList(list);
+            setFilteresEvents(events);
         }
     };
 
-    console.log('n', navigation);
     const renderItem = ({item}) => (
         <EventListItem
             event={item}
@@ -35,8 +36,6 @@ export default function VatsimEventsView({navigation}) {
         />
     );
 
-
-    console.log('events', events);
     return <SafeAreaView style={theme.blueGrey.safeAreaView}>
         <View style={styles.container}>
             <Searchbar
@@ -49,7 +48,7 @@ export default function VatsimEventsView({navigation}) {
         </View>
         <View style={styles.container}>
             <FlatList
-                data={events}
+                data={filteredEvents}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
             />

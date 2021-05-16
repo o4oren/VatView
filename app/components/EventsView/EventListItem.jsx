@@ -8,8 +8,15 @@ export default function EventListItem({event, navigation}) {
     const imageHeight = Math.round((dimensions.width) * 9 / 16);
     const imageWidth = dimensions.width;
 
+    const onPress = () => {
+        navigation.navigate('Event Details', {
+            event
+        });
+    };
 
-    return <Card>
+    return <Card
+        onPress={onPress}
+    >
         <Card.Content>
             <Title>{event.name}</Title>
             <HTML html={event.short_description} />
