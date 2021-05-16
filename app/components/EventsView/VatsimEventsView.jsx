@@ -1,32 +1,52 @@
-import React from 'react';
-import {StyleSheet, FlatList, SafeAreaView, View, Text, Image} from 'react-native';
-import FilterBar from '../filterBar/FilterBar';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, FlatList, SafeAreaView, View} from 'react-native';
 import theme from '../../common/theme';
 import {useSelector} from 'react-redux';
-import {Dimensions} from 'react-native';
+import EventListItem from './EventListItem';
+import {Searchbar} from 'react-native-paper';
 
-export default function VatsimEventsView() {
+export default function VatsimEventsView({navigation}) {
     const events = useSelector(state => state.vatsimLiveData.events);
-    const dimensions = Dimensions.get('window');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isReady, setIsReady] = useState(false);
 
-    const imageHeight = Math.round(dimensions.width * 9 / 16);
-    const imageWidth = dimensions.width;
+    useEffect(() => {
+        onChangeSearch(searchTerm);
+        setIsReady(true);
+    }, [isReady]);
 
+    const onChangeSearch = (searchTerm) => {
+        setSearchTerm(searchTerm);
+        if(searchTerm.length > 1) {
+            // setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
+        } else {
+            // const list = Object.keys(airports.icao).filter(a => {
+            //     return Object.keys(airportAtc).includes(a);
+            // }).map(icao => airports.icao[icao]);
+            // setFilteredAirportList(list);
+        }
+    };
+
+    console.log('n', navigation);
     const renderItem = ({item}) => (
-        <View>
-            <Text>Event: {item.name}</Text>
-            <Image
-                source={{uri: item.banner}}
-                resizeMode={'cover'}
-                style={{ width: imageWidth, height: imageHeight, marginBottom: 10 }}
-            />
-        </View>
+        <EventListItem
+            event={item}
+            navigation={navigation}
+        />
     );
 
 
     console.log('events', events);
     return <SafeAreaView style={theme.blueGrey.safeAreaView}>
-        <FilterBar />
+        <View style={styles.container}>
+            <Searchbar
+                style={styles.textInput}
+                palceholder="airport"
+                dense='true'
+                onChangeText={onChangeSearch}
+                value={searchTerm}
+            />
+        </View>
         <View style={styles.container}>
             <FlatList
                 data={events}
@@ -39,7 +59,18 @@ export default function VatsimEventsView() {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
-        flex: 1
+        backgroundColor: '#4d7199',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        padding: 5
+    },
+    placeholder: {
+        alignSelf:'center'
+    },
+    textInput: {
+        flex: 1,
+        borderRadius: 25,
+        maxWidth: 300
     }
 });
