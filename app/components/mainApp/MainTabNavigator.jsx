@@ -5,6 +5,7 @@ import VatsimListView from '../vatsimListView/VatsimListView';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
+import VatsimEventsView from '../EventsView/VatsimEventsView';
 
 export default function MainTabNavigator() {
     const Tab = createBottomTabNavigator();
@@ -59,6 +60,19 @@ export default function MainTabNavigator() {
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons
                         name="airport"
+                        size={size}
+                        color={color}
+                    />
+                ),
+            }}
+        />
+        <Tab.Screen
+            name="Events"
+            component={VatsimEventsView}
+            options={{
+                tabBarIcon: ({color, size}) => (
+                    <MaterialCommunityIcons
+                        name="calendar"
                         size={size}
                         color={color}
                     />
