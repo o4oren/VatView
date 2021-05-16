@@ -19,7 +19,7 @@ export default function EventListItem({event, navigation}) {
     >
         <Card.Content>
             <Title>{event.name}</Title>
-            <HTML html={event.short_description} />
+            <HTML source={{html: event.short_description}} />
         </Card.Content>
         <Card.Cover source={{ uri: event.banner }} style={{height: imageHeight, width: imageWidth}}/>
     </Card>;
