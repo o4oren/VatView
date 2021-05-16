@@ -37,6 +37,11 @@ export default function mainApp() {
         }
     }, []);
 
+    // load events
+    useEffect(() => {
+        dispatch(allActions.vatsimLiveDataActions.updateEvents);
+    });
+
 
     useEffect(() => {
         if(staticAirspaceData.firBoundaries != null && Object.keys(staticAirspaceData.firs).length) {

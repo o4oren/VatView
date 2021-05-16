@@ -1,14 +1,17 @@
 import {
     DATA_UPDATED,
+    EVENTS_UPDATED,
     ERROR
 } from '../actions/vatsimLiveDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: {pilots: [], app: {}}, servers: [], prefiles: []},
+const vatsimLiveDataReducer = (state = {general: {}, clients: {pilots: [], app: {}}, servers: [], prefiles: [], events: []},
     action) => {
     switch (action.type) {
     case DATA_UPDATED:
         return {...state, general: action.payload.data.general, clients: action.payload.data.clients, controllers: action.payload.data.controllers,
             servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
+    case EVENTS_UPDATED:
+        return {...state, events: action.payload.events.data};
     case ERROR:
         return { ...state, error: action.payload.error };
     default:

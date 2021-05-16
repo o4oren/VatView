@@ -4,6 +4,7 @@ import {getAirportByCode} from '../../common/airportTools';
 import createKey from '../../common/createKey';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
+export const EVENTS_UPDATED = 'EVENTS_UPDATED';
 export const ERROR = 'ERROR';
 export const DATA_FETCH_ERROR = 'DATA_FETCH_ERROR';
 
@@ -11,6 +12,13 @@ const dataUpdated = (data) => {
     return {
         type: DATA_UPDATED,
         payload: {data: data}
+    };
+};
+
+const eventsUpdated = (data) => {
+    return {
+        type: EVENTS_UPDATED,
+        payload: {events: data}
     };
 };
 
@@ -104,7 +112,24 @@ const updateData = async (dispatch, getState) => {
     }
 };
 
+const updateEvents = async (dispatch, getState) => {
+    console.log('fetching events feed');
+    try {
+        const response = await fetch(
+            'https://my.vatsim.net/api/v1/events/all'
+        );
+        let json = await response.json();
+        dispatch(eventsUpdated(json));
+
+    } catch (error) {
+        dispatch({type: DATA_FETCH_ERROR});
+    }
+};
+
+
 export default {
     dataUpdated: dataUpdated,
     updateData: updateData,
+    updateEvents: updateEvents,
+    eventsUpdated: eventsUpdated
 };
