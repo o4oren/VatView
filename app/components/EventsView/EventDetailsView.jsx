@@ -3,6 +3,7 @@ import {StyleSheet, View, Dimensions} from 'react-native';
 import {Card, Text} from 'react-native-paper';
 import HTML from 'react-native-render-html';
 import {ScrollView} from 'react-native';
+import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 
 export default function EventDetailsView(props) {
     const dimensions = Dimensions.get('window');
@@ -26,6 +27,8 @@ export default function EventDetailsView(props) {
             <Card.Title title={event.name} />
             <Card.Cover source={{uri: event.banner}} style={{height: imageHeight, width: imageWidth}}/>
             <Card.Content>
+                <Text>Start time: {getDateFromUTCString(event.start_time).toUTCString()}</Text>
+                <Text>End time: {getDateFromUTCString(event.end_time).toUTCString()}</Text>
                 <HTML source={{html: event.description}}/>
                 {addRoutesIfExist()}
             </Card.Content>
@@ -33,6 +36,8 @@ export default function EventDetailsView(props) {
     </ScrollView>;
 
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

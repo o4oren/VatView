@@ -29,6 +29,11 @@ export const getDateFromString = (timeString) => {
     return d;
 };
 
+export const getDateFromUTCString = (timeString) => {
+    const d = new Date(Date.parse(timeString));
+    return d;
+};
+
 /**
  * Notice - accepts a Date object
  * @param Date date
