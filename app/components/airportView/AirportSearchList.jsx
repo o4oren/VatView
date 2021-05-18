@@ -76,7 +76,7 @@ export default function AirportSearchList() {
         <View style={styles.container}>
             <Searchbar
                 style={styles.textInput}
-                palceholder="airport"
+                placeholder="Airport ICAO"
                 dense='true'
                 onChangeText={onChangeSearch}
                 value={searchTerm}
