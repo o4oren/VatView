@@ -31,7 +31,7 @@ export default function FilterBar() {
 
         <Searchbar
             style={styles.textInput}
-            palceholder="Callsign, Name, CID or Aircraft"
+            placeholder="Callsign, Name, CID or Aircraft"
             dense='true'
             onChangeText={onChangeSearch}
             value={filters.searchQuery}

@@ -95,7 +95,7 @@ export default function VatsimEventsView({navigation}) {
             />
             <Searchbar
                 style={styles.textInput}
-                palceholder="Description, airport or unit"
+                placeholder="Description or airport"
                 dense='true'
                 onChangeText={onChangeSearch}
                 value={searchTerm}
@@ -127,12 +127,9 @@ const styles = StyleSheet.create({
         padding: 5,
         height: '100%'
     },
-    placeholder: {
-        alignSelf:'center'
-    },
     textInput: {
         flex: 1,
         borderRadius: 25,
-        maxWidth: 300
+        maxWidth: 300,
     }
 });
