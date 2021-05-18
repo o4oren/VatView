@@ -101,7 +101,7 @@ export default function VatsimEventsView({navigation}) {
                 value={searchTerm}
             />
         </View>
-        <View style={styles.container}>
+        <View style={styles.flatlist}>
             <FlatList
                 data={filteredEvents}
                 renderItem={renderItem}
@@ -113,11 +113,19 @@ export default function VatsimEventsView({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.white,
+        backgroundColor: '#4d7199',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 5
+    },
+    flatlist: {
+        backgroundColor: Colors.white,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        padding: 5,
+        height: '100%'
     },
     placeholder: {
         alignSelf:'center'
