@@ -113,7 +113,7 @@ export default function VatsimEventsView({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#4d7199',
+        backgroundColor: Colors.white,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
