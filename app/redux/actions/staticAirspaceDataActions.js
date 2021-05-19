@@ -89,6 +89,7 @@ const getVATSpyData = async (dispatch) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/VATSpy.dat');
     let body = await response.text();
+
     const lines = body.split(/\r?\n/);
     let section = COUNTRIES;
     let countries = {};
@@ -101,7 +102,8 @@ const getVATSpyData = async (dispatch) => {
         {
             section = line.trim();
         }
-        if (!line.startsWith(';') && !line.startsWith('[') && shortline != '') {
+
+        if (!line.startsWith(';') && !line.startsWith('[') && line != '') {
             const tokens = line.split('|');
             switch (section) {
             case COUNTRIES:
@@ -158,6 +160,7 @@ const getVATSpyData = async (dispatch) => {
         }
     });
     const lastUpdated = Date.now();
+    console.log('before storing');
     await storeStaticAirspaceData({
         countries: countries,
         airports: airports,
