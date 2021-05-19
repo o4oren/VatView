@@ -105,7 +105,7 @@ export default function VatsimEventsView({navigation}) {
             <FlatList
                 data={filteredEvents}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
             />
         </View>
     </SafeAreaView>;

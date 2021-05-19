@@ -29,7 +29,7 @@ export default function EventDetailsView(props) {
             <Card.Content>
                 <Text>Start time: {getDateFromUTCString(event.start_time).toUTCString()}</Text>
                 <Text>End time: {getDateFromUTCString(event.end_time).toUTCString()}</Text>
-                <HTML source={{html: event.description}}/>
+                <HTML source={{html: event.description || '<p></p>'}}/>
                 {addRoutesIfExist()}
             </Card.Content>
         </Card>
