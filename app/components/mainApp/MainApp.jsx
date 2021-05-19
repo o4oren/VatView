@@ -24,13 +24,14 @@ export default function mainApp() {
         const now = Date.now();
 
         if(staticAirspaceData.version == null
+            || staticAirspaceData.version < STATIC_DATA_VERSION
+            || !staticAirspaceData.firBoundaries
             || staticAirspaceData.firBoundaries.length === 0
             || Object.keys(staticAirspaceData.firs).length === 0
-            || staticAirspaceData.version < STATIC_DATA_VERSION
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
-            console.log('ver', staticAirspaceData.version);
-            console.log('l', Object.keys(staticAirspaceData.firs).length);
-            console.log('static', STATIC_DATA_VERSION);
+            // console.log('ver', staticAirspaceData.version);
+            // console.log('l', Object.keys(staticAirspaceData.firs).length);
+            // console.log('static', STATIC_DATA_VERSION);
 
             console.log('Fetching vatspy static data!');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
@@ -41,7 +42,7 @@ export default function mainApp() {
     // load events
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateEvents);
-    });
+    }, []);
 
 
     useEffect(() => {
