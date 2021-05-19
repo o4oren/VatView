@@ -22,7 +22,7 @@ export default function EventListItem({event, navigation}) {
             <Title>{event.name}</Title>
             <Text>Start time: {getDateFromUTCString(event.start_time).toUTCString()}</Text>
             <Text>End time: {getDateFromUTCString(event.end_time).toUTCString()}</Text>
-            <HTML source={{html: event.short_description}} />
+            <HTML source={{html: event.short_description || '<p></p>'}} />
         </Card.Content>
         <Card.Cover source={{ uri: event.banner }} style={{height: imageHeight, width: imageWidth}}/>
     </Card>;
