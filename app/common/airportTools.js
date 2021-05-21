@@ -27,6 +27,9 @@ export const findAirportsByNamePrefix = (searchTerm, airports) => {
     if(!searchTerm || !airports)
         return [];
     searchTerm = searchTerm.toLowerCase();
+    if(!airports || !airports.icao) {
+        return [];
+    }
     const list = Object.entries(airports.icao).filter(([, airport]) => {
         return airport.name.toLowerCase().startsWith(searchTerm) ||
             airport.icao.toLowerCase().startsWith(searchTerm) ||

@@ -65,6 +65,10 @@ export default function AirportSearchList() {
         if(searchTerm.length > 1) {
             setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
         } else {
+            if(!airports || !airports.icao) {
+                setFilteredAirportList([]);
+                return;
+            }
             const list = Object.keys(airports.icao).filter(a => {
                 return Object.keys(airportAtc).includes(a);
             }).map(icao => airports.icao[icao]);
