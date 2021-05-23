@@ -6,46 +6,51 @@ import allActions from '../../redux/actions';
 import {Platform, View} from 'react-native';
 import * as Analytics from 'expo-firebase-analytics';
 
-export default function generatePilotMarkers(pilots) {
+export default function generatePilotMarkers(pilots, mapBoundaries) {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const dispatch = useDispatch();
-
     const pilotMarkers = pilots.map( pilot => {
-        const styleIos = Platform.OS === 'ios' ?
-            {
-                transform: [{rotate: `${pilot.heading}deg`}],
-            } : {};
+        if(pilot.latitude > mapBoundaries.lamin - 10
+            && pilot.latitude  < mapBoundaries.lamax + 10
+            && pilot.longitude > mapBoundaries.lomin - 10
+            && pilot.longitude < mapBoundaries.lomax + 10
+        ) {
+            const styleIos = Platform.OS === 'ios' ?
+                {
+                    transform: [{rotate: `${pilot.heading}deg`}],
+                } : {};
 
-        let onPress = (pilot) => {
-            Analytics.logEvent('SelectedPilot', {
-                callsign: pilot.callsign,
-                purpose: 'Clicking a flight',
-            });
-            if(selectedClient && pilot.callsign == selectedClient.callsign) {
-                dispatch(allActions.appActions.clientSelected(null));
-            } else {
-                dispatch(allActions.appActions.clientSelected(pilot));
-            }
-        };
+            let onPress = (pilot) => {
 
-        return <View key={pilot.key} last_updated={pilot.last_updated}>
-            <MapView.Marker
-                coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-                title={pilot.callsign}
-                anchor={{x: 0.5, y: 0.5}}
-                rotation={pilot.heading}
-                onPress={() => onPress(pilot)}
-                tracksViewChanges={false}
-                tracksInfoWindowChanges={false}
-            >
-                <Image
-                    source={pilot.image}
-                    fadeDuration={0}
-                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-                />
-            </MapView.Marker>
-        </View>;
-            
+                Analytics.logEvent('SelectedPilot', {
+                    callsign: pilot.callsign,
+                    purpose: 'Clicking a flight',
+                });
+                if(selectedClient && pilot.callsign == selectedClient.callsign) {
+                    dispatch(allActions.appActions.clientSelected(null));
+                } else {
+                    dispatch(allActions.appActions.clientSelected(pilot));
+                }
+            };
+
+            return <View key={pilot.key} last_updated={pilot.last_updated}>
+                <MapView.Marker
+                    coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+                    title={pilot.callsign}
+                    anchor={{x: 0.5, y: 0.5}}
+                    rotation={pilot.heading}
+                    onPress={() => onPress(pilot)}
+                    tracksViewChanges={false}
+                    tracksInfoWindowChanges={false}
+                >
+                    <Image
+                        source={pilot.image}
+                        fadeDuration={0}
+                        style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                    />
+                </MapView.Marker>
+            </View>;
+        }
     });
 
     return pilotMarkers;
