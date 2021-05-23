@@ -49,7 +49,7 @@ export default function mainApp() {
         if(staticAirspaceData.firBoundaries != null && Object.keys(staticAirspaceData.firs).length) {
             console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
-            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 60 * 1000);
+            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 15 * 1000);
             return () => {
                 clearInterval(interval);
             };
