@@ -10,7 +10,7 @@ export default function EventDetailsView(props) {
     const imageHeight = Math.round((dimensions.width) * 9 / 16);
     const imageWidth = dimensions.width;
     const event = props.route.params.event;
-    console.log('event', event);
+    // console.log('event', event);
 
     const addRoutesIfExist = () => {
         if(event.routes.length == 0) {
