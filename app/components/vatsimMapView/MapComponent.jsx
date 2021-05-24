@@ -5,31 +5,12 @@ import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {useDispatch} from 'react-redux';
 
 const MapComponent = ({clients, selectedClient, airports, screenSize, initialRegion}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
-    const [mapBoundaries, setMapBoundaries ] = useState(null);
-
-    const regionChanged = (region) => {
-        if (ref == null)
-            return;
-        ref.current.getMapBoundaries().then(boundaries => {
-            const lamin = Math.min(boundaries.northEast.latitude, boundaries.southWest.latitude);
-            const lamax = Math.max(boundaries.northEast.latitude, boundaries.southWest.latitude);
-            const lomin = Math.min(boundaries.northEast.longitude, boundaries.southWest.longitude);
-            const lomax = Math.max(boundaries.northEast.longitude, boundaries.southWest.longitude);
-            setMapBoundaries({
-                lamin: lamin,
-                lamax: lamax,
-                lomin: lomin,
-                lomax: lomax
-            });
-        });
-        dispatch(allActions.appActions.saveInitialRegion(region));
-    };
 
     // console.log(ref);
     return <MapView
@@ -39,19 +20,16 @@ const MapComponent = ({clients, selectedClient, airports, screenSize, initialReg
         // provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
         initialRegion={initialRegion}
-        onMapReady={region => regionChanged(region)}
-        onRegionChangeComplete={region => regionChanged(region)}
+        onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, airports, selectedClient, mapBoundaries)}
+        {getMarkers(clients, airports, selectedClient)}
     </MapView>;
 };
 
-const getMarkers = (clients, airports, selectedClient, mapBoundaries) => {
-    if(mapBoundaries == {})
-        return [];
+const getMarkers = (clients, airports, selectedClient) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
-        generatePilotMarkers(clients.pilots, mapBoundaries),
+        generatePilotMarkers(clients.pilots),
         generateAirportMarkers(clients.airportAtc, airports),
         renderToPath(airports, selectedClient),
         renderFromPath(airports, selectedClient)
