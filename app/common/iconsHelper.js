@@ -79,7 +79,7 @@ const aircraftCodes = {
     },
     gacodes: {
         codes: ['C172', 'C182', 'C152', 'PA22', 'C210', 'C208', 'V206', 'CRJ1', 'CRJ2', 'CRJX', 'C25B', 'C56X', 'C500', 'C510',
-            'C560', 'F2TH', 'E120', 'P28', 'P31', 'P44'],
+            'C560', 'F2TH', 'E120', 'P28', 'P31', 'P44', 'SREY'],
         icon: mapIcons.C172,
         size: iconSizes.EXTRA_SMALL_SIZE
     },
