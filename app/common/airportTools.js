@@ -24,10 +24,10 @@ export const getAirportByCode = (code, airports) => {
  * @returns {null|*}
  */
 export const findAirportsByNamePrefix = (searchTerm, airports) => {
-    if(!searchTerm || !airports)
+    if(!searchTerm || Object.keys(airports).length === 0 )
         return [];
     searchTerm = searchTerm.toLowerCase();
-    if(!airports || !airports.icao) {
+    if(!airports.icao || Object.keys(airports.icao).length === 0) {
         return [];
     }
     const list = Object.entries(airports.icao).filter(([, airport]) => {
