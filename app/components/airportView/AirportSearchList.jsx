@@ -59,7 +59,6 @@ export default function AirportSearchList() {
         />;
     };
 
-
     const onChangeSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
         if(searchTerm.length > 1) {
