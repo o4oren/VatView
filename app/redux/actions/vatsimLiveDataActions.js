@@ -108,6 +108,7 @@ const updateData = async (dispatch, getState) => {
 
         dispatch(dataUpdated(json));
     } catch (error) {
+        console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };
