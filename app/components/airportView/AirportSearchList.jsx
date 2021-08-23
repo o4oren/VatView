@@ -64,7 +64,7 @@ export default function AirportSearchList() {
         if(searchTerm.length > 1) {
             setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
         } else {
-            if(!airports || Object.keys(airports).length ===0 || !airports.icao) {
+            if(!airports || !airportAtc || Object.keys(airports).length === 0 || !airports.icao) {
                 setFilteredAirportList([]);
                 return;
             }
