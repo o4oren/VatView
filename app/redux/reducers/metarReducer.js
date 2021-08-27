@@ -3,11 +3,11 @@ import {
     METAR_UPDATED
 } from '../actions/metarActions';
 
-const metarReducer = (state = {metar: '', icao: ''},
+const metarReducer = (state = {metar: {}},
     action) => {
     switch (action.type) {
     case METAR_REQUESTED:
-        return {...state, metar: '', icao: action.payload.icao};
+        return {...state, metar: {}};
     case METAR_UPDATED:
         return {...state, metar: action.payload.metar};
     default:
