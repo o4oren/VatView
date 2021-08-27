@@ -6,6 +6,7 @@ export const METAR_UPDATED = 'METAR_UPDATED';
 const metarRequsted = (icao) => {
     return async (dispatch, getState) => {
         console.log('fetching metar data for ' + icao);
+        dispatch(metarUpdated({})); // clear the result
         try {
             const response = await fetch(
                 'https://metar.vatsim.net/data/metar.php?id=' + icao
