@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
+import * as Analytics from 'expo-firebase-analytics';
 
 export default function MetarView(props) {
     const metar = useSelector(state => state.metar.metar);
@@ -13,8 +14,13 @@ export default function MetarView(props) {
 
     const onChangeSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
-        if(searchTerm.length === 4)
+        if(searchTerm.length === 4) {
+            Analytics.logEvent('Requester METAR', {
+                icao: searchTerm,
+                purpose: 'Getting METAR',
+            });
             dispatch(allActions.metarActions.metarRequsted(searchTerm));
+        }
     };
 
     function displayClouds() {
@@ -30,7 +36,9 @@ export default function MetarView(props) {
     }
 
     function displayMetar() {
-        console.log(metar);
+        if(searchTerm.length != 4) {
+            return <View></View>;
+        }
         if(metar && Object.keys(metar).length > 0) {
             return   <View style={styles.metarDisplay}>
                 <Text>{metar.raw_text}</Text>
