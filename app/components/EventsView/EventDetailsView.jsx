@@ -18,7 +18,7 @@ export default function EventDetailsView(props) {
         }
         return <View>
             <Text>Route:</Text>
-            {event.routes.map(route => <Text>{route.departure} to {route.arrival}: {route.route}</Text>)}
+            {event.routes.map(route => <Text key={route.departure+'-'+route.arrival}>{route.departure} to {route.arrival}: {route.route}</Text>)}
         </View>;
     };
 
@@ -36,12 +36,3 @@ export default function EventDetailsView(props) {
     </ScrollView>;
 
 }
-
-
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'white',
-        flex: 1
-    }
-});

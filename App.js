@@ -4,7 +4,7 @@ import {applyMiddleware, createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
 import {Provider as PaperProvider} from 'react-native-paper';
-import {clearStorage, retrieveSavedState} from './app/common/storageService';
+import {retrieveSavedState} from './app/common/storageService';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
