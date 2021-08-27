@@ -68,11 +68,12 @@ export default function AirportListItem({airport, country, airportAtc, flights})
             subtitle={airport.name +', ' + country}
             right =   {() => <Button
                 icon="weather-partly-snowy-rainy"
-                title={'metar'}
                 color={'grey'}
-                onPress={() => navigation.navigate('Metar', {
-                    icao: airport.icao
-                })}
+                onPress={() => {
+                    navigation.navigate('Metar', {
+                        icao: airport.icao
+                    })
+                }}
             >METAR</Button>}
         />
         <Card.Content>
