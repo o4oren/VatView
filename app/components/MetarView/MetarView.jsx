@@ -68,9 +68,9 @@ export default function MetarView({route}) {
                 <Text>Observed on {metar.observed.toUTCString()}</Text>
                 <Text>Flight conditions: {metar.flight_category}</Text>
                 <Divider style={styles.divider}/>
-                <Text>Pressure: {Number(metar.barometer.hg).toFixed(2)} hg / {metar.barometer.mb} mb</Text>
+                <Text>Altimeter: {Number(metar.barometer.hg).toFixed(2)} hg / {Number(metar.barometer.mb).toFixed(0)} mb</Text>
                 <Text>Temperature: {metar.temperature.celsius} &#x2103; / {Number(metar.temperature.fahrenheit).toFixed(0)} &#x2109;</Text>
-                <Text>Due Point: {metar.dewpoint.celsius}c / {Number(metar.dewpoint.fahrenheit).toFixed(0)}f</Text>
+                <Text>Due Point: {metar.dewpoint.celsius} &#x2103; / {Number(metar.dewpoint.fahrenheit).toFixed(0)} &#x2109;</Text>
                 <Text>Winds: {metar.wind.degrees} at {Number(metar.wind.speed_kts).toFixed(0)} kts {}</Text>
                 {metar.wind.speed_kts != metar.wind.gust_kts ?
                     <Text>Gust: {Number(metar.wind.gust_kts).toFixed(0)} kts {}</Text>
