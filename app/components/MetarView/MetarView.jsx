@@ -5,17 +5,24 @@ import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import * as Analytics from 'expo-firebase-analytics';
+import {translateCondition, translateCloudCode} from '../../common/metarTools';
 
-export default function MetarView(props) {
+export default function MetarView({route}) {
     const metar = useSelector(state => state.metar.metar);
     const airports = useSelector(state => state.staticAirspaceData.airports);
     const [searchTerm, setSearchTerm] = useState('');
     const dispatch = useDispatch();
+    console.log('yoohoo', route);
+    useEffect(() => {
+        if(route.params && route.params.icao) {
+            onChangeSearch(route.params.icao);
+        }
+    }, [route.params]);
 
     const onChangeSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
         if(searchTerm.length === 4) {
-            Analytics.logEvent('Requester METAR', {
+            Analytics.logEvent('request_METAR', {
                 icao: searchTerm,
                 purpose: 'Getting METAR',
             });
@@ -23,17 +30,30 @@ export default function MetarView(props) {
         }
     };
 
-    function displayClouds() {
+    const displayClouds = () => {
         if(!metar.clouds || metar.clouds.length === 0) {
             return <Text>No clouds</Text>;
         }
         return <View>
             <Text>Clouds:</Text>
             {metar.clouds.map(layer => {
-                return <Text>{layer.code} at {layer.base_feet_agl} ft AGL</Text>;
+                return <Text key={layer.code+layer.base_feet_agl}>{translateCloudCode(layer.code)} at {layer.base_feet_agl} ft AGL</Text>;
             })}
         </View>;
-    }
+    };
+
+    const displayConditions = () => {
+        if(!metar.conditions || metar.conditions.length === 0) {
+            return null;
+        }
+        return <View>
+            <Text>
+                {metar.conditions.map(cond => {
+                    return translateCondition(cond.code) + ' ';
+                })}
+            </Text>
+        </View>;
+    };
 
     function displayMetar() {
         if(searchTerm.length != 4) {
@@ -44,7 +64,10 @@ export default function MetarView(props) {
                 <Text>{metar.raw_text}</Text>
                 <Divider style={styles.divider}/>
                 <Text>{airports && airports.icao && getAirportByCode(metar.icao, airports) ? getAirportByCode(metar.icao, airports).name : ''}</Text>
+                {displayConditions()}
                 <Text>Observed at {metar.observed.toUTCString()}</Text>
+                <Text>Flight conditions: {metar.flight_category}</Text>
+                <Divider style={styles.divider}/>
                 <Text>Pressure: {Number(metar.barometer.hg).toFixed(2)} hg / {metar.barometer.mb} mb</Text>
                 <Text>Temperature: {metar.temperature.celsius} &#x2103; / {Number(metar.temperature.fahrenheit).toFixed(0)} &#x2109;</Text>
                 <Text>Due Point: {metar.dewpoint.celsius}c / {Number(metar.dewpoint.fahrenheit).toFixed(0)}f</Text>
@@ -52,11 +75,11 @@ export default function MetarView(props) {
                 {metar.wind.speed_kts != metar.wind.gust_kts ?
                     <Text>Gust: {Number(metar.wind.gust_kts).toFixed(0)} kts {}</Text>
                     : null}
+                <Text>Humidity: {Number(metar.humidity_percent).toFixed(0)}%</Text>
+                <Divider style={styles.divider}/>
                 <Text>Visibility: {metar.visibility.miles} sm</Text>
                 {metar.ceiling ? <Text>Ceiling: {metar.ceiling.code} @ {metar.ceiling.feet_agl} ft AGL</Text> : <View />}
                 {displayClouds()}
-                <Text>Humidity: {Number(metar.humidity_percent).toFixed(0)}%</Text>
-                <Text>Flight conditions: {metar.flight_category}</Text>
             </View>;
         }
         return null;
