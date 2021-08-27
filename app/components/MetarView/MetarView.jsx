@@ -65,7 +65,7 @@ export default function MetarView({route}) {
                 <Divider style={styles.divider}/>
                 <Text>{airports && airports.icao && getAirportByCode(metar.icao, airports) ? getAirportByCode(metar.icao, airports).name : ''}</Text>
                 {displayConditions()}
-                <Text>Observed at {metar.observed.toUTCString()}</Text>
+                <Text>Observed on {metar.observed.toUTCString()}</Text>
                 <Text>Flight conditions: {metar.flight_category}</Text>
                 <Divider style={styles.divider}/>
                 <Text>Pressure: {Number(metar.barometer.hg).toFixed(2)} hg / {metar.barometer.mb} mb</Text>
@@ -78,7 +78,7 @@ export default function MetarView({route}) {
                 <Text>Humidity: {Number(metar.humidity_percent).toFixed(0)}%</Text>
                 <Divider style={styles.divider}/>
                 <Text>Visibility: {metar.visibility.miles} sm</Text>
-                {metar.ceiling ? <Text>Ceiling: {metar.ceiling.code} @ {metar.ceiling.feet_agl} ft AGL</Text> : <View />}
+                {metar.ceiling ? <Text>Ceiling: {translateCloudCode(metar.ceiling.code)} at {metar.ceiling.feet_agl} ft AGL</Text> : <View />}
                 {displayClouds()}
             </View>;
         }
