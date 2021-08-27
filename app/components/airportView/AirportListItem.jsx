@@ -1,10 +1,11 @@
-import {Card, List, Avatar} from 'react-native-paper';
+import {Card, List, Avatar, Button} from 'react-native-paper';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import theme from '../../common/theme';
 import {StyleSheet} from 'react-native';
 import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
 import * as Analytics from 'expo-firebase-analytics';
+import { useNavigation } from '@react-navigation/native';
 
 const generateAtcList = (airportAtc) => {
     return airportAtc.map(atc =>
@@ -37,6 +38,7 @@ export default function AirportListItem({airport, country, airportAtc, flights})
     const [expandedArrivals, setExpandedArrivals] = React.useState(false);
     const [expandedDepartures, setExpandedDepartures] = React.useState(false);
     const [expandedAtc, setExpandedAtc] = React.useState(false);
+    const navigation = useNavigation();
 
     const pressArrivals = () => {
         Analytics.logEvent('ExpandedArrivals', {
@@ -61,7 +63,18 @@ export default function AirportListItem({airport, country, airportAtc, flights})
     };
 
     return <Card>
-        <Card.Title title={airport.icao} subtitle={airport.name +', ' + country} />
+        <Card.Title
+            title={airport.icao}
+            subtitle={airport.name +', ' + country}
+            right =   {() => <Button
+                icon="weather-partly-snowy-rainy"
+                title={'metar'}
+                color={'grey'}
+                onPress={() => navigation.navigate('Metar', {
+                    icao: airport.icao
+                })}
+            >METAR</Button>}
+        />
         <Card.Content>
             <List.Accordion
                 key={1}
