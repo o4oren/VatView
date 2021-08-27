@@ -11,6 +11,7 @@ import Settings from '../settings/Settings';
 import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/newworkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
+import MetarView from '../MetarView/MetarView';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -109,6 +110,10 @@ export default function mainApp() {
                             navigation.navigate('Network status');
                             closeMenu();
                         }} icon="cloud-outline" title="Network status" />
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('Metar');
+                            closeMenu();
+                        }} icon="weather-partly-snowy-rainy" title="Metar" />
                     </Menu>
                 ),
             })}
@@ -132,6 +137,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="Event Details"
                 component={EventDetailsView}
+            />
+            <Stack.Screen
+                name="Metar"
+                component={MetarView}
             />
         </Stack.Navigator>
     </NavigationContainer>;
