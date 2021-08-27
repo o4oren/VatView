@@ -24,6 +24,7 @@
     "@react-navigation/material-top-tabs": "^5.3.10",
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.12.8",
+    "aewx-metar-parser": "^0.10.1",
     "expo": "^40.0.0",
     "expo-app-loading": "^1.0.1",
     "expo-file-system": "~9.3.0",
