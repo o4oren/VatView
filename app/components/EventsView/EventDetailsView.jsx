@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Dimensions} from 'react-native';
+import {View, Dimensions} from 'react-native';
 import {Card, Text} from 'react-native-paper';
 import HTML from 'react-native-render-html';
 import {ScrollView} from 'react-native';
