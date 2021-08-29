@@ -17,9 +17,9 @@ export default function VatsimListView() {
 
         // aggregatedClients.push(...clients.pilots);
         if(filters.atc) {
-            if(clients.airportAtc)
+            if(clients.airportAtc && Object.keys(clients.airportAtc).length > 0)
                 Object.entries(clients.airportAtc).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
-            if(clients.ctr)
+            if(clients.ctr && Object.keys(clients.ctr).length > 0)
                 Object.entries(clients.ctr).forEach(c => c[1].forEach(c1 => aggregatedClients.push(c1)));
         }
 

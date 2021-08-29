@@ -4,8 +4,16 @@ import {
     ERROR
 } from '../actions/vatsimLiveDataActions';
 
-const vatsimLiveDataReducer = (state = {general: {}, clients: {pilots: [], app: {}}, servers: [], prefiles: [], events: []},
-    action) => {
+const vatsimLiveDataReducer = (state = {general: {}, 
+    clients: {
+        ctr: {},
+        fss: {},
+        airportAtc: {},
+        pilots: [],
+        obs: [],
+        other: []
+    }, servers: [], prefiles: [], events: []},
+action) => {
     switch (action.type) {
     case DATA_UPDATED:
         return {...state, general: action.payload.data.general, clients: action.payload.data.clients, controllers: action.payload.data.controllers,
