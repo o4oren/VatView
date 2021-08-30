@@ -9,7 +9,7 @@ export default function FilterBar() {
     const dispatch = useDispatch();
 
     const pilotsFilterClicked = () => dispatch(allActions.appActions.pilotsFilterClicked());
-    const atcFilterCLicked = () => dispatch(allActions.appActions.atcFilterClicked());
+    const atcFilterClicked = () => dispatch(allActions.appActions.atcFilterClicked());
     const onChangeSearch = (text) => dispatch(allActions.appActions.searchQueryChanged(text));
 
     return <View style={styles.container}>
@@ -18,13 +18,15 @@ export default function FilterBar() {
             icon='airplane'
             onPress={pilotsFilterClicked}
             color="white"
+            accessibilityLabel='Pilots filter button'
             status={filters.pilots ? 'checked' : 'unchecked'}
         />
         <ToggleButton
             style={styles.button}
             icon='radar'
-            onPress={atcFilterCLicked}
+            onPress={atcFilterClicked}
             color="white"
+            accessibilityLabel='ATC filter button'
             status={filters.atc ? 'checked' : 'unchecked'}
         />
         {/*<ToggleButton style={styles.button} icon='earth' status='checked' color="white"></ToggleButton>*/}
