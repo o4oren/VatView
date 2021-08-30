@@ -18,7 +18,7 @@ export default function FilterBar() {
             icon='airplane'
             onPress={pilotsFilterClicked}
             color="white"
-            accessibilityLabel='Pilots filter button'
+            accessibilityLabel='Pilots filter'
             status={filters.pilots ? 'checked' : 'unchecked'}
         />
         <ToggleButton
@@ -26,7 +26,7 @@ export default function FilterBar() {
             icon='radar'
             onPress={atcFilterClicked}
             color="white"
-            accessibilityLabel='ATC filter button'
+            accessibilityLabel='Aur traffic control filter'
             status={filters.atc ? 'checked' : 'unchecked'}
         />
         {/*<ToggleButton style={styles.button} icon='earth' status='checked' color="white"></ToggleButton>*/}
