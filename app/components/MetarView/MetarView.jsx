@@ -80,6 +80,8 @@ export default function MetarView({route}) {
                 <Text>Visibility: {metar.visibility.miles} sm</Text>
                 {metar.ceiling ? <Text>Ceiling: {translateCloudCode(metar.ceiling.code)} at {metar.ceiling.feet_agl} ft AGL</Text> : <View />}
                 {displayClouds()}
+                <Divider style={styles.divider}/>
+                <Text>* The weather information presented in this app is obtained via the VATSIM network API, and is for use only in a simulated flight environment. Do not use for real world aviation or other activities.</Text>
             </View>;
         }
         return null;
