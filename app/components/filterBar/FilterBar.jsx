@@ -26,7 +26,7 @@ export default function FilterBar() {
             icon='radar'
             onPress={atcFilterClicked}
             color="white"
-            accessibilityLabel='Aur traffic control filter'
+            accessibilityLabel='Air traffic control filter'
             status={filters.atc ? 'checked' : 'unchecked'}
         />
         {/*<ToggleButton style={styles.button} icon='earth' status='checked' color="white"></ToggleButton>*/}
