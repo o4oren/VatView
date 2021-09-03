@@ -13,7 +13,6 @@ const metarRequsted = (icao) => {
             );
             let metar = await response.text();
             const metarObject = metarParser(metar);
-            console.log(metarObject);
 
             dispatch(metarUpdated(metarObject));
         } catch (error) {

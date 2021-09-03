@@ -12,7 +12,6 @@ export default function MetarView({route}) {
     const airports = useSelector(state => state.staticAirspaceData.airports);
     const [searchTerm, setSearchTerm] = useState('');
     const dispatch = useDispatch();
-    console.log('yoohoo', route);
     useEffect(() => {
         if(route.params && route.params.icao) {
             onChangeSearch(route.params.icao);
