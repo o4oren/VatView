@@ -13,7 +13,7 @@ const NetworkStatus = () => {
     const data = useSelector(state => state.vatsimLiveData);
     const getServers = () => {
         if(!data || !data.servers)
-            return null;
+            return '';
         return data.servers.map(s => (
             `${s.name} ${s.location} ${s.hostname_or_ip}\n`
         ));
