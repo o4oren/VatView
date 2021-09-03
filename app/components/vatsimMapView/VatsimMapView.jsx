@@ -50,10 +50,6 @@ export default function VatsimMapView() {
             onLayout={updateScreenSize}
         >
             <MapComponent
-                initialRegion={initialRegion}
-                clients={clients}
-                selectedClient={selectedClient}
-                airports={airports}
                 screenSize={screenSize}
             />
             <BottomSheet

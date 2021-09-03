@@ -6,11 +6,15 @@ import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
 import React, {useRef} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-const MapComponent = ({clients, selectedClient, airports, screenSize, initialRegion}) => {
+const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
+    const clients = useSelector(state => state.vatsimLiveData.clients);
+    const airports = useSelector(state => state.staticAirspaceData.airports);
+    const selectedClient = useSelector(state => state.app.selectedClient);
+    const initialRegion = useSelector(state => state.app.initialRegion);
 
     // console.log(ref);
     return <MapView
