@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Divider, Searchbar, Text} from 'react-native-paper';
+import {Divider, Searchbar, Text, IconButton} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import * as Analytics from 'expo-firebase-analytics';
@@ -70,7 +70,13 @@ export default function MetarView({route}) {
                 <Text>Altimeter: {Number(metar.barometer.hg).toFixed(2)} hg / {Number(metar.barometer.mb).toFixed(0)} mb</Text>
                 <Text>Temperature: {metar.temperature.celsius} &#x2103; / {Number(metar.temperature.fahrenheit).toFixed(0)} &#x2109;</Text>
                 <Text>Due Point: {metar.dewpoint.celsius} &#x2103; / {Number(metar.dewpoint.fahrenheit).toFixed(0)} &#x2109;</Text>
-                <Text>Winds: {metar.wind.degrees} at {Number(metar.wind.speed_kts).toFixed(0)} kts {}</Text>
+                <View style={styles.line}>
+                    {/*<IconButton*/}
+                    {/*    style={{transform: [{rotate: `${metar.wind.degrees - 180}deg`}],}}*/}
+                    {/*    icon={'navigation'}*/}
+                    {/*/>*/}
+                    <Text style={styles.centeredVertically}>Wind: {metar.wind.degrees} at {Number(metar.wind.speed_kts).toFixed(0)} kts {}</Text>
+                </View>
                 {metar.wind.speed_kts != metar.wind.gust_kts ?
                     <Text>Gust: {Number(metar.wind.gust_kts).toFixed(0)} kts {}</Text>
                     : null}
@@ -112,10 +118,16 @@ const styles = StyleSheet.create({
     metarDisplay: {
         padding: 15
     },
+    centeredVertically: {
+        alignSelf: 'center'
+    },
     textInput: {
         flex: 1,
         borderRadius: 25,
         maxWidth: 300
+    },
+    line: {
+        flexDirection: 'row'
     },
     divider: {
         marginTop: 5,
