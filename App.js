@@ -10,6 +10,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import AppLoading from 'expo-app-loading';
+import {DATA_FETCH_ERROR} from './app/redux/actions/vatsimLiveDataActions';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -55,9 +56,14 @@ if (isHermesEnabled || isAndroid) {
         // Intl.DateTimeFormat.__setDefaultTimeZone(RNLocalize.getTimeZone());
 
         //  Are you using Expo, use this instead of previous 2 lines
-        Intl.DateTimeFormat.__setDefaultTimeZone(
-            require('expo-localization').timezone
-        );
+        try {
+            Intl.DateTimeFormat.__setDefaultTimeZone(
+                require('expo-localization').timezone
+            );
+        }  catch (error) {
+            console.log('tz', require('expo-localization').timezone);
+            console.log(error);
+        }
     }
 }
 
