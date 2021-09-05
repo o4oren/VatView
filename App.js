@@ -10,7 +10,6 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import AppLoading from 'expo-app-loading';
-import {DATA_FETCH_ERROR} from './app/redux/actions/vatsimLiveDataActions';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 

@@ -6,7 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
-import {IconButton, Menu, ToggleButton} from 'react-native-paper';
+import {IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
 import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/newworkStatus';

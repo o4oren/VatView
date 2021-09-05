@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Divider, Searchbar, Text, IconButton} from 'react-native-paper';
+import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import * as Analytics from 'expo-firebase-analytics';
