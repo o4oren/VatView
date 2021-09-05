@@ -9,11 +9,9 @@ import MapComponent from './MapComponent';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
-    const airports = useSelector(state => state.staticAirspaceData.airports);
     const dispatch = useDispatch();
     const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
-    const initialRegion = useSelector(state => state.app.initialRegion);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const updateScreenSize = () => {
