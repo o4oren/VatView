@@ -10,6 +10,7 @@ const vatsimLiveDataReducer = (state = {general: {},
         fss: {},
         airportAtc: {},
         pilots: [],
+        controllers: [],
         obs: [],
         other: []
     }, servers: [], prefiles: [], events: []},
