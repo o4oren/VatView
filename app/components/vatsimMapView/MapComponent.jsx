@@ -33,7 +33,7 @@ const MapComponent = ({screenSize}) => {
 const getMarkers = (clients, airports, selectedClient) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
-        generatePilotMarkers(clients.pilots),
+        generatePilotMarkers(),
         generateAirportMarkers(clients.airportAtc, airports),
         renderToPath(airports, selectedClient),
         renderFromPath(airports, selectedClient)
