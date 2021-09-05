@@ -1,7 +1,7 @@
 
 const conditionCodes = {
-    minus: 'Light intensity',
-    plus: 'Heavy intensity',
+    minus: 'Light',
+    plus: 'Heavy',
     vc: 'In the vicinity',
     MI:	'Shallow',
     PR:	'Partial',
