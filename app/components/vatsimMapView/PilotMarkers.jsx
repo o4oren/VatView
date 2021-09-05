@@ -6,8 +6,10 @@ import allActions from '../../redux/actions';
 import {Platform, View} from 'react-native';
 import * as Analytics from 'expo-firebase-analytics';
 
-export default function generatePilotMarkers(pilots) {
+export default function generatePilotMarkers() {
     const selectedClient = useSelector(state => state.app.selectedClient);
+    const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
+
     const dispatch = useDispatch();
 
     const pilotMarkers = pilots.map( pilot => {
