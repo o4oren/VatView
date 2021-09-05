@@ -1,11 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {getAirportByCode} from '../../common/airportTools';
 import * as Analytics from 'expo-firebase-analytics';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
+import {LinearGradient} from 'expo-linear-gradient';
+
+const colors=['#b4becb', '#e1e8f5'];
+const start = { x: 0, y: 0 };
+const end = { x: 1, y: 1 };
 
 export default function MetarView({route}) {
     const metar = useSelector(state => state.metar.metar);
@@ -92,8 +97,12 @@ export default function MetarView({route}) {
         return null;
     }
 
-    return <View>
-        <View style={styles.container}>
+    return <LinearGradient
+        colors = {colors}
+        start={start}
+        end={end}
+        style={[styles.container, styles.rotate]}>
+        <View style={styles.searchContainer}>
             <Searchbar
                 style={styles.textInput}
                 placeholder="Airport ICAO"
@@ -102,18 +111,31 @@ export default function MetarView({route}) {
                 value={searchTerm}
             />
         </View>
-        {displayMetar()}
 
-    </View>;
+        <ScrollView style={styles.textArea}>
+
+            {displayMetar()}
+
+        </ScrollView>
+    </LinearGradient>;
 }
 
 const styles = StyleSheet.create({
-    container: {
+    searchContainer: {
         backgroundColor: '#4d7199',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 15,
+    },
+    container: {
+        justifyContent: 'center',
+        flexDirection: 'column',
+        flex: 1
+    },
+    textArea: {
+        margin: 20,
+        flex: 1
     },
     metarDisplay: {
         padding: 15

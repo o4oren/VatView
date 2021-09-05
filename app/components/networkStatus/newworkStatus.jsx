@@ -28,7 +28,15 @@ const NetworkStatus = () => {
             <ScrollView style={styles.textArea}>
                 <Title>VATSIM Network Status</Title>
                 <Image style={styles.image} source={require('../../../assets/VATSIM_Logo_Official_500px.png')} />
-
+                <Card style={styles.card}>
+                    <Card.Title
+                        title="Clients"
+                    />
+                    <Card.Content>
+                        <Text>Pilots: {data.clients.pilots.length}</Text>
+                        <Text>ATC: {data.controllers.length}</Text>
+                    </Card.Content>
+                </Card>
                 <Card style={styles.card}>
                     <Card.Title
                         title="Servers"
@@ -40,16 +48,6 @@ const NetworkStatus = () => {
                         </Text>
                     </Card.Content>
                 </Card>
-                <Card style={styles.card}>
-                    <Card.Title
-                        title="Clients"
-                    />
-                    <Card.Content>
-                        <Text>Pilots: {data.clients.pilots.length}</Text>
-                        <Text>ATC: {data.controllers.length}</Text>
-                    </Card.Content>
-                </Card>
-
             </ScrollView>
         </LinearGradient>
     </View>;
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     card: {
-        backgroundColor: 'transparent'
+        marginBottom: 20
     },
     textArea: {
         margin: 20,
