@@ -11,6 +11,9 @@ const end = { x: 1, y: 1 };
 const NetworkStatus = () => {
 
     const data = useSelector(state => state.vatsimLiveData);
+    if(!data || ! data.conrollers || data.controllers.length < 1) {
+        return <View></View>;
+    }
     const getServers = () => {
         if(!data || !data.servers)
             return '';
