@@ -1,5 +1,5 @@
 import MapView, {Circle} from 'react-native-maps';
-import {Image, View} from 'react-native';
+import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -42,17 +42,15 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 case APP:
                     app = true;
                     airportMarkers.push(
-                        <View key={atc.key}>
-                            <Circle
-                                key={atc.key}
-                                center={{latitude: airport.latitude, longitude: airport.longitude}}
-                                radius={APP_RADIUS}
-                                title={atc.callsign}
-                                strokeColor={theme.blueGrey.appCircleStroke}
-                                fillColor={theme.blueGrey.appCircleFill}
-                                strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                            />
-                        </View>
+                        <Circle
+                            key={atc.key}
+                            center={{latitude: airport.latitude, longitude: airport.longitude}}
+                            radius={APP_RADIUS}
+                            title={atc.callsign}
+                            strokeColor={theme.blueGrey.appCircleStroke}
+                            fillColor={theme.blueGrey.appCircleFill}
+                            strokeWidth={theme.blueGrey.appCircleStrokeWidth}
+                        />
                     );
                     break;
                 case DEL:
@@ -89,21 +87,20 @@ export default function generateAirportMarkers(airportAtc, airports) {
             }
 
             airportMarkers.push(
-                <View key={icao + '_' + lastUpdated}>
-                    <MapView.Marker
-                        coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
-                        title={airport.icao}
-                        anchor={{x: 0.5, y: 1}}
-                        onPress={() => onPress(airport)}
-                        tracksViewChanges={false}
-                        tracksInfoWindowChanges={false}
-                    >
-                        <Image
-                            source={image}
-                            fadeDuration={0}
-                        />
-                    </MapView.Marker>
-                </View>
+                <MapView.Marker
+                    key={icao + '_' + lastUpdated}
+                    coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
+                    title={airport.icao}
+                    anchor={{x: 0.5, y: 1}}
+                    onPress={() => onPress(airport)}
+                    tracksViewChanges={false}
+                    tracksInfoWindowChanges={false}
+                >
+                    <Image
+                        source={image}
+                        fadeDuration={0}
+                    />
+                </MapView.Marker>
             );
         } else {
             console.log('cannot add marker', airport);
