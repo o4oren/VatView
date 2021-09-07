@@ -64,6 +64,19 @@ export default function MetarView({route}) {
             return <View></View>;
         }
         if(metar && Object.keys(metar).length > 0) {
+
+            if(!metar.barometer || !metar.temperature) {
+                Analytics.logEvent('METAR_PARSING_FAILED', {
+                    icao: searchTerm,
+                    raw: metar.raw,
+                    purpose: 'Getting METAR',
+                });
+                return <View style={styles.metarDisplay}>
+                    <Text>Unable to parse METAR String</Text>
+                    <Text>{metar.raw_text}</Text>
+                </View>;
+            }
+
             return   <View style={styles.metarDisplay}>
                 <Text>{metar.raw_text}</Text>
                 <Divider style={styles.divider}/>
