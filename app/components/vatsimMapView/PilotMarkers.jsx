@@ -3,7 +3,7 @@ import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
-import {Platform, View} from 'react-native';
+import {Platform} from 'react-native';
 import * as Analytics from 'expo-firebase-analytics';
 
 export default function generatePilotMarkers() {
