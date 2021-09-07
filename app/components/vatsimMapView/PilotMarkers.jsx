@@ -30,24 +30,22 @@ export default function generatePilotMarkers() {
             }
         };
 
-        return <View key={pilot.key} last_updated={pilot.last_updated}>
-            <MapView.Marker
-                coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-                title={pilot.callsign}
-                anchor={{x: 0.5, y: 0.5}}
-                rotation={pilot.heading}
-                onPress={() => onPress(pilot)}
-                tracksViewChanges={false}
-                tracksInfoWindowChanges={false}
-            >
-                <Image
-                    source={pilot.image}
-                    fadeDuration={0}
-                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-                />
-            </MapView.Marker>
-        </View>;
-
+        return <MapView.Marker
+            key={pilot.key}
+            coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+            title={pilot.callsign}
+            anchor={{x: 0.5, y: 0.5}}
+            rotation={pilot.heading}
+            onPress={() => onPress(pilot)}
+            tracksViewChanges={false}
+            tracksInfoWindowChanges={false}
+        >
+            <Image
+                source={pilot.image}
+                fadeDuration={0}
+                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+            />
+        </MapView.Marker>;
     });
 
     return pilotMarkers;
