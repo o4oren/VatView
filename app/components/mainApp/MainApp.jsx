@@ -9,7 +9,7 @@ import About from '../About/About';
 import {IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
 import * as Analytics from 'expo-firebase-analytics';
-import NetworkStatus from '../networkStatus/newworkStatus';
+import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 
