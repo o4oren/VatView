@@ -8,19 +8,25 @@ const colors=['#b4becb', '#e1e8f5'];
 const start = { x: 0, y: 0 };
 const end = { x: 1, y: 1 };
 
+
+const getServers = (data) => {
+    console.log(data.servers);
+    if(!data || !data.servers)
+        return '';
+    return data.servers.map(s => (
+        `${s.name} ${s.location} ${s.hostname_or_ip}\n`
+    ));
+};
+
 const NetworkStatus = () => {
 
     const data = useSelector(state => state.vatsimLiveData);
-    if(!data || ! data.conrollers || data.controllers.length < 1) {
+    console.log(data.controllers.length);
+
+    if(!data || !data.controllers || data.controllers.length < 1) {
         return <View></View>;
     }
-    const getServers = () => {
-        if(!data || !data.servers)
-            return '';
-        return data.servers.map(s => (
-            `${s.name} ${s.location} ${s.hostname_or_ip}\n`
-        ));
-    };
+
 
     return <View style={styles.container}>
         <LinearGradient
@@ -47,7 +53,7 @@ const NetworkStatus = () => {
                     />
                     <Card.Content>
                         <Text>
-                            {getServers()}
+                            {getServers(data)}
                         </Text>
                     </Card.Content>
                 </Card>
