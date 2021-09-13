@@ -17,7 +17,7 @@ const vatsimLiveDataReducer = (state = {general: {},
 action) => {
     switch (action.type) {
     case DATA_UPDATED:
-        return {...state, general: action.payload.data.general, clients: action.payload.data.clients, controllers: action.payload.data.controllers,
+        return {...state, general: action.payload.data.general, clients: action.payload.data.clients, controllerCount: action.payload.data.controllerCount,
             servers: action.payload.data.servers, prefiles: action.payload.data.prefiles};
     case EVENTS_UPDATED:
         return {...state, events: action.payload.events.data};
