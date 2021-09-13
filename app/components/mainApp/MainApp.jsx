@@ -23,7 +23,7 @@ export default function mainApp() {
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
-
+        // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || !staticAirspaceData.firBoundaries

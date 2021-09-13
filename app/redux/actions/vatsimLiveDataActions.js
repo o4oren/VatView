@@ -103,8 +103,12 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.clients = clients;
+        json.clients.controllerCount = json.controllers.length;
+        delete json.controllers;
+        delete json.pilots;
+        delete json.atis;
 
-        // console.log('json', json);
+        // console.log('live', json);
 
         dispatch(dataUpdated(json));
     } catch (error) {
