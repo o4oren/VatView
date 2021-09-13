@@ -21,9 +21,8 @@ const getServers = (data) => {
 const NetworkStatus = () => {
 
     const data = useSelector(state => state.vatsimLiveData);
-    console.log(data.controllers.length);
 
-    if(!data || !data.controllers || data.controllers.length < 1) {
+    if(!data) {
         return <View></View>;
     }
 
@@ -43,7 +42,7 @@ const NetworkStatus = () => {
                     />
                     <Card.Content>
                         <Text>Pilots: {data.clients.pilots.length}</Text>
-                        <Text>ATC: {data.controllers.length}</Text>
+                        <Text>ATC: {data.clients.controllerCount}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={styles.card}>

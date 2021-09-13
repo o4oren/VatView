@@ -10,9 +10,9 @@ const vatsimLiveDataReducer = (state = {general: {},
         fss: {},
         airportAtc: {},
         pilots: [],
-        controllers: [],
         obs: [],
-        other: []
+        other: [],
+        controllerCount: 0
     }, servers: [], prefiles: [], events: []},
 action) => {
     switch (action.type) {

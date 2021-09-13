@@ -11,7 +11,6 @@ export default function generatePilotMarkers() {
     const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
 
     const dispatch = useDispatch();
-
     const pilotMarkers = pilots.map( pilot => {
         const styleIos = Platform.OS === 'ios' ?
             {
