@@ -10,7 +10,7 @@ const end = { x: 1, y: 1 };
 
 
 const getServers = (data) => {
-    console.log(data.servers);
+    console.log(data.general);
     if(!data || !data.servers)
         return '';
     return data.servers.map(s => (
