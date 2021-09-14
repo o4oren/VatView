@@ -10,7 +10,7 @@ export const getAirportByCode = (code, airports) => {
     if(!code || !airports)
         return null;
     if (airports.iata[code] !== undefined)
-        return (airports.iata[code]);
+        return (airports.icao[airports.iata[code].icao]);
     if (airports.icao[code] !== undefined)
         return airports.icao[code];
     console.log('null airport', code);
@@ -49,7 +49,7 @@ export const getAirportNameByCode = (code, airports) => {
     if (airports.icao[code] !== undefined)
         return airports.icao[code].name;
     if (airports.iata[code] !== undefined)
-        return airports.iata[code].name;
+        return airports.icao[airports.iata[code]].name;
     console.log('null airport', code);
     return '';
 };
