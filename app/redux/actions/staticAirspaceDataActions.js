@@ -128,13 +128,7 @@ const getVATSpyData = async (dispatch) => {
                 if(!airports.icao[tokens[4]]) {
                     airports.iata[tokens[4]] =
                         {
-                            icao: tokens[0],
-                            name: tokens[1],
-                            latitude: Number(tokens[2]),
-                            longitude: Number(tokens[3]),
-                            iata: tokens[4],
-                            fir: tokens[5],
-                            isPseudo: tokens[6]
+                            icao: tokens[0]
                         };
                 }
                 break;
