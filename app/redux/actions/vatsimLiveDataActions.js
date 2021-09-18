@@ -1,7 +1,7 @@
 import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
-import {getAirportByCode} from '../../common/airportTools';
 import createKey from '../../common/createKey';
+import {getAirportByCode} from '../../common/staticDataAcessLayer';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -54,7 +54,7 @@ const updateData = async (dispatch, getState) => {
             client.key = createKey(client);
             let prefix = client.callsign.split('_')[0];
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
-                const airport = getAirportByCode(prefix, airports);
+                const airport = getAirportByCode(prefix);
                 if(airport != null) {
                     client.latitude = airport.latitude;
                     client.longitude = airport.longitude;

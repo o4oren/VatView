@@ -7,12 +7,12 @@ import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
 import React, {useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {getAirportByCode} from '../../common/staticDataAcessLayer';
 
 const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
     const clients = useSelector(state => state.vatsimLiveData.clients);
-    const airports = useSelector(state => state.staticAirspaceData.airports);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
 
@@ -26,17 +26,17 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, airports, selectedClient)}
+        {getMarkers(clients, selectedClient)}
     </MapView>;
 };
 
-const getMarkers = (clients, airports, selectedClient) => {
+const getMarkers = (clients, selectedClient) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
         generatePilotMarkers(),
-        generateAirportMarkers(clients.airportAtc, airports),
-        renderToPath(airports, selectedClient),
-        renderFromPath(airports, selectedClient)
+        generateAirportMarkers(clients.airportAtc),
+        renderToPath(selectedClient),
+        renderFromPath(selectedClient)
 
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
@@ -64,9 +64,9 @@ const renderFromPath = (airports, selectedClient) => {
     }
 };
 
-const renderToPath = (airports, selectedClient) => {
+const renderToPath = (selectedClient) => {
     if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
-        const destAirport = airports.icao[selectedClient.flight_plan.arrival];
+        const destAirport = getAirportByCode(selectedClient.flight_plan.arrival);
         if(destAirport && destAirport.latitude) {
             return 	<View key={selectedClient.key + '_to_path'}>
                 <Polyline

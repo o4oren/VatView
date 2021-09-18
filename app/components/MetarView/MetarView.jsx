@@ -3,10 +3,10 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
-import {getAirportByCode} from '../../common/airportTools';
 import * as Analytics from 'expo-firebase-analytics';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
 import {LinearGradient} from 'expo-linear-gradient';
+import {getAirportByCode} from '../../common/staticDataAcessLayer';
 
 const colors=['#b4becb', '#e1e8f5'];
 const start = { x: 0, y: 0 };
@@ -80,7 +80,7 @@ export default function MetarView({route}) {
             return   <View style={styles.metarDisplay}>
                 <Text>{metar.raw_text}</Text>
                 <Divider style={styles.divider}/>
-                <Text>{airports && airports.icao && getAirportByCode(metar.icao, airports) ? getAirportByCode(metar.icao, airports).name : ''}</Text>
+                <Text>{airports && airports.icao && getAirportByCode(metar.icao) ? getAirportByCode(metar.icao).name : ''}</Text>
                 {displayConditions()}
                 <Text>Observed on {metar.observed.toUTCString()}</Text>
                 <Text>Flight conditions: {metar.flight_category}</Text>

@@ -1,5 +1,6 @@
 import {storeFirBoundaries, storeStaticAirspaceData} from '../../common/storageService';
 import {STATIC_DATA_VERSION} from '../../common/consts';
+import {countAirports, insertAirports} from '../../common/staticDataAcessLayer';
 
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
@@ -96,6 +97,8 @@ const getVATSpyData = async (dispatch) => {
     const airports = {icao: {}, iata: {}};
     const firs = [];
     const uirs = {};
+    let airportTokens = [];
+    let airportIndex = 0;
 
     await lines.forEach((line) => {
         if(line.startsWith('['))
@@ -113,6 +116,13 @@ const getVATSpyData = async (dispatch) => {
                 };
                 break;
             case AIRPORTS:
+                airportTokens.push(tokens);
+                if(airportTokens.length == 1000) {
+                    console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
+                    insertAirports(airportTokens);
+                    airportIndex += airportTokens.length;
+                    airportTokens = [];
+                }
                 if(!airports.icao[tokens[0]]) {
                     airports.icao[tokens[0]] =
                         {
@@ -133,6 +143,12 @@ const getVATSpyData = async (dispatch) => {
                 }
                 break;
             case FIR:
+                if(airportTokens.length > 0) {
+                    console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
+                    insertAirports(airportTokens);
+                    airportIndex += airportTokens.length;
+                    airportTokens = [];
+                }
                 firs.push(
                     {
                         icao: tokens[0],
@@ -168,6 +184,7 @@ const getVATSpyData = async (dispatch) => {
         version: STATIC_DATA_VERSION
     });
     console.log('vatspyDataUpdated');
+    countAirports();
     dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };
 
