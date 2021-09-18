@@ -3,16 +3,13 @@ import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
-import {getAirportByCode} from '../../common/airportTools';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
 import * as Analytics from 'expo-firebase-analytics';
+import {getAirportByCode} from '../../common/staticDataAcessLayer';
 
-export default function generateAirportMarkers(airportAtc, airports) {
-    if(!airports || !airports.icao || airports.icao.length === 0)
-        return null;
-
+export default function generateAirportMarkers(airportAtc) {
     const dispatch = useDispatch();
 
     const airportMarkers = [];
@@ -27,7 +24,8 @@ export default function generateAirportMarkers(airportAtc, airports) {
 
     for (let icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
-        const airport = getAirportByCode(icao, airports);
+        const airport = getAirportByCode(icao, (apt) => {return apt;});
+        console.log('a', airport);
         let delivery = false;
         let ground = false;
         let tower = false;

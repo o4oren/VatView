@@ -12,6 +12,7 @@ import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
+import {initDb} from '../../common/staticDataAcessLayer';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -23,6 +24,7 @@ export default function mainApp() {
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
+        initDb();
         // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
