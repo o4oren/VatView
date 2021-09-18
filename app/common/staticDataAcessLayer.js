@@ -45,8 +45,7 @@ export const insertAirports = (airportTokens) => {
     });
 };
 
-export const getAirportByCode = (code, callback) => {
-    let airport = null;
+export const getAirportByCode = (code) => {
     db.transaction((tx) => {
         tx.executeSql(
             'select * from airports where icao == ? or iata == ?;',
@@ -57,12 +56,30 @@ export const getAirportByCode = (code, callback) => {
                 //     res: res,
                 //     apt: res.rows.item(0)
                 // });
-                if(res.rows.length > 0) {
-                    airport = res.rows.item(0);
-                    callback(airport);
-                } else {
-                    console.log('0');
-                }
+                // TODO
+            },
+            (_, err) => {
+                console.log('error', err);
+            }
+        );
+    });
+
+};
+
+export const getAirportsByCodesArray = (codes, callback) => {
+    const mappedCodes = codes.map(code => {return '\'' + code + '\'';}).join(',');
+    db.transaction((tx) => {
+        tx.executeSql(
+            `select * from airports where icao in (${mappedCodes});`,
+            [mappedCodes].flat(1),
+            (_, res) => {
+                // console.log('query', {
+                //     code: code,
+                //     res: res,
+                //     apt: res.rows.item(0)
+                // });
+                console.log('r', res);
+                callback(res.rows._array);
             },
             (_, err) => {
                 console.log('error', err);

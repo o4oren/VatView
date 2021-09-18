@@ -23,7 +23,6 @@ const eventsUpdated = (data) => {
 };
 
 const updateData = async (dispatch, getState) => {
-    const airports = getState().staticAirspaceData.airports;
     console.log('fetching vatsim data feed');
     try {
         const response = await fetch(

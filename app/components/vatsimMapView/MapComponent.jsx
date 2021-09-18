@@ -31,6 +31,8 @@ const MapComponent = ({screenSize}) => {
 };
 
 const getMarkers = (clients, selectedClient) => {
+    generateAirportMarkers(clients.airportAtc);
+
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
         generatePilotMarkers(),
