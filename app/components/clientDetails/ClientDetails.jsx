@@ -38,12 +38,8 @@ export default function ClientDetails(props) {
         // if pilot
         if(props.client.facility == null) {
             const pilot = props.client;
-            const depAirport = pilot.flight_plan && getAirportByCode(pilot.flight_plan.departure, airports);
-            const arrAirport = pilot.flight_plan && getAirportByCode(pilot.flight_plan.arrival, airports);
             return <PilotDetails
                 pilot={pilot}
-                depAirport={depAirport}
-                arrAirport={arrAirport}
             />;
         }
         return (
