@@ -1,18 +1,15 @@
 import MapView, {Circle} from 'react-native-maps';
 import {Image} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
 import * as Analytics from 'expo-firebase-analytics';
-import {getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
 
-export default function generateAirportMarkers(airportAtc) {
-    const [airports, setAirports] = useState([]);
+export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();
-
     const airportMarkers = [];
 
     let onPress = (airport) => {
@@ -23,17 +20,15 @@ export default function generateAirportMarkers(airportAtc) {
         dispatch(allActions.appActions.clientSelected(airport));
     };
 
-
     if(Object.keys(airportAtc).length==0) {
         console.log('return empty', airportAtc);
         return [];
     }
-    getAirportsByCodesArray(Object.keys(airportAtc), setAirports);
-    console.log('airports', airports);
+
+    // console.log('airports', airports);
 
     for (const airport of airports) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
-        console.log('airport', airport);
         let delivery = false;
         let ground = false;
         let tower = false;
@@ -42,8 +37,7 @@ export default function generateAirportMarkers(airportAtc) {
         let lastUpdated = null;
         let image = null;
 
-        if (airport != null) {
-            console.log('aatc', airportAtc[airport.icao]);
+        if (airport != null && airportAtc) {
             airportAtc[airport.icao].forEach(atc => {
                 switch (atc.facility) {
                 case APP:
@@ -93,6 +87,7 @@ export default function generateAirportMarkers(airportAtc) {
                     image = mapIcons.mapAntenna;
             }
 
+            console.log('pushing ' + airport.icao + '_' + lastUpdated);
             airportMarkers.push(
                 <MapView.Marker
                     key={airport.icao + '_' + lastUpdated}
@@ -113,6 +108,7 @@ export default function generateAirportMarkers(airportAtc) {
             console.log('cannot add marker', airport);
         }
     }
+    console.log('aiportAtc', airportAtc);
     console.log('markers', airportMarkers);
     return airportMarkers;
 }

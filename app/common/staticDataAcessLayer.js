@@ -67,6 +67,10 @@ export const getAirportByCode = (code) => {
 };
 
 export const getAirportsByCodesArray = (codes, callback) => {
+    if(codes.length == 0 || !codes) {
+        callback([]);
+        return;
+    }
     const mappedCodes = codes.map(code => {return '\'' + code + '\'';}).join(',');
     db.transaction((tx) => {
         tx.executeSql(
@@ -78,7 +82,6 @@ export const getAirportsByCodesArray = (codes, callback) => {
                 //     res: res,
                 //     apt: res.rows.item(0)
                 // });
-                console.log('r', res);
                 callback(res.rows._array);
             },
             (_, err) => {
