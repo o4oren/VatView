@@ -20,7 +20,9 @@ const MapComponent = ({screenSize}) => {
 
     useEffect(() => {
         if(Object.keys(clients.airportAtc).length > 0) {
-            getAirportsByCodesArray(Object.keys(clients.airportAtc), setAirports);
+            getAirportsByCodesArray(Object.keys(clients.airportAtc), (airports) => {
+                setAirports(airports);
+            });
         }
     }, [clients]);
 

@@ -24,7 +24,6 @@ export default function mainApp() {
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
-        initDb();
         // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
@@ -35,7 +34,7 @@ export default function mainApp() {
             // console.log('ver', staticAirspaceData.version);
             // console.log('l', Object.keys(staticAirspaceData.firs).length);
             // console.log('static', STATIC_DATA_VERSION);
-
+            initDb();
             console.log('Fetching vatspy static data!');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);

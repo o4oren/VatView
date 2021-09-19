@@ -7,6 +7,7 @@ import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
 import * as Analytics from 'expo-firebase-analytics';
+import {findAirportByCodeInAptList} from '../../common/airportTools';
 
 export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();
@@ -25,10 +26,11 @@ export default function generateAirportMarkers(airportAtc, airports) {
         return [];
     }
 
-    // console.log('airports', airports);
+    console.log('airports', airports);
 
-    for (const airport of airports) {
+    for (const icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
+        const airport = findAirportByCodeInAptList(icao, airports);
         let delivery = false;
         let ground = false;
         let tower = false;
@@ -108,7 +110,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
             console.log('cannot add marker', airport);
         }
     }
-    console.log('aiportAtc', airportAtc);
-    console.log('markers', airportMarkers);
+    // console.log('aiportAtc', airportAtc);
+    // console.log('markers', airportMarkers);
     return airportMarkers;
 }
