@@ -2,40 +2,45 @@ import React, {useEffect, useState} from 'react';
 import {Avatar, Caption, Card, ProgressBar, Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
 import {StyleSheet, View} from 'react-native';
-import {getAirportByICAO} from '../../common/staticDataAcessLayer';
+import {getAirportByICAOAsync} from '../../common/staticDataAcessLayer';
 
 export default function PilotDetails({pilot}) {
 
-    const [depAirport, setDepAirport] = useState(null);
-    const [arrAirport, setArrAirport] = useState(null);
+    const [pilotAirports, setPilotAirports] = useState({
+        depAirport: null,
+        arrAirport: null
+    });
 
-    useEffect(() => {
-        if(pilot.flight_plan) {
-            getAirportByICAO(pilot.flight_plan.arrival, (airport) => {
-                console.log('aaa', airport);
-                setDepAirport(airport);
-            });
-            getAirportByICAO(pilot.flight_plan.arrival, (airport) => setArrAirport(airport));
+    useEffect( () => {
+        if(pilot.flight_plan && !pilotAirports.depAirport) {
+            resolveAirports();
         }
-    }, [pilot, arrAirport, depAirport]);
+    }, [pilot]);
 
-    console.log('a', arrAirport);
-    console.log('d', depAirport);
+    const resolveAirports = async () => {
+        const depAirport = await getAirportByICAOAsync(pilot.flight_plan.departure);
+        const arrAirport = await getAirportByICAOAsync(pilot.flight_plan.arrival);
+        setPilotAirports({
+            depAirport: depAirport,
+            arrAirport: arrAirport
+        });
+    };
+
     const renderFlightDetails = () => {
         let flown, distance;
-        if(depAirport && arrAirport) {
+        if(pilotAirports.depAirport && pilotAirports.arrAirport) {
             distance = getDistanceFromLatLonInNm({
-                lat: depAirport.latitude,
-                lon: depAirport.longitude
+                lat: pilotAirports.depAirport.latitude,
+                lon: pilotAirports.depAirport.longitude
             },
             {
-                lat: arrAirport.latitude,
-                lon: arrAirport.longitude
+                lat: pilotAirports.arrAirport.latitude,
+                lon: pilotAirports.arrAirport.longitude
             });
 
             flown = getDistanceFromLatLonInNm({
-                lat: depAirport.latitude,
-                lon: depAirport.longitude
+                lat: pilotAirports.depAirport.latitude,
+                lon: pilotAirports.depAirport.longitude
             },
             {
                 lat: pilot.latitude,
@@ -61,16 +66,16 @@ export default function PilotDetails({pilot}) {
     const renderFlightStatus = (flown, distance) => {
         return <View style={styles.container}>
             <View style={styles.textContainer}>
-                <Text>{depAirport.icao}</Text>
-                <Text>{arrAirport.icao}</Text>
+                <Text>{pilotAirports.depAirport.icao}</Text>
+                <Text>{pilotAirports.arrAirport.icao}</Text>
             </View>
             <ProgressBar
                 style={styles.progress}
                 progress={flown / distance}
             />
             <View style={styles.textContainer}>
-                <Caption style={styles.name}>{depAirport.name}</Caption>
-                <Caption style={styles.name}>{arrAirport.name}</Caption>
+                <Caption style={styles.name}>{pilotAirports.depAirport.name}</Caption>
+                <Caption style={styles.name}>{pilotAirports.arrAirport.name}</Caption>
             </View>
             <View style={styles.textContainer}>
                 <View>

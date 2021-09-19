@@ -4,7 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import {CTR, APP, GND, DEL, facilities, TWR_ATIS, FSS} from '../../common/consts';
 import {getFirCountry, getFirFromPrefix} from '../../common/firResolver';
 import {useSelector} from 'react-redux';
-import {getAirportByICAO} from '../../common/staticDataAcessLayer';
+import {getAirportByICAOAsync} from '../../common/staticDataAcessLayer';
 
 const resolveAtcCallsign = (atc, countries, firs, airports, uirs) => {
     const prefix = atc.callsign.split('_')[0];
@@ -16,7 +16,7 @@ const resolveAtcCallsign = (atc, countries, firs, airports, uirs) => {
         if(!fir || !country) return null;
         return <Text>{fir.name + ' ' + ((country.callsign) ? country.callsign : 'Center')}</Text>;
     } else if([APP, TWR_ATIS, GND, DEL].includes(atc.facility)){
-        const airport = getAirportByICAO(prefix);
+        const airport = getAirportByICAOAsync(prefix);
         country = airport ? getFirCountry(airport.fir, countries) : null;
         if(!airport || !country) return null;
         return <Text>{airport.name + ', ' + (atc.callsign.endsWith('ATIS') ? 'ATIS' : facilities[atc.facility].long)}</Text>;
