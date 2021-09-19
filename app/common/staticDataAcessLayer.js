@@ -83,7 +83,7 @@ export const getAirportsByCodesArray = (codes, callback) => {
     const mappedCodes = codes.map(code => {return '\'' + code + '\'';}).join(',');
     getDb().transaction((tx) => {
         tx.executeSql(
-            `select * from airports where icao in (${mappedCodes});`,
+            `select * from airports where icao in (${mappedCodes}) or iata in (${mappedCodes});`,
             null,
             (_, res) => {
                 // console.log('query', {

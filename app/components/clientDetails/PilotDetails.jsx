@@ -12,9 +12,11 @@ export default function PilotDetails({pilot}) {
     });
 
     useEffect( () => {
-        if(pilot.flight_plan && !pilotAirports.depAirport) {
+        let isMounted = true;
+        if(isMounted === true && pilot.flight_plan && !pilotAirports.depAirport) {
             resolveAirports();
         }
+        return () => isMounted = false;
     }, [pilot]);
 
     const resolveAirports = async () => {

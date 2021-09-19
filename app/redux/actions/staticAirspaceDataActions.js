@@ -123,24 +123,25 @@ const getVATSpyData = async (dispatch) => {
                     airportIndex += airportTokens.length;
                     airportTokens = [];
                 }
-                if(!airports.icao[tokens[0]]) {
-                    airports.icao[tokens[0]] =
-                        {
-                            icao: tokens[0],
-                            name: tokens[1],
-                            latitude: Number(tokens[2]),
-                            longitude: Number(tokens[3]),
-                            iata: tokens[4],
-                            fir: tokens[5],
-                            isPseaudo: tokens[6]
-                        };
-                }
-                if(!airports.icao[tokens[4]]) {
-                    airports.iata[tokens[4]] =
-                        {
-                            icao: tokens[0]
-                        };
-                }
+                // TODO remove - old airports implementation
+                // if(!airports.icao[tokens[0]]) {
+                //     airports.icao[tokens[0]] =
+                //         {
+                //             icao: tokens[0],
+                //             name: tokens[1],
+                //             latitude: Number(tokens[2]),
+                //             longitude: Number(tokens[3]),
+                //             iata: tokens[4],
+                //             fir: tokens[5],
+                //             isPseaudo: tokens[6]
+                //         };
+                // }
+                // if(!airports.icao[tokens[4]]) {
+                //     airports.iata[tokens[4]] =
+                //         {
+                //             icao: tokens[0]
+                //         };
+                // }
                 break;
             case FIR:
                 if(airportTokens.length > 0) {
