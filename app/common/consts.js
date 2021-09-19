@@ -1,5 +1,5 @@
 export const INITIAL_REGION = {
-    latitude: 51,
+    latitude: 52,
     longitude: 0,
     latitudeDelta: 20,
     longitudeDelta: 20
@@ -10,7 +10,7 @@ export const EXCLUDED_CALLSIGNS = [
     'BICC_FSS',
 ];
 
-export const STATIC_DATA_VERSION = 64;
+export const STATIC_DATA_VERSION = 89;
 export const ONE_MONTH = 1000 * 60 * 60 * 24 * 30;
 export const ONE_MIN = 1000 * 60;
 export const PILOT = 'PILOT';

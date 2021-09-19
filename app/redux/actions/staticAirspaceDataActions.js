@@ -117,7 +117,7 @@ const getVATSpyData = async (dispatch) => {
                 break;
             case AIRPORTS:
                 airportTokens.push(tokens);
-                if(airportTokens.length == 1000) {
+                if(airportTokens.length == 100) {
                     console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
                     insertAirports(airportTokens);
                     airportIndex += airportTokens.length;
