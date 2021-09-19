@@ -15,9 +15,9 @@ export default function PilotDetails({pilot}) {
                 console.log('aaa', airport);
                 setDepAirport(airport);
             });
-            getAirportByCode(pilot.flight_plan.arrival, (airport) => setArrAirport(airport));
+            getAirportByICAO(pilot.flight_plan.arrival, (airport) => setArrAirport(airport));
         }
-    }, []);
+    }, [pilot, arrAirport, depAirport]);
 
     console.log('a', arrAirport);
     console.log('d', depAirport);
