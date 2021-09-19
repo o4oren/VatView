@@ -1,38 +1,55 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Avatar, Caption, Card, ProgressBar, Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
 import {StyleSheet, View} from 'react-native';
+import {getAirportByICAO} from '../../common/staticDataAcessLayer';
 
-export default function PilotDetails(props) {
+export default function PilotDetails({pilot}) {
+
+    const [depAirport, setDepAirport] = useState(null);
+    const [arrAirport, setArrAirport] = useState(null);
+
+    useEffect(() => {
+        if(pilot.flight_plan) {
+            getAirportByICAO(pilot.flight_plan.arrival, (airport) => {
+                console.log('aaa', airport);
+                setDepAirport(airport);
+            });
+            getAirportByCode(pilot.flight_plan.arrival, (airport) => setArrAirport(airport));
+        }
+    }, []);
+
+    console.log('a', arrAirport);
+    console.log('d', depAirport);
     const renderFlightDetails = () => {
         let flown, distance;
-        if(props.depAirport && props.arrAirport) {
+        if(depAirport && arrAirport) {
             distance = getDistanceFromLatLonInNm({
-                lat: props.depAirport.latitude,
-                lon: props.depAirport.longitude
+                lat: depAirport.latitude,
+                lon: depAirport.longitude
             },
             {
-                lat: props.arrAirport.latitude,
-                lon: props.arrAirport.longitude
+                lat: arrAirport.latitude,
+                lon: arrAirport.longitude
             });
 
             flown = getDistanceFromLatLonInNm({
-                lat: props.depAirport.latitude,
-                lon: props.depAirport.longitude
+                lat: depAirport.latitude,
+                lon: depAirport.longitude
             },
             {
-                lat: props.pilot.latitude,
-                lon: props.pilot.longitude
+                lat: pilot.latitude,
+                lon: pilot.longitude
             });
         }
 
-        if(props.pilot.flight_plan != null && flown && distance) {
+        if(pilot.flight_plan != null && flown && distance) {
             return <Card.Content>
                 {renderFlightStatus(flown, distance)}
                 <Text>Flight plan:</Text>
-                <Caption>{props.pilot.flight_plan.route}</Caption>
+                <Caption>{pilot.flight_plan.route}</Caption>
                 <Text>Remarks:</Text>
-                <Caption>{props.pilot.flight_plan.remarks}</Caption>
+                <Caption>{pilot.flight_plan.remarks}</Caption>
             </Card.Content>;
         } else {
             return <Card.Content>
@@ -44,22 +61,22 @@ export default function PilotDetails(props) {
     const renderFlightStatus = (flown, distance) => {
         return <View style={styles.container}>
             <View style={styles.textContainer}>
-                <Text>{props.depAirport.icao}</Text>
-                <Text>{props.arrAirport.icao}</Text>
+                <Text>{depAirport.icao}</Text>
+                <Text>{arrAirport.icao}</Text>
             </View>
             <ProgressBar
                 style={styles.progress}
                 progress={flown / distance}
             />
             <View style={styles.textContainer}>
-                <Caption style={styles.name}>{props.depAirport.name}</Caption>
-                <Caption style={styles.name}>{props.arrAirport.name}</Caption>
+                <Caption style={styles.name}>{depAirport.name}</Caption>
+                <Caption style={styles.name}>{arrAirport.name}</Caption>
             </View>
             <View style={styles.textContainer}>
                 <View>
-                    <Text>Alt: {props.pilot.altitude} ft</Text>
-                    <Text>Hdg: {props.pilot.heading}</Text>
-                    <Text>Speed: {props.pilot.groundspeed} kts</Text>
+                    <Text>Alt: {pilot.altitude} ft</Text>
+                    <Text>Hdg: {pilot.heading}</Text>
+                    <Text>Speed: {pilot.groundspeed} kts</Text>
                 </View>
                 <View>
                     <View style={styles.textContainer}>
@@ -83,10 +100,10 @@ export default function PilotDetails(props) {
         <View>
             <Card.Title
                 style = {styles.title}
-                title = {props.pilot.callsign}
-                subtitle = {props.pilot.name + ' (' + props.pilot.cid +')'}
-                left = {() => <Avatar.Image source={props.pilot.image} size={32} style={styles.avatar} />}
-                right = {() => <Text>{props.pilot.flight_plan != null ? props.pilot.flight_plan.aircraft_short : ''}</Text>}
+                title = {pilot.callsign}
+                subtitle = {pilot.name + ' (' + pilot.cid +')'}
+                left = {() => <Avatar.Image source={pilot.image} size={32} style={styles.avatar} />}
+                right = {() => <Text>{pilot.flight_plan != null ? pilot.flight_plan.aircraft_short : ''}</Text>}
             />
             {renderFlightDetails()}
         </View>

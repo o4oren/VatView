@@ -7,7 +7,7 @@ import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getAirportByCode, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
+import {getAirportByICAO, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
 
 const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
@@ -75,7 +75,7 @@ const renderFromPath = (airports, selectedClient) => {
 
 const renderToPath = (selectedClient) => {
     if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
-        const destAirport = getAirportByCode(selectedClient.flight_plan.arrival);
+        const destAirport = getAirportByICAO(selectedClient.flight_plan.arrival);
         if(destAirport && destAirport.latitude) {
             return 	<View key={selectedClient.key + '_to_path'}>
                 <Polyline
