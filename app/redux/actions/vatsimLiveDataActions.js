@@ -1,7 +1,7 @@
 import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import createKey from '../../common/createKey';
-import {getAirportByICAO, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
+import {getAirportByICAOAsync, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
 
 export const DATA_UPDATED = 'DATA_UPDATED';

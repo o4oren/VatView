@@ -26,8 +26,6 @@ export default function generateAirportMarkers(airportAtc, airports) {
         return [];
     }
 
-    console.log('airports', airports);
-
     for (const icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
         const airport = findAirportByCodeInAptList(icao, airports);
@@ -89,7 +87,6 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     image = mapIcons.mapAntenna;
             }
 
-            console.log('pushing ' + airport.icao + '_' + lastUpdated);
             airportMarkers.push(
                 <MapView.Marker
                     key={airport.icao + '_' + lastUpdated}
