@@ -5,9 +5,9 @@ import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getAirportByCode} from '../../common/staticDataAcessLayer';
+import {getAirportByCode, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
 
 const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
@@ -15,8 +15,15 @@ const MapComponent = ({screenSize}) => {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
-
+    const [airports, setAirports] = useState([]);
     // console.log(ref);
+
+    useEffect(() => {
+        if(Object.keys(clients.airportAtc).length > 0) {
+            getAirportsByCodesArray(Object.keys(clients.airportAtc), setAirports);
+        }
+    }, [clients]);
+
     return <MapView
         ref={ref}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
@@ -26,17 +33,15 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, selectedClient)}
+        {getMarkers(clients, selectedClient, airports)}
     </MapView>;
 };
 
-const getMarkers = (clients, selectedClient) => {
-    generateAirportMarkers(clients.airportAtc);
-
+const getMarkers = (clients, selectedClient, airports) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
         generatePilotMarkers(),
-        generateAirportMarkers(clients.airportAtc),
+        generateAirportMarkers(clients.airportAtc, airports),
         renderToPath(selectedClient),
         renderFromPath(selectedClient)
 

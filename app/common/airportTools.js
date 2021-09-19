@@ -1,6 +1,22 @@
 import {getDistanceFromLatLonInNm} from './timeDIstanceTools';
 
 /**
+ * A function that accepts the airports object and a code and returns an airport object if the code exits in icao/iata
+ * @param code
+ * @param airports
+ * @returns {null|*}
+ */
+export const findAirportByCodeInAptList = (code, airports) => {
+    if(!code || !airports)
+        return null;
+    const airport = airports.find(airport => airport.icao == code || airport.iata == code);
+    if(airport)
+        return airport;
+    console.log('null airport', code);
+    return null;
+};
+
+/**
  * A function that accepts the airports object and the start of an airport name and returns an airport object if the code exits in icao/iata
  * @param code
  * @param airports
