@@ -14,10 +14,7 @@ export const initDb = () => {
     getDb().transaction((tx) => {
         tx.executeSql('drop table if exists airports');
         tx.executeSql(
-            'create table if not exists airports (icao text not null, iata text, name text, latitude real, longitude real, fir text, isPseaudo integer, primary key (icao, iata) on conflict ignore );',
-        );
-        tx.executeSql(
-            'create index if not exists airports_iata_index on airports(icao);'
+            'create table if not exists airports (icao text not null, iata text, name text, latitude real, longitude real, fir text, isPseaudo integer, primary key (icao) on conflict ignore );',
         );
         tx.executeSql(
             'create index if not exists airports_iata_index on airports(iata);'
@@ -63,6 +60,30 @@ export const getAirportsByICAOAsync = (codes) => {
                     // console.log('query', {
                     //     codes: codes,
                     //     q: `select * from airports where icao in (${placeholders});`,
+                    //     res: res,
+                    // });
+                    resolve(res.rows._array);
+                },
+                (_, err) => {
+                    console.log('error', err);
+                    reject(err);
+                }
+            );
+        });
+    });
+};
+
+//returns a promise of all the airports whose icao or IATA equals or name starts with the searchTerm
+export const findAirportsByCodeOrNamePrefixAsync = (searchTerm) => {
+    return new Promise((resolve, reject) => {
+        getDb().transaction((tx) => {
+            tx.executeSql(
+                `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
+                [searchTerm.toUpperCase(), searchTerm.toUpperCase()],
+                (_, res) => {
+                    // console.log('query', {
+                    //     searchTerm: searchTerm,
+                    //     q: `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
                     //     res: res,
                     // });
                     resolve(res.rows._array);
