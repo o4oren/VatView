@@ -52,19 +52,20 @@ export const insertAirports = (airportTokens) => {
     });
 };
 
-export const getAirportByICAOAsync = (code) => {
+export const getAirportsByICAOAsync = (codes) => {
+    const placeholders = codes.map(() => ('?')).join(',');
     return new Promise((resolve, reject) => {
         getDb().transaction((tx) => {
             tx.executeSql(
-                'select * from airports where icao = ?;',
-                [code],
+                `select * from airports where icao in (${placeholders});`,
+                codes,
                 (_, res) => {
                     // console.log('query', {
-                    //     code: code,
+                    //     codes: codes,
+                    //     q: `select * from airports where icao in (${placeholders});`,
                     //     res: res,
-                    //     apt: res.rows.item(0)
                     // });
-                    resolve(res.rows.item(0));
+                    resolve(res.rows._array);
                 },
                 (_, err) => {
                     console.log('error', err);

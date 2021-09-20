@@ -9,7 +9,6 @@ import CtrDetails from './CtrDetails';
 import {CTR} from '../../common/consts';
 
 export default function ClientDetails(props) {
-    const airports = useSelector(state => state.staticAirspaceData.airports);
     const centers = useSelector(state => state.vatsimLiveData.clients.ctr);
 
     const renderBody = () => {

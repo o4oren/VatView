@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Avatar, Caption, Card, ProgressBar, Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
 import {StyleSheet, View} from 'react-native';
-import {getAirportByICAOAsync} from '../../common/staticDataAcessLayer';
+import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
 
 export default function PilotDetails({pilot}) {
 
@@ -13,19 +13,30 @@ export default function PilotDetails({pilot}) {
 
     useEffect( () => {
         let isMounted = true;
-        if(isMounted === true && pilot.flight_plan && !pilotAirports.depAirport) {
-            resolveAirports();
+        if(isMounted === true && pilot.flight_plan) {
+            resolveAirports().then(airports => {
+                setPilotAirports(airports);
+            });
         }
         return () => isMounted = false;
     }, [pilot]);
 
     const resolveAirports = async () => {
-        const depAirport = await getAirportByICAOAsync(pilot.flight_plan.departure);
-        const arrAirport = await getAirportByICAOAsync(pilot.flight_plan.arrival);
-        setPilotAirports({
+        const airports =  await getAirportsByICAOAsync([pilot.flight_plan.departure, pilot.flight_plan.arrival]);
+
+        if(airports.length === 0) {
+            return {
+                depAirport: null,
+                arrAirport: null
+            };
+        }
+        const depAirport = airports.find(airport => airport.icao == pilot.flight_plan.departure);
+        const arrAirport = airports.find(airport => airport.icao == pilot.flight_plan.arrival);
+
+        return {
             depAirport: depAirport,
             arrAirport: arrAirport
-        });
+        };
     };
 
     const renderFlightDetails = () => {
@@ -50,7 +61,7 @@ export default function PilotDetails({pilot}) {
             });
         }
 
-        if(pilot.flight_plan != null && flown && distance) {
+        if(pilot.flight_plan != null && flown >=0  && distance >= 0) {
             return <Card.Content>
                 {renderFlightStatus(flown, distance)}
                 <Text>Flight plan:</Text>

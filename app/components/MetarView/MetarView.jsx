@@ -6,7 +6,7 @@ import allActions from '../../redux/actions';
 import * as Analytics from 'expo-firebase-analytics';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
 import {LinearGradient} from 'expo-linear-gradient';
-import {getAirportByICAOAsync} from '../../common/staticDataAcessLayer';
+import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
 
 const colors=['#b4becb', '#e1e8f5'];
 const start = { x: 0, y: 0 };
@@ -80,7 +80,7 @@ export default function MetarView({route}) {
             return   <View style={styles.metarDisplay}>
                 <Text>{metar.raw_text}</Text>
                 <Divider style={styles.divider}/>
-                <Text>{airports && airports.icao && getAirportByICAOAsync(metar.icao) ? getAirportByICAOAsync(metar.icao).name : ''}</Text>
+                <Text>{airports && airports.icao && getAirportsByICAOAsync([metar.icao]) ? getAirportsByICAOAsync([metar.icao]).name : ''}</Text>
                 {displayConditions()}
                 <Text>Observed on {metar.observed.toUTCString()}</Text>
                 <Text>Flight conditions: {metar.flight_category}</Text>

@@ -5,7 +5,7 @@ import { Card } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
 import ClientDetails from '../clientDetails/ClientDetails';
 import theme from '../../common/theme';
-import {getAirportByICAOAsync} from '../../common/staticDataAcessLayer';
+import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -37,7 +37,7 @@ export default function VatsimListView() {
                     (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.cid && c.cid == filters.searchQuery) ||
                     (c.flight_plan && c.flight_plan.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    (filters.searchQuery.length > 3 && getAirportByICAOAsync(filters.searchQuery.toLowerCase().substr(0, 3)) != null));
+                    (filters.searchQuery.length > 3 && getAirportsByICAOAsync([filters.searchQuery.toLowerCase().substr(0, 3)]) != null));
             });
         }
         return aggregatedClients;
