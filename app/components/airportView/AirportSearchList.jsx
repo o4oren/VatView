@@ -4,6 +4,11 @@ import {useSelector} from 'react-redux';
 import {Searchbar} from 'react-native-paper';
 import {findAirportsByNamePrefix, getAirportCountryFromIcao} from '../../common/airportTools';
 import AirportListItem from './AirportListItem';
+import {
+    findAirportsByCodeOrNamePrefixAsync,
+    getAirportsByCodesArray,
+    getAirportsByICAOAsync
+} from '../../common/staticDataAcessLayer';
 
 const calculateFlights = (airportIcao, pilots, prefiles) => {
     const departures = [];
@@ -60,18 +65,31 @@ export default function AirportSearchList() {
     };
 
     const onChangeSearch = (searchTerm) => {
+        if(!airportAtc) {
+            setFilteredAirportList([]);
+            return;
+        }
+
         setSearchTerm(searchTerm);
-        if(searchTerm.length > 1) {
-            setFilteredAirportList(findAirportsByNamePrefix(searchTerm, airports));
-        } else {
-            if(!airports || !airportAtc || Object.keys(airports).length === 0 || !airports.icao) {
+
+        if(searchTerm.length == 0) {
+            console.log(0);
+            const activeAirportsList = Object.keys(airportAtc);
+            getAirportsByICAOAsync(activeAirportsList).then((result) => {
+                setFilteredAirportList(result);
+            }, (err) => {
+                console.log('error', err);
                 setFilteredAirportList([]);
-                return;
-            }
-            const list = Object.keys(airports.icao).filter(a => {
-                return Object.keys(airportAtc).includes(a);
-            }).map(icao => airports.icao[icao]);
-            setFilteredAirportList(list);
+            });
+        }
+
+        if(searchTerm.length > 2) {
+            findAirportsByCodeOrNamePrefixAsync(searchTerm).then((result) => {
+                setFilteredAirportList(result);
+            }, (err) => {
+                console.log('error', err);
+                setFilteredAirportList([]);
+            });
         }
     };
 
