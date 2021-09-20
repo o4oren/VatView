@@ -16,6 +16,8 @@ const MapComponent = ({screenSize}) => {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
     const [airports, setAirports] = useState([]);
+    const [fromToCoords, setFromToCoords] = useState(null);
+
     // console.log(ref);
 
     useEffect(() => {
@@ -26,6 +28,30 @@ const MapComponent = ({screenSize}) => {
         }
     }, [clients]);
 
+    useEffect(() => {
+        if(selectedClient == null || !selectedClient.flight_plan || !selectedClient.flight_plan.departure) {
+            setFromToCoords(null);
+        } else {
+            getAirportsByICAOAsync([selectedClient.flight_plan.departure, selectedClient.flight_plan.arrival]).then((airports) => {
+                const depAirport = airports.find(apt => apt.icao == selectedClient.flight_plan.departure);
+                const arrAirport = airports.find(apt => apt.icao == selectedClient.flight_plan.arrival);
+                if(depAirport && arrAirport) {
+                    setFromToCoords({
+                        from: {latitude: depAirport.latitude, longitude: depAirport.longitude},
+                        to: {latitude: arrAirport.latitude, longitude: arrAirport.longitude},
+                    });
+                } else {
+                    console.log('Could not resolve pilot\'s airports');
+                    setFromToCoords(null);
+                }
+            }, (err) => {
+                console.log('Promise rejected', err);
+                setFromToCoords(null);
+            });
+        }
+        
+    }, [selectedClient]);
+
     return <MapView
         ref={ref}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
@@ -35,60 +61,46 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, selectedClient, airports)}
+        {getMarkers(clients, selectedClient, airports, fromToCoords)}
     </MapView>;
 };
 
-const getMarkers = (clients, selectedClient, airports) => {
+const getMarkers = (clients, selectedClient, airports, fromToCoords) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss),
         generatePilotMarkers(),
         generateAirportMarkers(clients.airportAtc, airports),
-        renderToPath(selectedClient),
-        renderFromPath(selectedClient)
-
+        renderFromToPath(selectedClient, fromToCoords)
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
     });
     return markers;
 };
 
-const renderFromPath = (airports, selectedClient) => {
-    if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
-        const depAirport = airports.icao[selectedClient.flight_plan.departure];
-        if(depAirport && depAirport.latitude) {
-            return 	<View key={selectedClient.key + '_from_path'}>
-                <Polyline
-                    coordinates={[
-                        { latitude: depAirport.latitude, longitude: depAirport.longitude },
-                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
-                    ]}
-                    strokeColor="red"
-                    geodesic={true}
-                    strokeWidth={3}
-                    key={`${selectedClient.callsign}_path`}
-                />
-            </View>;
-        }
-    }
-};
-
-const renderToPath = (selectedClient) => {
-    if(selectedClient != null && selectedClient.flight_plan != null && selectedClient.flight_plan.arrival != null) {
-        const destAirport = getAirportsByICAOAsync([selectedClient.flight_plan.arrival]);
-        if(destAirport && destAirport.latitude) {
-            return 	<View key={selectedClient.key + '_to_path'}>
-                <Polyline
-                    coordinates={[
-                        { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
-                        { latitude: destAirport.latitude, longitude: destAirport.longitude }
-                    ]}
-                    strokeColor="green"
-                    geodesic={true}
-                    strokeWidth={3}
-                />
-            </View>;
-        }
+const renderFromToPath = (selectedClient, fromToCoords) => {
+    if(fromToCoords != null) {
+        return 	<View key={selectedClient.key + '_from_path'}>
+            <Polyline
+                coordinates={[
+                    { latitude: fromToCoords.from.latitude, longitude: fromToCoords.from.longitude },
+                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
+                ]}
+                strokeColor="red"
+                geodesic={true}
+                strokeWidth={3}
+                key={`${selectedClient.callsign}_from_path`}
+            />
+            <Polyline
+                coordinates={[
+                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
+                    { latitude: fromToCoords.to.latitude, longitude: fromToCoords.to.longitude }
+                ]}
+                strokeColor="green"
+                geodesic={true}
+                strokeWidth={3}
+                key={`${selectedClient.callsign}_to_path`}
+            />
+        </View>;
     }
 };
 
