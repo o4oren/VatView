@@ -95,7 +95,7 @@ export default function App() {
             }
         },
         staticAirspaceData: {
-            firBoundaries: state.savedState.staticAirspaceData != null ? state.savedState.firBoundaries : [],
+            firBoundaries: {},
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
             airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : {},
             firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : {},

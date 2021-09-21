@@ -76,11 +76,7 @@ const getFirBoundaries = async (dispatch) => {
                 i++;
             }
             fir.points = points;
-            if (firBoundaries[fir.icao] == null) {
-                firBoundaries[fir.icao] = [];
-            }
 
-            // prevent storing the points
             // firBoundaries[fir.icao].push(fir);
 
             if(fir.icao && fir.icao.length > 0) {
@@ -89,6 +85,8 @@ const getFirBoundaries = async (dispatch) => {
         }
     }
 
+    // used to store the empty object. TODO remove this
+    storeFirBoundaries(firBoundaries);
     // dispatch(firBoundariesUpdated(firBoundaries));
 };
 
@@ -123,7 +121,7 @@ const getVATSpyData = async (dispatch) => {
                 break;
             case AIRPORTS:
                 airportTokens.push(tokens);
-                if(airportTokens.length == 100) {
+                if(airportTokens.length == 140) {
                     console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
                     insertAirports(airportTokens);
                     airportIndex += airportTokens.length;
