@@ -132,24 +132,31 @@ const updateData = async (dispatch, getState) => {
             delete json.pilots;
             delete json.atis;
 
+            // get airspace
             const firsTocCache = Object.keys(clients.ctr);
-            const firBoundaries = {};
-            getFirsFromDB(firsTocCache).then(firs => {
-                firs.forEach((fir, index, firs) => {
-                    getFirPointsFromDB(fir).then(f => {
-                        if (firBoundaries[f.icao] == null) {
-                            firBoundaries[f.icao] = [];
-                        }
 
-                        // prevent storing the points
-                        firBoundaries[f.icao].push(f);
-                    });
-                    console.log('index ' + index + ' length ' + firs.length, {
-                        firs: firs,
-                        firBoundaries: firBoundaries
-                    });
-                    if(index === firs.length -1) {
-                        console.log('fbh', firBoundaries);
+            // get also UIR firs
+            firsTocCache.forEach(icao => {
+                if(getState().staticAirspaceData.uirs[icao] != null) {
+                    Array.prototype.push.apply(firsTocCache, getState().staticAirspaceData.uirs[icao].firs);
+                }
+            });
+
+            const firBoundaries = {};
+            let isUpdated = false;
+            getFirsFromDB(firsTocCache).then(firs => {
+                firs.forEach(async (fir, index, firs) => {
+                    isUpdated = true;
+                    // console.log(`fetching ${fir.icao} from db`);
+                    const firWithPoints = await getFirPointsFromDB(fir);
+                    if (firBoundaries[firWithPoints.icao] == null) {
+                        firBoundaries[firWithPoints.icao] = [];
+                    }
+
+                    // prevent storing the points
+                    firBoundaries[firWithPoints.icao].push(firWithPoints);
+                    if(index === firs.length -1 && isUpdated) {
+                        console.log('dispatching', Object.keys(firBoundaries).length);
                         dispatch(firBoundariesUpdated(firBoundaries));
                     }
                 });

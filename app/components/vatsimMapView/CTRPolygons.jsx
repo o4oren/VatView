@@ -7,13 +7,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import * as Analytics from 'expo-firebase-analytics';
 
-export default function generateCtrPolygons(ctr, fss) {
+export default function generateCtrPolygons(ctr, fss, firBoundaries) {
     const dispatch = useDispatch();
     const firs = useSelector(state => state.staticAirspaceData.firs);
     const uirs = useSelector(state => state.staticAirspaceData.uirs);
-    const firBoundaries = useSelector(state => state.staticAirspaceData.firBoundaries);
 
-    console.log('fb', firBoundaries);
     const polygons = [];
 
     let onPress = (client) => {
@@ -70,28 +68,26 @@ export default function generateCtrPolygons(ctr, fss) {
         if (!airspace.firs[0]) {
             const uir = uirs[callsignPrefix];
             if (uir) {
-                // airspace.isUir = true;
-                // // calclute center of centers
-                // let latitudeSum = 0;
-                // let longitudeSum = 0;
-                // console.log('uirs', uir);
-                //
-                // if (uir.firs !== undefined && uir.firs.length > 0) {
-                //     uir.firs.forEach(firIcao => {
-                //         firBoundaries[firIcao].forEach(fir => {
-                //             if (fir) {     // preventing crash when not every fir in UIR can be resolved
-                //                 airspace.firs.push(fir);
-                //                 latitudeSum += fir.center.latitude;
-                //                 longitudeSum += fir.center.longitude;
-                //             }
-                //         });
-                //     });
-                //     airspace.icao = callsignPrefix;
-                //     airspace.center = {
-                //         latitude: latitudeSum / uir.firs.length,
-                //         longitude: longitudeSum / uir.firs.length
-                //     };
-                // }
+                airspace.isUir = true;
+                // calclute center of centers
+                let latitudeSum = 0;
+                let longitudeSum = 0;
+                if (uir.firs != null && uir.firs.length > 0) {
+                    uir.firs.forEach(firIcao => {
+                        firBoundaries[firIcao].forEach(fir => {
+                            if (fir != null) {     // preventing crash when not every fir in UIR can be resolved
+                                airspace.firs.push(fir);
+                                latitudeSum += fir.center.latitude;
+                                longitudeSum += fir.center.longitude;
+                            }
+                        });
+                    });
+                    airspace.icao = callsignPrefix;
+                    airspace.center = {
+                        latitude: latitudeSum / uir.firs.length,
+                        longitude: longitudeSum / uir.firs.length
+                    };
+                }
             }
         }
 
@@ -140,6 +136,7 @@ export default function generateCtrPolygons(ctr, fss) {
                 </View>
             );
         } else {
+            console.log('airspace', airspace);
             return <View key={client.callsign + '-' + client.cid}>
                 {airspace.firs.map((fir, i) =>
                     <View

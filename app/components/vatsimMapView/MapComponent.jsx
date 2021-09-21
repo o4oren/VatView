@@ -15,6 +15,7 @@ const MapComponent = ({screenSize}) => {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
+    const firBoundaries = useSelector(state => state.staticAirspaceData.firBoundaries);
     const [airports, setAirports] = useState([]);
     const [fromToCoords, setFromToCoords] = useState(null);
 
@@ -61,13 +62,13 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, selectedClient, airports, fromToCoords)}
+        {getMarkers(clients, selectedClient, airports, fromToCoords, firBoundaries)}
     </MapView>;
 };
 
-const getMarkers = (clients, selectedClient, airports, fromToCoords) => {
+const getMarkers = (clients, selectedClient, airports, fromToCoords, firBoundaries) => {
     const markers = [
-        generateCtrPolygons(clients.ctr, clients.fss),
+        generateCtrPolygons(clients.ctr, clients.fss, firBoundaries),
         generatePilotMarkers(),
         generateAirportMarkers(clients.airportAtc, airports),
         renderFromToPath(selectedClient, fromToCoords)
