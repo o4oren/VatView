@@ -1,8 +1,13 @@
 import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import createKey from '../../common/createKey';
-import {getAirportsByICAOAsync, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
+import {
+    getAirportsByCodesArray,
+    getFirsFromDB,
+    getFirPointsFromDB
+} from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
+import {firBoundariesUpdated} from './staticAirspaceDataActions';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -126,6 +131,29 @@ const updateData = async (dispatch, getState) => {
             delete json.controllers;
             delete json.pilots;
             delete json.atis;
+
+            const firsTocCache = Object.keys(clients.ctr);
+            const firBoundaries = {};
+            getFirsFromDB(firsTocCache).then(firs => {
+                firs.forEach((fir, index, firs) => {
+                    getFirPointsFromDB(fir).then(f => {
+                        if (firBoundaries[f.icao] == null) {
+                            firBoundaries[f.icao] = [];
+                        }
+
+                        // prevent storing the points
+                        firBoundaries[f.icao].push(f);
+                    });
+                    console.log('index ' + index + ' length ' + firs.length, {
+                        firs: firs,
+                        firBoundaries: firBoundaries
+                    });
+                    if(index === firs.length -1) {
+                        console.log('fbh', firBoundaries);
+                        dispatch(firBoundariesUpdated(firBoundaries));
+                    }
+                });
+            });
 
             // console.log('live', json);
             dispatch(dataUpdated(json));

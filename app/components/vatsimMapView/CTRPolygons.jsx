@@ -9,7 +9,11 @@ import * as Analytics from 'expo-firebase-analytics';
 
 export default function generateCtrPolygons(ctr, fss) {
     const dispatch = useDispatch();
-    const staticAirspaceData = useSelector(state => state.staticAirspaceData);
+    const firs = useSelector(state => state.staticAirspaceData.firs);
+    const uirs = useSelector(state => state.staticAirspaceData.uirs);
+    const firBoundaries = useSelector(state => state.staticAirspaceData.firBoundaries);
+
+    console.log('fb', firBoundaries);
     const polygons = [];
 
     let onPress = (client) => {
@@ -39,20 +43,20 @@ export default function generateCtrPolygons(ctr, fss) {
             return airspace;
         }
         // If client is FIR
-        if (staticAirspaceData.firBoundaries[callsignPrefix]) {
-            staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
+        if (firBoundaries[callsignPrefix]) {
+            firBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
         }
 
         if (airspace.firs.length === 0) {
             let fallbackFirIcao;
-            for (let fir of staticAirspaceData.firs) {
+            for (let fir of firs) {
                 if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
-                    if (staticAirspaceData.firBoundaries[fallbackFirIcao]) {
-                        staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
+                    if (firBoundaries[fallbackFirIcao]) {
+                        firBoundaries[fallbackFirIcao].forEach(fir => {
                             if (fir != null && (isOceanic === true || !fir.isOceanic) && fir.isExtention === false) {
                                 airspace.firs.push(fir);
                             }
@@ -64,28 +68,30 @@ export default function generateCtrPolygons(ctr, fss) {
 
         // if we did not resolve firs, we check if UIR
         if (!airspace.firs[0]) {
-            const uir = staticAirspaceData.uirs[callsignPrefix];
+            const uir = uirs[callsignPrefix];
             if (uir) {
-                airspace.isUir = true;
-                // calclute center of centers
-                let latitudeSum = 0;
-                let longitudeSum = 0;
-                if (uir.firs !== undefined && uir.firs.length > 0) {
-                    uir.firs.forEach(firIcao => {
-                        staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
-                            if (fir) {     // preventing crash when not every fir in UIR can be resolved
-                                airspace.firs.push(fir);
-                                latitudeSum += fir.center.latitude;
-                                longitudeSum += fir.center.longitude;
-                            }
-                        });
-                    });
-                    airspace.icao = callsignPrefix;
-                    airspace.center = {
-                        latitude: latitudeSum / uir.firs.length,
-                        longitude: longitudeSum / uir.firs.length
-                    };
-                }
+                // airspace.isUir = true;
+                // // calclute center of centers
+                // let latitudeSum = 0;
+                // let longitudeSum = 0;
+                // console.log('uirs', uir);
+                //
+                // if (uir.firs !== undefined && uir.firs.length > 0) {
+                //     uir.firs.forEach(firIcao => {
+                //         firBoundaries[firIcao].forEach(fir => {
+                //             if (fir) {     // preventing crash when not every fir in UIR can be resolved
+                //                 airspace.firs.push(fir);
+                //                 latitudeSum += fir.center.latitude;
+                //                 longitudeSum += fir.center.longitude;
+                //             }
+                //         });
+                //     });
+                //     airspace.icao = callsignPrefix;
+                //     airspace.center = {
+                //         latitude: latitudeSum / uir.firs.length,
+                //         longitude: longitudeSum / uir.firs.length
+                //     };
+                // }
             }
         }
 
