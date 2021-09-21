@@ -1,6 +1,6 @@
 import {storeFirBoundaries, storeStaticAirspaceData} from '../../common/storageService';
 import {STATIC_DATA_VERSION} from '../../common/consts';
-import {countAirports, insertAirports} from '../../common/staticDataAcessLayer';
+import {countAirports, insertAirports, insertFirBoundaries} from '../../common/staticDataAcessLayer';
 
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
@@ -12,7 +12,8 @@ const FIR = '[FIRs]';
 const IDL = '[IDL]';
 
 
-const firBoundariesUpdated = (firBoundaries) => {
+export const firBoundariesUpdated = (firBoundaries) => {
+    console.log('firBoundaries updated', firBoundaries);
     return {
         type: FIR_BOUNDARIES_UPDATED,
         payload: {firBoundaries: firBoundaries}
@@ -60,8 +61,8 @@ const getFirBoundaries = async (dispatch) => {
                 latitude: Number(fields[8]),
                 longitude: Number(fields[9])
             };
-            fir.isOceanic = fields[1] === '1';
-            fir.isExtention = fields[2] === '1';
+            fir.isOceanic = fields[1];
+            fir.isExtention = fields[2];
             const points = [];
             const anchor = i;
             for (let j = 1; j <= fields[3]; j++) {
@@ -78,12 +79,17 @@ const getFirBoundaries = async (dispatch) => {
             if (firBoundaries[fir.icao] == null) {
                 firBoundaries[fir.icao] = [];
             }
-            firBoundaries[fir.icao].push(fir);
+
+            // prevent storing the points
+            // firBoundaries[fir.icao].push(fir);
+
+            if(fir.icao && fir.icao.length > 0) {
+                insertFirBoundaries(fir, fir.points);
+            }
         }
     }
 
-    await storeFirBoundaries(firBoundaries);
-    dispatch(firBoundariesUpdated(firBoundaries));
+    // dispatch(firBoundariesUpdated(firBoundaries));
 };
 
 const getVATSpyData = async (dispatch) => {

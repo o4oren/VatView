@@ -20,16 +20,6 @@ export const storeStaticAirspaceData = async (staticAirspaceData) => {
     }
 };
 
-export const storeFirBoundaries = async (firBoundaries) => {
-    try {
-        console.log('storing FIR_BOUNDARIES');
-        await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + FIR_BOUNDARIES, JSON.stringify(firBoundaries));
-
-    } catch (err) {
-        console.log('Error storing static fir boundaries', err);
-    }
-};
-
 export const storeInitialRegion = async (region) => {
     try {
         await AsyncStorage.setItem(SAVED_INITIAL_REGION, JSON.stringify(region));
