@@ -28,7 +28,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
-        console.log(callsignPrefix);
+        console.log(callsignPrefix, client);
         // TODO proper condition to determine oceanic firs
 
         let airspace = {
@@ -44,19 +44,17 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         }
         // If client is FIR
         if (cachedFirBoundaries[callsignPrefix]) {
-            console.log('here', callsignPrefix);
             cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
         } else {
-            // if we did not fid by icao
-            const fir = staticAirspaceData.firs.find(fir => {
-                if(fir.prefix == callsignPrefix) {
-                    return true;
-                }
-                return false;
-            });
-            cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
+            // if we did not find by icao
+            const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
+            console.log(1);
+            if(fir && fir.icao) {
+                cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
+            }
+
         }
 
         if (airspace.firs.length === 0) {
