@@ -28,14 +28,6 @@ export const initDb = () => {
         );
 
         tx.executeSql(
-            //     center:
-            // latitude: -37
-            // longitude: -31.6
-            //     [[Prototype]]: Object
-            // icao: "SUEO"
-            // isExtention: false
-            // isOceanic: true
-            // pointCount
             'create table if not exists fir_boundaries (icao text not null, isOceanic integer, isExtention integer, latitude real, longitude real, pointCount integer, primary key (icao,  isOceanic, isExtention));'
         );
 
@@ -205,11 +197,11 @@ export const findAirportsByCodeOrNamePrefixAsync = (searchTerm) => {
                 `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
                 [searchTerm.toUpperCase(), searchTerm.toUpperCase()],
                 (_, res) => {
-                    // console.log('query', {
-                    //     searchTerm: searchTerm,
-                    //     q: `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
-                    //     res: res,
-                    // });
+                    console.log('query', {
+                        searchTerm: searchTerm,
+                        q: `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
+                        res: res,
+                    });
                     resolve(res.rows._array);
                 },
                 (_, err) => {
@@ -232,10 +224,10 @@ export const getAirportsByCodesArray = (codes, callback) => {
             `select * from airports where icao in (${mappedCodes}) or iata in (${mappedCodes});`,
             null,
             (_, res) => {
-                // console.log('query', {
-                //     codes: codes,
-                //     res: res,
-                // });
+                console.log('query', {
+                    codes: codes,
+                    res: res,
+                });
                 callback(res.rows._array);
             },
             (_, err) => {

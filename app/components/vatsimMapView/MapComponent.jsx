@@ -5,53 +5,22 @@ import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getAirportsByICAOAsync, getAirportsByCodesArray} from '../../common/staticDataAcessLayer';
+import {getAirportByCode} from '../../common/airportTools';
 
 const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
-    const clients = useSelector(state => state.vatsimLiveData.clients);
+    const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
-    const firBoundaries = useSelector(state => state.staticAirspaceData.firBoundaries);
-    const [airports, setAirports] = useState([]);
-    const [fromToCoords, setFromToCoords] = useState(null);
 
     // console.log(ref);
 
-    useEffect(() => {
-        if(Object.keys(clients.airportAtc).length > 0) {
-            getAirportsByCodesArray(Object.keys(clients.airportAtc), (airports) => {
-                setAirports(airports);
-            });
-        }
-    }, [clients]);
-
-    useEffect(() => {
-        if(selectedClient == null || !selectedClient.flight_plan || !selectedClient.flight_plan.departure) {
-            setFromToCoords(null);
-        } else {
-            getAirportsByICAOAsync([selectedClient.flight_plan.departure, selectedClient.flight_plan.arrival]).then((airports) => {
-                const depAirport = airports.find(apt => apt.icao == selectedClient.flight_plan.departure);
-                const arrAirport = airports.find(apt => apt.icao == selectedClient.flight_plan.arrival);
-                if(depAirport && arrAirport) {
-                    setFromToCoords({
-                        from: {latitude: depAirport.latitude, longitude: depAirport.longitude},
-                        to: {latitude: arrAirport.latitude, longitude: arrAirport.longitude},
-                    });
-                } else {
-                    console.log('Could not resolve pilot\'s airports');
-                    setFromToCoords(null);
-                }
-            }, (err) => {
-                console.log('Promise rejected', err);
-                setFromToCoords(null);
-            });
-        }
-        
-    }, [selectedClient]);
+    const clients = vatsimLiveData.clients;
+    const airports = vatsimLiveData.cachedAirports;
+    const cachedFirBoundaries = vatsimLiveData.cachedFirBoundaries;
 
     return <MapView
         ref={ref}
@@ -62,28 +31,30 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, selectedClient, airports, fromToCoords, firBoundaries)}
+        {getMarkers(clients, selectedClient, airports, cachedFirBoundaries)}
     </MapView>;
 };
 
-const getMarkers = (clients, selectedClient, airports, fromToCoords, firBoundaries) => {
+const getMarkers = (clients, selectedClient, airports, cachedFirBoundaries) => {
     const markers = [
-        generateCtrPolygons(clients.ctr, clients.fss, firBoundaries),
-        generatePilotMarkers(),
+        // generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
+        generatePilotMarkers(airports),
         generateAirportMarkers(clients.airportAtc, airports),
-        renderFromToPath(selectedClient, fromToCoords)
+        renderFromToPath(selectedClient,airports)
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
     });
     return markers;
 };
 
-const renderFromToPath = (selectedClient, fromToCoords) => {
-    if(fromToCoords != null) {
+const renderFromToPath = (selectedClient, airports) => {
+    if(selectedClient && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
+        const departure = getAirportByCode(selectedClient.flight_plan.departure, airports);
+        const arrival = getAirportByCode(selectedClient.flight_plan.arrival, airports);
         return 	<View key={selectedClient.key + '_from_path'}>
             <Polyline
                 coordinates={[
-                    { latitude: fromToCoords.from.latitude, longitude: fromToCoords.from.longitude },
+                    { latitude: departure.latitude, longitude: departure.longitude },
                     { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
                 ]}
                 strokeColor="red"
@@ -94,7 +65,7 @@ const renderFromToPath = (selectedClient, fromToCoords) => {
             <Polyline
                 coordinates={[
                     { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
-                    { latitude: fromToCoords.to.latitude, longitude: fromToCoords.to.longitude }
+                    { latitude: arrival.latitude, longitude: arrival.longitude }
                 ]}
                 strokeColor="green"
                 geodesic={true}

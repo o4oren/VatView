@@ -17,6 +17,25 @@ export const findAirportByCodeInAptList = (code, airports) => {
 };
 
 /**
+ * A function that accepts the airports object and a code and returns an airport object if the code exits in icao/iata
+ * @param code
+ * @param airports
+ * @returns {null|*}
+ */
+export const getAirportByCode = (code, airports) => {
+    if(!code || !airports) {
+        console.log('null airport', code);
+        return null;
+    }
+    if (airports.iata[code] !== undefined)
+        return (airports.icao[airports.iata[code].icao]);
+    if (airports.icao[code] !== undefined)
+        return airports.icao[code];
+    console.log('null airport', code);
+    return null;
+};
+
+/**
  * A function that accepts the airports object and the start of an airport name and returns an airport object if the code exits in icao/iata
  * @param code
  * @param airports
