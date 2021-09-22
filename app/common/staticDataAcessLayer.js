@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import appActions from '../redux/actions/appActions';
 
 let db;
 
@@ -55,13 +56,13 @@ export const initDb = () => {
     });
 };
 
-export const insertAirports = (airportTokens) => {
+export const insertAirports = (airportTokens, callback) => {
     getDb().transaction((tx) => {
         const placeholders = airportTokens.map(() => ('(?,?,?,?,?,?,?)')).join(',');
         tx.executeSql(
             'insert into airports (icao, name, latitude, longitude, iata, fir, isPseaudo) values ' + placeholders + ';',
             airportTokens.flat(1),
-            (_, res) => console.log(res.insertId),
+            (_, res) => callback(res),
             (_, err) => {
                 console.log('error', {error: err, airport: airportTokens});
             }
@@ -69,29 +70,28 @@ export const insertAirports = (airportTokens) => {
     });
 };
 
-export const insertFirBoundaries = (fir) => {
-
+export const insertFirBoundaries = (fir, callback) => {
     getDb().transaction((tx) => {
         tx.executeSql(
             'insert into fir_boundaries (icao, isOceanic, isExtention, latitude, longitude, pointCount) values (?,?,?,?,?,?);',
             [fir.icao, fir.isOceanic, fir.isExtention, fir.center.latitude, fir.center.longitude, fir.pointCount],
-            (_, res) => {
+            async (_, res) => {
                 // console.log('query', {
                 //     fir: fir,
                 //     q: 'insert into fir_boundaries (icao, isOceanic, isExtention, latitude, longitude, pointCount) values (?,?,?,?,?,?);',
                 //     res: res,
                 // });
-                console.log(`inserted fir boundary meta for ${fir.icao}, now points`);
-                insertPoints(fir);
+                insertPoints(fir, callback);
             },
             (_, err) => {
                 console.log('error', err);
+                callback(false);
             }
         );
     });
 };
 
-export const insertPoints = (fir) => {
+export const insertPoints = (fir, callback) => {
     getDb().transaction((tx) => {
         console.log('inserting points for fir ' + fir.icao);
         const placeholders = fir.points.map(() => (`('${fir.icao}',${fir.isOceanic},'${fir.isExtention}',?,?)`)).join(',');
@@ -104,9 +104,12 @@ export const insertPoints = (fir) => {
                 //     q: 'insert into boundary_points (icao, isOceanic, isExtention, latitude, longitude) values ' + placeholders + ';',
                 //     res: res,
                 // });
+                console.log('points for ' + fir.icao, res.insertId);
+                callback(true);
             },
             (_, err) => {
                 console.log('error', err);
+                callback(false);
             }
         );
     });
@@ -228,7 +231,7 @@ export const getAirportsByCodesArray = (codes, callback) => {
                 //     codes: codes,
                 //     res: res,
                 // });
-                console.log(res.rows._array.length);
+                // console.log(res.rows._array.length);
                 callback(res.rows._array);
             },
             (_, err) => {

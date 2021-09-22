@@ -11,6 +11,16 @@ export const clearStorage = () => {
     FileSystem.deleteAsync( FileSystem.documentDirectory + FIR_BOUNDARIES, {idempotent: true});
 };
 
+export const storeFirBoundaries = async (firBoundaries) => {
+    try {
+        console.log('storing FIR_BOUNDARIES');
+        await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + FIR_BOUNDARIES, JSON.stringify(firBoundaries));
+
+    } catch (err) {
+        console.log('Error storing static fir boundaries', err);
+    }
+};
+
 export const storeStaticAirspaceData = async (staticAirspaceData) => {
     try {
         console.log('storing STATIC_AIRSPACE_DATA');

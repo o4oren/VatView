@@ -6,6 +6,25 @@ export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
 export const PILOTS_FILTER_CLICKED = 'PILOTS_FILTER_CLICKED';
 export const SEARCH_QUERY_CHANGED = 'SEARCH_QUERY_CHANGED';
 export const AIRPORT_SELECTED = 'AIRPORT_SELECTED';
+export const IS_READY = 'IS_READY';
+export const LOADING_DB = 'LOADING_DB';
+
+const isReady = (isReady) => {
+    return {
+        type: IS_READY,
+        payload: {isReady: isReady}
+    };
+};
+
+const loadingDb = (loadingDb) => {
+    return {
+        type: LOADING_DB,
+        payload: {loadingDb: {
+            airports: loadingDb.airports,
+            firs: loadingDb.firs
+        }}
+    };
+};
 
 const initialRegionLoaded = (region) => {
     return {
@@ -63,6 +82,8 @@ export function saveInitialRegion(region) {
 }
 
 export default {
+    isReady: isReady,
+    loadingDb: loadingDb,
     initialRegionLoaded: initialRegionLoaded,
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,

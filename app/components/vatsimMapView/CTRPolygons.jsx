@@ -96,7 +96,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
 
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
-
+        console.log('a', airspace);
         if (airspace.isUir) {
             const boundaries = airspace.firs.map((fir, i) =>
                 <Polygon
