@@ -186,7 +186,7 @@ const getVATSpyData = async (dispatch, getState) => {
                         icao: tokens[0],
                         name: tokens[1],
                         prefix: tokens[2],
-                        position: tokens[3]
+                        firBoundary: tokens[3]
                     }
                 );
                 break;
