@@ -164,15 +164,26 @@ const updateData = async (dispatch, getState) => {
 
             // get also UIR firs
             firsTocCache.forEach(icao => {
+                // if UIR
                 if(getState().staticAirspaceData.uirs[icao] != null) {
                     Array.prototype.push.apply(firsTocCache, getState().staticAirspaceData.uirs[icao].firs);
                 }
+
+                // IF prefix in firs
+                getState().staticAirspaceData.firs.forEach(fir => {
+                    if(fir.prefix == icao) {
+                        firsTocCache.push(icao);
+                    }
+                });
             });
 
             let isUpdated = false;
+            console.log('ftc', firsTocCache);
             getFirsFromDB(firsTocCache).then(firs => {
                 firs.forEach(async (fir, index, firs) => {
                     isUpdated = true;
+                    console.log(fir);
+                    console.log(getState().staticAirspaceData.firs);
                     // console.log(`fetching ${fir.icao} from db`);
                     const firWithPoints = await getFirPointsFromDB(fir);
                     if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
@@ -181,6 +192,7 @@ const updateData = async (dispatch, getState) => {
 
                     // prevent storing the points
                     json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
+                    console.log('fwp', firWithPoints);
                     if(index === firs.length -1 && isUpdated) {
                         console.log('dispatching' + Object.keys(json.cachedFirBoundaries).length + ' boundaries');
                         // console.log('live', json);

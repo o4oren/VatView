@@ -221,13 +221,14 @@ export const getAirportsByCodesArray = (codes, callback) => {
     const mappedCodes = codes.map(code => {return '\'' + code + '\'';}).join(',');
     getDb().transaction((tx) => {
         tx.executeSql(
-            `select * from airports where icao in (${mappedCodes}) or iata in (${mappedCodes});`,
+            `select * from airports where (icao in (${mappedCodes}) or iata in (${mappedCodes}));`,
             null,
             (_, res) => {
-                console.log('query', {
-                    codes: codes,
-                    res: res,
-                });
+                // console.log('query', {
+                //     codes: codes,
+                //     res: res,
+                // });
+                console.log(res.rows._array.length);
                 callback(res.rows._array);
             },
             (_, err) => {
