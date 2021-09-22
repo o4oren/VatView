@@ -243,16 +243,37 @@ export const getAirportsByCodesArray = (codes, callback) => {
 };
 
 export const countAirports = () => {
-    getDb().transaction((tx) => {
-        tx.executeSql(
-            'select count(*) from airports;',
-            null,
-            (_, res) => {
-                console.log('count', res);
-            },
-            (_, err) => {
-                console.log('error', err);
-            }
-        );
+    return new Promise((resolve, reject) => {
+        getDb().transaction((tx) => {
+            tx.executeSql(
+                'select count(*) as count from airports;',
+                null,
+                (_, res) => {
+                    resolve(res);
+                },
+                (_, err) => {
+                    reject(err);
+                    console.log('error', err);
+                }
+            );
+        });
+    });
+};
+
+export const countFirBoundaries = () => {
+    return new Promise((resolve, reject) => {
+        getDb().transaction((tx) => {
+            tx.executeSql(
+                'select count(*) as count from fir_boundaries;',
+                null,
+                (_, res) => {
+                    resolve(res);
+                },
+                (_, err) => {
+                    reject(err);
+                    console.log('error', err);
+                }
+            );
+        });
     });
 };
