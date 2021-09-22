@@ -1,6 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import appActions from '../redux/actions/appActions';
-
 let db;
 
 export const getDb = () => {

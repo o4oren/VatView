@@ -80,7 +80,6 @@ const getFirBoundaries = async (dispatch, getState) => {
 
             if(fir.icao && fir.icao.length > 0) {
                 insertFirBoundaries(fir, (isSuccess) => {
-                    console.log('were here');
                     if(isSuccess) {
                         ++numInsertedFirs;
                         if(numInsertedFirs % 10 == 0) {
@@ -89,6 +88,9 @@ const getFirBoundaries = async (dispatch, getState) => {
                                 firs: numInsertedFirs
                             }));
                         }
+                    }
+                    if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 530) {
+                        dispatch(appActions.isReady(true));
                     }
                 });
             }
@@ -137,10 +139,15 @@ const getVATSpyData = async (dispatch, getState) => {
                 airportTokens.push(tokens);
                 if(airportTokens.length == 140) {
                     console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
-                    insertAirports(airportTokens, (res) => dispatch(appActions.loadingDb({
-                        airports: res.insertId,
-                        firs: getState().app.loadingDb.firs
-                    })));
+                    insertAirports(airportTokens, (res) => {
+                        dispatch(appActions.loadingDb({
+                            airports: res.insertId,
+                            firs: getState().app.loadingDb.firs
+                        }));
+                        if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 530) {
+                            dispatch(appActions.isReady(true));
+                        }
+                    });
                     airportIndex += airportTokens.length;
                     airportTokens = [];
                 }

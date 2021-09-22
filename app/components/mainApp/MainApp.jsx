@@ -13,6 +13,8 @@ import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
+import LoadingView from '../LoadingView/LoadingView';
+import appActions from '../../redux/actions/appActions';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -20,7 +22,7 @@ export default function mainApp() {
     const [showMenu, setShowMenu] = React.useState(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
-    const app = useSelector(state => state.app);
+    const isReady = useSelector(state => state.app.isReady);
 
     // Kick start api calls get static data as needed
     useEffect(() => {
@@ -28,7 +30,6 @@ export default function mainApp() {
         // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
-            || staticAirspaceData.firBoundaries.length === 0
             || Object.keys(staticAirspaceData.firs).length === 0
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
             // console.log('ver', staticAirspaceData.version);
@@ -38,6 +39,8 @@ export default function mainApp() {
             console.log('Fetching vatspy static data!');
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
+        } else {
+            dispatch(allActions.appActions.isReady(true));
         }
     }, []);
 
@@ -48,7 +51,7 @@ export default function mainApp() {
 
 
     useEffect(() => {
-        if(staticAirspaceData.firBoundaries != null && Object.keys(staticAirspaceData.firs).length > 0) {
+        if(isReady &&  Object.keys(staticAirspaceData.firs).length > 0) {
             console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
             const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 30 * 1000);
@@ -56,11 +59,15 @@ export default function mainApp() {
                 clearInterval(interval);
             };
         }
-    }, [staticAirspaceData]);
+    }, [staticAirspaceData, isReady]);
 
     const Stack = createStackNavigator();
     const navigationRef = useRef();
     const routeNameRef = useRef();
+
+    if(!isReady) {
+        return <LoadingView />;
+    }
 
     return  <NavigationContainer
         ref={navigationRef}
