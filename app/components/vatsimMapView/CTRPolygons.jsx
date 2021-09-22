@@ -12,9 +12,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
 
-    console.log('firs', staticAirspaceData.firs);
-    console.log('cachedB', cachedFirBoundaries);
-
     let onPress = (client) => {
         Analytics.logEvent('SelectAirport', {
             callsign: client.callsign,
@@ -28,7 +25,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
-        console.log(callsignPrefix, client);
+        // console.log(callsignPrefix, client);
         // TODO proper condition to determine oceanic firs
 
         let airspace = {
@@ -50,7 +47,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         } else {
             // if we did not find by icao
             const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
-            console.log(1);
             if(fir && fir.icao) {
                 cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
             }
@@ -84,7 +80,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 let longitudeSum = 0;
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
-                        console.log(firIcao, cachedFirBoundaries);
                         cachedFirBoundaries[firIcao].forEach(fir => {
                             if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
@@ -146,7 +141,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 </View>
             );
         } else {
-            console.log('aaa', airspace);
             return <View key={client.callsign + '-' + client.cid}>
                 {airspace.firs.map((fir, i) =>
                     <View
