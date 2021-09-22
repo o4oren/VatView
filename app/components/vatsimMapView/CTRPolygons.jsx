@@ -12,6 +12,9 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
 
+    console.log('firs', staticAirspaceData.firs);
+    console.log('cachedB', cachedFirBoundaries);
+
     let onPress = (client) => {
         Analytics.logEvent('SelectAirport', {
             callsign: client.callsign,
@@ -25,6 +28,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
+        console.log(callsignPrefix);
         // TODO proper condition to determine oceanic firs
 
         let airspace = {
@@ -40,15 +44,25 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         }
         // If client is FIR
         if (cachedFirBoundaries[callsignPrefix]) {
+            console.log('here', callsignPrefix);
             cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
+        } else {
+            // if we did not fid by icao
+            const fir = staticAirspaceData.firs.find(fir => {
+                if(fir.prefix == callsignPrefix) {
+                    return true;
+                }
+                return false;
+            });
+            cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
         }
 
         if (airspace.firs.length === 0) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
-                if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
+                if (fir.prefix === callsignPrefix || fir.firBoundary === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
                     if (cachedFirBoundaries[fallbackFirIcao]) {
@@ -91,13 +105,12 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         }
 
         if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility);
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility + ' prefix used: ' + callsignPrefix);
         return airspace;
     };
 
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
-        console.log('a', airspace);
         if (airspace.isUir) {
             const boundaries = airspace.firs.map((fir, i) =>
                 <Polygon
@@ -135,6 +148,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 </View>
             );
         } else {
+            console.log('aaa', airspace);
             return <View key={client.callsign + '-' + client.cid}>
                 {airspace.firs.map((fir, i) =>
                     <View
