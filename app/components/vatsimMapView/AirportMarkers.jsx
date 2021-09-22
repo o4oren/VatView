@@ -45,7 +45,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     airportMarkers.push(
                         <Circle
                             key={atc.key}
-                            center={{latitude: airport.latitude, longitude: airport.longitude}}
+                            center={{latitude: atc.latitude, longitude: atc.longitude}}
                             radius={APP_RADIUS}
                             title={atc.callsign}
                             strokeColor={theme.blueGrey.appCircleStroke}

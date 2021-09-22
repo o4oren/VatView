@@ -172,7 +172,7 @@ const updateData = async (dispatch, getState) => {
                 // IF prefix in firs
                 getState().staticAirspaceData.firs.forEach(fir => {
                     if(fir.prefix == icao) {
-                        firsTocCache.push(icao);
+                        firsTocCache.push(fir.icao);
                     }
                 });
             });
@@ -194,7 +194,7 @@ const updateData = async (dispatch, getState) => {
                     json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
                     console.log('fwp', firWithPoints);
                     if(index === firs.length -1 && isUpdated) {
-                        console.log('dispatching' + Object.keys(json.cachedFirBoundaries).length + ' boundaries');
+                        console.log('dispatching boundaries', json.cachedFirBoundaries);
                         // console.log('live', json);
                         dispatch(dataUpdated(json));
                     }

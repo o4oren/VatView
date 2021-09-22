@@ -37,7 +37,7 @@ const MapComponent = ({screenSize}) => {
 
 const getMarkers = (clients, selectedClient, airports, cachedFirBoundaries) => {
     const markers = [
-        // generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
+        generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
         generatePilotMarkers(airports),
         generateAirportMarkers(clients.airportAtc, airports),
         renderFromToPath(selectedClient,airports)
