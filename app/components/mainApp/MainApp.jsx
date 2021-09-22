@@ -14,7 +14,6 @@ import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
-import appActions from '../../redux/actions/appActions';
 
 export default function mainApp() {
     const dispatch = useDispatch();
