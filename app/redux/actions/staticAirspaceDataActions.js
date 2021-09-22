@@ -1,6 +1,7 @@
 import {storeFirBoundaries, storeStaticAirspaceData} from '../../common/storageService';
 import {STATIC_DATA_VERSION} from '../../common/consts';
 import {countAirports, insertAirports, insertFirBoundaries} from '../../common/staticDataAcessLayer';
+import appActions from './appActions';
 
 export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
@@ -45,12 +46,12 @@ const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated, version
 // 7 - Max Lon
 // 8 - Center Lat
 // 9 - Center Lon
-const getFirBoundaries = async (dispatch) => {
+const getFirBoundaries = async (dispatch, getState) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/FIRBoundaries.dat');
     let body = await response.text();
     const lines = body.split(/\r?\n/);
-    const firBoundaries = {};
+    let numInsertedFirs = 0;
     for (let i=0; i < lines.length; i++) {
         if (!lines[i].match(/^\d/)) {
             let fir = {};
@@ -77,20 +78,33 @@ const getFirBoundaries = async (dispatch) => {
             }
             fir.points = points;
 
-            // firBoundaries[fir.icao].push(fir);
-
             if(fir.icao && fir.icao.length > 0) {
-                insertFirBoundaries(fir, fir.points);
+                insertFirBoundaries(fir, (isSuccess) => {
+                    console.log('were here');
+                    if(isSuccess) {
+                        ++numInsertedFirs;
+                        if(numInsertedFirs % 10 == 0) {
+                            dispatch(appActions.loadingDb({
+                                airports: getState().app.loadingDb.airports,
+                                firs: numInsertedFirs
+                            }));
+                        }
+                    }
+                });
             }
         }
     }
 
+    dispatch(appActions.loadingDb({
+        airports: getState().app.loadingDb.airports,
+        firs: numInsertedFirs
+    }));
+
     // used to store the empty object. TODO remove this
-    storeFirBoundaries(firBoundaries);
-    // dispatch(firBoundariesUpdated(firBoundaries));
+    storeFirBoundaries(null);
 };
 
-const getVATSpyData = async (dispatch) => {
+const getVATSpyData = async (dispatch, getState) => {
     const response = await fetch(
         'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/VATSpy.dat');
     let body = await response.text();
@@ -123,7 +137,10 @@ const getVATSpyData = async (dispatch) => {
                 airportTokens.push(tokens);
                 if(airportTokens.length == 140) {
                     console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
-                    insertAirports(airportTokens);
+                    insertAirports(airportTokens, (res) => dispatch(appActions.loadingDb({
+                        airports: res.insertId,
+                        firs: getState().app.loadingDb.firs
+                    })));
                     airportIndex += airportTokens.length;
                     airportTokens = [];
                 }
@@ -150,7 +167,10 @@ const getVATSpyData = async (dispatch) => {
             case FIR:
                 if(airportTokens.length > 0) {
                     console.log('inserting airports ' + airportIndex + ' - ' + (airportIndex + airportTokens.length));
-                    insertAirports(airportTokens);
+                    insertAirports(airportTokens, (res) => dispatch(appActions.loadingDb({
+                        airports: res.insertId,
+                        firs: getState().app.loadingDb.firs
+                    })));
                     airportIndex += airportTokens.length;
                     airportTokens = [];
                 }
@@ -178,6 +198,7 @@ const getVATSpyData = async (dispatch) => {
             }
         }
     });
+
     const lastUpdated = Date.now();
     console.log('before storing');
     await storeStaticAirspaceData({

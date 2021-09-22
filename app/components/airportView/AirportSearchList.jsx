@@ -73,7 +73,6 @@ export default function AirportSearchList() {
         setSearchTerm(searchTerm);
 
         if(searchTerm.length == 0) {
-            console.log(0);
             const activeAirportsList = Object.keys(airportAtc);
             getAirportsByICAOAsync(activeAirportsList).then((result) => {
                 setFilteredAirportList(result);

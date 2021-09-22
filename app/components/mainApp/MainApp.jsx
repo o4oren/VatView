@@ -20,6 +20,7 @@ export default function mainApp() {
     const [showMenu, setShowMenu] = React.useState(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
+    const app = useSelector(state => state.app);
 
     // Kick start api calls get static data as needed
     useEffect(() => {
@@ -27,7 +28,6 @@ export default function mainApp() {
         // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || staticAirspaceData.version < STATIC_DATA_VERSION
-            || !staticAirspaceData.firBoundaries
             || staticAirspaceData.firBoundaries.length === 0
             || Object.keys(staticAirspaceData.firs).length === 0
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {

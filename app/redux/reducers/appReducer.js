@@ -1,7 +1,14 @@
-import {CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
-    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED} from '../actions/appActions';
+import {
+    CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
+    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, IS_READY
+} from '../actions/appActions';
 
 const appReducer = (state = {
+    isReady: false,
+    loadingDb: {
+        airports: 0,
+        firs: 0
+    },
     initialRegion: {},
     theme: {},
     navigation: {},
@@ -34,6 +41,10 @@ const appReducer = (state = {
             atc: state.filters.atc,
             pilots: state.filters.pilots}
         };
+    case LOADING_DB:
+        return {...state, loadingDb: action.payload.loadingDb};
+    case IS_READY:
+        return {...state, isReady: action.payload.isReady};
     default:
         return state;
     }
