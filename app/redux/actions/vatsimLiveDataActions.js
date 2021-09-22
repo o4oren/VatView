@@ -161,7 +161,7 @@ const updateData = async (dispatch, getState) => {
 
             // get airspace
             const firsTocCache = Object.keys(clients.ctr);
-
+            Array.prototype.push.apply(firsTocCache, Object.keys(clients.fss));
             // get also UIR firs
             firsTocCache.forEach(icao => {
                 // if UIR

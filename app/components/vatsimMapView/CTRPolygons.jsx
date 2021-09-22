@@ -72,6 +72,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 let longitudeSum = 0;
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
+                        console.log(firIcao, cachedFirBoundaries);
                         cachedFirBoundaries[firIcao].forEach(fir => {
                             if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
