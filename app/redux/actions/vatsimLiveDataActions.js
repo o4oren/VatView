@@ -7,7 +7,6 @@ import {
     getFirPointsFromDB
 } from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
-import {firBoundariesUpdated} from './staticAirspaceDataActions';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -36,6 +35,11 @@ const updateData = async (dispatch, getState) => {
         );
         let json = await response.json();
 
+        json.cachedAirports = {
+            icao: {},
+            iata: {}
+        };
+        json.cachedFirBoundaries=  {};
         const clients = {
             ctr: {},
             fss: {},
@@ -55,6 +59,17 @@ const updateData = async (dispatch, getState) => {
             return client.callsign.split('_')[0];
         });
 
+        json.pilots.forEach(p => {
+            if(p.flight_plan && p.flight_plan.departure) {
+                if(!prefixes.includes(p.flight_plan.departure)) {
+                    prefixes.push(p.flight_plan.departure);
+                }
+                if(!prefixes.includes(p.flight_plan.arrival)) {
+                    prefixes.push(p.flight_plan.arrival);
+                }
+            }
+        });
+
         // get connected airports list
         getAirportsByCodesArray(prefixes, (airports) => {return createJsonObject(json, clients, airports);});
 
@@ -63,6 +78,18 @@ const updateData = async (dispatch, getState) => {
             // console.log('c', clients);
             // console.log('j', json);
             // console.log('a', airports);
+
+            if(Object.keys(airports).length > 0) {
+                airports.forEach(airport => {
+                    if(!json.cachedAirports.icao[airport.icao]) {
+                        json.cachedAirports.icao[airport.icao] = airport;
+                    }
+                    if(airport.iata && airport.iata.length > 0 && !json.cachedAirports.iata[airport.iata]) {
+                        json.cachedAirports.iata[airport.iata] = {icao: airport.icao};
+                    }
+                });
+            }
+
 
             json.pilots.forEach((pilot) => {
                 const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
@@ -142,28 +169,25 @@ const updateData = async (dispatch, getState) => {
                 }
             });
 
-            const firBoundaries = {};
             let isUpdated = false;
             getFirsFromDB(firsTocCache).then(firs => {
                 firs.forEach(async (fir, index, firs) => {
                     isUpdated = true;
                     // console.log(`fetching ${fir.icao} from db`);
                     const firWithPoints = await getFirPointsFromDB(fir);
-                    if (firBoundaries[firWithPoints.icao] == null) {
-                        firBoundaries[firWithPoints.icao] = [];
+                    if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
+                        json.cachedFirBoundaries[firWithPoints.icao] = [];
                     }
 
                     // prevent storing the points
-                    firBoundaries[firWithPoints.icao].push(firWithPoints);
+                    json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
                     if(index === firs.length -1 && isUpdated) {
-                        console.log('dispatching', Object.keys(firBoundaries).length);
-                        dispatch(firBoundariesUpdated(firBoundaries));
+                        console.log('dispatching' + Object.keys(json.cachedFirBoundaries).length + ' boundaries');
+                        // console.log('live', json);
+                        dispatch(dataUpdated(json));
                     }
                 });
             });
-
-            // console.log('live', json);
-            dispatch(dataUpdated(json));
         };
 
     } catch (error) {

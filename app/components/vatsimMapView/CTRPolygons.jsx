@@ -7,11 +7,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import * as Analytics from 'expo-firebase-analytics';
 
-export default function generateCtrPolygons(ctr, fss, firBoundaries) {
+export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
     const dispatch = useDispatch();
-    const firs = useSelector(state => state.staticAirspaceData.firs);
-    const uirs = useSelector(state => state.staticAirspaceData.uirs);
-
+    const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
 
     let onPress = (client) => {
@@ -41,20 +39,20 @@ export default function generateCtrPolygons(ctr, fss, firBoundaries) {
             return airspace;
         }
         // If client is FIR
-        if (firBoundaries[callsignPrefix]) {
-            firBoundaries[callsignPrefix].forEach(fir => {
+        if (cachedFirBoundaries[callsignPrefix]) {
+            cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
         }
 
         if (airspace.firs.length === 0) {
             let fallbackFirIcao;
-            for (let fir of firs) {
+            for (let fir of staticAirspaceData.firs) {
                 if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
-                    if (firBoundaries[fallbackFirIcao]) {
-                        firBoundaries[fallbackFirIcao].forEach(fir => {
+                    if (cachedFirBoundaries[fallbackFirIcao]) {
+                        cachedFirBoundaries[fallbackFirIcao].forEach(fir => {
                             if (fir != null && (isOceanic === true || !fir.isOceanic) && fir.isExtention === false) {
                                 airspace.firs.push(fir);
                             }
@@ -66,16 +64,16 @@ export default function generateCtrPolygons(ctr, fss, firBoundaries) {
 
         // if we did not resolve firs, we check if UIR
         if (!airspace.firs[0]) {
-            const uir = uirs[callsignPrefix];
+            const uir = staticAirspaceData.uirs[callsignPrefix];
             if (uir) {
                 airspace.isUir = true;
                 // calclute center of centers
                 let latitudeSum = 0;
                 let longitudeSum = 0;
-                if (uir.firs != null && uir.firs.length > 0) {
+                if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
-                        firBoundaries[firIcao].forEach(fir => {
-                            if (fir != null) {     // preventing crash when not every fir in UIR can be resolved
+                        cachedFirBoundaries[firIcao].forEach(fir => {
+                            if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
                                 latitudeSum += fir.center.latitude;
                                 longitudeSum += fir.center.longitude;
@@ -136,7 +134,6 @@ export default function generateCtrPolygons(ctr, fss, firBoundaries) {
                 </View>
             );
         } else {
-            console.log('airspace', airspace);
             return <View key={client.callsign + '-' + client.cid}>
                 {airspace.firs.map((fir, i) =>
                     <View

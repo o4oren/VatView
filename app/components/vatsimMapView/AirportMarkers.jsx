@@ -7,7 +7,7 @@ import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
 import * as Analytics from 'expo-firebase-analytics';
-import {findAirportByCodeInAptList} from '../../common/airportTools';
+import {getAirportByCode} from '../../common/airportTools';
 
 export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();
@@ -28,7 +28,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
 
     for (const icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
-        const airport = findAirportByCodeInAptList(icao, airports);
+        const airport = getAirportByCode(icao, airports);
         let delivery = false;
         let ground = false;
         let tower = false;
