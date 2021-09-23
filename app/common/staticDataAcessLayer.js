@@ -41,16 +41,6 @@ export const initDb = () => {
         tx.executeSql(
             'create index if not exists boundary_points_index on boundary_points(icao);'
         );
-
-        tx.executeSql(
-            'create table if not exists firs (icao text primary key not null, name text, prefix text, position text);'
-        );
-        tx.executeSql(
-            'create table if not exists uirs (icao text primary key not null, name text);'
-        );
-        tx.executeSql(
-            'create table if not exists firs_in_uir (icao text not null, fir_icao text not null, primary key (icao, fir_icao));'
-        );
     });
 };
 
