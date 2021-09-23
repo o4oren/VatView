@@ -4,13 +4,12 @@ import {useSelector} from 'react-redux';
 import { Card } from 'react-native-paper';
 import FilterBar from '../filterBar/FilterBar';
 import ClientDetails from '../clientDetails/ClientDetails';
-import {getAirportByCode} from '../../common/airportTools';
 import theme from '../../common/theme';
+import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
 
 export default function VatsimListView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
-    const airports = useSelector(state => state.staticAirspaceData.airports);
 
     const aggregatedClient = (clients) => {
         let aggregatedClients = [];
@@ -38,7 +37,7 @@ export default function VatsimListView() {
                     (c.name.toLowerCase() && c.name.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
                     (c.cid && c.cid == filters.searchQuery) ||
                     (c.flight_plan && c.flight_plan.aircraft.toLowerCase().startsWith(filters.searchQuery.toLowerCase().trim())) ||
-                    (filters.searchQuery.length > 3 && getAirportByCode(filters.searchQuery.toLowerCase().substr(0, 3), airports) != null));
+                    (filters.searchQuery.length > 3 && getAirportsByICAOAsync([filters.searchQuery.toLowerCase().substr(0, 3)]) != null));
             });
         }
         return aggregatedClients;

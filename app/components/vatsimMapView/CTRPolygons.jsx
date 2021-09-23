@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import * as Analytics from 'expo-firebase-analytics';
 
-export default function generateCtrPolygons(ctr, fss) {
+export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const polygons = [];
@@ -25,6 +25,7 @@ export default function generateCtrPolygons(ctr, fss) {
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
+        // console.log(callsignPrefix, client);
         // TODO proper condition to determine oceanic firs
 
         let airspace = {
@@ -39,20 +40,27 @@ export default function generateCtrPolygons(ctr, fss) {
             return airspace;
         }
         // If client is FIR
-        if (staticAirspaceData.firBoundaries[callsignPrefix]) {
-            staticAirspaceData.firBoundaries[callsignPrefix].forEach(fir => {
+        if (cachedFirBoundaries[callsignPrefix]) {
+            cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
+        } else {
+            // if we did not find by icao
+            const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
+            if(fir && fir.icao) {
+                cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
+            }
+
         }
 
         if (airspace.firs.length === 0) {
             let fallbackFirIcao;
             for (let fir of staticAirspaceData.firs) {
-                if (fir.prefix === callsignPrefix || fir.position === callsignPrefix) {
+                if (fir.prefix === callsignPrefix || fir.firBoundary === callsignPrefix) {
                     fallbackFirIcao = fir.icao;
                     // we have to iterate to prevent fetching the oceanic only
-                    if (staticAirspaceData.firBoundaries[fallbackFirIcao]) {
-                        staticAirspaceData.firBoundaries[fallbackFirIcao].forEach(fir => {
+                    if (cachedFirBoundaries[fallbackFirIcao]) {
+                        cachedFirBoundaries[fallbackFirIcao].forEach(fir => {
                             if (fir != null && (isOceanic === true || !fir.isOceanic) && fir.isExtention === false) {
                                 airspace.firs.push(fir);
                             }
@@ -72,7 +80,7 @@ export default function generateCtrPolygons(ctr, fss) {
                 let longitudeSum = 0;
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
-                        staticAirspaceData.firBoundaries[firIcao].forEach(fir => {
+                        cachedFirBoundaries[firIcao].forEach(fir => {
                             if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
                                 latitudeSum += fir.center.latitude;
@@ -90,13 +98,12 @@ export default function generateCtrPolygons(ctr, fss) {
         }
 
         if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility);
+            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility + ' prefix used: ' + callsignPrefix);
         return airspace;
     };
 
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
-
         if (airspace.isUir) {
             const boundaries = airspace.firs.map((fir, i) =>
                 <Polygon

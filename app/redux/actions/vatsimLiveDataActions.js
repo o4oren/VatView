@@ -1,7 +1,12 @@
 import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
-import {getAirportByCode} from '../../common/airportTools';
 import createKey from '../../common/createKey';
+import {
+    getAirportsByCodesArray,
+    getFirsFromDB,
+    getFirPointsFromDB
+} from '../../common/staticDataAcessLayer';
+import {findAirportByCodeInAptList} from '../../common/airportTools';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -23,7 +28,6 @@ const eventsUpdated = (data) => {
 };
 
 const updateData = async (dispatch, getState) => {
-    const airports = getState().staticAirspaceData.airports;
     console.log('fetching vatsim data feed');
     try {
         const response = await fetch(
@@ -31,6 +35,11 @@ const updateData = async (dispatch, getState) => {
         );
         let json = await response.json();
 
+        json.cachedAirports = {
+            icao: {},
+            iata: {}
+        };
+        json.cachedFirBoundaries=  {};
         const clients = {
             ctr: {},
             fss: {},
@@ -40,82 +49,160 @@ const updateData = async (dispatch, getState) => {
             other: []
         };
 
-        json.pilots.forEach((pilot) => {
-            const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
-            pilot.image = image;
-            pilot.imageSize = imageSize;
-            pilot.key = createKey(pilot);
-            clients.pilots.push(pilot);
-        });
-
-        json.controllers.forEach(client => {
-            client.image = mapIcons.radar;
-            client.imageSize = iconSizes.BUILDING_SIZE;
-            client.key = createKey(client);
-            let prefix = client.callsign.split('_')[0];
+        // map prefixes to query db
+        const prefixes = json.controllers.filter(client => {
             if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
-                const airport = getAirportByCode(prefix, airports);
-                if(airport != null) {
-                    client.latitude = airport.latitude;
-                    client.longitude = airport.longitude;
-                    if(client.callsign.endsWith('TWR')) {
-                        client.image = mapIcons.tower;
-                        client.imageSize = iconSizes.BUILDING_SIZE;
-                    }
-                    if(client.callsign.endsWith('ATIS')) {
-                        client.image = mapIcons.antenna;
-                        client.imageSize = iconSizes.BUILDING_SIZE;
-                    }
-                    if (clients.airportAtc[airport.icao] == null) {
-                        clients.airportAtc[airport.icao] = [];
-                    }
-                    clients.airportAtc[airport.icao].push(client);
+                return true;
+            }
+            return false;
+        }).map(client => {
+            return client.callsign.split('_')[0];
+        });
+
+        json.pilots.forEach(p => {
+            if(p.flight_plan && p.flight_plan.departure) {
+                if(!prefixes.includes(p.flight_plan.departure)) {
+                    prefixes.push(p.flight_plan.departure);
                 }
-                else {
-                    console.log('Unknown APT', client.callsign);
+                if(!prefixes.includes(p.flight_plan.arrival)) {
+                    prefixes.push(p.flight_plan.arrival);
                 }
-            } else if(client.facility === CTR) {
-                if (clients.ctr[prefix] == null) {
-                    clients.ctr[prefix] = [];
-                }
-                clients.ctr[prefix].push(client);
-            } else if(client.facility === FSS) {
-                if (clients.fss[prefix] == null) {
-                    clients.fss[prefix] = [];
-                }
-                clients.fss[prefix].push(client);
-            } else if(client.facility === OBS) {
-                clients.obs[prefix]=client;
-            } else {
-                clients.other[prefix]=client;
             }
         });
 
-        json.atis.forEach(atis => {
-            atis.key=createKey(atis);
-            let prefix = atis.callsign.split('_')[0];
-            atis.image = mapIcons.antenna;
-            atis.imageSize = iconSizes.BUILDING_SIZE;
-            if (clients.airportAtc[prefix] == null) {
-                clients.airportAtc[prefix] = [];
+        // get connected airports list
+        getAirportsByCodesArray(prefixes, (airports) => {return createJsonObject(json, clients, airports);});
+
+        // generate the json
+        const createJsonObject = (json, clients, airports) => {
+            // console.log('c', clients);
+            // console.log('j', json);
+            // console.log('a', airports);
+
+            if(Object.keys(airports).length > 0) {
+                airports.forEach(airport => {
+                    if(!json.cachedAirports.icao[airport.icao]) {
+                        json.cachedAirports.icao[airport.icao] = airport;
+                    }
+                    if(airport.iata && airport.iata.length > 0 && !json.cachedAirports.iata[airport.iata]) {
+                        json.cachedAirports.iata[airport.iata] = {icao: airport.icao};
+                    }
+                });
             }
-            clients.airportAtc[prefix].push(atis);
-        });
 
-        json.clients = clients;
-        json.clients.controllerCount = json.controllers.length;
-        delete json.controllers;
-        delete json.pilots;
-        delete json.atis;
 
-        // console.log('live', json);
+            json.pilots.forEach((pilot) => {
+                const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
+                pilot.image = image;
+                pilot.imageSize = imageSize;
+                pilot.key = createKey(pilot);
+                clients.pilots.push(pilot);
+            });
 
-        dispatch(dataUpdated(json));
+            json.controllers.forEach(client => {
+                client.image = mapIcons.radar;
+                client.imageSize = iconSizes.BUILDING_SIZE;
+                client.key = createKey(client);
+                let prefix = client.callsign.split('_')[0];
+                if([TWR_ATIS, GND, DEL, APP].includes(client.facility)) {
+                    const airport = findAirportByCodeInAptList(prefix, airports);
+                    if(airport != null) {
+                        client.latitude = airport.latitude;
+                        client.longitude = airport.longitude;
+                        if(client.callsign.endsWith('TWR')) {
+                            client.image = mapIcons.tower;
+                            client.imageSize = iconSizes.BUILDING_SIZE;
+                        }
+                        if(client.callsign.endsWith('ATIS')) {
+                            client.image = mapIcons.antenna;
+                            client.imageSize = iconSizes.BUILDING_SIZE;
+                        }
+                        if (clients.airportAtc[airport.icao] == null) {
+                            clients.airportAtc[airport.icao] = [];
+                        }
+                        clients.airportAtc[airport.icao].push(client);
+                    }
+                    else {
+                        console.log('Unknown APT', client.callsign);
+                    }
+                } else if(client.facility === CTR) {
+                    if (clients.ctr[prefix] == null) {
+                        clients.ctr[prefix] = [];
+                    }
+                    clients.ctr[prefix].push(client);
+                } else if(client.facility === FSS) {
+                    if (clients.fss[prefix] == null) {
+                        clients.fss[prefix] = [];
+                    }
+                    clients.fss[prefix].push(client);
+                } else if(client.facility === OBS) {
+                    clients.obs[prefix]=client;
+                } else {
+                    clients.other[prefix]=client;
+                }
+            });
+
+            json.atis.forEach(atis => {
+                atis.key=createKey(atis);
+                let prefix = atis.callsign.split('_')[0];
+                atis.image = mapIcons.antenna;
+                atis.imageSize = iconSizes.BUILDING_SIZE;
+                if (clients.airportAtc[prefix] == null) {
+                    clients.airportAtc[prefix] = [];
+                }
+                clients.airportAtc[prefix].push(atis);
+            });
+
+            json.clients = clients;
+            json.clients.controllerCount = json.controllers.length;
+            delete json.controllers;
+            delete json.pilots;
+            delete json.atis;
+
+            // get airspace
+            const firsTocCache = Object.keys(clients.ctr);
+            Array.prototype.push.apply(firsTocCache, Object.keys(clients.fss));
+            // get also UIR firs
+            firsTocCache.forEach(icao => {
+                // if UIR
+                if(getState().staticAirspaceData.uirs[icao] != null) {
+                    Array.prototype.push.apply(firsTocCache, getState().staticAirspaceData.uirs[icao].firs);
+                }
+
+                // IF prefix in firs
+                getState().staticAirspaceData.firs.forEach(fir => {
+                    if(fir.prefix == icao) {
+                        firsTocCache.push(fir.icao);
+                    }
+                });
+            });
+
+            let isUpdated = false;
+            getFirsFromDB(firsTocCache).then(firs => {
+                firs.forEach(async (fir, index, firs) => {
+                    isUpdated = true;
+                    // console.log(`fetching ${fir.icao} from db`);
+                    const firWithPoints = await getFirPointsFromDB(fir);
+                    if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
+                        json.cachedFirBoundaries[firWithPoints.icao] = [];
+                    }
+
+                    // prevent storing the points
+                    json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
+                    if(index === firs.length -1 && isUpdated) {
+                        // console.log('live', json);
+                        dispatch(dataUpdated(json));
+                    }
+                });
+            });
+        };
+
     } catch (error) {
         console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };
+
 
 const updateEvents = async (dispatch, getState) => {
     console.log('fetching events feed');

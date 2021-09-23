@@ -1,7 +1,15 @@
-import {CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
-    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED} from '../actions/appActions';
+import {
+    CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
+    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED
+} from '../actions/appActions';
 
 const appReducer = (state = {
+    firBoundariesLoaded: false,
+    airportsLoaded: false,
+    loadingDb: {
+        airports: 0,
+        firs: 0
+    },
     initialRegion: {},
     theme: {},
     navigation: {},
@@ -34,6 +42,12 @@ const appReducer = (state = {
             atc: state.filters.atc,
             pilots: state.filters.pilots}
         };
+    case LOADING_DB:
+        return {...state, loadingDb: action.payload.loadingDb};
+    case AIRPORTS_LOADED:
+        return {...state, airportsLoaded: action.payload.airportsLoaded};
+    case FIR_BOUNDARIES_LOADED:
+        return {...state, firBoundariesLoaded: action.payload.firBoundariesLoaded};
     default:
         return state;
     }

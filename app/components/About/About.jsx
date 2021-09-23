@@ -18,7 +18,7 @@ const About = () => {
             <ScrollView style={styles.textArea}>
                 <Title>About VatView</Title>
                 <Paragraph>
-                    VatView is you mobile VATSIM companion, displaying all the information you need so that you can stay in the sim.
+                    VatView is your mobile VATSIM companion, displaying all the information you need so that you can stay in the sim.
                     You can use it to check the network status, get ATIS messages without leaving the sim, and see the current VATSIM
                     traffic and ATC coverage.
                     I created this app as a personal project to fill in the gap of what I was missing in similar apps, and intend

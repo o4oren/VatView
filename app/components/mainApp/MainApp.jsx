@@ -12,6 +12,8 @@ import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
+import {initDb} from '../../common/staticDataAcessLayer';
+import LoadingView from '../LoadingView/LoadingView';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -19,22 +21,25 @@ export default function mainApp() {
     const [showMenu, setShowMenu] = React.useState(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
-
+    const airportsLoaded = useSelector(state => state.app.airportsLoaded);
+    const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
         // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
+            || !airportsLoaded
+            || !firBoundariesLoaded
             || staticAirspaceData.version < STATIC_DATA_VERSION
-            || !staticAirspaceData.firBoundaries
-            || staticAirspaceData.firBoundaries.length === 0
             || Object.keys(staticAirspaceData.firs).length === 0
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
             // console.log('ver', staticAirspaceData.version);
             // console.log('l', Object.keys(staticAirspaceData.firs).length);
             // console.log('static', STATIC_DATA_VERSION);
-
+            initDb();
             console.log('Fetching vatspy static data!');
+            dispatch(allActions.appActions.saveAirportsLoaded(false));
+            dispatch(allActions.appActions.saveFirBoundariesLoaded(false));
             dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
@@ -46,8 +51,12 @@ export default function mainApp() {
     }, []);
 
 
+    function isReady() {
+        return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
+    }
+
     useEffect(() => {
-        if(staticAirspaceData.firBoundaries != null && Object.keys(staticAirspaceData.firs).length > 0) {
+        if(isReady()) {
             console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
             const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 30 * 1000);
@@ -55,11 +64,15 @@ export default function mainApp() {
                 clearInterval(interval);
             };
         }
-    }, [staticAirspaceData]);
+    }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded]);
 
     const Stack = createStackNavigator();
     const navigationRef = useRef();
     const routeNameRef = useRef();
+
+    if(!isReady()) {
+        return <LoadingView />;
+    }
 
     return  <NavigationContainer
         ref={navigationRef}
