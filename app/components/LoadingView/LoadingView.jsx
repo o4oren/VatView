@@ -28,7 +28,7 @@ const LoadingView = () => {
                     <Text style={styles.progressView}>
                         Loading {loadingDb.airports} airports
                     </Text>
-                    <ProgressBar progress={loadingDb.airports / 17500} style={styles.progressView}/>
+                    <ProgressBar progress={loadingDb.airports / 17411} style={styles.progressView}/>
                 </View> : null
             }
 

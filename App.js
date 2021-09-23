@@ -92,7 +92,8 @@ export default function App() {
             initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,
             selectedAirport: state.savedState.selectedAirport != null ? state.savedState.selectedAirport : null,
             filters: {pilots: true, atc: true, searchQuery: ''},
-            isReady: false,
+            airportsLoaded: state.savedState.airportsLoaded || false,
+            firBoundariesLoaded: state.savedState.firBoundariesLoaded || false,
             loadingDb: {
                 airports: 0,
                 firs: 0

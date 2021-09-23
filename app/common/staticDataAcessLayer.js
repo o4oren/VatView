@@ -92,7 +92,7 @@ export const insertPoints = (fir, callback) => {
                 //     q: 'insert into boundary_points (icao, isOceanic, isExtention, latitude, longitude) values ' + placeholders + ';',
                 //     res: res,
                 // });
-                console.log('points for ' + fir.icao, res.insertId);
+                // console.log('points for ' + fir.icao, res.insertId);
                 callback(true);
             },
             (_, err) => {

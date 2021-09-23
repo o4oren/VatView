@@ -190,7 +190,6 @@ const updateData = async (dispatch, getState) => {
                     // prevent storing the points
                     json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
                     if(index === firs.length -1 && isUpdated) {
-                        console.log('dispatching boundaries', Object.keys(json.cachedFirBoundaries).length);
                         // console.log('live', json);
                         dispatch(dataUpdated(json));
                     }
