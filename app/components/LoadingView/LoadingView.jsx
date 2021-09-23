@@ -13,28 +13,35 @@ const LoadingView = () => {
     const loadingDb = useSelector(state => state.app.loadingDb);
 
     const generateContent = () => {
-        if(loadingDb.airports == 0 && loadingDb.firs == 0) {
-            return <View style={styles.paragraph}>
-                <Text>
-                    Please wait while we prepare airspace data
-                </Text>
-                <ProgressBar indeterminate={true}/>
-            </View>;
-        } else if(loadingDb.airports > 0 && loadingDb.firs == 0) {
-            return <View style={styles.paragraph}>
-                <Text>
-                    Loading {loadingDb.airports} airports
-                </Text>
-                <ProgressBar progress={loadingDb.airports / 17500}/>
-            </View>;
-        } else if(loadingDb.firs > 0) {
-            return <View style={styles.paragraph}>
-                <Text>
-                    Loading {loadingDb.firs} FIR boundaries
-                </Text>
-                <ProgressBar progress={loadingDb.firs / 540}/>
-            </View>;
-        }
+        return <View style={styles.paragraph}>
+            {
+                (loadingDb.airports == 0 && loadingDb.firs == 0) ? <View style={styles.progressView}>
+                    <Text style={styles.progressView}>
+                        Please wait while we prepare airspace data
+                    </Text>
+                    <ProgressBar indeterminate={true} style={styles.progressView}/>
+                </View> : null
+            }
+
+            {
+                (loadingDb.airports > 0 && loadingDb.firs == 0) ? <View style={styles.progressView}>
+                    <Text style={styles.progressView}>
+                        Loading {loadingDb.airports} airports
+                    </Text>
+                    <ProgressBar progress={loadingDb.airports / 17500} style={styles.progressView}/>
+                </View> : null
+            }
+
+            {
+                (loadingDb.airports > 0 && loadingDb.firs > 0) ? <View style={styles.progressView}>
+                    <Text style={styles.progressView}>
+                        Loading {loadingDb.firs} FIR boundaries
+                    </Text>
+                    <ProgressBar progress={loadingDb.firs / 540} style={styles.progressView}/>
+                </View> : null
+            }
+
+        </View>;
     };
 
     return <View style={styles.container}>
@@ -76,6 +83,9 @@ const styles = StyleSheet.create({
     paragraph: {
         padding: 20,
         margin: 20,
+    },
+    progressView: {
+        marginHorizontal: -20
     }
 });
 export default LoadingView;
