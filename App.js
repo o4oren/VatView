@@ -91,11 +91,16 @@ export default function App() {
         app: {
             initialRegion: state.savedState.initialRegion != null ? state.savedState.initialRegion.region : INITIAL_REGION,
             selectedAirport: state.savedState.selectedAirport != null ? state.savedState.selectedAirport : null,
-            filters: {pilots: true, atc: true, searchQuery: ''
-            }
+            filters: {pilots: true, atc: true, searchQuery: ''},
+            airportsLoaded: state.savedState.airportsLoaded || false,
+            firBoundariesLoaded: state.savedState.firBoundariesLoaded || false,
+            loadingDb: {
+                airports: 0,
+                firs: 0
+            },
         },
         staticAirspaceData: {
-            firBoundaries: state.savedState.staticAirspaceData != null ? state.savedState.firBoundaries : [],
+            firBoundaries: {},
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
             airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : {},
             firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : {},

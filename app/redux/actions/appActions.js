@@ -1,4 +1,8 @@
-import {storeInitialRegion} from '../../common/storageService';
+import {
+    storeAirportsLoaded,
+    storeFirBoundariesLoaded,
+    storeInitialRegion
+} from '../../common/storageService';
 export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
@@ -6,6 +10,47 @@ export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
 export const PILOTS_FILTER_CLICKED = 'PILOTS_FILTER_CLICKED';
 export const SEARCH_QUERY_CHANGED = 'SEARCH_QUERY_CHANGED';
 export const AIRPORT_SELECTED = 'AIRPORT_SELECTED';
+export const AIRPORTS_LOADED = 'AIRPORTS_LOADED';
+export const FIR_BOUNDARIES_LOADED = 'FIR_BOUNDARIES_LOADED';
+export const LOADING_DB = 'LOADING_DB';
+
+export const saveAirportsLoaded = (isAirportsLoaded) => {
+    return async (dispatch) => {
+        await storeAirportsLoaded(isAirportsLoaded);
+        dispatch(airportsLoaded(isAirportsLoaded));
+    };
+};
+
+export const saveFirBoundariesLoaded = (isFirBoundariesLoaded) => {
+    return async (dispatch) => {
+        await storeFirBoundariesLoaded(isFirBoundariesLoaded);
+        dispatch(firBoundariesLoaded(isFirBoundariesLoaded));
+    };
+};
+
+const airportsLoaded = (airportsLoaded) => {
+    return {
+        type: AIRPORTS_LOADED,
+        payload: {airportsLoaded: airportsLoaded}
+    };
+};
+
+const firBoundariesLoaded = (firBoundariesLoaded) => {
+    return {
+        type: FIR_BOUNDARIES_LOADED,
+        payload: {firBoundariesLoaded: firBoundariesLoaded}
+    };
+};
+
+const loadingDb = (loadingDb) => {
+    return {
+        type: LOADING_DB,
+        payload: {loadingDb: {
+            airports: loadingDb.airports,
+            firs: loadingDb.firs
+        }}
+    };
+};
 
 const initialRegionLoaded = (region) => {
     return {
@@ -63,6 +108,9 @@ export function saveInitialRegion(region) {
 }
 
 export default {
+    saveFirBoundariesLoaded: saveFirBoundariesLoaded,
+    saveAirportsLoaded: saveAirportsLoaded,
+    loadingDb: loadingDb,
     initialRegionLoaded: initialRegionLoaded,
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,

@@ -4,20 +4,13 @@ const SAVED_INITIAL_REGION = 'SAVED_INITIAL_REGION';
 const FIR_BOUNDARIES = 'FIR_BOUNDARIES';
 const STATIC_AIRSPACE_DATA = 'STATIC_AIRSPACE_DATA';
 const SELECTED_AIRPORT = 'SELECTED_AIRPORT';
+const AIRPORTS_LOADED = 'AIRPORTS_LOADED';
+const FIR_BOUNDARIES_LOADED = 'FIR_BOUNDARIES_LOADED';
 
 export const clearStorage = () => {
     AsyncStorage.clear();
     FileSystem.deleteAsync( FileSystem.documentDirectory + FIR_BOUNDARIES, {idempotent: true});
     FileSystem.deleteAsync( FileSystem.documentDirectory + FIR_BOUNDARIES, {idempotent: true});
-};
-
-export const storeStaticAirspaceData = async (staticAirspaceData) => {
-    try {
-        console.log('storing STATIC_AIRSPACE_DATA');
-        await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
-    } catch (err) {
-        console.log('Error storing static airspace data', err);
-    }
 };
 
 export const storeFirBoundaries = async (firBoundaries) => {
@@ -27,6 +20,15 @@ export const storeFirBoundaries = async (firBoundaries) => {
 
     } catch (err) {
         console.log('Error storing static fir boundaries', err);
+    }
+};
+
+export const storeStaticAirspaceData = async (staticAirspaceData) => {
+    try {
+        console.log('storing STATIC_AIRSPACE_DATA');
+        await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
+    } catch (err) {
+        console.log('Error storing static airspace data', err);
     }
 };
 
@@ -43,6 +45,27 @@ export const storeSelectedAirport = async (selectedAirport) => {
         await AsyncStorage.setItem(SELECTED_AIRPORT, JSON.stringify(selectedAirport));
     } catch (err) {
         console.log('Error storing selected Airport', err);
+    }
+};
+
+export const storeAirportsLoaded = async (isAirportsLoaded) => {
+    console.log('storing AIRPORTS_LOADED');
+
+    try {
+        await AsyncStorage.setItem(AIRPORTS_LOADED, JSON.stringify(isAirportsLoaded));
+        
+    } catch (err) {
+        console.log('Error storing db state', err);
+    }
+};
+
+export const storeFirBoundariesLoaded = async (isFirBoundariesLoaded) => {
+    console.log('storing FIR_BOUNDARIES_LOADED', isFirBoundariesLoaded);
+
+    try {
+        await AsyncStorage.setItem(FIR_BOUNDARIES_LOADED, JSON.stringify(isFirBoundariesLoaded));
+    } catch (err) {
+        console.log('Error storing db state', err);
     }
 };
 
@@ -66,6 +89,21 @@ export const retrieveSavedState = async () => {
         }
     } catch (err) {
         console.log('Error retrieving selectedAirport', err);
+    }
+
+    try {
+        const airportsLoaded = await AsyncStorage.getItem(AIRPORTS_LOADED);
+        if (airportsLoaded !== null) {
+            retrievedData.airportsLoaded = JSON.parse(airportsLoaded);
+        }
+        const firBoundariesLoaded = await AsyncStorage.getItem(FIR_BOUNDARIES_LOADED);
+
+        if (firBoundariesLoaded !== null) {
+            retrievedData.firBoundariesLoaded = JSON.parse(firBoundariesLoaded);
+        }
+        
+    } catch (err) {
+        console.log('Error retrieving db status', err);
     }
 
     try {

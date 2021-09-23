@@ -6,9 +6,27 @@ import {getDistanceFromLatLonInNm} from './timeDIstanceTools';
  * @param airports
  * @returns {null|*}
  */
-export const getAirportByCode = (code, airports) => {
+export const findAirportByCodeInAptList = (code, airports) => {
     if(!code || !airports)
         return null;
+    const airport = airports.find(airport => airport.icao == code || airport.iata == code);
+    if(airport)
+        return airport;
+    console.log('null airport', code);
+    return null;
+};
+
+/**
+ * A function that accepts the airports object and a code and returns an airport object if the code exits in icao/iata
+ * @param code
+ * @param airports
+ * @returns {null|*}
+ */
+export const getAirportByCode = (code, airports) => {
+    if(!code || !airports) {
+        console.log('null airport', code);
+        return null;
+    }
     if (airports.iata[code] !== undefined)
         return (airports.icao[airports.iata[code].icao]);
     if (airports.icao[code] !== undefined)
