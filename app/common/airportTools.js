@@ -91,6 +91,9 @@ export function getAirportCountryFromIcao(icao, countries) {
  * @returns {number}
  */
 export const calculateDistanceFromAirport = (pilot, airport) => {
+    if(!airport || !pilot) {
+        return 0;
+    }
     return getDistanceFromLatLonInNm({
         lat: airport.latitude,
         lon: airport.longitude
