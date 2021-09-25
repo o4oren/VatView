@@ -51,6 +51,8 @@ const renderFromToPath = (selectedClient, airports) => {
     if(selectedClient && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
         const departure = getAirportByCode(selectedClient.flight_plan.departure, airports);
         const arrival = getAirportByCode(selectedClient.flight_plan.arrival, airports);
+        console.log('s', selectedClient);
+        console.log('a', airports);
         return 	<View key={selectedClient.key + '_from_path'}>
             <Polyline
                 coordinates={[
@@ -61,6 +63,7 @@ const renderFromToPath = (selectedClient, airports) => {
                 geodesic={true}
                 strokeWidth={3}
                 key={`${selectedClient.callsign}_from_path`}
+                lineCap={'round'}
             />
             <Polyline
                 coordinates={[
