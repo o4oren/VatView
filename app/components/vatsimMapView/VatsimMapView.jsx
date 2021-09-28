@@ -33,7 +33,7 @@ export default function VatsimMapView() {
 
     // if selected client is not null, we update it with the one from the new update
     useEffect(() => {
-        if(selectedClient !== undefined) {
+        if(selectedClient != null) {
             const newClient = clients.pilots.filter(p => p.cid === selectedClient.cid);
             if(newClient.length > 0)
                 dispatch(allActions.appActions.clientSelected(newClient[0]));
