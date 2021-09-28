@@ -51,30 +51,32 @@ const renderFromToPath = (selectedClient, airports) => {
     if(selectedClient && selectedClient.flight_plan != null && selectedClient.flight_plan.departure != null) {
         const departure = getAirportByCode(selectedClient.flight_plan.departure, airports);
         const arrival = getAirportByCode(selectedClient.flight_plan.arrival, airports);
-        console.log('s', selectedClient);
-        console.log('a', airports);
+        const depLine = departure != null ? <Polyline
+            coordinates={[
+                { latitude: departure.latitude, longitude: departure.longitude },
+                { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
+            ]}
+            strokeColor="red"
+            geodesic={true}
+            strokeWidth={3}
+            key={`${selectedClient.callsign}_from_path`}
+            lineCap={'round'}
+        /> : null;
+
+        const arrLine = arrival != null ? <Polyline
+            coordinates={[
+                { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
+                { latitude: arrival.latitude, longitude: arrival.longitude }
+            ]}
+            strokeColor="green"
+            geodesic={true}
+            strokeWidth={3}
+            key={`${selectedClient.callsign}_to_path`}
+        /> : null;
+
         return 	<View key={selectedClient.key + '_from_path'}>
-            <Polyline
-                coordinates={[
-                    { latitude: departure.latitude, longitude: departure.longitude },
-                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude }
-                ]}
-                strokeColor="red"
-                geodesic={true}
-                strokeWidth={3}
-                key={`${selectedClient.callsign}_from_path`}
-                lineCap={'round'}
-            />
-            <Polyline
-                coordinates={[
-                    { latitude: selectedClient.latitude, longitude: selectedClient.longitude },
-                    { latitude: arrival.latitude, longitude: arrival.longitude }
-                ]}
-                strokeColor="green"
-                geodesic={true}
-                strokeWidth={3}
-                key={`${selectedClient.callsign}_to_path`}
-            />
+            {depLine}
+            {arrLine}
         </View>;
     }
 };
