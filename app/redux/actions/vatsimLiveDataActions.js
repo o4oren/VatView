@@ -7,11 +7,13 @@ import {
     getFirPointsFromDB
 } from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
+import {parse} from 'fast-xml-parser';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
 export const ERROR = 'ERROR';
 export const DATA_FETCH_ERROR = 'DATA_FETCH_ERROR';
+export const BOOKINGS_UPDATED = 'BOOKINGS_UPDATED';
 
 const dataUpdated = (data) => {
     return {
@@ -218,10 +220,36 @@ const updateEvents = async (dispatch, getState) => {
     }
 };
 
+const updateBookings = async (dispatch, getState) => {
+    console.log('fetching bookings');
+    try {
+        const response = await fetch(
+            'http://vatbook.euroutepro.com/xml2.php'
+        );
+        const bookingsText = await response.text();
+        let bookings = parse(bookingsText);
+
+        console.log('bookings', bookings);
+        dispatch(bookingsUpdated(bookings));
+    } catch (error) {
+        console.log(error);
+        dispatch({type: DATA_FETCH_ERROR});
+    }
+};
+
+const bookingsUpdated = (bookings) => {
+    return {
+        type: BOOKINGS_UPDATED,
+        payload: {bookings: bookings}
+    };
+};
+
 
 export default {
     dataUpdated: dataUpdated,
     updateData: updateData,
     updateEvents: updateEvents,
-    eventsUpdated: eventsUpdated
+    eventsUpdated: eventsUpdated,
+    updateBookings: updateBookings,
+    bookingsUpdated: bookingsUpdated
 };

@@ -33,6 +33,7 @@
     "expo-localization": "~10.2.0",
     "expo-sqlite": "~9.2.1",
     "expo-status-bar": "~1.0.4",
+    "fast-xml-parser": "^3.20.3",
     "lz-string": "^1.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
