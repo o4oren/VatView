@@ -2,11 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {Searchbar} from 'react-native-paper';
-import {findAirportsByNamePrefix, getAirportCountryFromIcao} from '../../common/airportTools';
+import {getAirportCountryFromIcao} from '../../common/airportTools';
 import AirportListItem from './AirportListItem';
 import {
     findAirportsByCodeOrNamePrefixAsync,
-    getAirportsByCodesArray,
     getAirportsByICAOAsync
 } from '../../common/staticDataAcessLayer';
 
