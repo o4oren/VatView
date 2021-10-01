@@ -14,6 +14,7 @@ import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
+import BookingsView from '../BookingsView/BookingsView';
 
 export default function mainApp() {
     const dispatch = useDispatch();
@@ -118,9 +119,9 @@ export default function mainApp() {
                         {/*}} icon="cog" title="Settings" />*/}
                         {/*<Divider />*/}
                         <Menu.Item onPress={() => {
-                            navigation.navigate('About');
+                            navigation.navigate('ATC Bookings');
                             closeMenu();
-                        }} icon="information-variant" title="About" />
+                        }} icon="information-variant" title="ATC Bookings" />
                         <Menu.Item onPress={() => {
                             navigation.navigate('Network status');
                             closeMenu();
@@ -129,6 +130,10 @@ export default function mainApp() {
                             navigation.navigate('Metar');
                             closeMenu();
                         }} icon="weather-partly-snowy-rainy" title="Metar" />
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('About');
+                            closeMenu();
+                        }} icon="information-variant" title="About" />
                     </Menu>
                 ),
             })}
@@ -152,6 +157,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="Event Details"
                 component={EventDetailsView}
+            />
+            <Stack.Screen
+                name="ATC Bookings"
+                component={BookingsView}
             />
             <Stack.Screen
                 name="Metar"
