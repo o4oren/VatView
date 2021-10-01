@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, FlatList, SafeAreaView, View, Text, ScrollView} from 'react-native';
-import theme from '../../common/theme';
+import {StyleSheet, FlatList, View, } from 'react-native';
 import {useSelector} from 'react-redux';
 import {IconButton, Searchbar, Colors} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
@@ -8,14 +7,14 @@ import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 import BookingDetails from './BookingDeatils';
 import {LinearGradient} from 'expo-linear-gradient';
 
-export default function BookingsView({navigation}) {
-    const bookings = useSelector(state => state.vatsimLiveData.bookings.bookings.atcs.booking);
+export default function BookingsView() {
+    const bookings = useSelector(state => state.vatsimLiveData.bookings.atcs);
     const [filteredBookings, setFilteredBookings] = useState(bookings);
     const [searchTerm, setSearchTerm] = useState('');
     const [isReady, setIsReady] = useState(false);
     const [date, setDate] = React.useState(undefined);
     const [open, setOpen] = React.useState(false);
-
+    console.log(bookings);
     const colors=['#b4becb', '#e1e8f5'];
     const start = { x: 0, y: 0 };
     const end = { x: 1, y: 1 };
@@ -52,9 +51,8 @@ export default function BookingsView({navigation}) {
             });
         }
         if(date) {
-            list = list.filter(event => {
-                return getDateFromUTCString(event.start_time).toDateString() == date.toDateString()
-                || getDateFromUTCString(event.end_time).toDateString() == date.toDateString();
+            list = list.filter(booking => {
+                return (new Date(booking.time_start).toDateString()) == date.toDateString();
             });
         }
         console.log('list', list);

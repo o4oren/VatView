@@ -17,7 +17,10 @@ clients: {
     obs: [],
     other: [],
     controllerCount: 0
-}, servers: [], prefiles: [], events: [], bookings: []},
+},
+servers: [], prefiles: [], events: [],
+bookings: {atcs: [], pilots: []}
+},
 action) => {
     switch (action.type) {
     case DATA_UPDATED:
