@@ -45,9 +45,10 @@ export default function mainApp() {
         }
     }, []);
 
-    // load events
+    // load events and bookings
     useEffect(() => {
         dispatch(allActions.vatsimLiveDataActions.updateEvents);
+        dispatch(allActions.vatsimLiveDataActions.updateBookings);
     }, []);
 
 
