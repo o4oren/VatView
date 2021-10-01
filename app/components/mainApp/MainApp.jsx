@@ -119,13 +119,13 @@ export default function mainApp() {
                         {/*}} icon="cog" title="Settings" />*/}
                         {/*<Divider />*/}
                         <Menu.Item onPress={() => {
-                            navigation.navigate('ATC Bookings');
-                            closeMenu();
-                        }} icon="information-variant" title="ATC Bookings" />
-                        <Menu.Item onPress={() => {
                             navigation.navigate('Network status');
                             closeMenu();
                         }} icon="cloud-outline" title="Network status" />
+                        <Menu.Item onPress={() => {
+                            navigation.navigate('ATC Bookings');
+                            closeMenu();
+                        }} icon="calendar-range-outline" title="ATC Bookings" />
                         <Menu.Item onPress={() => {
                             navigation.navigate('Metar');
                             closeMenu();

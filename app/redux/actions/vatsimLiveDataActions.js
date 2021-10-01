@@ -228,8 +228,24 @@ const updateBookings = async (dispatch, getState) => {
         );
         const bookingsText = await response.text();
         let bookings = parse(bookingsText);
-
-        console.log('bookings', bookings);
+        const atcBookings = bookings.bookings.atcs.booking.map(booking => {
+            let time_start = Date.parse(booking.time_start + 'Z');
+            let time_end = Date.parse(booking.time_end + 'Z');
+            booking.time_start = time_start;
+            booking.time_end = time_end;
+            return booking;
+        });
+        const pilotBookings = bookings.bookings.pilots.booking.map(booking => {
+            let time_start = Date.parse(booking.time_start + 'Z');
+            let time_end = Date.parse(booking.time_end + 'Z');
+            booking.time_start = time_start;
+            booking.time_end = time_end;
+            return booking;
+        });
+        bookings = {
+            pilots: pilotBookings,
+            atcs: atcBookings
+        };
         dispatch(bookingsUpdated(bookings));
     } catch (error) {
         console.log(error);
