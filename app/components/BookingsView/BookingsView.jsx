@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, FlatList, SafeAreaView, View, Text} from 'react-native';
+import {StyleSheet, FlatList, SafeAreaView, View, Text, ScrollView} from 'react-native';
 import theme from '../../common/theme';
 import {useSelector} from 'react-redux';
 import {IconButton, Searchbar, Colors} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
+import BookingDetails from './BookingDeatils';
+import {LinearGradient} from 'expo-linear-gradient';
 
 export default function BookingsView({navigation}) {
     const bookings = useSelector(state => state.vatsimLiveData.bookings.bookings.atcs.booking);
@@ -13,6 +15,10 @@ export default function BookingsView({navigation}) {
     const [isReady, setIsReady] = useState(false);
     const [date, setDate] = React.useState(undefined);
     const [open, setOpen] = React.useState(false);
+
+    const colors=['#b4becb', '#e1e8f5'];
+    const start = { x: 0, y: 0 };
+    const end = { x: 1, y: 1 };
 
     console.log('bookings in view', bookings);
 
@@ -63,17 +69,18 @@ export default function BookingsView({navigation}) {
     };
 
     const renderItem = ({item}) => (
-        <View>
-            <Text>Callsign: {item.callsign}</Text>
-            <Text>Name: {item.name}</Text>
-            <Text>CID: {item.cid}</Text>
-            <Text>Start: {item.time_start}</Text>
-            <Text>end: {item.time_end}</Text>
-        </View>
+        <BookingDetails
+            booking = {item}
+            styles = {styles.booking}
+        />
     );
 
-    return <SafeAreaView style={theme.blueGrey.safeAreaView}>
-        <View style={styles.container}>
+    return <LinearGradient
+        colors = {colors}
+        start={start}
+        end={end}
+        style={[styles.container, styles.rotate]}>
+        <View style={styles.searchContainer}>
             <DatePickerModal
                 // locale={'en'} optional, default: automatic
                 mode="single"
@@ -104,35 +111,47 @@ export default function BookingsView({navigation}) {
                 value={searchTerm}
             />
         </View>
-        <View style={styles.flatlist}>
-            <FlatList
-                data={filteredBookings}
-                renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-            />
-        </View>
-    </SafeAreaView>;
+        <FlatList
+            data={filteredBookings}
+            renderItem={renderItem}
+            keyExtractor={item => item.id.toString()}
+        />
+    </LinearGradient>;
 }
 
 const styles = StyleSheet.create({
-    container: {
+    searchContainer: {
         backgroundColor: '#4d7199',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        padding: 5
+        padding: 15,
     },
-    flatlist: {
-        backgroundColor: Colors.white,
-        alignItems: 'center',
+    container: {
         justifyContent: 'center',
-        flexDirection: 'row',
-        padding: 5,
-        height: '100%'
+        flexDirection: 'column',
+        flex: 1
+    },
+    textArea: {
+        margin: 20,
+        flex: 1
+    },
+    metarDisplay: {
+        padding: 15
+    },
+    centeredVertically: {
+        alignSelf: 'center'
     },
     textInput: {
         flex: 1,
         borderRadius: 25,
-        maxWidth: 300,
+        maxWidth: 300
+    },
+    line: {
+        flexDirection: 'row'
+    },
+    divider: {
+        marginTop: 5,
+        marginBottom: 5
     }
 });
