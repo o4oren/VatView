@@ -1,5 +1,5 @@
 const createKey = (client) => {
-    return `${client.callsign}_${client.cid}_${client.last_updated}`;
+    return `${client.callsign}_${client.cid}`;
 };
 
 export default createKey;

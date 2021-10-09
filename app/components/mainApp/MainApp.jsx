@@ -61,7 +61,7 @@ export default function mainApp() {
         if(isReady()) {
             console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
-            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 30 * 1000);
+            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 20 * 1000);
             return () => {
                 clearInterval(interval);
             };
@@ -104,7 +104,7 @@ export default function mainApp() {
                     <Menu
                         visible={showMenu}
                         onDismiss={closeMenu}
-                        anchor={                    
+                        anchor={
                             <IconButton
                                 icon='dots-vertical'
                                 color={'white'}

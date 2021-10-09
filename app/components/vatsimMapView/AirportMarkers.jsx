@@ -96,11 +96,12 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     onPress={() => onPress(airport)}
                     tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
+                    image={image}
                 >
-                    <Image
-                        source={image}
-                        fadeDuration={0}
-                    />
+                    {/*<Image*/}
+                    {/*    source={image}*/}
+                    {/*    fadeDuration={0}*/}
+                    {/*/>*/}
                 </MapView.Marker>
             );
         } else {
