@@ -12,10 +12,10 @@ export default function generatePilotMarkers() {
 
     const dispatch = useDispatch();
     const pilotMarkers = pilots.map( pilot => {
-        const styleIos = Platform.OS === 'ios' ?
+        const styleIos =
             {
                 transform: [{rotate: `${pilot.heading}deg`}],
-            } : {};
+            };
 
         let onPress = (pilot) => {
             Analytics.logEvent('SelectedPilot', {
@@ -29,6 +29,25 @@ export default function generatePilotMarkers() {
             }
         };
 
+        if(Platform.OS === 'ios') {
+            return <MapView.Marker
+                key={pilot.key}
+                coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
+                title={pilot.callsign}
+                anchor={{x: 0.5, y: 0.5}}
+                rotation={pilot.heading}
+                onPress={() => onPress(pilot)}
+                tracksViewChanges={false}
+                tracksInfoWindowChanges={false}
+            >
+                <Image
+                    source={pilot.image}
+                    fadeDuration={0}
+                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+                />
+            </MapView.Marker>;
+        }
+
         return <MapView.Marker
             key={pilot.key}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
@@ -38,12 +57,8 @@ export default function generatePilotMarkers() {
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
+            icon={pilot.image}
         >
-            <Image
-                source={pilot.image}
-                fadeDuration={0}
-                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-            />
         </MapView.Marker>;
     });
 

@@ -3,7 +3,6 @@ import {StyleSheet, FlatList, View, } from 'react-native';
 import {useSelector} from 'react-redux';
 import {IconButton, Searchbar, Colors} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
-import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 import BookingDetails from './BookingDeatils';
 import {LinearGradient} from 'expo-linear-gradient';
 
