@@ -102,7 +102,7 @@ const updateData = async (dispatch, getState) => {
             });
 
             json.controllers.forEach(client => {
-                client.image = mapIcons.radar;
+                client.image = mapIcons.radar64;
                 client.imageSize = iconSizes.BUILDING_SIZE;
                 client.key = createKey(client);
                 let prefix = client.callsign.split('_')[0];
@@ -112,11 +112,11 @@ const updateData = async (dispatch, getState) => {
                         client.latitude = airport.latitude;
                         client.longitude = airport.longitude;
                         if(client.callsign.endsWith('TWR')) {
-                            client.image = mapIcons.tower;
+                            client.image = mapIcons.tower64;
                             client.imageSize = iconSizes.BUILDING_SIZE;
                         }
                         if(client.callsign.endsWith('ATIS')) {
-                            client.image = mapIcons.antenna;
+                            client.image = mapIcons.antenna64;
                             client.imageSize = iconSizes.BUILDING_SIZE;
                         }
                         if (clients.airportAtc[airport.icao] == null) {
@@ -147,7 +147,7 @@ const updateData = async (dispatch, getState) => {
             json.atis.forEach(atis => {
                 atis.key=createKey(atis);
                 let prefix = atis.callsign.split('_')[0];
-                atis.image = mapIcons.antenna;
+                atis.image = mapIcons.antenna64;
                 atis.imageSize = iconSizes.BUILDING_SIZE;
                 if (clients.airportAtc[prefix] == null) {
                     clients.airportAtc[prefix] = [];
