@@ -1,5 +1,5 @@
 import MapView, {Circle} from 'react-native-maps';
-import {Image} from 'react-native';
+import {Image, Platform} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -75,16 +75,16 @@ export default function generateAirportMarkers(airportAtc, airports) {
             });
 
             if(app) {
-                image = mapIcons.mapRadar;
+                image = Platform.OS === 'ios' ? mapIcons.radar32 : mapIcons.radar64;
                 if ((ground || tower))
-                    image = mapIcons.mapTowerRadar;
+                    image = Platform.OS === 'ios' ? mapIcons.towerRadar32 : mapIcons.towerRadar64;
                 else if (atis || delivery)
-                    image = mapIcons.mapAntennaRadar;
+                    image = Platform.OS === 'ios' ? mapIcons.antennaRadar32 : mapIcons.antennaRadar64;
             } else {
                 if (ground || tower)
-                    image = mapIcons.mapTower;
+                    image = Platform.OS === 'ios' ? mapIcons.tower32 : mapIcons.tower64;
                 else if (atis || delivery)
-                    image = mapIcons.mapAntenna;
+                    image = Platform.OS === 'ios' ? mapIcons.antenna32 : mapIcons.antenna64;
             }
 
             airportMarkers.push(
