@@ -47,14 +47,17 @@ const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated, version
 // 8 - Center Lat
 // 9 - Center Lon
 const getFirBoundaries = async (dispatch, getState) => {
+    const dataUrls = await fetch(
+        'https://api.vatsim.net/api/map_data/');
+    const dataUrlsJson = await dataUrls.json();
     const response = await fetch(
-        'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/FIRBoundaries.dat');
+        dataUrlsJson.fir_boundaries_dat_url);
     let body = await response.text();
     const lines = body.trim().split(/\r?\n/);
     let numInsertedFirs = 0;
 
     for (let i = 0; i <= lines.length; i++) {
-        if (!lines[i].match(/^\d/)) {
+        if (lines[i] && !lines[i].match(/^\d/)) {
             let fir = {};
             const fields = lines[i].split('|');
             fir.icao = fields[0];
@@ -136,8 +139,12 @@ function insertAirportIntoDb(airportTokens, dispatch, getState) {
 }
 
 const getVATSpyData = async (dispatch, getState) => {
+    const dataUrls = await fetch(
+        'https://api.vatsim.net/api/map_data/');
+    const dataUrlsJson = await dataUrls.json();
+
     const response = await fetch(
-        'https://raw.githubusercontent.com/vatsimnetwork/vatspy-data-project/master/VATSpy.dat');
+        dataUrlsJson.vatspy_dat_url);
     let body = await response.text();
 
     const lines = body.split(/\r?\n/);
