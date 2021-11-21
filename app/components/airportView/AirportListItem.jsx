@@ -6,6 +6,8 @@ import {StyleSheet} from 'react-native';
 import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
 import * as Analytics from 'expo-firebase-analytics';
 import { useNavigation } from '@react-navigation/native';
+import {airlineLogos} from "../../common/airlineLogos";
+import {Image} from "react-native";
 
 const generateAtcList = (airportAtc) => {
     return airportAtc.map(atc =>
@@ -21,11 +23,11 @@ const generateFlightsList = (flights) => {
     return flights.map(flight => {
         const depTime = getDateFromString(flight.flight_plan.deptime);
         const eta = addTimeToDate(depTime, flight.flight_plan.enroute_time);
-
         return <List.Item
             key={flight.callsign + '_' + flight.cid}
             title={flight.callsign + ' - ' + flight.name}
             left={() => <Avatar.Image source={flight.image} size={flight.imageSize} style={styles.avatar}/>}
+            right={() => <Image source={airlineLogos[flight.callsign.substr(0,3)]}  style={styles.logo} />}
             description={
                 flight.flight_plan.aircraft_short + ' from ' + flight.flight_plan.departure + ' to ' + flight.flight_plan.arrival + '\n'
                 + 'Departure time: ' + getZuluTimeFromDate(depTime) + '   ETA: ' + getZuluTimeFromDate(eta)
@@ -108,5 +110,9 @@ export default function AirportListItem({airport, country, airportAtc, flights})
 const styles = StyleSheet.create({
     avatar: {
         backgroundColor: 'transparent'
+    },
+    logo: {
+        width: 60,
+        height: 60
     }
 });
