@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, Caption, Card, ProgressBar, Text} from 'react-native-paper';
+import {Avatar, Caption, Card, List, ProgressBar, Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
-import {StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
+import {airlineLogos} from '../../common/airlineLogos';
 
 export default function PilotDetails({pilot}) {
 
@@ -120,8 +121,11 @@ export default function PilotDetails({pilot}) {
                 style = {styles.title}
                 title = {pilot.callsign}
                 subtitle = {pilot.name + ' (' + pilot.cid +')'}
-                left = {() => <Avatar.Image source={pilot.image} size={32} style={styles.avatar} />}
-                right = {() => <Text>{pilot.flight_plan != null ? pilot.flight_plan.aircraft_short : ''}</Text>}
+                left = {() => <View>
+                    <Avatar.Image source={pilot.image} size={32} style={styles.avatar} />
+                    <Text>{pilot.flight_plan != null ? pilot.flight_plan.aircraft_short : ''}</Text>
+                </View>}
+                right={() => <Image source={airlineLogos[pilot.callsign.substr(0,3)]}  style={styles.logo} />}
             />
             {renderFlightDetails()}
         </View>
@@ -144,5 +148,9 @@ const styles = StyleSheet.create({
     },
     title: {
         paddingRight: 16
+    },
+    logo: {
+        width: 60,
+        height: 60
     }
 });
