@@ -78,7 +78,7 @@ export const airlineLogos = {
     HTL: require('../../assets/logos/HTL.png'),
     IBE: require('../../assets/logos/IBE.png'),
     ICE: require('../../assets/logos/ICE.png'),
-    ISR: require('../../assets/logos/ISR.jpeg'),
+    ISR: require('../../assets/logos/ISR.png'),
     JAL: require('../../assets/logos/JAL.png'),
     JAT: require('../../assets/logos/JAT.png'),
     JBU: require('../../assets/logos/JBU.png'),
