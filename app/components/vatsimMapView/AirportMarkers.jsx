@@ -37,7 +37,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
         let lastUpdated = null;
         let image = null;
 
-        if (airport != null && airportAtc) {
+        if (airport != null && airportAtc && airportAtc[airport.icao]) {
             airportAtc[airport.icao].forEach(atc => {
                 switch (atc.facility) {
                 case APP:
