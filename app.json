@@ -27,7 +27,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
-      "buildNumber": "1.7.1",
+      "buildNumber": "1.7.2",
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
@@ -45,7 +45,7 @@
       },
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
       "package": "com.gevahim.vatview",
-      "versionCode": 171,
+      "versionCode": 172,
       "googleServicesFile": "./google-services.json"
     },
     "web": {
