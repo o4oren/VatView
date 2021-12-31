@@ -95,7 +95,7 @@ const getFirBoundaries = async (dispatch, getState) => {
                     }
                     if(i == lines.length - 1) {
                         // we're at the end of the file
-                        if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 530) {
+                        if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 520) {
                             dispatch(appActions.saveFirBoundariesLoaded(true));
                         }
                     }
