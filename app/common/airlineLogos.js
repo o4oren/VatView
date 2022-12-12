@@ -127,7 +127,7 @@ export const airlineLogos = {
     SAA: require('../../assets/logos/SAA.png'),
     SAS: require('../../assets/logos/SAS.png'),
     SCX: require('../../assets/logos/SCX.png'),
-    SIA: require('../../assets/logos/SIA.png'),
+    SFR: require('../../assets/logos/SFR.png'),
     SKV: require('../../assets/logos/SKV.png'),
     SKW: require('../../assets/logos/SKW.png'),
     SLI: require('../../assets/logos/SLI.png'),
