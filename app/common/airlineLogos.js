@@ -90,7 +90,7 @@ export const airlineLogos = {
     JZA: require('../../assets/logos/JZA.png'),
     KAL: require('../../assets/logos/KAL.png'),
     KLM: require('../../assets/logos/KLM.png'),
-    KQA: require('../../assets/logos/KQA.png'),
+    KQA: require('../../assets/logos/KQA.jpg'),
     LAL: require('../../assets/logos/LAL.png'),
     LAN: require('../../assets/logos/LAN.png'),
     LDA: require('../../assets/logos/LDA.png'),
