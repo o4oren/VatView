@@ -53,7 +53,7 @@ const aircraftCodes = {
         size: iconSizes.JUMBO_SIZE
     },
     a330codes: {
-        codes: ['A330', 'A364', 'A333', 'A336', 'A338', 'A339', 'A350', 'A351', 'A359', 'A35K', 'A306', 'A310'],
+        codes: ['A330', 'A364', 'A332', 'A333', 'A336', 'A338', 'A339', 'A350', 'A351', 'A359', 'A35K', 'A306', 'A310'],
         icon: mapIcons.A330,
         size: iconSizes.LARGE_SIZE
     },
