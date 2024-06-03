@@ -55,15 +55,14 @@ export default function VatsimMapView() {
                 enablePanDownToClose={true}
                 snapPoints={[300, 400]}
                 borderRadius={10}
-                renderContent={() => (
-                    <BottomSheetView>
-                        <ClientDetails
-                            client={selectedClient}
-                            fill={true}
-                        />
-                    </BottomSheetView>)}
-                initialSnap={-1}
+                index={-1}
             >
+                <BottomSheetView>
+                    <ClientDetails
+                        client={selectedClient}
+                        fill={true}
+                    />
+                </BottomSheetView>
             </BottomSheet>
         </SafeAreaView>
     );

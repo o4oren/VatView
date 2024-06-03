@@ -186,7 +186,7 @@ const updateData = async (dispatch, getState) => {
                     isUpdated = true;
                     // console.log(`fetching ${fir.icao} from db`);
                     const firWithPoints = await getFirPointsFromDB(fir);
-                    console.log('fetching with points', firWithPoints);
+                    // console.log('fetching with points', firWithPoints);
 
                     if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
                         json.cachedFirBoundaries[firWithPoints.icao] = [];

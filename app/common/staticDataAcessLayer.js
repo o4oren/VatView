@@ -82,7 +82,6 @@ export const getFirsFromDB = (codes) => {
             try {
                 let res = tx.getAllSync(
                     `select * from fir_boundaries where fir_boundaries.icao in (${placeholders});`, codes);
-                console.log('firs result', res)
                 resolve(res);
             } catch(err) {
                 console.log('error', err);
@@ -103,8 +102,6 @@ export const getFirPointsFromDB = (fir) => {
                 fir.center.longitude = fir.longitude;
                 fir.center.latitude = fir.latitude;
                 fir.points = res;
-                console.log('fir', fir);
-
                 resolve(fir);
             } catch(err) {
                 console.log('error', err);
