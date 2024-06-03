@@ -120,7 +120,6 @@ export const getAirportsByICAOAsync = (codes) => {
                 let res = tx.getAllSync(
                     `select * from airports where icao in (${placeholders});`,
                     codes);
-                console.log('airport',res)
                 resolve(res);
             } catch (err) {
                 console.log('error', err);
