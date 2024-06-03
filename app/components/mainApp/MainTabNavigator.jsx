@@ -6,6 +6,7 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
+import {Platform} from 'react-native';
 
 export default function MainTabNavigator() {
     const Tab = createBottomTabNavigator();

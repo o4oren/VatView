@@ -8,7 +8,6 @@ import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
 import {IconButton, Menu} from 'react-native-paper';
 import Settings from '../settings/Settings';
-import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
@@ -54,7 +53,8 @@ export default function mainApp() {
 
 
     function isReady() {
-        return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
+        console.log("airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length", airportsLoaded + ' ' + firBoundariesLoaded + ' ' +  Object.keys(staticAirspaceData.firs).length)
+            return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
     }
 
     useEffect(() => {
@@ -86,7 +86,7 @@ export default function mainApp() {
             const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
             if (previousRouteName !== currentRouteName) {
-                await Analytics.setCurrentScreen(currentRouteName, currentRouteName);
+                // await Analytics.setCurrentScreen(currentRouteName, currentRouteName);
             }
 
             // Save the current route name for later comparison

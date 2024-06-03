@@ -1,5 +1,5 @@
-import { AsyncStorage } from 'react-native';
 import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const SAVED_INITIAL_REGION = 'SAVED_INITIAL_REGION';
 const FIR_BOUNDARIES = 'FIR_BOUNDARIES';
 const STATIC_AIRSPACE_DATA = 'STATIC_AIRSPACE_DATA';

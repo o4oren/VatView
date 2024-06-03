@@ -3,9 +3,9 @@ import {SafeAreaView, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import theme from '../../common/theme';
-import BottomSheet from 'reanimated-bottom-sheet';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -20,12 +20,12 @@ export default function VatsimMapView() {
 
     useEffect(() => {
         if (selectedClient == null)
-            sheetRef.current.snapTo(2);
+            sheetRef.current.snapToIndex(0);
         else if(prevSelectedClient == null || (
             (selectedClient.cid != null && selectedClient.cid !== prevSelectedClient.cid) ||
             (selectedClient.icao != null && selectedClient.icao !== prevSelectedClient.icao)
         )) {
-            sheetRef.current.snapTo(1);
+            sheetRef.current.snapToIndex(0);
         } else if(selectedClient.cid == prevSelectedClient.cid || selectedClient.icao !== prevSelectedClient.icao)
             return;
         setPrevSelectedClient(selectedClient);
@@ -52,14 +52,19 @@ export default function VatsimMapView() {
             />
             <BottomSheet
                 ref={sheetRef}
-                snapPoints={[400, 300, 0]}
+                enablePanDownToClose={true}
+                snapPoints={[300, 400]}
                 borderRadius={10}
-                renderContent={() => (<ClientDetails
-                    client={selectedClient}
-                    fill={true}
-                />)}
-                initialSnap={2}
-            />
+                renderContent={() => (
+                    <BottomSheetView>
+                        <ClientDetails
+                            client={selectedClient}
+                            fill={true}
+                        />
+                    </BottomSheetView>)}
+                initialSnap={-1}
+            >
+            </BottomSheet>
         </SafeAreaView>
     );
 }

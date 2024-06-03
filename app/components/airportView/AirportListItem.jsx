@@ -4,7 +4,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import theme from '../../common/theme';
 import {StyleSheet} from 'react-native';
 import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
-import * as Analytics from 'expo-firebase-analytics';
 import { useNavigation } from '@react-navigation/native';
 import {airlineLogos} from "../../common/airlineLogos";
 import {Image} from "react-native";
@@ -43,17 +42,17 @@ export default function AirportListItem({airport, country, airportAtc, flights})
     const navigation = useNavigation();
 
     const pressArrivals = () => {
-        Analytics.logEvent('ExpandedArrivals', {
-            action: expandedArrivals ? 'close' : 'open',
-            airport: airport,
-        });
+        // Analytics.logEvent('ExpandedArrivals', {
+        //     action: expandedArrivals ? 'close' : 'open',
+        //     airport: airport,
+        // });
         setExpandedArrivals(!expandedArrivals);
     };
     const pressDepartures = () => {
-        Analytics.logEvent('ExpandedDepartures', {
-            action: expandedDepartures ? 'close' : 'open',
-            airport: airport,
-        });
+        // Analytics.logEvent('ExpandedDepartures', {
+        //     action: expandedDepartures ? 'close' : 'open',
+        //     airport: airport,
+        // });
         setExpandedDepartures(!expandedDepartures);
     };
     const pressAtc = () => {

@@ -3,7 +3,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
-import * as Analytics from 'expo-firebase-analytics';
+// import * as Analytics from 'expo-firebase-analytics';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
 import {LinearGradient} from 'expo-linear-gradient';
 import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
@@ -26,10 +26,10 @@ export default function MetarView({route}) {
     const onChangeSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
         if(searchTerm.length === 4) {
-            Analytics.logEvent('request_METAR', {
-                icao: searchTerm,
-                purpose: 'Getting METAR',
-            });
+            // Analytics.logEvent('request_METAR', {
+            //     icao: searchTerm,
+            //     purpose: 'Getting METAR',
+            // });
             dispatch(allActions.metarActions.metarRequsted(searchTerm));
         }
     };
