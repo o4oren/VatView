@@ -226,30 +226,21 @@ const updateEvents = async (dispatch, getState) => {
 const updateBookings = async (dispatch, getState) => {
     console.log('fetching bookings');
     try {
+        // old 'http://vatbook.euroutepro.com/xml2.php'
         const response = await fetch(
-            'http://vatbook.euroutepro.com/xml2.php'
+            'https://atc-bookings.vatsim.net/api/booking'
         );
-        const bookingsText = await response.text();
-        let bookings = parse(bookingsText);
-        const atcBookings = bookings.bookings.atcs.booking.map(booking => {
-            let time_start = Date.parse(booking.time_start.replace(' ', 'T') + 'Z');
-            let time_end = Date.parse(booking.time_end.replace(' ', 'T') + 'Z');
-            booking.time_start = time_start;
-            booking.time_end = time_end;
+
+
+        const bookingsJson = await response.json();
+        const atcBookings = bookingsJson.map(booking => {
+            let time_start = new Date(booking.start.replace(' ', 'T') + 'Z');
+            let time_end = new Date(booking.end.replace(' ', 'T') + 'Z');
+            booking.start = time_start;
+            booking.end = time_end;
             return booking;
         });
-        const pilotBookings = bookings.bookings.pilots.booking.map(booking => {
-            let time_start = Date.parse(booking.time_start + 'Z');
-            let time_end = Date.parse(booking.time_end + 'Z');
-            booking.time_start = time_start;
-            booking.time_end = time_end;
-            return booking;
-        });
-        bookings = {
-            pilots: pilotBookings,
-            atcs: atcBookings
-        };
-        dispatch(bookingsUpdated(bookings));
+        dispatch(bookingsUpdated(atcBookings));
     } catch (error) {
         console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
