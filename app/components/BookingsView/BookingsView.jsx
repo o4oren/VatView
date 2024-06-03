@@ -7,7 +7,7 @@ import BookingDetails from './BookingDeatils';
 import {LinearGradient} from 'expo-linear-gradient';
 
 export default function BookingsView() {
-    const bookings = useSelector(state => state.vatsimLiveData.bookings.atcs);
+    const bookings = useSelector(state => state.vatsimLiveData.bookings);
     const [filteredBookings, setFilteredBookings] = useState(bookings);
     const [searchTerm, setSearchTerm] = useState('');
     const [isReady, setIsReady] = useState(false);
@@ -17,8 +17,6 @@ export default function BookingsView() {
     const colors=['#b4becb', '#e1e8f5'];
     const start = { x: 0, y: 0 };
     const end = { x: 1, y: 1 };
-
-    console.log('bookings in view', bookings);
 
     const onDismissSingle = React.useCallback(() => {
         setOpen(false);
@@ -51,7 +49,7 @@ export default function BookingsView() {
         }
         if(date) {
             list = list.filter(booking => {
-                return (new Date(booking.time_start).toDateString()) == date.toDateString();
+                return (new Date(booking.start).toDateString()) == date.toDateString();
             });
         }
         console.log('list', list);
@@ -86,7 +84,7 @@ export default function BookingsView() {
                 date={date}
                 onConfirm={onConfirmSingle}
                 validRange={{
-                    startDate: new Date(),  // optional
+                    start: new Date(),  // optional
                     // endDate: new Date(), // optional
                 }}
                 // onChange={} // same props as onConfirm but triggered without confirmed by user

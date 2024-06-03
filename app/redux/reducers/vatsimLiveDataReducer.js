@@ -19,7 +19,7 @@ clients: {
     controllerCount: 0
 },
 servers: [], prefiles: [], events: [],
-bookings: {atcs: [], pilots: []}
+bookings: []
 },
 action) => {
     switch (action.type) {
