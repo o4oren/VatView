@@ -9,7 +9,7 @@ import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
-import AppLoading from 'expo-app-loading';
+import {Text, View} from 'react-native';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -83,7 +83,7 @@ export default function App() {
 
     if(!state.isReady) {
         return (
-            <AppLoading>Loading</AppLoading>
+            <View><Text>Loading</Text></View>
         );
     }
 

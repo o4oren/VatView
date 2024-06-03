@@ -83,7 +83,7 @@ const getFirBoundaries = async (dispatch, getState) => {
             fir.points = points;
 
             if(fir.icao && fir.icao.length > 0) {
-                insertFirBoundaries(fir, (isSuccess) => {
+                await insertFirBoundaries(fir, (isSuccess) => {
                     if(isSuccess) {
                         ++numInsertedFirs;
                         if(numInsertedFirs % 10 == 0) {
@@ -95,7 +95,9 @@ const getFirBoundaries = async (dispatch, getState) => {
                     }
                     if(i == lines.length - 1) {
                         // we're at the end of the file
-                        if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 520) {
+                        console.log('===================', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs)
+                        if(getState().app.loadingDb.firs > 520) {
+                            console.log('***************=');
                             dispatch(appActions.saveFirBoundariesLoaded(true));
                         }
                     }
@@ -104,6 +106,10 @@ const getFirBoundaries = async (dispatch, getState) => {
         }
     }
 
+    console.log({
+        airports: getState().app.loadingDb.airports,
+        firs: numInsertedFirs
+    });
     dispatch(appActions.loadingDb({
         airports: getState().app.loadingDb.airports,
         firs: numInsertedFirs
@@ -123,15 +129,16 @@ function insertAirportIntoDb(airportTokens, dispatch, getState) {
     Array.from(
         {length: Math.ceil(airportTokens.length / AIRPORTS_CHUNK_SIZE)},
         (_, index) => airportTokens.slice(index * AIRPORTS_CHUNK_SIZE, (index + 1) * AIRPORTS_CHUNK_SIZE)
-    ).forEach((chunk, index) => {
-        // console.log('inserting airports chunk ' + index);
-        insertAirports(chunk, (res) => {
+    ).forEach(async (chunk, index) => {
+        await insertAirports(chunk, (res) => {
+            console.log('inserting airports count ' + res);
+
             dispatch(appActions.loadingDb({
-                airports: res.insertId,
+                airports: res,
                 firs: getState().app.loadingDb.firs
             }));
 
-            if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length == airportTokens.length) {
+            if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length === airportTokens.length) {
                 dispatch(appActions.saveAirportsLoaded(true));
             }
         });
@@ -200,7 +207,7 @@ const getVATSpyData = async (dispatch, getState) => {
         }
     });
 
-    insertAirportIntoDb(airportTokens, dispatch, getState);
+    await insertAirportIntoDb(airportTokens, dispatch, getState);
 
     const lastUpdated = Date.now();
     await storeStaticAirspaceData({
@@ -211,8 +218,8 @@ const getVATSpyData = async (dispatch, getState) => {
         lastUpdated: lastUpdated,
         version: STATIC_DATA_VERSION
     });
-    console.log('vatspyDataUpdated');
-    countAirports();
+    console.log('vatspyDataUpdated', vatspyDataUpdated);
+    await countAirports();
     dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };
 

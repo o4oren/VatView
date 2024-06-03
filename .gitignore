@@ -75,3 +75,5 @@ buck-out/
 web-build/
 
 # @end expo-cli
+/.java-version
+/amazon-corretto-11-x64-linux-jdk.tar.gz

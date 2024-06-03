@@ -4,7 +4,6 @@ import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {Platform} from 'react-native';
-import * as Analytics from 'expo-firebase-analytics';
 
 export default function generatePilotMarkers() {
     const selectedClient = useSelector(state => state.app.selectedClient);
@@ -18,10 +17,10 @@ export default function generatePilotMarkers() {
             };
 
         let onPress = (pilot) => {
-            Analytics.logEvent('SelectedPilot', {
-                callsign: pilot.callsign,
-                purpose: 'Clicking a flight',
-            });
+            // Analytics.logEvent('SelectedPilot', {
+            //     callsign: pilot.callsign,
+            //     purpose: 'Clicking a flight',
+            // });
             if(selectedClient && pilot.callsign == selectedClient.callsign) {
                 dispatch(allActions.appActions.clientSelected(null));
             } else {
