@@ -1,4 +1,4 @@
-import MapView from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
 import {Image} from 'react-native';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,7 +29,7 @@ export default function generatePilotMarkers() {
         };
 
         if(Platform.OS === 'ios') {
-            return <MapView.Marker
+            return <Marker
                 key={pilot.key}
                 coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
                 title={pilot.callsign}
@@ -44,10 +44,10 @@ export default function generatePilotMarkers() {
                     fadeDuration={0}
                     style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
                 />
-            </MapView.Marker>;
+            </Marker>;
         }
 
-        return <MapView.Marker
+        return <Marker
             key={pilot.key}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
             title={pilot.callsign}
@@ -58,7 +58,7 @@ export default function generatePilotMarkers() {
             tracksInfoWindowChanges={false}
             icon={pilot.image}
         >
-        </MapView.Marker>;
+        </Marker>;
     });
 
     return pilotMarkers;

@@ -1,4 +1,4 @@
-import MapView, {Circle} from 'react-native-maps';
+import MapView, {Circle, Marker} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
@@ -87,7 +87,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
             }
 
             airportMarkers.push(
-                <MapView.Marker
+                <Marker
                     key={airport.icao + '_' + lastUpdated}
                     coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
                     title={airport.icao}
@@ -101,7 +101,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     {/*    source={image}*/}
                     {/*    fadeDuration={0}*/}
                     {/*/>*/}
-                </MapView.Marker>
+                </Marker>
             );
         } else {
             console.log('cannot add marker', airport);
