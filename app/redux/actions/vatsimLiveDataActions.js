@@ -181,10 +181,13 @@ const updateData = async (dispatch, getState) => {
 
             let isUpdated = false;
             getFirsFromDB(firsTocCache).then(firs => {
+                // console.log('firs fetched', firs)
                 firs.forEach(async (fir, index, firs) => {
                     isUpdated = true;
                     // console.log(`fetching ${fir.icao} from db`);
                     const firWithPoints = await getFirPointsFromDB(fir);
+                    console.log('fetching with points', firWithPoints);
+
                     if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
                         json.cachedFirBoundaries[firWithPoints.icao] = [];
                     }

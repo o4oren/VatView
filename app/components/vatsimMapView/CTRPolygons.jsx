@@ -1,4 +1,4 @@
-import MapView, {Polygon} from 'react-native-maps';
+import MapView, {Marker, Polygon} from 'react-native-maps';
 import {Text, View} from 'react-native';
 import React from 'react';
 import theme from '../../common/theme';
@@ -122,7 +122,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                     style={{zIndex: 2}}
                 >
                     {boundaries}
-                    <MapView.Marker
+                    <Marker
                         key={client.callsign + '_' + client.cid + '-marker'}
                         coordinate={airspace.center}
                         tracksViewChanges={false}
@@ -136,7 +136,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                         >
                             {client.callsign}
                         </Text>
-                    </MapView.Marker>
+                    </Marker>
                 </View>
             );
         } else {
@@ -156,7 +156,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                             tappable={true}
                             onPress={() => onPress(client)}
                         />
-                        <MapView.Marker
+                        <Marker
                             key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
                             coordinate={fir.center}
                             tracksViewChanges={false}
@@ -170,7 +170,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                             >
                                 {fir.icao}
                             </Text>
-                        </MapView.Marker>
+                        </Marker>
                     </View>
                 )}
             </View>;
