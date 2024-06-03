@@ -13,7 +13,6 @@ export default function BookingsView() {
     const [isReady, setIsReady] = useState(false);
     const [date, setDate] = React.useState(undefined);
     const [open, setOpen] = React.useState(false);
-    console.log(bookings);
     const colors=['#b4becb', '#e1e8f5'];
     const start = { x: 0, y: 0 };
     const end = { x: 1, y: 1 };
@@ -52,7 +51,6 @@ export default function BookingsView() {
                 return (new Date(booking.start).toDateString()) == date.toDateString();
             });
         }
-        console.log('list', list);
         setFilteredBookings(list);
     };
 
