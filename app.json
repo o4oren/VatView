@@ -60,6 +60,19 @@
         }
       }
     },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView",
     "extra": {
