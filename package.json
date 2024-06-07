@@ -62,7 +62,8 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "yarn": "^1.22.22"
+    "yarn": "^1.22.22",
+    "expo-dev-client": "~4.0.15"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
