@@ -40,6 +40,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         }
         // If client is FIR
         if (cachedFirBoundaries[callsignPrefix]) {
+            console.log(callsignPrefix + ' is in cached boundaries');
             cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
@@ -47,6 +48,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
             // if we did not find by icao
             const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
             if(fir && fir.icao) {
+                console.log(callsignPrefix + ' is not in cached boundaries');
                 cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
             }
 
