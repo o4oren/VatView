@@ -5,7 +5,7 @@
     "ios": "npx expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint *.js **/*.js src/**/*.js"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
@@ -63,7 +63,6 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "yarn": "^1.22.22",
     "expo-build-properties": "~0.12.3"
   },
   "devDependencies": {
