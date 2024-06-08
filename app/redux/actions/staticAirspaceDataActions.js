@@ -86,22 +86,23 @@ const getFirBoundaries = async (dispatch, getState) => {
                 await insertFirBoundaries(fir, (isSuccess) => {
                     if(isSuccess) {
                         ++numInsertedFirs;
-                        if(numInsertedFirs % 10 == 0) {
+                        if(numInsertedFirs % 100 == 0) {
                             dispatch(appActions.loadingDb({
                                 airports: getState().app.loadingDb.airports,
                                 firs: numInsertedFirs
                             }));
                         }
                     }
-                    if(i == lines.length - 1) {
-                        // we're at the end of the file
-                        console.log('===================', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs)
-                        if(getState().app.loadingDb.firs > 520) {
-                            console.log('***************=');
-                            dispatch(appActions.saveFirBoundariesLoaded(true));
-                        }
-                    }
+
                 });
+                if(i == lines.length - 1) {
+                    // we're at the end of the file
+                    console.log('===================', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs)
+                    if(getState().app.loadingDb.firs > 520) {
+                        console.log('***************=', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs);
+                        dispatch(appActions.saveFirBoundariesLoaded(true));
+                    }
+                }
             }
         }
     }
@@ -130,14 +131,8 @@ function insertAirportIntoDb(airportTokens, dispatch, getState) {
         {length: Math.ceil(airportTokens.length / AIRPORTS_CHUNK_SIZE)},
         (_, index) => airportTokens.slice(index * AIRPORTS_CHUNK_SIZE, (index + 1) * AIRPORTS_CHUNK_SIZE)
     ).forEach(async (chunk, index) => {
-        await insertAirports(chunk, (res) => {
-            console.log('inserting airports count ' + res);
-
-            dispatch(appActions.loadingDb({
-                airports: res,
-                firs: getState().app.loadingDb.firs
-            }));
-
+        await insertAirports(chunk, (lastRowId) => {
+            // console.log('inserting airports count ' + lastRowId);
             if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length === airportTokens.length) {
                 dispatch(appActions.saveAirportsLoaded(true));
             }
