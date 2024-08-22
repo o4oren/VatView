@@ -14,7 +14,7 @@ web-build/
 *.iml
 .idea
 app.json.prod
-app.json
+# app.json
 
 /.java-version
 /amazon-corretto-11-x64-linux-jdk.tar.gz
