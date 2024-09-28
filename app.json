@@ -3,7 +3,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "orientation": "portrait",
     "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
@@ -35,7 +35,7 @@
     },
     "android": {
       "package": "com.gevahim.vatview",
-      "versionCode": 180,
+      "versionCode": 181,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -48,7 +48,8 @@
       "permissions": [
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
-        "INTERNET"
+        "INTERNET",
+        "com.google.android.gms.permission.AD_ID"
       ],
       "googleServicesFile": "./google-services.json"
     },
