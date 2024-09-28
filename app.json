@@ -27,7 +27,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
-      "buildNumber": "1.8.0",
+      "buildNumber": "1.8.1",
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
