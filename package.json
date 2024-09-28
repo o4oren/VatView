@@ -63,7 +63,8 @@
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "expo-insights": "~0.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

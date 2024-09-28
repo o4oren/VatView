@@ -1,18 +1,18 @@
 import theme from '../../common/theme';
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
 import {Platform} from 'react-native';
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 export default function MainTabNavigator() {
-    const Tab = createBottomTabNavigator();
+    const tab = createBottomTabNavigator();
     const barHeight = Platform.OS === 'ios' ? 90 : 60;
 
-    return <Tab.Navigator
+    return <tab.Navigator
         tabBarOptions={{
             activeBackgroundColor: theme.blueGrey.theme.colors.primary,
             inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
@@ -28,7 +28,7 @@ export default function MainTabNavigator() {
             }
         }}
     >
-        <Tab.Screen
+        <tab.Screen
             name="Map"
             component={VatsimMapView}
             options={{
@@ -41,7 +41,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="List"
             component={VatsimListView}
             options={{
@@ -54,7 +54,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="Airports"
             component={AirportDetailsView}
             options={{
@@ -67,7 +67,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="Events"
             component={VatsimEventsView}
             options={{
@@ -80,5 +80,5 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-    </Tab.Navigator>;
+    </tab.Navigator>;
 }
