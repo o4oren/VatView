@@ -3,7 +3,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.8.1",
+    "version": "1.8.2",
     "orientation": "portrait",
     "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
@@ -27,7 +27,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
-      "buildNumber": "1.8.1",
+      "buildNumber": "1.8.2",
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
@@ -35,7 +35,7 @@
     },
     "android": {
       "package": "com.gevahim.vatview",
-      "versionCode": 181,
+      "versionCode": 182,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

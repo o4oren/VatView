@@ -19,7 +19,9 @@ export default function PilotDetails({pilot}) {
                 setPilotAirports(airports);
             });
         }
-        return () => isMounted = false;
+        return () => {
+            isMounted = false;
+        }
     }, [pilot]);
 
     const resolveAirports = async () => {
@@ -78,6 +80,7 @@ export default function PilotDetails({pilot}) {
     };
 
     const renderFlightStatus = (flown, distance) => {
+        let percentage = distance != 0 ? flown / distance : 0;
         return <View style={styles.container}>
             <View style={styles.textContainer}>
                 <Text>{pilotAirports.depAirport.icao}</Text>
@@ -85,7 +88,7 @@ export default function PilotDetails({pilot}) {
             </View>
             <ProgressBar
                 style={styles.progress}
-                progress={flown / distance}
+                progress={percentage}
             />
             <View style={styles.textContainer}>
                 <Caption style={styles.name}>{pilotAirports.depAirport.name}</Caption>
@@ -108,7 +111,7 @@ export default function PilotDetails({pilot}) {
                     </View>
                     <View style={styles.textContainer}>
                         <Text>Remaining: </Text>
-                        <Text>{distance - flown} nm</Text>
+                        <Text>{distance == 0 ? 0 : distance - flown} nm</Text>
                     </View>
                 </View>
             </View>
