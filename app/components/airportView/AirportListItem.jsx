@@ -56,10 +56,10 @@ export default function AirportListItem({airport, country, airportAtc, flights})
         setExpandedDepartures(!expandedDepartures);
     };
     const pressAtc = () => {
-        Analytics.logEvent('ExpandedAtc', {
-            action: expandedAtc ? 'close' : 'open',
-            airport: airport,
-        });
+        // Analytics.logEvent('ExpandedAtc', {
+        //     action: expandedAtc ? 'close' : 'open',
+        //     airport: airport,
+        // });
         setExpandedAtc(!expandedAtc);
     };
 
