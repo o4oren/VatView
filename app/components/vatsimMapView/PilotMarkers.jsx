@@ -33,7 +33,6 @@ export default function generatePilotMarkers() {
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
-            rotation={pilot.heading}
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
