@@ -107,7 +107,5 @@ export default function generateAirportMarkers(airportAtc, airports) {
             console.log('cannot add marker', airport);
         }
     }
-    // console.log('aiportAtc', airportAtc);
-    // console.log('markers', airportMarkers);
     return airportMarkers;
 }
