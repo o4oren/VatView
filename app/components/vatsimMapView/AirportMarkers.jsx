@@ -95,12 +95,12 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     onPress={() => onPress(airport)}
                     tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
-                    image={image}
                 >
-                    {/*<Image*/}
-                    {/*    source={image}*/}
-                    {/*    fadeDuration={0}*/}
-                    {/*/>*/}
+                    <Image
+                        source={image}
+                        fadeDuration={0}
+                        style={[{ height: 32, width: 32 }]}
+                    />
                 </Marker>
             );
         } else {
