@@ -28,25 +28,6 @@ export default function generatePilotMarkers() {
             }
         };
 
-        if(Platform.OS === 'ios') {
-            return <Marker
-                key={pilot.key}
-                coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
-                title={pilot.callsign}
-                anchor={{x: 0.5, y: 0.5}}
-                rotation={pilot.heading}
-                onPress={() => onPress(pilot)}
-                tracksViewChanges={false}
-                tracksInfoWindowChanges={false}
-            >
-                <Image
-                    source={pilot.image}
-                    fadeDuration={0}
-                    style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
-                />
-            </Marker>;
-        }
-
         return <Marker
             key={pilot.key}
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
@@ -56,8 +37,12 @@ export default function generatePilotMarkers() {
             onPress={() => onPress(pilot)}
             tracksViewChanges={false}
             tracksInfoWindowChanges={false}
-            icon={pilot.image}
         >
+            <Image
+                source={pilot.image}
+                fadeDuration={0}
+                style={[styleIos, { height: pilot.imageSize, width: pilot.imageSize }]}
+            />
         </Marker>;
     });
 
