@@ -13,6 +13,7 @@ export default function MainTabNavigator() {
     const barHeight = Platform.OS === 'ios' ? 90 : 60;
 
     return <tab.Navigator
+        screenOptions={{headerShown: false}}
         tabBarOptions={{
             activeBackgroundColor: theme.blueGrey.theme.colors.primary,
             inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
