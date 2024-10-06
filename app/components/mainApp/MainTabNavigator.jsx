@@ -13,20 +13,21 @@ export default function MainTabNavigator() {
     const barHeight = Platform.OS === 'ios' ? 90 : 60;
 
     return <tab.Navigator
-        screenOptions={{headerShown: false}}
+        screenOptions={{
+            headerShown: false,
+            tabBarItemStyle:{
+                height: barHeight,
+                padding: 10
+            },
+            tabBarStyle: {
+                height: barHeight,
+            }
+    }}
         tabBarOptions={{
             activeBackgroundColor: theme.blueGrey.theme.colors.primary,
             inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
             activeTintColor: 'white',
             inactiveTintColor: theme.blueGrey.theme.colors.onBackground,
-            tabStyle: {
-                padding: 10   //Padding 0 here
-            },
-            style: {
-                height: barHeight,
-                backgroundColor: theme.blueGrey.theme.colors.primary,
-
-            }
         }}
     >
         <tab.Screen
