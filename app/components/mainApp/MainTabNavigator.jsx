@@ -14,6 +14,10 @@ export default function MainTabNavigator() {
 
     return <tab.Navigator
         screenOptions={{
+            tabBarActiveBackgroundColor: theme.blueGrey.theme.colors.primary,
+            tabBarInactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
+            tabBarActiveTintColor: 'white',
+            tabBarInactiveTintColor: theme.blueGrey.theme.colors.onBackground,
             headerShown: false,
             tabBarItemStyle:{
                 height: barHeight,
@@ -23,12 +27,6 @@ export default function MainTabNavigator() {
                 height: barHeight,
             }
     }}
-        tabBarOptions={{
-            activeBackgroundColor: theme.blueGrey.theme.colors.primary,
-            inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
-            activeTintColor: 'white',
-            inactiveTintColor: theme.blueGrey.theme.colors.onBackground,
-        }}
     >
         <tab.Screen
             name="Map"
