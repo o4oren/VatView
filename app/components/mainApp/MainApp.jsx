@@ -14,6 +14,7 @@ import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import BookingsView from '../BookingsView/BookingsView';
+import {StatusBar} from "expo-status-bar";
 
 export default function mainApp() {
     const dispatch = useDispatch();
