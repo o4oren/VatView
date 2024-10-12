@@ -10,6 +10,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import {Text, View} from 'react-native';
+import {StatusBar} from "expo-status-bar/build/StatusBar";
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -114,6 +115,10 @@ export default function App() {
     return (
         <Provider store={store}>
             <PaperProvider theme={theme.blueGrey.theme}>
+                <StatusBar
+                    backgroundColor="#2A5D99"
+                    style="light"
+                />
                 <MainApp />
             </PaperProvider>
         </Provider>
