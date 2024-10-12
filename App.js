@@ -116,8 +116,8 @@ export default function App() {
         <Provider store={store}>
             <PaperProvider theme={theme.blueGrey.theme}>
                 <StatusBar
-                    backgroundColor="#2A5D99"
-                    style="light"
+                    backgroundColor={theme.blueGrey.theme.colors.primary}
+                    style={theme.blueGrey.theme.colors.onBackground}
                 />
                 <MainApp />
             </PaperProvider>
