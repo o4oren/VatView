@@ -17,7 +17,7 @@
     "@formatjs/intl-numberformat": "^7.1.0",
     "@formatjs/intl-pluralrules": "^4.0.20",
     "@formatjs/intl-relativetimeformat": "^9.1.0",
-    "@gorhom/bottom-sheet": "^4.6.3",
+    "@gorhom/bottom-sheet": "^5.0.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-firebase/app": "^23.8.6",
     "@react-native-firebase/auth": "^23.8.6",
