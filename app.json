@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "VatView",
@@ -73,7 +72,8 @@
             "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView",
