@@ -93,7 +93,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     title={airport.icao}
                     anchor={{x: 0.5, y: 1}}
                     onPress={() => onPress(airport)}
-                    tracksViewChanges={false}
+                    tracksViewChanges={Platform.OS === 'android'}
                     tracksInfoWindowChanges={false}
                 >
                     <Image

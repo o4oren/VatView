@@ -1,5 +1,5 @@
 import MapView, {Marker, Polygon} from 'react-native-maps';
-import {Text, View} from 'react-native';
+import {Text} from 'react-native';
 import React from 'react';
 import theme from '../../common/theme';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
@@ -105,31 +105,29 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
 
     const calculatePolygon = client => {
         const airspace = getAirspaceCoordinates(client);
+        const elements = [];
         if (airspace.isUir) {
-            const boundaries = airspace.firs.map((fir, i) =>
-                <Polygon
-                    key={client.cid + '-uir--polygon-' + i}
-                    coordinates={fir.points}
-                    strokeColor={theme.blueGrey.uirStrokeColor}
-                    fillColor={theme.blueGrey.uirFill}
-                    strokeWidth={theme.blueGrey.uirStrokeWidth}
-                    geodesic={true}
-                    tappable={true}
-                    onPress={() => onPress(client)}
-                />
-            );
-
-            return (
-                <View key={client.callsign + '_' + client.cid + '-uir-v'}
-                    style={{zIndex: 2}}
-                >
-                    {boundaries}
+            airspace.firs.forEach((fir, i) => {
+                elements.push(
+                    <Polygon
+                        key={client.cid + '-uir--polygon-' + i}
+                        coordinates={fir.points}
+                        strokeColor={theme.blueGrey.uirStrokeColor}
+                        fillColor={theme.blueGrey.uirFill}
+                        strokeWidth={theme.blueGrey.uirStrokeWidth}
+                        geodesic={true}
+                        tappable={true}
+                        onPress={() => onPress(client)}
+                    />
+                );
+            });
+            if (airspace.center) {
+                elements.push(
                     <Marker
                         key={client.callsign + '_' + client.cid + '-marker'}
                         coordinate={airspace.center}
                         tracksViewChanges={false}
                         tracksInfoWindowChanges={false}
-                        // anchor={{x: 0.5, y: 0.5}}
                     >
                         <Text
                             key={client.cid + '-uir-text'}
@@ -139,44 +137,42 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                             {client.callsign}
                         </Text>
                     </Marker>
-                </View>
-            );
+                );
+            }
         } else {
-            return <View key={client.callsign + '-' + client.cid}>
-                {airspace.firs.map((fir, i) =>
-                    <View
-                        key={client.callsign + '-' + i}
-                        style={{zIndex: 1}}
+            airspace.firs.forEach((fir, i) => {
+                if (!fir.center) return;
+                elements.push(
+                    <Polygon
+                        key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
+                        coordinates={fir.points}
+                        strokeColor={theme.blueGrey.firStrokeColor}
+                        fillColor={theme.blueGrey.firFill}
+                        strokeWidth={theme.blueGrey.firStrokeWidth}
+                        geodesic={true}
+                        tappable={true}
+                        onPress={() => onPress(client)}
+                    />
+                );
+                elements.push(
+                    <Marker
+                        key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
+                        coordinate={fir.center}
+                        tracksViewChanges={false}
+                        tracksInfoWindowChanges={false}
                     >
-                        <Polygon
-                            key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
-                            coordinates={fir.points}
-                            strokeColor={theme.blueGrey.firStrokeColor}
-                            fillColor={theme.blueGrey.firFill}
-                            strokeWidth={theme.blueGrey.firStrokeWidth}
-                            geodesic={true}
-                            tappable={true}
+                        <Text
+                            key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
+                            style={theme.blueGrey.firTextStyle}
                             onPress={() => onPress(client)}
-                        />
-                        <Marker
-                            key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
-                            coordinate={fir.center}
-                            tracksViewChanges={false}
-                            tracksInfoWindowChanges={false}
-                            // anchor={{x: 0.5, y: 0.5}}
                         >
-                            <Text
-                                key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
-                                style={theme.blueGrey.firTextStyle}
-                                onPress={() => onPress(client)}
-                            >
-                                {fir.icao}
-                            </Text>
-                        </Marker>
-                    </View>
-                )}
-            </View>;
+                            {fir.icao}
+                        </Text>
+                    </Marker>
+                );
+            });
         }
+        return elements;
     };
 
     for (let icao in fss) {

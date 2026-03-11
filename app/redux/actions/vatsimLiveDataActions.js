@@ -179,26 +179,18 @@ const updateData = async (dispatch, getState) => {
                 });
             });
 
-            let isUpdated = false;
-            getFirsFromDB(firsTocCache).then(firs => {
-                // console.log('firs fetched', firs)
-                firs.forEach(async (fir, index, firs) => {
-                    isUpdated = true;
-                    // console.log(`fetching ${fir.icao} from db`);
+            getFirsFromDB(firsTocCache).then(async firs => {
+                await Promise.all(firs.map(async (fir) => {
                     const firWithPoints = await getFirPointsFromDB(fir);
-                    // console.log('fetching with points', firWithPoints);
-
                     if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
                         json.cachedFirBoundaries[firWithPoints.icao] = [];
                     }
-
-                    // prevent storing the points
                     json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
-                    if(index === firs.length -1 && isUpdated) {
-                        // console.log('live', json);
-                        dispatch(dataUpdated(json));
-                    }
-                });
+                }));
+                dispatch(dataUpdated(json));
+            }).catch(err => {
+                console.error('getFirsFromDB error, dispatching without FIR boundaries:', err);
+                dispatch(dataUpdated(json));
             });
         };
 

@@ -34,7 +34,7 @@ export default function generatePilotMarkers() {
             title={pilot.callsign}
             anchor={{x: 0.5, y: 0.5}}
             onPress={() => onPress(pilot)}
-            tracksViewChanges={false}
+            tracksViewChanges={Platform.OS === 'android'}
             tracksInfoWindowChanges={false}
         >
             <Image

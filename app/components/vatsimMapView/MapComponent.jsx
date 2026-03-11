@@ -74,10 +74,7 @@ const renderFromToPath = (selectedClient, airports) => {
             key={`${selectedClient.callsign}_to_path`}
         /> : null;
 
-        return 	<View key={selectedClient.key + '_from_path'}>
-            {depLine}
-            {arrLine}
-        </View>;
+        return [depLine, arrLine].filter(Boolean);
     }
 };
 
