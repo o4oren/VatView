@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
-import {applyMiddleware, createStore} from 'redux';
+import {applyMiddleware, legacy_createStore as createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
-import thunkMiddleware from 'redux-thunk';
+import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
