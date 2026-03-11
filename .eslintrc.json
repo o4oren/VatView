@@ -6,6 +6,7 @@
     "node": true,
     "react-native/react-native": true
   },
+  "parser": "@babel/eslint-parser",
   "extends": "eslint:recommended",
   "plugins": [
     "react",
@@ -23,10 +24,6 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "react-native"
-  ],
   "rules": {
     "indent": [
       "warn",
