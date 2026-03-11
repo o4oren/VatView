@@ -73,7 +73,8 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-sqlite"
     ],
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView",

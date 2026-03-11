@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import Provider from 'react-redux/lib/components/Provider';
+import {Provider} from 'react-redux';
 import {applyMiddleware, createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
 import thunkMiddleware from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import {Text, View} from 'react-native';
@@ -51,18 +51,15 @@ if (isHermesEnabled || isAndroid) {
 
     if ('__setDefaultTimeZone' in Intl.DateTimeFormat) {
 
-        // If you are using react-native-cli
-        // let RNLocalize = require('react-native-localize');
-        // Intl.DateTimeFormat.__setDefaultTimeZone(RNLocalize.getTimeZone());
-
-        //  Are you using Expo, use this instead of previous 2 lines
+        // Set timezone using Expo localization
         try {
-            Intl.DateTimeFormat.__setDefaultTimeZone(
-                require('expo-localization').timezone
-            );
+            const calendars = require('expo-localization').getCalendars();
+            const tz = calendars && calendars[0] && calendars[0].timeZone;
+            if (tz) {
+                Intl.DateTimeFormat.__setDefaultTimeZone(tz);
+            }
         }  catch (error) {
-            console.log('tz', require('expo-localization').timezone);
-            console.log(error);
+            console.log('tz error', error);
         }
     }
 }
