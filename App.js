@@ -10,7 +10,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import {Text, View} from 'react-native';
-import {StatusBar} from "expo-status-bar/build/StatusBar";
+import {StatusBar} from "expo-status-bar";
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
