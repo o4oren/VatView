@@ -1,4 +1,4 @@
-package com.vatview
+package com.gevahim.vatview
 
 import android.app.Application
 import android.content.res.Configuration
