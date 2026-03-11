@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 xcodebuild -workspace ios/VatView.xcworkspace -scheme VatView -sdk iphonesimulator -configuration Debug build)",
-      "Bash(node -e \"console.log\\(require\\(''./node_modules/expo/package.json''\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/expo/package.json''\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/react-native-maps/package.json''\\).version\\)\")",
+      "Bash(node -e \"const v=require\\(''''fs''''\\).readFileSync\\(''''/dev/stdin'''',''''utf8''''\\); const arr=JSON.parse\\(v\\); console.log\\(arr.filter\\(x=>x.startsWith\\(''''1.''''\\)||x.startsWith\\(''''2.''''\\)\\).slice\\(-10\\).join\\(''''\\\\n''''\\)\\)\")"
     ]
   }
 }
