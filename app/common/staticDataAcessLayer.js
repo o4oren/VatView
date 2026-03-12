@@ -56,7 +56,7 @@ export const insertAirports = (airportTokens, callback) => {
 
 export const insertFirBoundaries = (fir, callback) => {
     getDb().then((tx) => {
-        let res = tx.runSync(
+        tx.runSync(
             'insert into fir_boundaries (icao, isOceanic, isExtention, latitude, longitude, pointCount) values (?,?,?,?,?,?);',
             [fir.icao, fir.isOceanic, fir.isExtention, fir.center.latitude, fir.center.longitude, fir.pointCount]
         );

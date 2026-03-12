@@ -7,7 +7,6 @@ import {
     getFirPointsFromDB
 } from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
-import {parse} from 'fast-xml-parser';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -201,7 +200,7 @@ const updateData = async (dispatch, getState) => {
 };
 
 
-const updateEvents = async (dispatch, getState) => {
+const updateEvents = async (dispatch) => {
     console.log('fetching events feed');
     try {
         const response = await fetch(
@@ -215,7 +214,7 @@ const updateEvents = async (dispatch, getState) => {
     }
 };
 
-const updateBookings = async (dispatch, getState) => {
+const updateBookings = async (dispatch) => {
     console.log('fetching bookings');
     try {
         // old 'http://vatbook.euroutepro.com/xml2.php'
