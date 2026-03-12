@@ -1,7 +1,7 @@
 import {Dimensions} from 'react-native';
 import React from 'react';
 import HTML from 'react-native-render-html';
-import {Card, Text, Title} from 'react-native-paper';
+import {Card, Text} from 'react-native-paper';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 
 export default function EventListItem({event, navigation}) {
@@ -19,7 +19,7 @@ export default function EventListItem({event, navigation}) {
         onPress={onPress}
     >
         <Card.Content>
-            <Title>{event.name}</Title>
+            <Text variant="titleLarge">{event.name}</Text>
             <Text>Start time: {getDateFromUTCString(event.start_time).toUTCString()}</Text>
             <Text>End time: {getDateFromUTCString(event.end_time).toUTCString()}</Text>
             <HTML source={{html: event.short_description || '<p></p>'}} />

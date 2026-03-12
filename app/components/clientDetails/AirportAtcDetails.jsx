@@ -4,6 +4,7 @@ import {Card, Button} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import AtcDetails from './AtcDetails';
 import { useNavigation } from '@react-navigation/native';
+import theme from '../../common/theme';
 
 const getAtcClients =  (airportAtc, airport) => {
     let atisExists = false;
@@ -35,7 +36,7 @@ export default function AirportAtcDetils(props) {
             subtitle = {airport.name}
             right =   {() => <Button
                 icon="weather-partly-snowy-rainy"
-                color={'grey'}
+                textColor={theme.blueGrey.theme.colors.onSurfaceVariant}
                 onPress={() => {
                     navigation.navigate('Metar', {
                         icao: airport.icao

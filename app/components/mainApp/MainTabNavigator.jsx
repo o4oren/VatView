@@ -17,7 +17,7 @@ export default function MainTabNavigator() {
             tabBarActiveBackgroundColor: theme.blueGrey.theme.colors.primary,
             tabBarInactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
             tabBarActiveTintColor: 'white',
-            tabBarInactiveTintColor: theme.blueGrey.theme.colors.onBackground,
+            tabBarInactiveTintColor: theme.blueGrey.inactiveTabTint,
             headerShown: false,
             tabBarItemStyle:{
                 height: barHeight,

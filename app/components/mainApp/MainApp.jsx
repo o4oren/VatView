@@ -7,6 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
 import {IconButton, Menu} from 'react-native-paper';
+import theme from '../../common/theme';
 import Settings from '../settings/Settings';
 import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
@@ -108,7 +109,7 @@ export default function mainApp() {
                         anchor={
                             <IconButton
                                 icon='dots-vertical'
-                                color={'white'}
+                                iconColor={theme.blueGrey.theme.colors.onPrimary}
                                 size={20}
                                 accessibilityLabel='Menu'
                                 onPress={() => openMenu()}

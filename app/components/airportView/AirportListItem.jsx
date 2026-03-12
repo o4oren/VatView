@@ -69,7 +69,7 @@ export default function AirportListItem({airport, country, airportAtc, flights})
             subtitle={airport.name +', ' + country}
             right =   {() => <Button
                 icon="weather-partly-snowy-rainy"
-                color={'grey'}
+                textColor={theme.blueGrey.theme.colors.onSurfaceVariant}
                 onPress={() => {
                     navigation.navigate('Metar', {
                         icao: airport.icao

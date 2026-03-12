@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, Caption, Card, List, ProgressBar, Text} from 'react-native-paper';
+import {Avatar, Card, List, ProgressBar, Text} from 'react-native-paper';
 import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
 import {Image, StyleSheet, View} from 'react-native';
 import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
@@ -68,9 +68,9 @@ export default function PilotDetails({pilot}) {
             return <Card.Content>
                 {renderFlightStatus(flown, distance)}
                 <Text>Flight plan:</Text>
-                <Caption>{pilot.flight_plan.route}</Caption>
+                <Text variant="bodySmall">{pilot.flight_plan.route}</Text>
                 <Text>Remarks:</Text>
-                <Caption>{pilot.flight_plan.remarks}</Caption>
+                <Text variant="bodySmall">{pilot.flight_plan.remarks}</Text>
             </Card.Content>;
         } else {
             return <Card.Content>
@@ -91,8 +91,8 @@ export default function PilotDetails({pilot}) {
                 progress={percentage}
             />
             <View style={styles.textContainer}>
-                <Caption style={styles.name}>{pilotAirports.depAirport.name}</Caption>
-                <Caption style={styles.name}>{pilotAirports.arrAirport.name}</Caption>
+                <Text variant="bodySmall" style={styles.name}>{pilotAirports.depAirport.name}</Text>
+                <Text variant="bodySmall" style={styles.name}>{pilotAirports.arrAirport.name}</Text>
             </View>
             <View style={styles.textContainer}>
                 <View>
