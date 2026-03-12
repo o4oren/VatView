@@ -97,9 +97,9 @@ const getFirBoundaries = async (dispatch, getState) => {
                 });
                 if(i == lines.length - 1) {
                     // we're at the end of the file
-                    console.log('===================', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs)
+                    console.log('===================', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
                     if(getState().app.loadingDb.firs > 520) {
-                        console.log('***************=', getState().app.loadingDb.airports + "  " + getState().app.loadingDb.firs);
+                        console.log('***************=', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
                         dispatch(appActions.saveFirBoundariesLoaded(true));
                     }
                 }
@@ -126,12 +126,12 @@ const getFirBoundaries = async (dispatch, getState) => {
  * @param dispatch
  * @param getState
  */
-function insertAirportIntoDb(airportTokens, dispatch, getState) {
+function insertAirportIntoDb(airportTokens, dispatch) {
     Array.from(
         {length: Math.ceil(airportTokens.length / AIRPORTS_CHUNK_SIZE)},
         (_, index) => airportTokens.slice(index * AIRPORTS_CHUNK_SIZE, (index + 1) * AIRPORTS_CHUNK_SIZE)
     ).forEach(async (chunk, index) => {
-        await insertAirports(chunk, (lastRowId) => {
+        await insertAirports(chunk, () => {
             // console.log('inserting airports count ' + lastRowId);
             if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length === airportTokens.length) {
                 dispatch(appActions.saveAirportsLoaded(true));
@@ -140,7 +140,7 @@ function insertAirportIntoDb(airportTokens, dispatch, getState) {
     });
 }
 
-const getVATSpyData = async (dispatch, getState) => {
+const getVATSpyData = async (dispatch) => {
     const dataUrls = await fetch(
         'https://api.vatsim.net/api/map_data/');
     const dataUrlsJson = await dataUrls.json();
@@ -156,7 +156,6 @@ const getVATSpyData = async (dispatch, getState) => {
     const firs = [];
     const uirs = {};
     let airportTokens = [];
-    let airportIndex = 0;
 
     await lines.forEach((line) => {
         if(line.startsWith('['))
@@ -202,7 +201,7 @@ const getVATSpyData = async (dispatch, getState) => {
         }
     });
 
-    await insertAirportIntoDb(airportTokens, dispatch, getState);
+    await insertAirportIntoDb(airportTokens, dispatch);
 
     const lastUpdated = Date.now();
     await storeStaticAirspaceData({

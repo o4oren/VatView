@@ -4,7 +4,7 @@ export const METAR_REQUESTED = 'METAR_REQUESTED';
 export const METAR_UPDATED = 'METAR_UPDATED';
 
 const metarRequsted = (icao) => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         console.log('fetching metar data for ' + icao);
         dispatch(metarUpdated({})); // clear the result
         try {

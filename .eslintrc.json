@@ -7,6 +7,17 @@
     "react-native/react-native": true
   },
   "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["babel-preset-expo"]
+    },
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
   "extends": "eslint:recommended",
   "plugins": [
     "react",
@@ -16,13 +27,6 @@
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
-  },
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 2018,
-    "sourceType": "module"
   },
   "rules": {
     "indent": [
@@ -41,6 +45,8 @@
       "error",
       "always"
     ],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
     "react-native/no-unused-styles": 2,
     "react-native/split-platform-components": 2,
     "react-native/no-inline-styles": 2,
