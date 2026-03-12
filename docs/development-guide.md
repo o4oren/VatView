@@ -79,52 +79,104 @@ No test suite is configured. Manual testing on device/emulator.
 
 ## Build & Distribution (EAS)
 
+### Development Workflow
+
+There are two ways to develop: **local builds** (fast, for emulators) and **EAS cloud builds** (for physical devices and distribution).
+
+#### Local Development (emulators)
+
+The fastest development loop. Builds natively on your machine and connects to Metro for hot reloading. Only needs a rebuild when native dependencies change (e.g., adding a new native library). Otherwise, Metro hot-reloads JS changes automatically.
+
 ```bash
-# Development build (internal distribution)
-eas build --profile development --platform android
-eas build --profile development --platform ios
-
-# iOS Simulator build
-eas build --profile ios-simulator --platform ios
-
-# Preview build (internal distribution)
-eas build --profile preview --platform all
-
-# Production build (app store submission)
-eas build --profile production --platform all
-
-# Submit to stores
-eas submit --profile production --platform ios
-eas submit --profile production --platform android
+npm start              # Start Metro bundler
+npm run ios            # Build & run on iOS simulator
+npm run android        # Build & run on Android emulator
 ```
 
-Build profiles defined in `eas.json`:
-- `development` — dev client, internal distribution
-- `ios-simulator` — extends development, simulator target
-- `preview` — internal distribution, production-like
-- `production` — store submission
+#### Dev Client on Physical Devices
+
+Build a dev client in the EAS cloud and install it on a real device. Once installed, it connects to your local Metro server (`npm start`) for live reloading — same experience as an emulator.
+
+```bash
+# Build dev client for physical devices
+eas build --profile development --platform android   # Produces installable .apk
+eas build --profile development --platform ios        # Install via TestFlight or ad-hoc
+
+# Build dev client for iOS simulator
+eas build --profile ios-simulator --platform ios
+
+# Then start Metro and connect from the dev client
+npm start
+```
+
+You only need to rebuild the dev client when native dependencies change. Day-to-day JS changes are served live by Metro.
+
+#### Testing (preview builds)
+
+Preview builds bundle the JS and don't need Metro — good for sharing test builds with others or testing release-like behavior:
+
+```bash
+eas build --profile preview --platform all
+```
+
+#### Production & App Store Deployment
+
+```bash
+# 1. Bump user-facing version in app.json (e.g., "1.9.2" → "1.10.0")
+#    Build numbers are auto-incremented by EAS (see Version Management below)
+
+# 2. Build production binaries
+eas build --profile production --platform all
+
+# 3. Submit to stores
+eas submit --platform ios        # → App Store Connect
+eas submit --platform android    # → Google Play Console
+```
+
+### Build Profiles Summary
+
+Profiles are defined in `eas.json`:
+
+| Profile | Purpose | Distribution | Needs Metro? |
+|---|---|---|---|
+| `development` | Dev client for physical devices | Internal | Yes |
+| `ios-simulator` | Dev client for iOS simulator | Internal | Yes |
+| `preview` | Test builds (JS bundled) | Internal | No |
+| `production` | App store submission | Store | No |
 
 ---
 
 ## OTA Updates (expo-updates)
 
-Production uses Expo OTA updates (`expo-updates ~0.25.25`). Configured via `eas.json` and `app.json`.
+Production uses Expo OTA updates (`expo-updates ~0.25.25`). OTA updates push JS-only changes without a full app store release.
 
 ```bash
 # Publish an OTA update
 eas update --branch production --message "Fix: ..."
 ```
 
+> **Note:** OTA updates can only change JS/assets. Native dependency changes (new libraries, SDK upgrades) require a full `eas build` + store submission.
+
 ---
 
-## App Version
+## Version Management
 
-Current version: **1.9.1** (iOS `buildNumber`, Android `versionCode: 191`)
+App versioning uses **EAS remote version source** (`cli.appVersionSource: "remote"` in `eas.json`). This means:
 
-Bump version in `app.json`:
-- `expo.version` — user-facing version string
-- `expo.ios.buildNumber` — iOS build number
-- `expo.android.versionCode` — Android version code (integer, must increment)
+- **`expo.version`** in `app.json` — The user-facing version string (e.g., "1.9.2"). You bump this manually when releasing a new version.
+- **`buildNumber` (iOS) / `versionCode` (Android)** — Auto-incremented by EAS on each build. You don't need to manage these.
+
+To check or manually set the remote build numbers:
+
+```bash
+# View current remote version
+eas build:version:get --platform ios
+eas build:version:get --platform android
+
+# Manually set (e.g., after initial setup or reset)
+eas build:version:set --platform ios --build-number 1.9.2
+eas build:version:set --platform android --version-code 192
+```
 
 ---
 
