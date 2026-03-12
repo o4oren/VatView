@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, Title, Card} from 'react-native-paper';
+import {Text, Card} from 'react-native-paper';
 import {StyleSheet, View, Image, ScrollView} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {useSelector} from 'react-redux';
@@ -34,7 +34,7 @@ const NetworkStatus = () => {
             end={end}
             style={[styles.container, styles.rotate]}>
             <ScrollView style={styles.textArea}>
-                <Title>VATSIM Network Status</Title>
+                <Text variant="titleLarge">VATSIM Network Status</Text>
                 <Image style={styles.image} source={require('../../../assets/VATSIM_Logo_Official_500px.png')} />
                 <Card style={styles.card}>
                     <Card.Title

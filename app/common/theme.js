@@ -1,4 +1,4 @@
-import {DefaultTheme} from 'react-native-paper';
+import {MD3LightTheme} from 'react-native-paper';
 
 const blueGreyNew = [
     {
@@ -313,17 +313,21 @@ export default {
     blueGrey: {
         customMapStyle: blueGreyNew,
         theme: {
-            ...DefaultTheme,
+            ...MD3LightTheme,
             roundness: 2,
             colors: {
-                ...DefaultTheme.colors,
+                ...MD3LightTheme.colors,
                 primary: '#2a5d99',
-                accent: '#2a5d99',
-                text: '#000000',
-                placeholder: '#c1c1c1',
-                onBackground: 'rgba(255,255,255,0.6)',
+                secondary: '#2a5d99',
+                onSurface: '#000000',
+                outline: '#c1c1c1',
+                onPrimary: '#ffffff',
+                onSurfaceVariant: '#808080',
+                secondaryContainer: '#e3f2fd',
+                surface: '#ffffff',
             },
         },
+        inactiveTabTint: 'rgba(255,255,255,0.6)',
         bottomBarIconSize: 32,
         appCircleStroke: 'rgb(159,8,8)',
         appCircleFill: 'rgba(227,133,133, 0.1)',

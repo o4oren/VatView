@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {ToggleButton, Searchbar} from 'react-native-paper';
+import theme from '../../common/theme';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 
@@ -17,7 +18,7 @@ export default function FilterBar() {
             style={styles.button}
             icon='airplane'
             onPress={pilotsFilterClicked}
-            color="white"
+            iconColor={theme.blueGrey.theme.colors.onPrimary}
             accessibilityLabel='Pilots filter'
             status={filters.pilots ? 'checked' : 'unchecked'}
         />
@@ -25,7 +26,7 @@ export default function FilterBar() {
             style={styles.button}
             icon='radar'
             onPress={atcFilterClicked}
-            color="white"
+            iconColor={theme.blueGrey.theme.colors.onPrimary}
             accessibilityLabel='Air traffic control filter'
             status={filters.atc ? 'checked' : 'unchecked'}
         />

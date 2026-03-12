@@ -3,7 +3,7 @@ import {StyleSheet, FlatList, SafeAreaView, View} from 'react-native';
 import theme from '../../common/theme';
 import {useSelector} from 'react-redux';
 import EventListItem from './EventListItem';
-import {IconButton, Searchbar, Colors} from 'react-native-paper';
+import {IconButton, Searchbar} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 
@@ -89,7 +89,7 @@ export default function VatsimEventsView({navigation}) {
             />
             <IconButton
                 icon="calendar"
-                color={Colors.blue50}
+                iconColor={theme.blueGrey.theme.colors.secondaryContainer}
                 size={20}
                 onPress={dateFilterPressed}
             />
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     flatlist: {
-        backgroundColor: Colors.white,
+        backgroundColor: theme.blueGrey.theme.colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',

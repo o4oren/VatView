@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, FlatList, View, } from 'react-native';
 import {useSelector} from 'react-redux';
-import {IconButton, Searchbar, Colors} from 'react-native-paper';
+import {IconButton, Searchbar} from 'react-native-paper';
+import theme from '../../common/theme';
 import {DatePickerModal} from 'react-native-paper-dates';
 import BookingDetails from './BookingDeatils';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -82,7 +83,7 @@ export default function BookingsView() {
                 date={date}
                 onConfirm={onConfirmSingle}
                 validRange={{
-                    start: new Date(),  // optional
+                    startDate: new Date(),  // optional
                     // endDate: new Date(), // optional
                 }}
                 // onChange={} // same props as onConfirm but triggered without confirmed by user
@@ -92,7 +93,7 @@ export default function BookingsView() {
             />
             <IconButton
                 icon="calendar"
-                color={Colors.blue50}
+                iconColor={theme.blueGrey.theme.colors.secondaryContainer}
                 size={20}
                 onPress={dateFilterPressed}
             />
