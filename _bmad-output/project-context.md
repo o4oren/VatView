@@ -16,9 +16,9 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ## Technology Stack & Versions
 
-- **Runtime:** React Native 0.74.5 + Expo SDK 51
+- **Runtime:** React Native 0.81.5 + Expo SDK 54
 - **Language:** JavaScript (JSX) — no TypeScript
-- **UI:** react-native-paper 4.x (Material Design v2 API — NOT v5)
+- **UI:** react-native-paper 5.x (Material Design 3 / MD3LightTheme)
 - **Navigation:** React Navigation 6 (Stack + Bottom Tabs)
 - **State:** Redux 4 + redux-thunk 2 (NOT Redux Toolkit)
 - **Maps:** react-native-maps 1.14.0 with Google Maps provider
@@ -91,7 +91,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - **Do NOT mutate Redux state directly** — always return a new object/array from reducers
 - **Do NOT call `dispatch` from inside a reducer** — only from thunks or components
-- **Do NOT use `react-native-paper` v5 APIs** — the project uses v4; `DefaultTheme` is imported from `react-native-paper`, not `@react-navigation/native`
+- **Do NOT use `react-native-paper` v4 APIs** — the project uses v5 (MD3); use `MD3LightTheme` not `DefaultTheme`, `Text variant="..."` not `Title`/`Caption`/`Paragraph`, `textColor` not `color` on Button, `iconColor` not `color` on IconButton/ToggleButton
 - **Do NOT use `expo-sqlite` legacy callback API** — the project uses the new async/promise API (`openDatabaseAsync`, not `openDatabase`)
 - **Do NOT add `require()` polyfill calls outside `App.js`** — Intl polyfills must only be loaded once at app root
 - **Do NOT dispatch after component unmount** — check component lifecycle when dispatching from async thunks
@@ -128,4 +128,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Bump `STATIC_DATA_VERSION` in `consts.js` whenever SQLite schema changes
 - Review periodically and remove rules that become obvious over time
 
-Last Updated: 2026-03-10
+Last Updated: 2026-03-13
