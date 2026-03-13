@@ -22,6 +22,9 @@ export default function MainTabNavigator() {
             headerShown: false,
             tabBarStyle: {
                 backgroundColor: theme.blueGrey.theme.colors.primary,
+                height: 75,
+                paddingTop: 10,
+                paddingBottom: 15,
             }
     }}
     >
