@@ -21,10 +21,15 @@
       }
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "1562497035"
+      }
+    }
   }
 }
