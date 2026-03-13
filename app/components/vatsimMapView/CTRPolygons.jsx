@@ -49,7 +49,9 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
             const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
             if(fir && fir.icao) {
                 console.log(callsignPrefix + ' is not in cached boundaries');
-                cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
+                if (cachedFirBoundaries[fir.icao]) {
+                    cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
+                }
             }
 
         }
@@ -81,6 +83,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 let longitudeSum = 0;
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
+                        if (!cachedFirBoundaries[firIcao]) return;
                         cachedFirBoundaries[firIcao].forEach(fir => {
                             if (fir) {     // preventing crash when not every fir in UIR can be resolved
                                 airspace.firs.push(fir);
