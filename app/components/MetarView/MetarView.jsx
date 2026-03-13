@@ -3,7 +3,6 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
-// import * as Analytics from 'expo-firebase-analytics';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
 import {LinearGradient} from 'expo-linear-gradient';
 import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
@@ -66,11 +65,6 @@ export default function MetarView({route}) {
         if(metar && Object.keys(metar).length > 0) {
 
             if(!metar.barometer || !metar.temperature) {
-                Analytics.logEvent('METAR_PARSING_FAILED', {
-                    icao: searchTerm,
-                    raw: metar.raw,
-                    purpose: 'Getting METAR',
-                });
                 return <View style={styles.metarDisplay}>
                     <Text>Unable to parse METAR String</Text>
                     <Text>{metar.raw_text}</Text>

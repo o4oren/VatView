@@ -16,18 +16,19 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ## Technology Stack & Versions
 
-- **Runtime:** React Native 0.81.5 + Expo SDK 54
+- **Runtime:** React Native 0.83.2 + Expo SDK 55
 - **Language:** JavaScript (JSX) — no TypeScript
 - **UI:** react-native-paper 5.x (Material Design 3 / MD3LightTheme)
-- **Navigation:** React Navigation 6 (Stack + Bottom Tabs)
-- **State:** Redux 4 + redux-thunk 2 (NOT Redux Toolkit)
-- **Maps:** react-native-maps 1.14.0 with Google Maps provider
-- **Bottom Sheet:** @gorhom/bottom-sheet 4.x
-- **Database:** expo-sqlite 14 (async API: openDatabaseAsync, runAsync, getFirstAsync; sync API: runSync, getAllSync)
-- **Storage:** AsyncStorage 1.23.1 + Expo FileSystem 17
-- **Crash Reporting:** Firebase Crashlytics (@react-native-firebase 20.x)
+- **Navigation:** React Navigation 7 (Native Stack + Bottom Tabs)
+- **State:** Redux 5 + redux-thunk 3, react-redux 9 (NOT Redux Toolkit)
+- **Maps:** react-native-maps 1.26.x with Google Maps provider
+- **Bottom Sheet:** @gorhom/bottom-sheet 5.x
+- **Database:** expo-sqlite 55 (async API: openDatabaseAsync, runAsync, getFirstAsync; sync API: runSync, getAllSync)
+- **Storage:** AsyncStorage 2.x + Expo FileSystem 55
+- **Crash Reporting:** Firebase Crashlytics (@react-native-firebase 23.x)
+- **HTML Rendering:** react-native-render-html 6.x (requires `contentWidth` prop)
 - **Intl Polyfills:** @formatjs/intl-* suite (required on Hermes/Android)
-- **Linting:** ESLint 7 with eslint:recommended + react-native plugins
+- **Linting:** ESLint 8 with eslint:recommended + react-native plugins
 
 ## Critical Implementation Rules
 
@@ -63,7 +64,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 #### Navigation
 
-- **Stack navigator** at root wraps the bottom tab navigator (`MainTabNavigator`)
+- **Native stack navigator** (`@react-navigation/native-stack`) at root wraps the bottom tab navigator (`MainTabNavigator`)
+- **Use `useNavigation()` hook** — do NOT pass navigation as a prop between components
 - **Bottom sheet** (`@gorhom/bottom-sheet`) is used for client detail panels — NOT a modal or drawer
 - **`snapToIndex(-1)`** closes the sheet; `snapToIndex(0)` opens it to first snap point
 

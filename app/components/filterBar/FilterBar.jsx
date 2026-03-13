@@ -52,6 +52,8 @@ const styles = StyleSheet.create({
     },
     button: {
         marginEnd: 10,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     textInput: {
         flex: 1,
