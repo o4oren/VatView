@@ -1,6 +1,6 @@
 ---
 stepsCompleted: [1, 2, 3]
-session_concluded: 'early - decision reached'
+session_concluded: 'concluded'
 inputDocuments: []
 session_topic: 'Evaluating shift from custom Material Design colors/formatting to Material You dynamic theming in VatView'
 session_goals: 'Decide whether to adopt Material You — weighing UX consistency, brand identity, user personalization, implementation effort, and platform considerations'

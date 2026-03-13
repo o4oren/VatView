@@ -19,20 +19,17 @@
     "androidStatusBar": {
       "barStyle": "light-content"
     },
-    "androidNavigationBar": {
-      "visible": "immersive",
-      "barStyle": "light-content",
-      "backgroundColor": "#2a5d99"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
-      },
+      }
     },
     "android": {
       "package": "com.gevahim.vatview",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -47,7 +44,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "INTERNET",
         "com.google.android.gms.permission.AD_ID"
-      ],
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -70,7 +67,15 @@
           "androidGoogleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       ],
-      "./plugins/withDisableLiquidGlass"
+      "./plugins/withDisableLiquidGlass",
+      "./plugins/withModularHeaders",
+      [
+        "@react-native-firebase/app",
+        {
+          "analyticsCollectionEnabled": true
+        }
+      ],
+      "@react-native-firebase/crashlytics"
     ],
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView",

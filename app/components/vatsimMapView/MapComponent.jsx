@@ -26,6 +26,7 @@ const MapComponent = ({screenSize}) => {
         customMapStyle={theme.blueGrey.customMapStyle}
         // provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
+        toolbarEnabled={false}
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
