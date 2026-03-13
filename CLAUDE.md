@@ -17,6 +17,26 @@ npm run lint       # Run ESLint
 
 No test suite is configured.
 
+## Deployment
+
+### Production Builds & Store Submission
+
+```bash
+npx eas-cli@latest build --profile production          # Build both platforms
+npx eas-cli@latest submit -p ios --latest               # Submit to App Store Connect
+npx eas-cli@latest submit -p android --latest           # Submit to Google Play
+```
+
+### OTA Updates (JS-only fixes)
+
+For JavaScript-only changes (no native code modifications), push an over-the-air update without rebuilding:
+
+```bash
+npx eas-cli@latest update --branch production --message "Description of fix"
+```
+
+**Note:** OTA updates only work on builds that were built with `channel: "production"` in `eas.json`. If the build predates the channel config, you must rebuild and resubmit to the stores.
+
 ## Architecture
 
 ### State Management (Redux)
