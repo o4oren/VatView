@@ -1,33 +1,34 @@
 import theme from '../../common/theme';
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import analytics from '../../common/analytics';
 
 export default function MainTabNavigator() {
-    const Tab = createBottomTabNavigator();
-    const barHeight = Platform.OS === 'ios' ? 90 : 60;
-
-    return <Tab.Navigator
-        tabBarOptions={{
-            activeBackgroundColor: theme.blueGrey.theme.colors.primary,
-            inactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
-            activeTintColor: 'white',
-            inactiveTintColor: theme.blueGrey.theme.colors.onBackground,
-            tabStyle: {
-                padding: 10   //Padding 0 here
+    const tab = createBottomTabNavigator();
+    return <tab.Navigator
+        screenListeners={({ route }) => ({
+            tabPress: () => {
+                analytics.logEvent('nav_tab_switch', { tab_name: route.name });
             },
-            style: {
-                height: barHeight,
+        })}
+        screenOptions={{
+            tabBarActiveTintColor: theme.blueGrey.theme.colors.onPrimary,
+            tabBarInactiveTintColor: theme.blueGrey.inactiveTabTint,
+            headerShown: false,
+            tabBarStyle: {
                 backgroundColor: theme.blueGrey.theme.colors.primary,
-
+                height: 75,
+                paddingTop: 10,
+                paddingBottom: 15,
             }
-        }}
+    }}
     >
-        <Tab.Screen
+        <tab.Screen
             name="Map"
             component={VatsimMapView}
             options={{
@@ -40,7 +41,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="List"
             component={VatsimListView}
             options={{
@@ -53,7 +54,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="Airports"
             component={AirportDetailsView}
             options={{
@@ -66,7 +67,7 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-        <Tab.Screen
+        <tab.Screen
             name="Events"
             component={VatsimEventsView}
             options={{
@@ -79,5 +80,5 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-    </Tab.Navigator>;
+    </tab.Navigator>;
 }

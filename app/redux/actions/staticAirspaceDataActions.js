@@ -83,27 +83,34 @@ const getFirBoundaries = async (dispatch, getState) => {
             fir.points = points;
 
             if(fir.icao && fir.icao.length > 0) {
-                insertFirBoundaries(fir, (isSuccess) => {
+                await insertFirBoundaries(fir, (isSuccess) => {
                     if(isSuccess) {
                         ++numInsertedFirs;
-                        if(numInsertedFirs % 10 == 0) {
+                        if(numInsertedFirs % 100 == 0) {
                             dispatch(appActions.loadingDb({
                                 airports: getState().app.loadingDb.airports,
                                 firs: numInsertedFirs
                             }));
                         }
                     }
-                    if(i == lines.length - 1) {
-                        // we're at the end of the file
-                        if(getState().app.loadingDb.airports > 17300 && getState().app.loadingDb.firs > 520) {
-                            dispatch(appActions.saveFirBoundariesLoaded(true));
-                        }
-                    }
+
                 });
+                if(i == lines.length - 1) {
+                    // we're at the end of the file
+                    console.log('===================', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
+                    if(getState().app.loadingDb.firs > 520) {
+                        console.log('***************=', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
+                        dispatch(appActions.saveFirBoundariesLoaded(true));
+                    }
+                }
             }
         }
     }
 
+    console.log({
+        airports: getState().app.loadingDb.airports,
+        firs: numInsertedFirs
+    });
     dispatch(appActions.loadingDb({
         airports: getState().app.loadingDb.airports,
         firs: numInsertedFirs
@@ -119,26 +126,21 @@ const getFirBoundaries = async (dispatch, getState) => {
  * @param dispatch
  * @param getState
  */
-function insertAirportIntoDb(airportTokens, dispatch, getState) {
+function insertAirportIntoDb(airportTokens, dispatch) {
     Array.from(
         {length: Math.ceil(airportTokens.length / AIRPORTS_CHUNK_SIZE)},
         (_, index) => airportTokens.slice(index * AIRPORTS_CHUNK_SIZE, (index + 1) * AIRPORTS_CHUNK_SIZE)
-    ).forEach((chunk, index) => {
-        // console.log('inserting airports chunk ' + index);
-        insertAirports(chunk, (res) => {
-            dispatch(appActions.loadingDb({
-                airports: res.insertId,
-                firs: getState().app.loadingDb.firs
-            }));
-
-            if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length == airportTokens.length) {
+    ).forEach(async (chunk, index) => {
+        await insertAirports(chunk, () => {
+            // console.log('inserting airports count ' + lastRowId);
+            if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length === airportTokens.length) {
                 dispatch(appActions.saveAirportsLoaded(true));
             }
         });
     });
 }
 
-const getVATSpyData = async (dispatch, getState) => {
+const getVATSpyData = async (dispatch) => {
     const dataUrls = await fetch(
         'https://api.vatsim.net/api/map_data/');
     const dataUrlsJson = await dataUrls.json();
@@ -154,7 +156,6 @@ const getVATSpyData = async (dispatch, getState) => {
     const firs = [];
     const uirs = {};
     let airportTokens = [];
-    let airportIndex = 0;
 
     await lines.forEach((line) => {
         if(line.startsWith('['))
@@ -200,7 +201,7 @@ const getVATSpyData = async (dispatch, getState) => {
         }
     });
 
-    insertAirportIntoDb(airportTokens, dispatch, getState);
+    await insertAirportIntoDb(airportTokens, dispatch);
 
     const lastUpdated = Date.now();
     await storeStaticAirspaceData({
@@ -211,8 +212,8 @@ const getVATSpyData = async (dispatch, getState) => {
         lastUpdated: lastUpdated,
         version: STATIC_DATA_VERSION
     });
-    console.log('vatspyDataUpdated');
-    countAirports();
+    console.log('vatspyDataUpdated', vatspyDataUpdated);
+    await countAirports();
     dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };
 

@@ -15,29 +15,11 @@ const LoadingView = () => {
     const generateContent = () => {
         return <View style={styles.paragraph}>
             {
-                (loadingDb.airports == 0 && loadingDb.firs == 0) ? <View style={styles.progressView}>
+                (loadingDb.airports + loadingDb.firs < 17500) ? <View style={styles.progressView}>
                     <Text style={styles.progressView}>
                         Please wait while we prepare airspace data
                     </Text>
                     <ProgressBar indeterminate={true} style={styles.progressView}/>
-                </View> : null
-            }
-
-            {
-                (loadingDb.airports > 0 && loadingDb.firs == 0) ? <View style={styles.progressView}>
-                    <Text style={styles.progressView}>
-                        Loading {loadingDb.airports} airports
-                    </Text>
-                    <ProgressBar progress={loadingDb.airports / 17411} style={styles.progressView}/>
-                </View> : null
-            }
-
-            {
-                (loadingDb.airports > 0 && loadingDb.firs > 0) ? <View style={styles.progressView}>
-                    <Text style={styles.progressView}>
-                        Loading {loadingDb.firs} FIR boundaries
-                    </Text>
-                    <ProgressBar progress={loadingDb.firs / 540} style={styles.progressView}/>
                 </View> : null
             }
 

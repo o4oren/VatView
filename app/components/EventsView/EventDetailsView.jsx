@@ -1,14 +1,14 @@
 import React from 'react';
-import {View, Dimensions} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import {Card, Text} from 'react-native-paper';
-import HTML from 'react-native-render-html';
+import RenderHtml from 'react-native-render-html';
 import {ScrollView} from 'react-native';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 
 export default function EventDetailsView(props) {
-    const dimensions = Dimensions.get('window');
-    const imageHeight = Math.round((dimensions.width) * 9 / 16);
-    const imageWidth = dimensions.width;
+    const {width} = useWindowDimensions();
+    const imageHeight = Math.round(width * 9 / 16);
+    const imageWidth = width;
     const event = props.route.params.event;
     // console.log('event', event);
 
@@ -29,7 +29,7 @@ export default function EventDetailsView(props) {
             <Card.Content>
                 <Text>Start time: {getDateFromUTCString(event.start_time).toUTCString()}</Text>
                 <Text>End time: {getDateFromUTCString(event.end_time).toUTCString()}</Text>
-                <HTML source={{html: event.description || '<p></p>'}}/>
+                <RenderHtml contentWidth={width} source={{html: event.description || '<p></p>'}}/>
                 {addRoutesIfExist()}
             </Card.Content>
         </Card>
