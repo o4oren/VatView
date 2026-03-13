@@ -22,16 +22,23 @@ import {StatusBar} from 'expo-status-bar';
 function HeaderMenu() {
     const navigation = useNavigation();
     const [showMenu, setShowMenu] = React.useState(false);
-    const openMenu = () => setShowMenu(true);
+    const [anchorLayout, setAnchorLayout] = React.useState(null);
     const closeMenu = () => setShowMenu(false);
+    const openMenu = () => {
+        if (anchorLayout) {
+            setShowMenu(true);
+        }
+    };
 
     return (
         <Menu
             visible={showMenu}
             onDismiss={closeMenu}
+            anchorPosition="bottom"
             anchor={
                 <Pressable
                     onPress={openMenu}
+                    onLayout={(e) => setAnchorLayout(e.nativeEvent.layout)}
                     accessibilityLabel='Menu'
                     style={({pressed}) => ({
                         padding: 8,
