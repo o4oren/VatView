@@ -12,8 +12,9 @@ import theme from './app/common/theme';
 import {StyleSheet, Text, View} from 'react-native';
 import {StatusBar} from 'expo-status-bar';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import analyticsMiddleware from './app/common/analyticsMiddleware';
 
-const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, analyticsMiddleware));
 
 // on top of your index.android.js file
 const isAndroid = require('react-native').Platform.OS === 'android';

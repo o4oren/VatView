@@ -18,6 +18,7 @@ import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import BookingsView from '../BookingsView/BookingsView';
 import {StatusBar} from 'expo-status-bar';
+import analytics from '../../common/analytics';
 
 function HeaderMenu() {
     const navigation = useNavigation();
@@ -77,6 +78,10 @@ export default function mainApp() {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const airportsLoaded = useSelector(state => state.app.airportsLoaded);
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
+    useEffect(() => {
+        analytics.setUserProperty('user_type', 'anonymous');
+    }, []);
+
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
@@ -140,7 +145,7 @@ export default function mainApp() {
             const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
             if (previousRouteName !== currentRouteName) {
-                // await Analytics.setCurrentScreen(currentRouteName, currentRouteName);
+                analytics.logScreenView(currentRouteName, currentRouteName);
             }
 
             // Save the current route name for later comparison

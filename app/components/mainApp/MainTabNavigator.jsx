@@ -6,10 +6,16 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
 import {MaterialCommunityIcons} from "@expo/vector-icons";
+import analytics from '../../common/analytics';
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
     return <tab.Navigator
+        screenListeners={({ route }) => ({
+            tabPress: () => {
+                analytics.logEvent('nav_tab_switch', { tab_name: route.name });
+            },
+        })}
         screenOptions={{
             tabBarActiveTintColor: theme.blueGrey.theme.colors.onPrimary,
             tabBarInactiveTintColor: theme.blueGrey.inactiveTabTint,

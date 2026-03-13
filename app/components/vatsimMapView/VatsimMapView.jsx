@@ -6,6 +6,7 @@ import theme from '../../common/theme';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import analytics from '../../common/analytics';
 
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
@@ -13,6 +14,7 @@ export default function VatsimMapView() {
     const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
+    const lastLoggedClientRef = useRef(null);
     const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
     const updateScreenSize = () => {
         setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
@@ -56,6 +58,24 @@ export default function VatsimMapView() {
                 snapPoints={[300, 400]}
                 borderRadius={10}
                 index={-1}
+                onChange={(index) => {
+                    if (index === -1) {
+                        lastLoggedClientRef.current = null;
+                        return;
+                    }
+                    const client = selectedClient;
+                    if (client) {
+                        const clientKey = client.cid || client.icao;
+                        if (clientKey !== lastLoggedClientRef.current) {
+                            lastLoggedClientRef.current = clientKey;
+                            const eventName = client.cid ? 'sheet_open_pilot' : 'sheet_open_atc';
+                            const params = client.cid
+                                ? { callsign: client.callsign, cid: String(client.cid) }
+                                : { icao: client.icao };
+                            analytics.logEvent(eventName, params);
+                        }
+                    }
+                }}
             >
                 <BottomSheetView>
                     <ClientDetails
