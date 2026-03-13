@@ -1,6 +1,6 @@
-import MapView, {Circle, Marker} from 'react-native-maps';
+import {Circle, Marker} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
@@ -33,10 +33,9 @@ export default function generateAirportMarkers(airportAtc, airports) {
         let tower = false;
         let app = false;
         let atis = false;
-        let lastUpdated = null;
         let image = null;
 
-        if (airport != null && airportAtc && airportAtc[airport.icao]) {
+        if (airport != null && airportAtc && airportAtc[airport.icao] && airportAtc[airport.icao].length > 0) {
             airportAtc[airport.icao].forEach(atc => {
                 switch (atc.facility) {
                 case APP:
@@ -68,9 +67,6 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 default:
                     break;
                 }
-
-                // update last updated to the last station in this icao so that react reconciliation will detect the change
-                lastUpdated = atc.last_updated;
             });
 
             if(app) {
@@ -86,14 +82,23 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     image = Platform.OS === 'ios' ? mapIcons.antenna32 : mapIcons.antenna64;
             }
 
+            // Fallback for unrecognized facility types — prevents red pin markers
+            if (!image) {
+                console.warn('Unknown ATC facility type at', airport.icao);
+                image = Platform.OS === 'ios' ? mapIcons.tower32 : mapIcons.tower64;
+            }
+
+            // Key includes ATC composition so marker updates when staffing changes
+            const atcSuffix = `${app ? 'a' : ''}${tower ? 't' : ''}${ground ? 'g' : ''}${atis ? 's' : ''}${delivery ? 'd' : ''}`;
+
             airportMarkers.push(
                 <Marker
-                    key={airport.icao + '_' + lastUpdated}
+                    key={airport.icao + '_' + atcSuffix}
                     coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
                     title={airport.icao}
                     anchor={{x: 0.5, y: 1}}
                     onPress={() => onPress(airport)}
-                    tracksViewChanges={Platform.OS === 'android'}
+                    tracksViewChanges={false}
                     tracksInfoWindowChanges={false}
                 >
                     <Image
