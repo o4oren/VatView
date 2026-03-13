@@ -6,7 +6,9 @@ import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
-import {IconButton, Menu} from 'react-native-paper';
+import {Menu} from 'react-native-paper';
+import {Pressable} from 'react-native';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import theme from '../../common/theme';
 import Settings from '../settings/Settings';
 import NetworkStatus from '../networkStatus/networkStatus';
@@ -28,15 +30,20 @@ function HeaderMenu() {
             visible={showMenu}
             onDismiss={closeMenu}
             anchor={
-                <IconButton
-                    icon='dots-vertical'
-                    iconColor={theme.blueGrey.theme.colors.onPrimary}
-                    mode="contained"
-                    containerColor='transparent'
-                    size={20}
+                <Pressable
+                    onPress={openMenu}
                     accessibilityLabel='Menu'
-                    onPress={() => openMenu()}
-                />
+                    style={({pressed}) => ({
+                        padding: 8,
+                        opacity: pressed ? 0.5 : 1,
+                    })}
+                >
+                    <MaterialCommunityIcons
+                        name="dots-vertical"
+                        size={24}
+                        color={theme.blueGrey.theme.colors.onPrimary}
+                    />
+                </Pressable>
             }>
             <Menu.Item onPress={() => {
                 navigation.navigate('Network status');
