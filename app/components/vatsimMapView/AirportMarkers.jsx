@@ -1,6 +1,6 @@
 import {Circle, Marker} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
@@ -8,17 +8,44 @@ import theme from '../../common/theme';
 import {mapIcons} from '../../common/iconsHelper';
 import {getAirportByCode} from '../../common/airportTools';
 
+const isAndroid = Platform.OS === 'android';
+
+const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
+    return isAndroid ? (
+        <Marker
+            coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
+            title={airport.icao}
+            anchor={{x: 0.5, y: 1}}
+            onPress={() => onPress(airport)}
+            tracksViewChanges={false}
+            tracksInfoWindowChanges={false}
+            image={image}
+        />
+    ) : (
+        <Marker
+            coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
+            title={airport.icao}
+            anchor={{x: 0.5, y: 1}}
+            onPress={() => onPress(airport)}
+            tracksViewChanges={false}
+            tracksInfoWindowChanges={false}
+        >
+            <Image
+                source={image}
+                fadeDuration={0}
+                style={{height: 32, width: 32}}
+            />
+        </Marker>
+    );
+});
+
 export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();
     const airportMarkers = [];
 
-    let onPress = (airport) => {
-        // Analytics.logEvent('SelectAirport', {
-        //     callsign: airport.icao,
-        //     purpose: 'Clicking an airport atc',
-        // });
+    const onPress = useCallback((airport) => {
         dispatch(allActions.appActions.clientSelected(airport));
-    };
+    }, [dispatch]);
 
     if(Object.keys(airportAtc).length==0) {
         console.log('return empty', airportAtc);
@@ -92,21 +119,13 @@ export default function generateAirportMarkers(airportAtc, airports) {
             const atcSuffix = `${app ? 'a' : ''}${tower ? 't' : ''}${ground ? 'g' : ''}${atis ? 's' : ''}${delivery ? 'd' : ''}`;
 
             airportMarkers.push(
-                <Marker
+                <AirportMarkerItem
                     key={airport.icao + '_' + atcSuffix}
-                    coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
-                    title={airport.icao}
-                    anchor={{x: 0.5, y: 1}}
-                    onPress={() => onPress(airport)}
+                    airport={airport}
+                    image={image}
+                    onPress={onPress}
                     tracksViewChanges={false}
-                    tracksInfoWindowChanges={false}
-                >
-                    <Image
-                        source={image}
-                        fadeDuration={0}
-                        style={[{ height: 32, width: 32 }]}
-                    />
-                </Marker>
+                />
             );
         } else {
             console.log('cannot add marker', airport);

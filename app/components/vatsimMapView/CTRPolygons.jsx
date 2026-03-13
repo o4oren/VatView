@@ -144,7 +144,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 if (!fir.center) return;
                 elements.push(
                     <Polygon
-                        key={client.cid + '-polygon-' + fir.center.latitude + '_' + fir.center.longitude}
+                        key={client.cid + '-polygon-' + i}
                         coordinates={fir.points}
                         strokeColor={theme.blueGrey.firStrokeColor}
                         fillColor={theme.blueGrey.firFill}
@@ -156,13 +156,12 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 );
                 elements.push(
                     <Marker
-                        key={client.cid + '-marker-' + fir.center.latitude + '_' + fir.center.longitude}
+                        key={client.cid + '-marker-' + i}
                         coordinate={fir.center}
                         tracksViewChanges={false}
                         tracksInfoWindowChanges={false}
                     >
                         <Text
-                            key={client.cid + '-' + fir.icao + '-' + fir.center.latitude + '_' + fir.center.longitude}
                             style={theme.blueGrey.firTextStyle}
                             onPress={() => onPress(client)}
                         >

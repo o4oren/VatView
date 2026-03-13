@@ -5,7 +5,7 @@ import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
-import React, {useRef, } from 'react';
+import React, {useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
 
@@ -15,8 +15,6 @@ const MapComponent = ({screenSize}) => {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
-
-    // console.log(ref);
 
     const clients = vatsimLiveData.clients;
     const airports = vatsimLiveData.cachedAirports;
@@ -38,7 +36,7 @@ const MapComponent = ({screenSize}) => {
 const getMarkers = (clients, selectedClient, airports, cachedFirBoundaries) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
-        generatePilotMarkers(airports),
+        generatePilotMarkers(),
         generateAirportMarkers(clients.airportAtc, airports),
         renderFromToPath(selectedClient,airports)
     ].flat(1).sort((a,b) => {
