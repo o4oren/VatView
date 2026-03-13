@@ -18,6 +18,8 @@ import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import BookingsView from '../BookingsView/BookingsView';
 import {StatusBar} from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
+import {Platform} from 'react-native';
 import analytics from '../../common/analytics';
 
 function HeaderMenu() {
@@ -80,6 +82,9 @@ export default function mainApp() {
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
     useEffect(() => {
         analytics.setUserProperty('user_type', 'anonymous');
+        if (Platform.OS === 'android') {
+            NavigationBar.setVisibilityAsync('hidden');
+        }
     }, []);
 
     // Kick start api calls get static data as needed
