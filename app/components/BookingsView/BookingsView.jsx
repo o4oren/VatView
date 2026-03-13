@@ -1,24 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, FlatList, View, } from 'react-native';
 import {useSelector} from 'react-redux';
-import {IconButton, Searchbar, Colors} from 'react-native-paper';
+import {IconButton, Searchbar} from 'react-native-paper';
+import theme from '../../common/theme';
 import {DatePickerModal} from 'react-native-paper-dates';
 import BookingDetails from './BookingDeatils';
 import {LinearGradient} from 'expo-linear-gradient';
 
 export default function BookingsView() {
-    const bookings = useSelector(state => state.vatsimLiveData.bookings.atcs);
+    const bookings = useSelector(state => state.vatsimLiveData.bookings);
     const [filteredBookings, setFilteredBookings] = useState(bookings);
     const [searchTerm, setSearchTerm] = useState('');
     const [isReady, setIsReady] = useState(false);
     const [date, setDate] = React.useState(undefined);
     const [open, setOpen] = React.useState(false);
-    console.log(bookings);
     const colors=['#b4becb', '#e1e8f5'];
     const start = { x: 0, y: 0 };
     const end = { x: 1, y: 1 };
-
-    console.log('bookings in view', bookings);
 
     const onDismissSingle = React.useCallback(() => {
         setOpen(false);
@@ -51,10 +49,9 @@ export default function BookingsView() {
         }
         if(date) {
             list = list.filter(booking => {
-                return (new Date(booking.time_start).toDateString()) == date.toDateString();
+                return (new Date(booking.start).toDateString()) == date.toDateString();
             });
         }
-        console.log('list', list);
         setFilteredBookings(list);
     };
 
@@ -96,7 +93,9 @@ export default function BookingsView() {
             />
             <IconButton
                 icon="calendar"
-                color={Colors.blue50}
+                iconColor={theme.blueGrey.theme.colors.secondaryContainer}
+                mode="contained"
+                containerColor="transparent"
                 size={20}
                 onPress={dateFilterPressed}
             />

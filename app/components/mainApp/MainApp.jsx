@@ -2,28 +2,91 @@ import React, {useEffect, useRef} from 'react';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
-import {IconButton, Menu} from 'react-native-paper';
+import {Menu} from 'react-native-paper';
+import {Pressable} from 'react-native';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import theme from '../../common/theme';
 import Settings from '../settings/Settings';
-import * as Analytics from 'expo-firebase-analytics';
 import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import BookingsView from '../BookingsView/BookingsView';
+import {StatusBar} from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
+import {Platform} from 'react-native';
+import analytics from '../../common/analytics';
+
+function HeaderMenu() {
+    const navigation = useNavigation();
+    const [showMenu, setShowMenu] = React.useState(false);
+    const [anchorLayout, setAnchorLayout] = React.useState(null);
+    const closeMenu = () => setShowMenu(false);
+    const openMenu = () => {
+        if (anchorLayout) {
+            setShowMenu(true);
+        }
+    };
+
+    return (
+        <Menu
+            visible={showMenu}
+            onDismiss={closeMenu}
+            anchorPosition="bottom"
+            anchor={
+                <Pressable
+                    onPress={openMenu}
+                    onLayout={(e) => setAnchorLayout(e.nativeEvent.layout)}
+                    accessibilityLabel='Menu'
+                    style={({pressed}) => ({
+                        padding: 8,
+                        opacity: pressed ? 0.5 : 1,
+                    })}
+                >
+                    <MaterialCommunityIcons
+                        name="dots-vertical"
+                        size={24}
+                        color={theme.blueGrey.theme.colors.onPrimary}
+                    />
+                </Pressable>
+            }>
+            <Menu.Item onPress={() => {
+                navigation.navigate('Network status');
+                closeMenu();
+            }} icon="cloud-outline" title="Network status" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('ATC Bookings');
+                closeMenu();
+            }} icon="calendar-range-outline" title="ATC Bookings" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('Metar');
+                closeMenu();
+            }} icon="weather-partly-snowy-rainy" title="Metar" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('About');
+                closeMenu();
+            }} icon="information-variant" title="About" />
+        </Menu>
+    );
+}
 
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const [showMenu, setShowMenu] = React.useState(false);
-    const openMenu = () => setShowMenu(true);
-    const closeMenu = () => setShowMenu(false);
     const airportsLoaded = useSelector(state => state.app.airportsLoaded);
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
+    useEffect(() => {
+        analytics.setUserProperty('user_type', 'anonymous');
+        if (Platform.OS === 'android') {
+            NavigationBar.setVisibilityAsync('hidden');
+        }
+    }, []);
+
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
@@ -54,7 +117,8 @@ export default function mainApp() {
 
 
     function isReady() {
-        return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
+        console.log("airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length", airportsLoaded + ' ' + firBoundariesLoaded + ' ' +  Object.keys(staticAirspaceData.firs).length)
+            return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
     }
 
     useEffect(() => {
@@ -68,7 +132,7 @@ export default function mainApp() {
         }
     }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded]);
 
-    const Stack = createStackNavigator();
+    const Stack = createNativeStackNavigator();
     const navigationRef = useRef();
     const routeNameRef = useRef();
 
@@ -86,7 +150,7 @@ export default function mainApp() {
             const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
             if (previousRouteName !== currentRouteName) {
-                await Analytics.setCurrentScreen(currentRouteName, currentRouteName);
+                analytics.logScreenView(currentRouteName, currentRouteName);
             }
 
             // Save the current route name for later comparison
@@ -94,49 +158,14 @@ export default function mainApp() {
         }}
     >
         <Stack.Navigator
-            screenOptions={({ navigation }) => ({
+            screenOptions={{
                 headerTitle: 'VatView',
                 headerStyle: {
-                    backgroundColor: '#2A5D99',
+                    backgroundColor: theme.blueGrey.theme.colors.primary,
                 },
-                headerTintColor: '#ffffff',
-                headerRight: () => (
-                    <Menu
-                        visible={showMenu}
-                        onDismiss={closeMenu}
-                        anchor={
-                            <IconButton
-                                icon='dots-vertical'
-                                color={'white'}
-                                size={20}
-                                accessibilityLabel='Menu'
-                                onPress={() => openMenu()}
-                            />
-                        }>
-                        {/*<Menu.Item onPress={() => {*/}
-                        {/*    navigation.navigate('Settings');*/}
-                        {/*    closeMenu();*/}
-                        {/*}} icon="cog" title="Settings" />*/}
-                        {/*<Divider />*/}
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('Network status');
-                            closeMenu();
-                        }} icon="cloud-outline" title="Network status" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('ATC Bookings');
-                            closeMenu();
-                        }} icon="calendar-range-outline" title="ATC Bookings" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('Metar');
-                            closeMenu();
-                        }} icon="weather-partly-snowy-rainy" title="Metar" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('About');
-                            closeMenu();
-                        }} icon="information-variant" title="About" />
-                    </Menu>
-                ),
-            })}
+                headerTintColor: theme.blueGrey.theme.colors.onPrimary,
+                headerRight: () => <HeaderMenu />,
+            }}
         >
             <Stack.Screen
                 name="VatView"

@@ -1,17 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import Provider from 'react-redux/lib/components/Provider';
-import {applyMiddleware, createStore} from 'redux';
+import {Provider} from 'react-redux';
+import {applyMiddleware, legacy_createStore as createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
-import thunkMiddleware from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { thunk as thunkMiddleware } from 'redux-thunk';
+import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
-import AppLoading from 'expo-app-loading';
+import {StyleSheet, Text, View} from 'react-native';
+import {StatusBar} from 'expo-status-bar';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import analyticsMiddleware from './app/common/analyticsMiddleware';
 
-const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, analyticsMiddleware));
 
 // on top of your index.android.js file
 const isAndroid = require('react-native').Platform.OS === 'android';
@@ -50,18 +53,15 @@ if (isHermesEnabled || isAndroid) {
 
     if ('__setDefaultTimeZone' in Intl.DateTimeFormat) {
 
-        // If you are using react-native-cli
-        // let RNLocalize = require('react-native-localize');
-        // Intl.DateTimeFormat.__setDefaultTimeZone(RNLocalize.getTimeZone());
-
-        //  Are you using Expo, use this instead of previous 2 lines
+        // Set timezone using Expo localization
         try {
-            Intl.DateTimeFormat.__setDefaultTimeZone(
-                require('expo-localization').timezone
-            );
+            const calendars = require('expo-localization').getCalendars();
+            const tz = calendars && calendars[0] && calendars[0].timeZone;
+            if (tz) {
+                Intl.DateTimeFormat.__setDefaultTimeZone(tz);
+            }
         }  catch (error) {
-            console.log('tz', require('expo-localization').timezone);
-            console.log(error);
+            console.log('tz error', error);
         }
     }
 }
@@ -83,7 +83,7 @@ export default function App() {
 
     if(!state.isReady) {
         return (
-            <AppLoading>Loading</AppLoading>
+            <View><Text>Loading</Text></View>
         );
     }
 
@@ -112,10 +112,22 @@ export default function App() {
     // console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
-        <Provider store={store}>
-            <PaperProvider theme={theme.blueGrey.theme}>
-                <MainApp />
-            </PaperProvider>
-        </Provider>
+        <GestureHandlerRootView style={styles.root}>
+            <Provider store={store}>
+                <PaperProvider theme={theme.blueGrey.theme}>
+                    <StatusBar
+                        backgroundColor={theme.blueGrey.theme.colors.primary}
+                        style="light"
+                    />
+                    <MainApp />
+                </PaperProvider>
+            </Provider>
+        </GestureHandlerRootView>
     );
 }
+
+const styles = StyleSheet.create({
+    root: {
+        flex: 1
+    }
+});

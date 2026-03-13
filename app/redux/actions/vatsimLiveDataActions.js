@@ -7,7 +7,6 @@ import {
     getFirPointsFromDB
 } from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
-import {parse} from 'fast-xml-parser';
 
 export const DATA_UPDATED = 'DATA_UPDATED';
 export const EVENTS_UPDATED = 'EVENTS_UPDATED';
@@ -179,23 +178,18 @@ const updateData = async (dispatch, getState) => {
                 });
             });
 
-            let isUpdated = false;
-            getFirsFromDB(firsTocCache).then(firs => {
-                firs.forEach(async (fir, index, firs) => {
-                    isUpdated = true;
-                    // console.log(`fetching ${fir.icao} from db`);
+            getFirsFromDB(firsTocCache).then(async firs => {
+                await Promise.all(firs.map(async (fir) => {
                     const firWithPoints = await getFirPointsFromDB(fir);
                     if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
                         json.cachedFirBoundaries[firWithPoints.icao] = [];
                     }
-
-                    // prevent storing the points
                     json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
-                    if(index === firs.length -1 && isUpdated) {
-                        // console.log('live', json);
-                        dispatch(dataUpdated(json));
-                    }
-                });
+                }));
+                dispatch(dataUpdated(json));
+            }).catch(err => {
+                console.error('getFirsFromDB error, dispatching without FIR boundaries:', err);
+                dispatch(dataUpdated(json));
             });
         };
 
@@ -206,7 +200,7 @@ const updateData = async (dispatch, getState) => {
 };
 
 
-const updateEvents = async (dispatch, getState) => {
+const updateEvents = async (dispatch) => {
     console.log('fetching events feed');
     try {
         const response = await fetch(
@@ -220,33 +214,24 @@ const updateEvents = async (dispatch, getState) => {
     }
 };
 
-const updateBookings = async (dispatch, getState) => {
+const updateBookings = async (dispatch) => {
     console.log('fetching bookings');
     try {
+        // old 'http://vatbook.euroutepro.com/xml2.php'
         const response = await fetch(
-            'http://vatbook.euroutepro.com/xml2.php'
+            'https://atc-bookings.vatsim.net/api/booking'
         );
-        const bookingsText = await response.text();
-        let bookings = parse(bookingsText);
-        const atcBookings = bookings.bookings.atcs.booking.map(booking => {
-            let time_start = Date.parse(booking.time_start.replace(' ', 'T') + 'Z');
-            let time_end = Date.parse(booking.time_end.replace(' ', 'T') + 'Z');
-            booking.time_start = time_start;
-            booking.time_end = time_end;
+
+
+        const bookingsJson = await response.json();
+        const atcBookings = bookingsJson.map(booking => {
+            let time_start = new Date(booking.start.replace(' ', 'T') + 'Z');
+            let time_end = new Date(booking.end.replace(' ', 'T') + 'Z');
+            booking.start = time_start;
+            booking.end = time_end;
             return booking;
         });
-        const pilotBookings = bookings.bookings.pilots.booking.map(booking => {
-            let time_start = Date.parse(booking.time_start + 'Z');
-            let time_end = Date.parse(booking.time_end + 'Z');
-            booking.time_start = time_start;
-            booking.time_end = time_end;
-            return booking;
-        });
-        bookings = {
-            pilots: pilotBookings,
-            atcs: atcBookings
-        };
-        dispatch(bookingsUpdated(bookings));
+        dispatch(bookingsUpdated(atcBookings));
     } catch (error) {
         console.log(error);
         dispatch({type: DATA_FETCH_ERROR});

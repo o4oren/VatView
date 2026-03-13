@@ -2,7 +2,7 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "version": "1.7.2",
+    "version": "1.9.3",
     "orientation": "portrait",
     "icon": "./graphics/icons/icon-1024-background.png",
     "splash": {
@@ -10,7 +10,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -20,20 +19,20 @@
     "androidStatusBar": {
       "barStyle": "light-content"
     },
-    "androidNavigationBar": {
-      "barStyle": "light-content",
-      "backgroundColor": "#000000"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gevahim.vatview",
-      "buildNumber": "1.7.2",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.gevahim.vatview",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -43,21 +42,51 @@
           "apiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
         }
       },
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
-      "package": "com.gevahim.vatview",
-      "versionCode": 172,
-      "googleServicesFile": "./google-services.json"
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "config": {
-        "firebase": {
-          "apiKey": "[REPLACE]",
-          "measurementId": "G-C7CHC7DF09"
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          }
         }
+      ],
+      "expo-localization",
+      "expo-sqlite",
+      "expo-font",
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+        }
+      ],
+      "./plugins/withDisableLiquidGlass",
+      "./plugins/withModularHeaders",
+      [
+        "@react-native-firebase/app",
+        {
+          "analyticsCollectionEnabled": true
+        }
+      ],
+      "@react-native-firebase/crashlytics"
+    ],
+    "description": "VatView is a VATSIM map and information app.",
+    "githubUrl": "https://github.com/o4oren/VatView",
+    "extra": {
+      "eas": {
+        "projectId": "700dac5e-72d8-45e4-8bf5-693f1bb78b70"
       }
     },
-    "description": "VatView is a VATSIM map and information app.",
-    "githubUrl": "https://github.com/o4oren/VatView"
+    "owner": "ogeva"
   }
 }
