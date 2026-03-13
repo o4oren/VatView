@@ -320,7 +320,7 @@ export default {
                 primary: '#2a5d99',
                 secondary: '#2a5d99',
                 onSurface: '#000000',
-                outline: '#c1c1c1',
+                outline: 'transparent',
                 onPrimary: '#ffffff',
                 onSurfaceVariant: '#808080',
                 secondaryContainer: '#e3f2fd',
