@@ -29,7 +29,6 @@
       "config": {
         "googleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
       },
-      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "com.gevahim.vatview",
@@ -48,32 +47,28 @@
         "INTERNET",
         "com.google.android.gms.permission.AD_ID"
       ],
-      "googleServicesFile": "./google-services.json"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "config": {
-        "firebase": {
-          "apiKey": "[REPLACE]",
-          "measurementId": "G-C7CHC7DF09"
-        }
-      }
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
-      "@react-native-firebase/crashlytics",
       [
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static",
             "newArchEnabled": true
           }
         }
       ],
       "expo-localization",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-font",
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": "AIzaSyBgzIoWm3eIB5mEvOqFAdIGdLC_6IRFeLk"
+        }
+      ]
     ],
     "description": "VatView is a VATSIM map and information app.",
     "githubUrl": "https://github.com/o4oren/VatView",

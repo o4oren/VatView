@@ -9,8 +9,9 @@ import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
-import {Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {StatusBar} from 'expo-status-bar';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -110,14 +111,22 @@ export default function App() {
     // console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
-        <Provider store={store}>
-            <PaperProvider theme={theme.blueGrey.theme}>
-                <StatusBar
-                    backgroundColor={theme.blueGrey.theme.colors.primary}
-                    style={theme.blueGrey.theme.colors.onBackground}
-                />
-                <MainApp />
-            </PaperProvider>
-        </Provider>
+        <GestureHandlerRootView style={styles.root}>
+            <Provider store={store}>
+                <PaperProvider theme={theme.blueGrey.theme}>
+                    <StatusBar
+                        backgroundColor={theme.blueGrey.theme.colors.primary}
+                        style={theme.blueGrey.theme.colors.onBackground}
+                    />
+                    <MainApp />
+                </PaperProvider>
+            </Provider>
+        </GestureHandlerRootView>
     );
 }
+
+const styles = StyleSheet.create({
+    root: {
+        flex: 1
+    }
+});

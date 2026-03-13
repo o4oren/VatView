@@ -5,26 +5,17 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
-import {Platform} from 'react-native';
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
-    const barHeight = Platform.OS === 'ios' ? 90 : 60;
-
     return <tab.Navigator
         screenOptions={{
-            tabBarActiveBackgroundColor: theme.blueGrey.theme.colors.primary,
-            tabBarInactiveBackgroundColor: theme.blueGrey.theme.colors.primary,
-            tabBarActiveTintColor: 'white',
+            tabBarActiveTintColor: theme.blueGrey.theme.colors.onPrimary,
             tabBarInactiveTintColor: theme.blueGrey.inactiveTabTint,
             headerShown: false,
-            tabBarItemStyle:{
-                height: barHeight,
-                padding: 10
-            },
             tabBarStyle: {
-                height: barHeight,
+                backgroundColor: theme.blueGrey.theme.colors.primary,
             }
     }}
     >

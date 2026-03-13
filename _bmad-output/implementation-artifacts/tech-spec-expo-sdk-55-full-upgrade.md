@@ -2,7 +2,7 @@
 title: 'Expo SDK 55 Full Upgrade'
 slug: 'expo-sdk-55-full-upgrade'
 created: '2026-03-11'
-status: 'ready-for-dev'
+status: 'in-progress'
 stepsCompleted: [1, 2, 3, 4]
 tech_stack:
   - expo@55

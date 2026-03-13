@@ -7,15 +7,15 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
 def ccache_enabled?(podfile_properties)
   # Environment variable takes precedence
   return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
-  
+
   # Fall back to Podfile properties
   podfile_properties['apple.ccacheEnabled'] == 'true'
 end
 
-ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 
 prepare_react_native_project!
@@ -39,8 +39,9 @@ target 'VatView' do
     ]
   end
 
-# @generated begin react-native-maps - expo prebuild (DO NOT MODIFY) sync-e9cc66c360abe50bc66d89fffb3c55b034d7d369
-  pod 'react-native-google-maps', path: File.dirname(`node --print "require.resolve('react-native-maps/package.json')"`)
+# @generated begin react-native-maps - expo prebuild (DO NOT MODIFY) sync-e998e3efeb335e37f5f7a069abfc6d5ecd4fd33e
+  rn_maps_path = File.dirname(`node --print "require.resolve('react-native-maps/package.json')"`) 
+
 # @generated end react-native-maps
   config = use_native_modules!(config_command)
 
@@ -62,13 +63,5 @@ target 'VatView' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        if ['react-native-maps', 'react-native-google-maps', 'RNFBApp', 'RNFBAuth', 'RNFBCrashlytics'].include?(target.name)
-          config.build_settings['DEFINES_MODULE'] = 'NO'
-        end
-      end
-    end
   end
 end

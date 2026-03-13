@@ -2,8 +2,8 @@ import React, {useEffect, useRef} from 'react';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTabNavigator from './MainTabNavigator';
 import About from '../About/About';
 import {IconButton, Menu} from 'react-native-paper';
@@ -15,14 +15,52 @@ import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import BookingsView from '../BookingsView/BookingsView';
-import {StatusBar} from "expo-status-bar";
+import {StatusBar} from 'expo-status-bar';
+
+function HeaderMenu() {
+    const navigation = useNavigation();
+    const [showMenu, setShowMenu] = React.useState(false);
+    const openMenu = () => setShowMenu(true);
+    const closeMenu = () => setShowMenu(false);
+
+    return (
+        <Menu
+            visible={showMenu}
+            onDismiss={closeMenu}
+            anchor={
+                <IconButton
+                    icon='dots-vertical'
+                    iconColor={theme.blueGrey.theme.colors.onPrimary}
+                    mode="contained"
+                    containerColor='transparent'
+                    size={20}
+                    accessibilityLabel='Menu'
+                    onPress={() => openMenu()}
+                />
+            }>
+            <Menu.Item onPress={() => {
+                navigation.navigate('Network status');
+                closeMenu();
+            }} icon="cloud-outline" title="Network status" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('ATC Bookings');
+                closeMenu();
+            }} icon="calendar-range-outline" title="ATC Bookings" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('Metar');
+                closeMenu();
+            }} icon="weather-partly-snowy-rainy" title="Metar" />
+            <Menu.Item onPress={() => {
+                navigation.navigate('About');
+                closeMenu();
+            }} icon="information-variant" title="About" />
+        </Menu>
+    );
+}
 
 export default function mainApp() {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const [showMenu, setShowMenu] = React.useState(false);
-    const openMenu = () => setShowMenu(true);
-    const closeMenu = () => setShowMenu(false);
     const airportsLoaded = useSelector(state => state.app.airportsLoaded);
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
     // Kick start api calls get static data as needed
@@ -70,7 +108,7 @@ export default function mainApp() {
         }
     }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded]);
 
-    const Stack = createStackNavigator();
+    const Stack = createNativeStackNavigator();
     const navigationRef = useRef();
     const routeNameRef = useRef();
 
@@ -96,49 +134,14 @@ export default function mainApp() {
         }}
     >
         <Stack.Navigator
-            screenOptions={({ navigation }) => ({
+            screenOptions={{
                 headerTitle: 'VatView',
                 headerStyle: {
-                    backgroundColor: '#2A5D99',
+                    backgroundColor: theme.blueGrey.theme.colors.primary,
                 },
-                headerTintColor: '#ffffff',
-                headerRight: () => (
-                    <Menu
-                        visible={showMenu}
-                        onDismiss={closeMenu}
-                        anchor={
-                            <IconButton
-                                icon='dots-vertical'
-                                iconColor={theme.blueGrey.theme.colors.onPrimary}
-                                size={20}
-                                accessibilityLabel='Menu'
-                                onPress={() => openMenu()}
-                            />
-                        }>
-                        {/*<Menu.Item onPress={() => {*/}
-                        {/*    navigation.navigate('Settings');*/}
-                        {/*    closeMenu();*/}
-                        {/*}} icon="cog" title="Settings" />*/}
-                        {/*<Divider />*/}
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('Network status');
-                            closeMenu();
-                        }} icon="cloud-outline" title="Network status" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('ATC Bookings');
-                            closeMenu();
-                        }} icon="calendar-range-outline" title="ATC Bookings" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('Metar');
-                            closeMenu();
-                        }} icon="weather-partly-snowy-rainy" title="Metar" />
-                        <Menu.Item onPress={() => {
-                            navigation.navigate('About');
-                            closeMenu();
-                        }} icon="information-variant" title="About" />
-                    </Menu>
-                ),
-            })}
+                headerTintColor: theme.blueGrey.theme.colors.onPrimary,
+                headerRight: () => <HeaderMenu />,
+            }}
         >
             <Stack.Screen
                 name="VatView"

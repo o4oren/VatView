@@ -7,7 +7,7 @@ import {IconButton, Searchbar} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
 
-export default function VatsimEventsView({navigation}) {
+export default function VatsimEventsView() {
     const events = useSelector(state => state.vatsimLiveData.events);
     const [filteredEvents, setFilteresEvents] = useState(events);
     const [searchTerm, setSearchTerm] = useState('');
@@ -65,7 +65,6 @@ export default function VatsimEventsView({navigation}) {
     const renderItem = ({item}) => (
         <EventListItem
             event={item}
-            navigation={navigation}
         />
     );
 
@@ -90,6 +89,8 @@ export default function VatsimEventsView({navigation}) {
             <IconButton
                 icon="calendar"
                 iconColor={theme.blueGrey.theme.colors.secondaryContainer}
+                mode="contained"
+                containerColor="transparent"
                 size={20}
                 onPress={dateFilterPressed}
             />
@@ -113,7 +114,7 @@ export default function VatsimEventsView({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#4d7199',
+        backgroundColor: theme.blueGrey.theme.colors.primaryContainer,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',

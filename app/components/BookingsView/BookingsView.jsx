@@ -94,6 +94,8 @@ export default function BookingsView() {
             <IconButton
                 icon="calendar"
                 iconColor={theme.blueGrey.theme.colors.secondaryContainer}
+                mode="contained"
+                containerColor="transparent"
                 size={20}
                 onPress={dateFilterPressed}
             />
