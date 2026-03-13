@@ -34,6 +34,8 @@ dist/
 web-build/
 
 # Native
+android/
+ios/
 *.orig.*
 *.jks
 *.p8
