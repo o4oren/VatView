@@ -52,7 +52,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 - Primary domain: Cross-platform mobile (React Native / Expo)
 - Complexity level: Medium
-- Estimated architectural components: ~35 (28 existing restyled + new floating nav island, theme provider, adaptive layout container, blur wrapper, filter chips overlay, detail panel abstraction, and design token system)
+- Estimated architectural components: ~42 (28 existing restyled + new: FloatingNavIsland, ThemeProvider, MapOverlayGroup, BlurWrapper, TranslucentSurface, ThemedText, ListItem, StaleIndicator, ThemePicker, FloatingFilterChips, DetailPanelProvider, AircraftIconService, design token system, 15 level sub-components)
 
 ### Technical Constraints & Dependencies
 
@@ -63,7 +63,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 | react-native-paper removal | Every component using Paper (all 28) must be restyled | PRD FR1-8, FR43 |
 | NativeWind + react-native-maps compatibility | Unknown — must validate before committing to NativeWind for map overlay components | PRD risk table |
 | NativeWind + @gorhom/bottom-sheet compatibility | Unknown — must validate before committing to NativeWind for bottom sheet | PRD risk table |
-| Backdrop blur device support | Must support graceful fallback to solid semi-transparent backgrounds | NFR4 |
+| Backdrop blur — iOS only | Android uses solid translucency (permanent design decision per UX spec), iOS uses native backdrop blur | NFR4, UX spec |
 | Google Maps custom styling | Two complete JSON style sets needed (light + dark), managed separately from NativeWind tokens | FR32 |
 | Expo SDK 55 | Determines available NativeWind version and native module compatibility | Current stack |
 | Solo developer + AI-assisted | Migration strategy should favor incremental, testable steps over big-bang | Product brief |
@@ -77,7 +77,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 3. **Design token system with dual consumers** — Affects every component plus the map. The theme architecture has TWO token systems that must stay coordinated: (a) NativeWind/Tailwind tokens for app UI components, and (b) Google Maps JSON style objects for map appearance. These use completely different formats — NativeWind tokens cannot be referenced from inside Google Maps style JSON. The architecture must define a single source-of-truth color palette (likely `theme.js`) that exports both NativeWind config values AND the Maps JSON styles. If they diverge, you get mismatched themes (e.g., light app UI on dark map). Phase 2 extensibility for aviation themes required.
 
-4. **Translucency/blur rendering** — Floating nav, bottom sheet, filter chips, and any overlay surface. Needs a shared blur wrapper component with device-capability-based fallback (solid semi-transparent background on devices where blur drops below 30fps). Performance testing required on mid-range devices.
+4. **Translucency/blur rendering** — Floating nav, bottom sheet, filter chips, and any overlay surface. Needs a shared blur wrapper component with platform-based rendering: iOS uses native backdrop blur (`UIVisualEffectView`), Android uses semi-transparent solid background with 1px border + elevation shadow (permanent platform design decision per UX spec — no Android blur attempted, regardless of Android version).
 
 5. **Progressive disclosure content architecture** — 5 detail view types × 3 disclosure levels = 15 distinct view states. Each level (glanceable, expanded, full) needs designed content for each client type. This is a design dependency that blocks implementation of the progressive disclosure components. The architecture must define the snap point → content level mapping.
 
@@ -117,7 +117,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 - Native iOS blur is already performant
 - Already in the Expo ecosystem — no additional native dependency
 
-**Selected: expo-blur** — ships with Expo SDK 55, major Android performance improvements, built-in fallback path for NFR4.
+**Selected: expo-blur** — ships with Expo SDK 55, used for iOS native backdrop blur only. **Android does not use blur** — per UX spec, Android renders semi-transparent solid backgrounds with 1px border + elevation shadow as a permanent platform design decision (Android's software blur cannot reliably render at 60fps across multiple overlapping surfaces).
 
 #### Orientation / Responsive Layout
 
@@ -182,7 +182,7 @@ npx expo install expo-screen-orientation
 3. Detail Panel Abstraction — Provider pattern, portrait-only initially
 4. Progressive Disclosure Snap Points — Hybrid percentage with min/max
 5. Migration Order — Infrastructure-first, then screens top-down
-6. Blur Wrapper Design — BlurWrapper + PlatformCapabilityProvider
+6. Blur Wrapper Design — BlurWrapper (iOS blur / Android solid translucency)
 
 **Deferred Decisions (Post-Phase 1):**
 - Landscape side panel implementation (abstraction ready, container deferred)
@@ -240,9 +240,9 @@ npx expo install expo-screen-orientation
 **Rationale:** Scales with device size (phone vs tablet) while guaranteeing minimum usability on small screens.
 
 **Implementation:**
-- Level 1 (glanceable): `Math.max(120, 15%)` — callsign, type, one-line summary
-- Level 2 (expanded): `Math.max(300, 40%)` — key details (frequency, altitude, flight plan summary)
-- Level 3 (full): `85%` — everything (full ATIS, complete flight plan, route)
+- Level 1 (peek): ~155px — ClientCard/AirportCard summary, opacity 0.45
+- Level 2 (half): ~50% — data grid, route, ATIS, opacity 0.65
+- Level 3 (full): ~90% — complete info, scrollable, opacity 0.85
 - `DetailPanelProvider` tracks current snap index → maps to `disclosureLevel`
 - Detail views receive level, render additively: always show L1; if >= 2, add L2 section; if === 3, add L3 section
 - **Affects:** DetailPanelProvider, all 5 detail view components (content organization)
@@ -254,29 +254,179 @@ npx expo install expo-screen-orientation
 **Rationale:** Front-loads shared components so every screen migration is straightforward. Map screen comes early for maximum validation of NativeWind + react-native-maps + blur interaction.
 
 **Implementation Sequence:**
-1. **Infrastructure:** NativeWind config, tailwind.config.js, global.css, babel/metro plugins
-2. **Theme system:** Extended theme.js, ThemeContext, PlatformCapabilityProvider
-3. **Shared components:** BlurWrapper, FloatingNavIsland, FloatingFilterChips, DetailPanelProvider
-4. **Map screen:** VatsimMapView, MapComponent, PilotMarkers, AirportMarkers, CTRPolygons — full-bleed + floating HUD
-5. **Detail views:** ClientDetails, PilotDetails, AtcDetails, CtrDetails, AirportAtcDetails — progressive disclosure
-6. **List view:** VatsimListView + FilterBar
-7. **Airport view:** AirportDetailsView, AirportSearchList, AirportListItem
-8. **Events + Bookings:** VatsimEventsView, EventListItem, EventDetailsView, BookingsView, BookingDeatils
-9. **Secondary screens:** Settings (theme toggle), About, NetworkStatus, MetarView, LoadingView
-10. **Polish:** Remove react-native-paper dependency, final visual QA, both platforms
+1. **Infrastructure:** NativeWind config, tailwind.config.js (including animation tokens), global.css, babel/metro plugins, bundle JetBrains Mono font
+2. **Theme system:** Extended theme.js, ThemeContext, BlurWrapper
+3. **Shared UI components:** TranslucentSurface, ThemedText, ListItem, StaleIndicator
+4. **Map navigation:** FloatingNavIsland, FloatingFilterChips, MapOverlayGroup, DetailPanelProvider, tab cross-fade transitions
+5. **Map screen:** VatsimMapView (full-bleed + MapOverlayGroup), MapComponent (zoom callback + dual theme styles), AircraftIconService, PilotMarkers (SVG→bitmap), AirportMarkers (zoom-aware 3-band), CTRPolygons
+6. **Detail views:** ClientDetails, PilotDetails, AtcDetails, CtrDetails, AirportAtcDetails — progressive disclosure with Level sub-components
+7. **List view:** VatsimListView + FilterBar
+8. **Airport view:** AirportDetailsView, AirportSearchList, AirportListItem
+9. **Events + Bookings:** VatsimEventsView, EventListItem, EventDetailsView, BookingsView, BookingDeatils
+10. **Secondary screens:** Settings (ThemePicker), About, NetworkStatus, MetarView, LoadingView
+11. **Polish:** Remove react-native-paper dependency, accessibility audit (VoiceOver/TalkBack), reduced motion verification, final visual QA, both platforms
 
 ### Blur Wrapper Design
 
-**Decision:** Reusable `BlurWrapper` component backed by `PlatformCapabilityProvider` context.
+**Decision:** Reusable `BlurWrapper` component with platform-based rendering (iOS blur, Android solid translucency).
 
-**Rationale:** Single capability check at app startup. All blur surfaces read the decision from context. Natural extension point for user preference toggle ("Reduce transparency" in Settings).
+**Rationale:** Platform check is a simple `Platform.OS` comparison — no capability detection needed. iOS gets native hardware-accelerated blur. Android gets a premium clean-glass aesthetic with semi-transparent backgrounds + 1px border + elevation shadow. This is a permanent design decision per the UX spec, not a degradation — both platforms deliver a premium translucent surface, just expressed differently.
 
 **Implementation:**
-- `PlatformCapabilityProvider` at app root checks: iOS → blur supported; Android 12+ → blur supported; Android < 12 → fallback
-- `BlurWrapper` component reads context, renders either `BlurView` (expo-blur) or semi-transparent `View`
-- Props: `intensity` (default 45), `tint` (auto from theme: light/dark), `fallbackOpacity` (default 0.45)
-- Used by: FloatingNavIsland, DetailPanelProvider (sheet backdrop), FloatingFilterChips
-- **Affects:** All translucent UI surfaces, PlatformCapabilityProvider, Settings (future toggle)
+- `BlurWrapper` component checks `Platform.OS`: iOS → renders `BlurView` (expo-blur); Android → renders semi-transparent `View` with 1px border (`surface.border` token) and elevation shadow
+- Props: `intensity` (default 45, iOS only), `tint` (auto from theme: light/dark), `opacity` (default 0.45)
+- Three opacity levels from UX spec tokens: `surface` (0.45 default), `surface-dense` (0.65 for busy map backgrounds), `overlay` (0.85 for full-detail panels)
+- Used by: FloatingNavIsland, DetailPanelProvider (sheet backdrop), FloatingFilterChips, TranslucentSurface
+- **Affects:** All translucent UI surfaces, Settings (future toggle)
+
+**Note:** `PlatformCapabilityProvider` is no longer needed — the platform check is simple enough to live inside `BlurWrapper` directly. Removed from the provider hierarchy.
+
+### MapOverlayGroup — Floating Element Orchestrator
+
+**Decision:** Centralized layout orchestrator component for all floating elements on the map view.
+
+**Rationale:** Multiple floating elements (nav island, filter chips, detail sheet, stale indicator) must coordinate their positions when the sheet state changes, orientation changes, or nav island auto-hides. Without a single orchestrator, each element positions itself independently, leading to overlap bugs and duplicated layout logic.
+
+**Implementation:**
+- `MapOverlayGroup` wraps all floating elements on the map screen
+- Receives props: `sheetState` (closed/peek/half/full), `orientation`, `navIslandVisible`, `zoomLevel`
+- Manages z-ordering, spatial relationships, and coordinated repositioning:
+  - Sheet closed: all elements at default positions
+  - Sheet at peek: filter chips remain, nav island visible
+  - Sheet at half: filter chips shift up if occluded
+  - Sheet at full: filter chips hidden, nav island remains above sheet
+  - Landscape: side panel replaces detail sheet, filter chips shift left
+- Children: FloatingNavIsland, FloatingFilterChips, StaleIndicator, DetailSheet/SidePanel
+- **Location:** `app/components/mapOverlay/MapOverlayGroup.jsx`
+- **Affects:** VatsimMapView (wraps all floating elements), FloatingNavIsland, FloatingFilterChips, DetailPanelProvider, StaleIndicator
+
+### AircraftIconService — SVG-to-Bitmap Pipeline
+
+**Decision:** Pre-render SVG aircraft silhouettes from FSTrAk project into cached `ImageSource` objects for native map markers.
+
+**Rationale:** SVG View markers for 1,500+ pilots cause frame drops. Pre-rendered bitmaps give SVG benefits (resolution independence, theme-awareness) with native `Image` marker performance. Replaces current PNG-based `iconsHelper.js`.
+
+**Implementation:**
+- `aircraftIconService.js` in `app/common/`
+- `init(theme)` called on app start and theme change — renders each (aircraftType × sizeVariant × themeColor) combination into cached `ImageSource`
+- `getMarkerImage(aircraftType, sizeVariant) → ImageSource` — synchronous lookup after init
+- Cache regenerates on theme change (accent color differs between light/dark)
+- **Migration:** Current `getAircraftIcon(type) → [require('...png'), size]` becomes `getMarkerImage(type, variant) → ImageSource`
+- **Affects:** PilotMarkers.jsx, iconsHelper.js (replaced)
+
+**SVG Assets (15 files in `assets/svg/`):**
+
+All SVGs are single-path silhouettes with 32x32 viewBox, no fill color (filled at render time with theme accent color):
+
+| File | Icon Key | Description |
+|---|---|---|
+| `a320.svg` | A320 | Airbus A320 family |
+| `a330.svg` | A330 | Airbus A330/A350 family |
+| `a340.svg` | A340 | Airbus A340 / quad-jet |
+| `a380.svg` | A380 | Airbus A380 super-jumbo |
+| `b737.svg` | B737 | Boeing 737 family |
+| `b747.svg` | B747 | Boeing 747 jumbo |
+| `b767.svg` | B767 | Boeing 767 |
+| `b777.svg` | B777 | Boeing 777 |
+| `b787.svg` | B787 | Boeing 787 Dreamliner |
+| `c172.svg` | C172 | Cessna/GA single-engine |
+| `dc3.svg` | DC3 | Twin-prop / vintage |
+| `e195.svg` | E195 | Embraer 195 |
+| `erj.svg` | ERJ | Regional jet (Embraer/CRJ/biz jets) |
+| `helicopter.svg` | Helicopter | Generic helicopter |
+| `conc.svg` | Conc | Concorde |
+
+**Aircraft Type → Icon Mapping (ported from FSTrAk `AircraftResolver.cs`):**
+
+The resolver matches ICAO type codes from the VATSIM data feed against candidate lists. First match wins. Matching uses `code.includes(candidate)` (same as current VatView logic).
+
+| Icon Key | Scale | Code Candidates |
+|---|---|---|
+| B737 | 0.75 | B737, B738, B739, B733, B734, B735, B736, B38M, B39M, B3XM |
+| A320 | 0.75 | A318, A319, A320, A321, A20N, A21N, T204 |
+| C172 | 0.6 | C172, C82R, C140, C170, C210, C182, C177, PA28, P28A, P28R, P28B, P28T, DA20, DA40, SR22, COY2 |
+| B747 | 1.1 | B741, B742, B743, B744, B748, B74R, B74S |
+| B767 | 0.8 | B762, B763, B764 |
+| B777 | 1.0 | B772, B773, B778, B779, B77X, B77L, B77W |
+| B787 | 0.9 | B788, B789, B78X |
+| A340 | 1.0 | A342, A343, A345, A346, A347, IL76, IL96 |
+| A330 | 1.0 | A332, A333, A339, A310, A306, A300, A33X, A33Y, A359, A35K |
+| A380 | 1.2 | A388 |
+| ERJ | 0.6 | E175, E190, E170, E195, CRJ, CJ2, CJ3, CRJ9, CRJ7, CJ4, C500, C510, C525, C550, C560, CL30, CL60, C25C, GLF5, LJ35, T154, T134, F28, E50P |
+| DC3 | 0.6 | DC3, C47, DC2, PA34, B300, B200, B350, C310 |
+| Helicopter | 0.6 | B06, H500, H135, EC45, EC35, H145, H160, H155, H125, H275, R44, B47G, R66, B212, UH1 |
+| Conc | 1.3 | CONC |
+
+**Fallback logic:** If no code matches, default to B737 at scale 0.75 (same as current VatView behavior).
+
+**Changes from current `iconsHelper.js`:**
+- **Added 6 types:** B767, DC3, ERJ, E195, Helicopter, Conc
+- **Removed F100** — regional jets now map to ERJ
+- **Expanded code lists** — significantly more ICAO type codes covered per icon (e.g., GA codes now include Piper, Diamond, Cirrus)
+- **Scale factors replace fixed pixel sizes** — relative scaling (0.6–1.3) instead of hardcoded dp values (16–32px). Base size TBD during implementation based on map zoom level
+
+### Zoom-Aware Airport Markers
+
+**Decision:** Airport markers render differently at three zoom bands for performance and progressive information density.
+
+**Rationale:** At continental/regional zoom, potentially hundreds of airports are visible. Image markers (simple bitmaps) ensure 60fps panning. At local zoom, fewer airports are on screen, allowing View-based markers with full ATC badge layout.
+
+**Implementation:**
+- `MapComponent.jsx` provides current zoom level via `onRegionChangeComplete` callback
+- `AirportMarkers.jsx` receives zoom level and conditionally renders:
+
+| Zoom Band | Zoom Level | Display | Marker Type |
+|---|---|---|---|
+| Continental | 3–4 | Staffed only: small dot + ICAO at 8px | Image marker |
+| Regional | 5–6 | Staffed: dot + ICAO at 11px. Unstaffed: grey dot, no label | Image marker |
+| Local | 7+ | Full: dot + ICAO + ATC letter badges (C/G/T/A) + traffic count arrows (▲/▼) | View-based marker |
+
+- ATC letter badges: C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS)
+- Traffic counts: green ▲ departures, red ▼ arrivals
+- **Affects:** MapComponent.jsx (zoom callback), AirportMarkers.jsx (complete redesign)
+
+### Animation Token System
+
+**Decision:** Standardized animation tokens defined in `tailwind.config.js` and used consistently across all animated transitions.
+
+**Rationale:** The UX spec defines specific timing and easing for the "instrument, not toy" feel. All animations must be consistent and must respect the system "Reduce Motion" accessibility setting.
+
+**Implementation:**
+- Animation tokens in `tailwind.config.js`:
+  - `duration.fast`: 150ms — micro-interactions (chip toggle, state changes)
+  - `duration.normal`: 250ms — panel transitions, tab switches
+  - `duration.slow`: 400ms — sheet open/close, layout morphs
+  - `easing.default`: `cubic-bezier(0.2, 0, 0, 1)` — smooth deceleration, no bounce
+  - `spring.sheet`: `{ damping: 20, stiffness: 300 }` — bottom sheet gesture physics
+- Reduced motion: All `duration.*` tokens resolve to 0ms when `AccessibilityInfo.isReduceMotionEnabled()` returns true. Wrap `withSpring`/`withTiming` calls in a reduced-motion check.
+- **Affects:** Every animated component (sheet, nav island, filter chips, tab transitions)
+
+### Tab Cross-Fade Transitions
+
+**Decision:** Tab switches via NavIsland use cross-fade animation (250ms `duration.normal`), not hard cuts.
+
+**Rationale:** The UX spec requires map-fade animations when switching tabs to maintain spatial continuity. Hard cuts break the perception that "the map is always there."
+
+**Implementation:**
+- Custom tab transition using React Navigation's `animation` config or a fade wrapper in `MainTabNavigator`
+- Duration: `duration.normal` (250ms) cross-fade between outgoing and incoming views
+- The map tab should feel like it's "always underneath" other tabs
+- **Affects:** MainTabNavigator.jsx
+
+### Accessibility Architecture
+
+**Decision:** WCAG 2.1 AA compliance built into all Phase 1 components.
+
+**Rationale:** Accessibility is not optional per the UX spec — it ships with Phase 1. Screen reader support, reduced motion, and contrast ratios are hard requirements.
+
+**Implementation:**
+- Every interactive element gets an `accessibilityLabel` — no exceptions
+- Use `accessibilityRole` appropriately: `button` for tappable elements, `tab` for NavIsland items, `adjustable` for the sheet, `image` for map markers
+- Reduced motion: `AccessibilityInfo.isReduceMotionEnabled()` check — all animations skip to final state when enabled
+- Touch targets: 44x44px minimum for all interactive elements. Map markers have expanded hit areas beyond visual bounds
+- Color-independent indicators: ATC badges use letter + color, StaleIndicator uses color + pulse, polygons distinguishable by shape
+- Screen reader navigation order on map: NavIsland → filter chips → StaleIndicator → map markers → DetailSheet
+- **Affects:** Every component (accessibility labels), animation system (reduced motion), MapOverlayGroup (focus order)
 
 ### Decision Impact Analysis
 
@@ -284,20 +434,27 @@ npx expo install expo-screen-orientation
 
 ```
 theme.js (tokens) → tailwind.config.js → NativeWind setup
-                  → ThemeContext → PlatformCapabilityProvider
-                                 → BlurWrapper
-                                 → FloatingNavIsland
-                                 → DetailPanelProvider → Detail views
-                                 → FloatingFilterChips
-                                 → Map screen (full-bleed + HUD)
+                  → ThemeContext
+                  → BlurWrapper → TranslucentSurface
+                               → FloatingNavIsland
+                               → DetailPanelProvider → Detail views
+                               → FloatingFilterChips
+                  → AircraftIconService → PilotMarkers
+                  → MapOverlayGroup → coordinates all floating elements
+                  → Map screen (full-bleed + HUD)
 ```
 
 **Cross-Component Dependencies:**
-- BlurWrapper depends on PlatformCapabilityProvider (context)
-- FloatingNavIsland depends on BlurWrapper + ThemeContext
-- DetailPanelProvider depends on BlurWrapper + ThemeContext + orientation detection
+- BlurWrapper depends on `Platform.OS` (no context needed)
+- TranslucentSurface depends on BlurWrapper
+- ThemedText, ListItem — zero dependencies (build first)
+- FloatingNavIsland depends on TranslucentSurface + ThemeContext
+- DetailPanelProvider depends on TranslucentSurface + ThemeContext + orientation detection
+- MapOverlayGroup depends on FloatingNavIsland + FloatingFilterChips + DetailPanelProvider + StaleIndicator
+- AircraftIconService depends on ThemeContext (regenerates cache on theme change)
+- AirportMarkers depends on zoom level from MapComponent
 - All detail views depend on DetailPanelProvider (disclosure level API)
-- Map screen depends on FloatingNavIsland + DetailPanelProvider + FloatingFilterChips + ThemeContext (map style)
+- Map screen depends on MapOverlayGroup (which orchestrates all floating elements) + ThemeContext (map style)
 - Every migrated component depends on NativeWind config + theme tokens being in place
 
 ## Implementation Patterns & Consistency Rules
@@ -373,9 +530,12 @@ import { BlurView } from 'expo-blur';
 <BlurView intensity={45}>...</BlurView>
 ```
 
-**Standard translucency values:**
-- Floating surfaces (nav island, filter chips): `intensity={45}`, `fallbackOpacity={0.45}`
-- Detail panel backdrop: `intensity={60}`, `fallbackOpacity={0.6}`
+**Standard translucency values (from UX spec design tokens):**
+- Floating surfaces (nav island, filter chips): `opacity="surface"` (0.45), iOS blur `intensity={20}`
+- Detail panel at half: `opacity="surface-dense"` (0.65)
+- Detail panel at full / non-map screens: `opacity="overlay"` (0.85)
+- Android always uses solid translucency at these opacity values + 1px border + elevation shadow
+- iOS uses backdrop blur at these opacity values
 - These values are defaults in BlurWrapper — only override with explicit rationale
 
 ### Detail Panel Provider Patterns
@@ -432,14 +592,20 @@ dispatch(appActions.setActiveTab('Map'));
 | Component | Location | Rationale |
 |---|---|---|
 | BlurWrapper | `app/common/BlurWrapper.jsx` | Shared utility, same level as theme.js |
-| PlatformCapabilityProvider | `app/common/PlatformCapabilityProvider.jsx` | App-wide context provider |
+| AircraftIconService | `app/common/aircraftIconService.js` | Shared utility — SVG→bitmap pipeline for pilot markers |
 | ThemeContext / ThemeProvider | `app/common/ThemeProvider.jsx` | App-wide context provider |
+| TranslucentSurface | `app/components/shared/TranslucentSurface.jsx` | Base wrapper for all floating elements (uses BlurWrapper) |
+| ThemedText | `app/components/shared/ThemedText.jsx` | Typography with 9 variants (system sans + JetBrains Mono) |
+| ListItem | `app/components/shared/ListItem.jsx` | Shared list item base (64px min, left/body/trailing slots) |
+| StaleIndicator | `app/components/shared/StaleIndicator.jsx` | Data freshness dot (green/amber/red with pulse) |
+| ThemePicker | `app/components/shared/ThemePicker.jsx` | System/Dark/Light selector for Settings |
 | FloatingNavIsland | `app/components/navigation/FloatingNavIsland.jsx` | New navigation feature component |
+| MapOverlayGroup | `app/components/mapOverlay/MapOverlayGroup.jsx` | Layout orchestrator for all floating map elements |
 | FloatingFilterChips | `app/components/filterBar/FloatingFilterChips.jsx` | Replaces/augments existing FilterBar |
 | DetailPanelProvider | `app/components/detailPanel/DetailPanelProvider.jsx` | New abstraction for detail views |
 | Level1Summary, Level2Details, Level3Full | Inside each detail view's directory | Co-located with the detail view that owns them |
 
-**Provider import rule:** Providers (`DetailPanelProvider`, `ThemeProvider`, `PlatformCapabilityProvider`) can be imported by any component across directories. Feature components should NOT import from sibling feature directories except for providers.
+**Provider import rule:** Providers (`DetailPanelProvider`, `ThemeProvider`) can be imported by any component across directories. Feature components should NOT import from sibling feature directories except for providers.
 
 ### Migration Process Patterns
 
@@ -466,11 +632,17 @@ dispatch(appActions.setActiveTab('Map'));
 - Read `project-context.md` AND this architecture document before implementing any migration story
 - Use `npm run lint` after every component migration — ESLint catches hardcoded colors and inline styles
 - Never import from `react-native-paper` in a component that has been marked as migrated
-- Never import `expo-blur` directly — always use `BlurWrapper`
+- Never import `expo-blur` directly — always use `BlurWrapper` (or `TranslucentSurface` which wraps it)
 - Never access `@gorhom/bottom-sheet` refs from detail view components — always use `DetailPanelProvider`
 - Follow the additive disclosure pattern (L1 always, L2 adds, L3 adds)
 - Use custom theme tokens from `tailwind.config.js`, never NativeWind defaults
 - Use Reanimated `useAnimatedStyle()` for animations, never NativeWind class toggling
+- Use animation duration tokens (`duration.fast`/`normal`/`slow`) — never hardcode timing values
+- Wrap all `withSpring`/`withTiming` calls in reduced-motion check (`AccessibilityInfo.isReduceMotionEnabled()`)
+- Add `accessibilityLabel` and `accessibilityRole` to every interactive element — no exceptions
+- Ensure all touch targets meet 44x44px minimum (expand hit areas for map markers)
+- Use JetBrains Mono (`font-mono`) for all aviation data: callsigns, frequencies, ICAO codes, flight plan strings
+- Position all floating map elements through `MapOverlayGroup` — never position them independently
 
 ### Anti-Patterns to Avoid
 
@@ -484,6 +656,10 @@ dispatch(appActions.setActiveTab('Map'));
 | `style={{ position: 'absolute', bottom: 20 }}` on FloatingNavIsland | Inline styles violate ESLint | StyleSheet.create() for positioning |
 | `className={isVisible ? 'opacity-100' : 'opacity-0'}` for animations | Discrete class swaps, not smooth transitions | Reanimated `useAnimatedStyle()` with shared values |
 | `import PilotDetails from '../clientDetails/PilotDetails'` in AirportView | Feature components importing from sibling feature dirs | Only import providers cross-directory |
+| `withTiming(value, { duration: 250 })` | Hardcoded duration, ignores reduced motion | Use `duration.normal` token + reduced-motion wrapper |
+| `<BlurView>` on Android | Android blur can't reliably hit 60fps across overlapping surfaces | `BlurWrapper` renders solid translucency on Android (permanent design decision) |
+| Interactive element without `accessibilityLabel` | Screen reader users can't identify the element | Always add `accessibilityLabel` and `accessibilityRole` |
+| Positioning FloatingNavIsland directly in VatsimMapView | Bypasses coordinated layout orchestration | Position through `MapOverlayGroup` |
 
 ## Project Structure & Boundaries
 
@@ -493,7 +669,7 @@ Existing structure preserved. **New files/directories marked with ➕**. Modifie
 
 ```
 VatView/
-├── App.js                                    ✏️ Add ThemeProvider, PlatformCapabilityProvider wrapping
+├── App.js                                    ✏️ Add ThemeProvider wrapping, bundle JetBrains Mono font
 ├── index.js
 ├── app.json
 ├── eas.json
@@ -516,8 +692,8 @@ VatView/
 │   │   ├── airportTools.js
 │   │   ├── metarTools.js
 │   │   ├── createKey.js
-│   │   ├── BlurWrapper.jsx                   ➕ Reusable blur/fallback component
-│   │   ├── PlatformCapabilityProvider.jsx    ➕ Blur capability detection context
+│   │   ├── BlurWrapper.jsx                   ➕ Reusable blur (iOS) / solid translucency (Android) component
+│   │   ├── aircraftIconService.js            ➕ SVG→bitmap pipeline for aircraft markers (replaces iconsHelper.js)
 │   │   └── ThemeProvider.jsx                 ➕ ThemeContext: map style, isDark, toggleTheme, preference
 │   │
 │   ├── components/
@@ -528,14 +704,17 @@ VatView/
 │   │   ├── navigation/                       ➕ New directory
 │   │   │   └── FloatingNavIsland.jsx         ➕ Translucent floating tab pill
 │   │   │
+│   │   ├── mapOverlay/                       ➕ New directory
+│   │   │   └── MapOverlayGroup.jsx           ➕ Layout orchestrator for all floating map elements
+│   │   │
 │   │   ├── detailPanel/                      ➕ New directory
 │   │   │   └── DetailPanelProvider.jsx       ➕ Bottom sheet / side panel abstraction
 │   │   │
 │   │   ├── vatsimMapView/
 │   │   │   ├── VatsimMapView.jsx             ✏️ Full-bleed map, wrap with DetailPanelProvider
 │   │   │   ├── MapComponent.jsx              ✏️ Theme-aware customMapStyle from ThemeContext
-│   │   │   ├── PilotMarkers.jsx              ✏️ NativeWind migration
-│   │   │   ├── AirportMarkers.jsx            ✏️ NativeWind migration
+│   │   │   ├── PilotMarkers.jsx              ✏️ Use AircraftIconService for marker images
+│   │   │   ├── AirportMarkers.jsx            ✏️ Zoom-aware rendering (3 bands: continental/regional/local)
 │   │   │   └── CTRPolygons.jsx               ✏️ NativeWind migration (StyleSheet for Polygon styles)
 │   │   │
 │   │   ├── clientDetails/
@@ -556,6 +735,13 @@ VatView/
 │   │   │   ├── AirportAtcLevel1Summary.jsx   ➕
 │   │   │   ├── AirportAtcLevel2Details.jsx   ➕
 │   │   │   └── AirportAtcLevel3Full.jsx      ➕
+│   │   │
+│   │   ├── shared/                           ➕ New directory — shared UI building blocks
+│   │   │   ├── TranslucentSurface.jsx        ➕ Base wrapper for all floating elements (uses BlurWrapper)
+│   │   │   ├── ThemedText.jsx                ➕ Typography with 9 variants (system sans + JetBrains Mono)
+│   │   │   ├── ListItem.jsx                  ➕ Shared list item base (64px min, left/body/trailing slots)
+│   │   │   ├── StaleIndicator.jsx            ➕ Data freshness dot (green/amber/red with pulse)
+│   │   │   └── ThemePicker.jsx               ➕ System/Dark/Light selector for Settings
 │   │   │
 │   │   ├── filterBar/
 │   │   │   ├── FilterBar.jsx                 ✏️ NativeWind migration (may be replaced by FloatingFilterChips)
@@ -623,16 +809,16 @@ VatView/
 **Provider Hierarchy (App.js wrapping order):**
 
 ```
-<PlatformCapabilityProvider>          ← blur capability detection (once)
-  <ThemeProvider>                      ← theme context (isDark, mapStyle, toggle)
-    <Provider store={store}>           ← Redux store (existing)
-      <NavigationContainer>            ← React Navigation (existing)
-        <MainApp />
-      </NavigationContainer>
-    </Provider>
-  </ThemeProvider>
-</PlatformCapabilityProvider>
+<ThemeProvider>                      ← theme context (isDark, mapStyle, toggle)
+  <Provider store={store}>           ← Redux store (existing)
+    <NavigationContainer>            ← React Navigation (existing)
+      <MainApp />
+    </NavigationContainer>
+  </Provider>
+</ThemeProvider>
 ```
+
+**Note:** No `PlatformCapabilityProvider` needed — blur vs solid translucency is a simple `Platform.OS` check inside `BlurWrapper`, not a runtime capability detection.
 
 **Component Communication Boundaries:**
 
@@ -642,7 +828,7 @@ VatView/
 | Components → Redux | Write | `useDispatch()` + `allActions.<module>.<action>()` |
 | Components → Theme | Read | NativeWind `dark:` classes (automatic) |
 | Components → Map Style | Read | `useTheme()` → `activeMapStyle` |
-| Components → Blur Capability | Read | `BlurWrapper` (reads context internally) |
+| Components → Blur/Translucency | Read | `BlurWrapper` (checks `Platform.OS` internally) |
 | Detail Views → Panel Container | Read/Write | `useDetailPanel()` → `disclosureLevel`, `open()`, `close()` |
 | FloatingNavIsland → Navigation | Write | `useNavigation()` → `navigate()` |
 | Map ← Data Pipeline | Read | `useSelector` for pilots, controllers, boundaries (every 20s) |
@@ -661,21 +847,24 @@ VatView/
 
 | FR Category | Primary Files | New Files |
 |---|---|---|
-| **Map Experience** (FR1-8) | `VatsimMapView.jsx`, `MapComponent.jsx`, `PilotMarkers.jsx`, `AirportMarkers.jsx`, `CTRPolygons.jsx` | `FloatingNavIsland.jsx`, `FloatingFilterChips.jsx`, `DetailPanelProvider.jsx` |
+| **Map Experience** (FR1-8) | `VatsimMapView.jsx`, `MapComponent.jsx`, `PilotMarkers.jsx`, `AirportMarkers.jsx`, `CTRPolygons.jsx` | `FloatingNavIsland.jsx`, `FloatingFilterChips.jsx`, `DetailPanelProvider.jsx`, `MapOverlayGroup.jsx`, `aircraftIconService.js`, `TranslucentSurface.jsx`, `StaleIndicator.jsx` |
 | **Progressive Disclosure** (FR9-11) | `ClientDetails.jsx`, `PilotDetails.jsx`, `AtcDetails.jsx`, `CtrDetails.jsx`, `AirportAtcDetails.jsx` | 15 Level sub-components (`*Level1Summary.jsx`, `*Level2Details.jsx`, `*Level3Full.jsx`) |
 | **Navigation** (FR12-14) | `MainTabNavigator.jsx`, `MainApp.jsx` | `FloatingNavIsland.jsx` |
 | **Filtering** (FR15-18) | `FilterBar.jsx`, `VatsimListView.jsx`, `AirportDetailsView.jsx` | `FloatingFilterChips.jsx` |
 | **Theming** (FR29-33) | `theme.js`, `App.js` | `ThemeProvider.jsx`, `tailwind.config.js`, `global.css`, `lightMapStyle`/`darkMapStyle` in theme.js |
 | **Orientation** (FR34-37) | `VatsimMapView.jsx` | `DetailPanelProvider.jsx` (orientation-aware container switching) |
 | **Settings** (FR38) | `Settings.jsx` | Theme toggle UI added to Settings |
-| **Blur/Translucency** (NFR4, FR33) | — | `BlurWrapper.jsx`, `PlatformCapabilityProvider.jsx` |
+| **Blur/Translucency** (NFR4, FR33) | — | `BlurWrapper.jsx`, `TranslucentSurface.jsx` |
+| **Typography** (UX spec) | — | `ThemedText.jsx`, JetBrains Mono font bundle |
+| **Shared UI** (UX spec) | — | `ListItem.jsx`, `StaleIndicator.jsx`, `ThemePicker.jsx` |
+| **Accessibility** (UX spec, WCAG 2.1 AA) | All interactive components | Accessibility labels, reduced motion, 44px touch targets |
 
 ### Cross-Cutting Concern Locations
 
 | Concern | Files |
 |---|---|
 | Theme tokens | `theme.js` → `tailwind.config.js` → every component via NativeWind classes |
-| Blur rendering | `PlatformCapabilityProvider.jsx` → `BlurWrapper.jsx` → FloatingNavIsland, DetailPanelProvider, FloatingFilterChips |
+| Blur rendering | `BlurWrapper.jsx` → TranslucentSurface → FloatingNavIsland, DetailPanelProvider, FloatingFilterChips |
 | Progressive disclosure | `DetailPanelProvider.jsx` → all 5 detail views → 15 level sub-components |
 | Migration coexistence | All 28 components during migration; `package.json` retains `react-native-paper` until step 10 |
 | Map performance | `MapComponent.jsx`, `PilotMarkers.jsx`, `CTRPolygons.jsx` — no new performance concerns from overlay components (they render outside the map's child tree) |
@@ -718,10 +907,10 @@ New files placed consistently with existing conventions (PascalCase .jsx, utilit
 | NFR | Status | Architectural Support |
 |---|---|---|
 | NFR1-3 (Performance) | ✅ | Overlay components outside map child tree; Reanimated for animations |
-| NFR4 (Blur fallback) | ✅ | PlatformCapabilityProvider + BlurWrapper automatic fallback |
+| NFR4 (Blur fallback) | ✅ | BlurWrapper: iOS native blur, Android solid translucency (permanent platform design) |
 | NFR5 (Orientation transition) | ✅ | DetailPanelProvider via useWindowDimensions |
 | NFR6 (Theme no restart) | ✅ | React context + NativeWind dark: — instant |
-| NFR7 (Cold start) | ✅ | PlatformCapabilityProvider is a single sync check |
+| NFR7 (Cold start) | ✅ | No new startup overhead — BlurWrapper uses `Platform.OS` (no async check) |
 | NFR8-11 (Integration) | ✅ | Existing error handling preserved; Maps styling fallback documented |
 | NFR12-14 (Compatibility) | ✅ | NativeWind/StyleSheet coexistence defined; third-party lib boundaries documented |
 | NFR15-17 (Visual quality) | ✅ | Token enforcement, no hardcoded colors, dual map styling |
@@ -740,11 +929,13 @@ New files placed consistently with existing conventions (PascalCase .jsx, utilit
 
 **Important Gaps (non-blocking, address during implementation):**
 
-1. **Google Maps dark theme JSON** — Architecture specifies two map style sets but doesn't define the dark theme JSON rules. Current `blueGreyMapStyle` (37 rules) serves as light theme baseline. **Resolution:** Create during migration step 2 (theme system). Invert luminance values from existing style.
+1. **Google Maps dark theme JSON** — Architecture specifies two map style sets but doesn't define the dark theme JSON rules. Current `blueGreyMapStyle` (37 rules) serves as light theme baseline. **Resolution:** Create during migration step 2 (theme system). UX spec provides guidance: deep navy/charcoal base, subtle road lines, muted labels, optimized for polygon and marker contrast.
 
-2. **ClusteredPilotMarkers status** — Listed as "in-progress" in docs. Not in PRD scope. **Resolution:** Continue as-is, migrate when reached in step 4.
+2. **ClusteredPilotMarkers status** — Listed as "in-progress" in docs. Not in PRD scope. **Resolution:** Continue as-is, migrate when reached in step 5.
 
-3. **react-native-paper replacement mapping** — Architecture says "replace Paper components" but doesn't list specific Paper→NativeWind equivalents. **Resolution:** Each migration story identifies Paper components in the target file and documents the replacement (Paper `Button` → `Pressable` + NativeWind, Paper `Text` → RN `Text` + NativeWind, Paper `Surface` → `View` + NativeWind/BlurWrapper).
+3. **react-native-paper replacement mapping** — Architecture says "replace Paper components" but doesn't list specific Paper→NativeWind equivalents. **Resolution:** Each migration story identifies Paper components in the target file and documents the replacement (Paper `Button` → `Pressable` + NativeWind, Paper `Text` → RN `Text` + NativeWind/ThemedText, Paper `Surface` → `View` + NativeWind/TranslucentSurface).
+
+4. **FSTrAk SVG assets** — AircraftIconService depends on SVG assets from the FSTrAk project (provided by Oren). **Resolution:** Coordinate asset delivery before migration step 5 (map screen).
 
 ### Architecture Completeness Checklist
 
@@ -791,6 +982,7 @@ New files placed consistently with existing conventions (PascalCase .jsx, utilit
 - Paper component replacement mapping (document per-story)
 - Landscape side panel implementation (abstraction ready, container deferred)
 - Phase 2 aviation theme token structure (extensible, not yet designed)
+- Dynamic opacity strategy — UX spec mentions increasing surface opacity when map is visually noisy (not yet specified how to detect "noisy" map state)
 
 ### Implementation Handoff
 
