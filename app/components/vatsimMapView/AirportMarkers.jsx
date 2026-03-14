@@ -75,7 +75,7 @@ export default function generateAirportMarkers(airportAtc, airports) {
                     const callsignSuffix = atc.callsign.split('_').pop();
                     const tracon = lookupTracon(traconBoundaryLookup, callsignPrefix, callsignSuffix);
                     if (tracon) {
-                        const traconKey = tracon.id + '_' + (tracon.suffix || '');
+                        const traconKey = tracon.id;
                         if (!renderedTracons.has(traconKey)) {
                             renderedTracons.add(traconKey);
                             tracon.polygons.forEach((poly, i) => {
