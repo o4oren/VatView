@@ -1,3 +1,4 @@
+import './global.css';
 import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
 import {applyMiddleware, legacy_createStore as createStore} from 'redux';
@@ -14,6 +15,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import {StatusBar} from 'expo-status-bar';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import analyticsMiddleware from './app/common/analyticsMiddleware';
+import {useFonts, JetBrainsMono_400Regular, JetBrainsMono_700Bold} from '@expo-google-fonts/jetbrains-mono';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, analyticsMiddleware));
 
@@ -68,6 +70,10 @@ if (isHermesEnabled || isAndroid) {
 }
 
 export default function App() {
+    const [fontsLoaded] = useFonts({
+        JetBrainsMono_400Regular,
+        JetBrainsMono_700Bold,
+    });
     const [state, setState] = useState({isReady: false});
 
     // clearStorage();
@@ -96,7 +102,7 @@ export default function App() {
         loadStateFromStorage();
     }, []);
 
-    if(!state.isReady) {
+    if(!state.isReady || !fontsLoaded) {
         return (
             <View><Text>Loading</Text></View>
         );
