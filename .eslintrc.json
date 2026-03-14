@@ -4,7 +4,8 @@
     "es6": true,
     "es2021": true,
     "node": true,
-    "react-native/react-native": true
+    "react-native/react-native": true,
+    "jest": true
   },
   "parser": "@babel/eslint-parser",
   "parserOptions": {

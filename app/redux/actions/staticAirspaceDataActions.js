@@ -58,7 +58,10 @@ const getBoundaryData = async (dispatch) => {
         dispatch(appActions.saveFirBoundariesLoaded(true));
     } catch (err) {
         console.error('getBoundaryData failed:', err);
-        dispatch(appActions.saveFirBoundariesLoaded(true));
+        // Set Redux state so app proceeds past loading screen, but do NOT
+        // persist to AsyncStorage — App.js will force retry on next cold start
+        // if boundary files are missing from disk.
+        dispatch({type: 'FIR_BOUNDARIES_LOADED', payload: {firBoundariesLoaded: true}});
     }
 };
 

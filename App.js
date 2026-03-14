@@ -108,7 +108,9 @@ export default function App() {
             selectedAirport: state.savedState.selectedAirport != null ? state.savedState.selectedAirport : null,
             filters: {pilots: true, atc: true, searchQuery: ''},
             airportsLoaded: state.savedState.airportsLoaded || false,
-            firBoundariesLoaded: state.savedState.firBoundariesLoaded || false,
+            firBoundariesLoaded: (state.savedState.firGeoJson && state.savedState.traconBoundaries)
+                ? (state.savedState.firBoundariesLoaded || false)
+                : false,
             loadingDb: {
                 airports: 0,
                 firs: 0
