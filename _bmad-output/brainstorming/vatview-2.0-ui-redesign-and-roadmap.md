@@ -7,7 +7,7 @@ session_topic: 'VatView UI/UX modernization — visual refresh, design system di
 session_goals: 'Explore design alternatives beyond Material Design, enable landscape mode, elevate overall look and feel for an aviation tracking app'
 selected_approach: 'AI-Recommended Techniques'
 techniques_used: ['Cross-Pollination', 'SCAMPER Method', 'Morphological Analysis']
-ideas_generated: 84
+ideas_generated: 90
 technique_execution_complete: true
 selected_direction: 'Direction 3 — Progressive Transformation (Phase 1 → Phase 2)'
 context_file: ''
@@ -281,7 +281,7 @@ Step 7: Polish, test, ship Phase 1
 ## Session Summary and Insights
 
 **Key Achievements:**
-- 84 ideas generated across 3 structured creativity techniques
+- 90 ideas generated across 3 structured creativity techniques + 1 extension
 - 7 coherent themes identified from idea clustering
 - Clear two-phase strategy selected (Progressive Transformation)
 - Phase 1 priorities confirmed with concrete implementation sequence
@@ -292,6 +292,55 @@ The map IS the app. Everything floats. The UI is translucent. Themes are aviatio
 
 **Session Reflections:**
 This session successfully moved from open creative exploration to a concrete, prioritized, actionable plan. The Progressive Transformation strategy allows Oren to ship a dramatic visual upgrade (Phase 1) while building toward the full single-surface aviation HUD vision (Phase 2). Each phase is independently valuable and shippable.
+
+---
+
+## Session Extension: VATGlasses Data Discovery (2026-03-14)
+
+**Discovery:** Oren found the VATGlasses data repository — a rich, community-maintained dataset of sector-level airspace definitions used by vatglasses.uk.
+
+### Data Source
+**VATGlasses Data** — Community-maintained sector data:
+https://github.com/lennycolton/vatglasses-data
+
+**Schema (per region JSON file):**
+
+| Section | Contents |
+|---|---|
+| **airspace** | Named sectors with actual polygon boundaries, altitude bands (min/max FL), ownership chains, group assignments |
+| **positions** | Controller positions with callsign prefixes, frequency, type (CTR/APP/TWR), colors, and conditional color rules based on other online positions |
+| **groups** | Named groupings (e.g. "London") with assigned colors |
+| **callsigns** | Suffix → role mapping (DEL, GND, TWR, APP, DEP) with sub-suffixes |
+| **airports** | Airport-to-callsign mapping with aliases |
+
+**Key capabilities beyond SimAware TRACON:**
+- Sector-level polygons (not just facility-level) with altitude bands
+- Ownership chains showing bandbox → split hierarchy
+- Conditional coloring rules that change based on what other positions are online
+- Position frequency and callsign data
+
+### New Ideas Generated
+
+**[VATGlasses #85]**: Sector-Aware ATC Visualization — Show actual sector boundaries that the controller owns, with proper altitude filtering, instead of just "FIR polygon = online"
+
+**[VATGlasses #86]**: Bandbox/Split Detection — Use ownership chain + online positions to show whether sectors are combined (bandboxed) or split, color-coded differently
+
+**[VATGlasses #87]**: Altitude-Layered Airspace View — Since sectors have min/max FL, offer a layer slider to show airspace at different altitudes (like real radar)
+
+**[VATGlasses #88]**: Dynamic Sector Coloring — Use VATGlasses' conditional color rules to show realistic sector colors that change based on staffing state
+
+**[VATGlasses #89]**: Dual Data Source Fallback Strategy — Use VATGlasses as primary where available (richer data), fall back to SimAware TRACON → VATSpy → circle, giving the best possible accuracy per region
+
+**[VATGlasses #90]**: "Who Controls Me Here" Query — Given a position + altitude, trace the ownership chain to show which controller actually has responsibility — useful for pilots
+
+### Phasing Decision
+
+VATGlasses integration is **separated into its own phase (Phase 1.5)** rather than bundled into Phase 1 or 2:
+
+- **Phase 1 is already ambitious** — ripping out react-native-paper, full-bleed map, HUD system, themes, landscape
+- **VATGlasses deserves focused effort** — callsign matching, ownership chain resolution, altitude filtering, conditional coloring, multi-source fallback
+- **Ships independently** after Phase 1 gives it the visual foundation to shine
+- **Potential differentiator** — no other VATSIM mobile app does sector-level visualization with split awareness (desktop-tool territory)
 
 ---
 
@@ -366,4 +415,5 @@ This is the same FIR boundary data VatView already uses, but in cleaner GeoJSON 
 |---|---|---|
 | **0.1** | ATC Polygon Accuracy | TRACON polygon rendering for APP/DEP, optional GeoJSON migration |
 | **1** | Visual Modernization | Full-bleed map, floating HUD, NativeWind, light/dark themes, landscape support |
+| **1.5** | VATGlasses Sector Intelligence | Sector-level ATC visualization, bandbox/split detection, altitude layers, dynamic coloring, multi-source fallback |
 | **2** | Aviation HUD Vision | Single-surface map, aviation theme collection, full animation suite, progressive disclosure |

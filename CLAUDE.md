@@ -44,7 +44,7 @@ npx eas-cli@latest update --branch production --message "Description of fix"
 Four Redux slices combined in `app/redux/reducers/rootReducer.js`:
 
 - **`vatsimLiveData`** — Live VATSIM feed data (pilots, controllers, events, bookings). Polled every 20 seconds from `https://data.vatsim.net/v3/vatsim-data.json`.
-- **`staticAirspaceData`** — Airport database, FIR/UIR boundaries, countries. Loaded once (or on version change) from external sources into SQLite.
+- **`staticAirspaceData`** — Airport database, FIR/UIR boundaries, TRACON boundaries, countries. Loaded once (or on version change) from external sources. Includes in-memory `firBoundaryLookup` and `traconBoundaryLookup`.
 - **`app`** — UI state: selected client/airport, map filters, loading flags.
 - **`metar`** — Cached METAR weather data by ICAO.
 
@@ -53,10 +53,12 @@ Four Redux slices combined in `app/redux/reducers/rootReducer.js`:
 | Data type | Storage |
 |---|---|
 | Redux state (small) | AsyncStorage |
-| Large JSON blobs (FIR boundaries) | Expo FileSystem |
-| Structured static data (airports, FIRs) | Expo SQLite (`app/common/staticDataAcessLayer.js`) |
+| FIR boundary GeoJSON (`Boundaries.geojson`) | Expo FileSystem → parsed to in-memory lookup on startup |
+| TRACON boundary GeoJSON (`TRACONBoundaries.geojson`) | Expo FileSystem → parsed to in-memory lookup on startup |
+| Boundary release tags | AsyncStorage |
+| Structured static data (airports) | Expo SQLite (`app/common/staticDataAcessLayer.js`) |
 
-On startup, `App.js` calls `retrieveSavedState()` to rehydrate the store before rendering. Static data version is checked and SQLite is repopulated if outdated.
+On startup, `App.js` calls `retrieveSavedState()` to rehydrate the store before rendering. Boundary GeoJSON files are parsed into in-memory lookups (`firBoundaryLookup`, `traconBoundaryLookup`) and included in preloaded Redux state. Static data version is checked and SQLite is repopulated if outdated. Boundary data auto-updates via GitHub release tag checks in background (`checkBoundaryUpdates` thunk).
 
 ### Navigation
 
@@ -78,15 +80,16 @@ Stack.Navigator
 - `app/components/` — Feature-organized React components
 - `app/redux/actions/` — Redux thunk action creators (async data fetching)
 - `app/redux/reducers/` — State reducers
-- `app/common/` — Utilities: `theme.js` (Material Design + Google Maps styling), `consts.js` (facility codes), `staticDataAcessLayer.js` (SQLite wrapper), `storageService.js`, `iconsHelper.js`, `metarTools.js`, `airportTools.js`
+- `app/common/` — Utilities: `theme.js` (Material Design + Google Maps styling), `consts.js` (facility codes), `staticDataAcessLayer.js` (SQLite wrapper), `storageService.js`, `boundaryService.js` (GeoJSON parsing, TRACON lookup, GitHub release fetching), `iconsHelper.js`, `metarTools.js`, `airportTools.js`
 
 ### Data Flow
 
-1. `App.js` initializes Redux store, loads persisted state
-2. `MainApp.jsx` checks static data freshness, loads airports/FIRs into SQLite, starts live data polling
-3. `vatsimLiveDataActions.js` fetches live JSON, processes controllers by facility type, dispatches `DATA_UPDATED`
-4. Map components subscribe to Redux via `useSelector`, render clustered pilot markers and ATC polygons
+1. `App.js` initializes Redux store, loads persisted state, parses boundary GeoJSON files into in-memory lookups
+2. `MainApp.jsx` checks static data freshness, loads airports into SQLite, fetches boundary data from GitHub releases if needed, starts live data polling
+3. `vatsimLiveDataActions.js` fetches live JSON, processes controllers by facility type, builds `cachedFirBoundaries` from in-memory `firBoundaryLookup`, dispatches `DATA_UPDATED`
+4. Map components subscribe to Redux via `useSelector`, render pilot markers, TRACON polygons (or circle fallback), and FIR boundary polygons
 5. On marker tap → dispatch `clientSelected` → bottom sheet opens with `ClientDetails`
+6. Background `checkBoundaryUpdates` compares stored release tags against GitHub latest releases, downloads new files if available (picked up on next cold start)
 
 ### Key Technical Details
 

@@ -104,7 +104,7 @@ export default function mainApp() {
             console.log('Fetching vatspy static data!');
             dispatch(allActions.appActions.saveAirportsLoaded(false));
             dispatch(allActions.appActions.saveFirBoundariesLoaded(false));
-            dispatch(allActions.staticAirspaceDataActions.getFirBoundaries);
+            dispatch(allActions.staticAirspaceDataActions.getBoundaryData);
             dispatch(allActions.staticAirspaceDataActions.getVATSpyData);
         }
     }, []);
@@ -114,6 +114,13 @@ export default function mainApp() {
         dispatch(allActions.vatsimLiveDataActions.updateEvents);
         dispatch(allActions.vatsimLiveDataActions.updateBookings);
     }, []);
+
+    // Background check for boundary data updates
+    useEffect(() => {
+        if (isReady()) {
+            dispatch(allActions.staticAirspaceDataActions.checkBoundaryUpdates);
+        }
+    }, [airportsLoaded, firBoundariesLoaded]);
 
 
     function isReady() {
