@@ -38,7 +38,13 @@ const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
             />
         </Marker>
     );
-});
+}, (prev, next) =>
+    prev.airport.icao === next.airport.icao &&
+    prev.airport.latitude === next.airport.latitude &&
+    prev.airport.longitude === next.airport.longitude &&
+    prev.image === next.image &&
+    prev.onPress === next.onPress
+);
 
 export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();

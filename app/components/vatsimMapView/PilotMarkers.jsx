@@ -1,6 +1,6 @@
 import {Marker} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useRef, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {mapIcons} from '../../common/iconsHelper';
@@ -51,13 +51,17 @@ export default function generatePilotMarkers() {
 
     const dispatch = useDispatch();
     const defaultImageSize = isAndroid ? 64 : 32;
+    const selectedClientRef = useRef(selectedClient);
+    useEffect(() => {
+        selectedClientRef.current = selectedClient;
+    }, [selectedClient]);
     const onPress = useCallback((pilot) => {
-        if(selectedClient && pilot.callsign == selectedClient.callsign) {
+        if(selectedClientRef.current && pilot.callsign == selectedClientRef.current.callsign) {
             dispatch(allActions.appActions.clientSelected(null));
         } else {
             dispatch(allActions.appActions.clientSelected(pilot));
         }
-    }, [selectedClient, dispatch]);
+    }, [dispatch]);
 
     const pilotMarkers = pilots.map( pilot => {
         const pilotImage = pilot.image || mapIcons.B737;
