@@ -5,7 +5,7 @@ import {useDispatch} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
-import {mapIcons} from '../../common/iconsHelper';
+import {mapIcons, getAtcIcon} from '../../common/iconsHelper';
 import {getAirportByCode} from '../../common/airportTools';
 
 const isAndroid = Platform.OS === 'android';
@@ -97,22 +97,22 @@ export default function generateAirportMarkers(airportAtc, airports) {
             });
 
             if(app) {
-                image = Platform.OS === 'ios' ? mapIcons.radar32 : mapIcons.radar64;
+                image = getAtcIcon('radar');
                 if ((ground || tower))
-                    image = Platform.OS === 'ios' ? mapIcons.towerRadar32 : mapIcons.towerRadar64;
+                    image = getAtcIcon('towerRadar');
                 else if (atis || delivery)
-                    image = Platform.OS === 'ios' ? mapIcons.antennaRadar32 : mapIcons.antennaRadar64;
+                    image = getAtcIcon('antennaRadar');
             } else {
                 if (ground || tower)
-                    image = Platform.OS === 'ios' ? mapIcons.tower32 : mapIcons.tower64;
+                    image = getAtcIcon('tower');
                 else if (atis || delivery)
-                    image = Platform.OS === 'ios' ? mapIcons.antenna32 : mapIcons.antenna64;
+                    image = getAtcIcon('antenna');
             }
 
             // Fallback for unrecognized facility types — prevents red pin markers
             if (!image) {
                 console.warn('Unknown ATC facility type at', airport.icao);
-                image = Platform.OS === 'ios' ? mapIcons.tower32 : mapIcons.tower64;
+                image = getAtcIcon('tower');
             }
 
             // Key includes ATC composition so marker updates when staffing changes
