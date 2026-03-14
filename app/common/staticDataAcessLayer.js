@@ -25,22 +25,6 @@ export const initDb = () => {
         await tx.runAsync(
             'create index if not exists airports_iata_index on airports(name);'
         );
-
-        await tx.runAsync(
-            'create table if not exists fir_boundaries (icao text not null, isOceanic integer, isExtention integer, latitude real, longitude real, pointCount integer, primary key (icao,  isOceanic, isExtention));'
-        );
-
-        await tx.runAsync(
-            'create index if not exists firBoundaries_index on fir_boundaries(icao);'
-        );
-
-        await tx.runAsync(
-            'create table if not exists boundary_points (icao text not null, isOceanic integer, isExtention integer, latitude real, longitude real, foreign key (icao,  isOceanic, isExtention) references fir_boundaries);'
-        );
-
-        await tx.runAsync(
-            'create index if not exists boundary_points_index on boundary_points(icao);'
-        );
     });
 };
 
@@ -53,64 +37,6 @@ export const insertAirports = (airportTokens, callback) => {
         callback(res.lastInsertRowId);
     });
 };
-
-export const insertFirBoundaries = (fir, callback) => {
-    getDb().then((tx) => {
-        tx.runSync(
-            'insert into fir_boundaries (icao, isOceanic, isExtention, latitude, longitude, pointCount) values (?,?,?,?,?,?);',
-            [fir.icao, fir.isOceanic, fir.isExtention, fir.center.latitude, fir.center.longitude, fir.pointCount]
-        );
-        insertPoints(fir, callback);
-    });
-};
-
-export const insertPoints = (fir, callback) => {
-    getDb().then((tx) => {
-        console.log('inserting points for fir ' + fir.icao);
-        const placeholders = fir.points.map(() => (`('${fir.icao}',${fir.isOceanic},'${fir.isExtention}',?,?)`)).join(',');
-        tx.runSync(
-            'insert into boundary_points (icao, isOceanic, isExtention, latitude, longitude) values ' + placeholders + ';',
-            fir.points.map(point => {return [point.latitude, point.longitude];}).flat(1));
-        callback(true);
-    });
-};
-
-export const getFirsFromDB = (codes) => {
-    const placeholders = codes.map(() => ('?')).join(',');
-    return new Promise((resolve, reject) => {
-        getDb().then((tx) => {
-            try {
-                let res = tx.getAllSync(
-                    `select * from fir_boundaries where fir_boundaries.icao in (${placeholders});`, codes);
-                resolve(res);
-            } catch(err) {
-                console.log('error', err);
-                reject(err);
-            }
-        });
-    });
-};
-
-export const getFirPointsFromDB = (fir) => {
-    return new Promise((resolve, reject) => {
-        getDb().then((tx) => {
-            try {
-                let res = tx.getAllSync(
-                    'select latitude, longitude from boundary_points where icao = ? and isOceanic = ? and isExtention = ?;',
-                    [fir.icao, fir.isOceanic, fir.isExtention]);
-                fir.center = {};
-                fir.center.longitude = fir.longitude;
-                fir.center.latitude = fir.latitude;
-                fir.points = res;
-                resolve(fir);
-            } catch(err) {
-                console.log('error', err);
-                reject(err);
-            }
-        });
-    });
-};
-
 
 export const getAirportsByICAOAsync = (codes) => {
     const placeholders = codes.map(() => ('?')).join(',');
@@ -178,8 +104,3 @@ export const countAirports = async () => {
     return res.count;
 };
 
-export const countFirBoundaries = async () => {
-    let tx = await getDb();
-    let res = tx.getFirstAsync('select count(*) as count from fir_boundaries;');
-    return res.count;
-};

@@ -74,6 +74,14 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Always use `getDb()`** (singleton) — never call `SQLite.openDatabaseAsync` directly outside `staticDataAcessLayer.js`
 - **Mix of sync/async:** `runSync`/`getAllSync` are used inside `.then()` callbacks; `runAsync`/`getFirstAsync` are used with `await` — match the existing pattern for the context you're in
 - **Note typo in filename:** The file is `staticDataAcessLayer.js` (single 'c' in Access) — do not rename it
+- **SQLite only stores airports** — `fir_boundaries` and `boundary_points` tables have been removed. FIR/TRACON boundary data is stored as GeoJSON files on disk and parsed into in-memory lookups on startup
+
+#### Boundary Data Pipeline
+
+- **FIR boundaries:** `Boundaries.geojson` from VatSpy Data Project → stored on disk via FileSystem → parsed by `parseFirGeoJson()` in `boundaryService.js` → `firBoundaryLookup` in Redux `staticAirspaceData` slice
+- **TRACON boundaries:** `TRACONBoundaries.geojson` from SimAware TRACON Project → stored on disk → parsed by `parseTraconJson()` → `traconBoundaryLookup` in Redux
+- **TRACON matching:** `lookupTracon(lookup, prefix, suffix)` checks suffix-specific entries first, then falls back to prefix-only
+- **Auto-update:** `checkBoundaryUpdates` thunk compares stored release tags against GitHub latest releases; downloads happen in background, picked up on next cold start
 
 ### Code Quality & Style Rules
 
@@ -102,6 +110,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - **Controllers are keyed by callsign prefix** (e.g., `EGLL` from `EGLL_TWR`) — not by full callsign
 - **`clients.airportAtc`** is a map of `icao → controller[]`; **`clients.ctr`** and **`clients.fss`** are maps of `prefix → controller[]`
+- **APP/DEP controllers** are matched to TRACON polygons via `lookupTracon()` in `boundaryService.js` — falls back to 80km circle when no TRACON data exists
 - **Pilot key uniqueness** uses `createKey()` from `app/common/createKey.js` — always use this, never construct keys manually
 - **`STATIC_DATA_VERSION`** in `consts.js` must be bumped when static airport/FIR data schema changes — triggers SQLite re-population on next app launch
 - **Airport lookup supports both ICAO and IATA** — `cachedAirports.icao` and `cachedAirports.iata` are separate maps; IATA entries only store `{icao}` as a pointer
@@ -110,7 +119,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - **Map markers re-render on every live data update (every 20s)** — avoid heavy computations inside marker render functions
 - **`getAirportsByCodesArray` uses raw string interpolation** (not parameterized) for array queries — do not change this pattern without testing SQLite compatibility
-- **FIR boundary points are fetched per-FIR sequentially** — avoid adding more sequential async DB calls in the data update path
+- **FIR boundary lookups are in-memory** — `firBoundaryLookup` is queried synchronously during each poll cycle (no more async SQLite per-FIR fetching)
 
 ---
 
@@ -130,4 +139,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Bump `STATIC_DATA_VERSION` in `consts.js` whenever SQLite schema changes
 - Review periodically and remove rules that become obvious over time
 
-Last Updated: 2026-03-13
+Last Updated: 2026-03-14
