@@ -58,6 +58,13 @@ const updateData = async (dispatch, getState) => {
             return client.callsign.split('_')[0];
         });
 
+        json.atis.forEach(atis => {
+            const prefix = atis.callsign.split('_')[0];
+            if(!prefixes.includes(prefix)) {
+                prefixes.push(prefix);
+            }
+        });
+
         json.pilots.forEach(p => {
             if(p.flight_plan && p.flight_plan.departure) {
                 if(!prefixes.includes(p.flight_plan.departure)) {
