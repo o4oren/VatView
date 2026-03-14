@@ -94,6 +94,7 @@ export const getAirportsByCodesArray = (codes, callback) => {
                 err: err,
                 q: `select * from airports where icao in (${mappedCodes});`
             });
+            callback([]);
         }
     });
 };

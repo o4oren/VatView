@@ -35,12 +35,39 @@ export default function VatsimMapView() {
 
     // if selected client is not null, we update it with the one from the new update
     useEffect(() => {
-        if(selectedClient != null) {
-            const newClient = clients.pilots.filter(p => p.cid === selectedClient.cid);
-            if(newClient.length > 0)
-                dispatch(allActions.appActions.clientSelected(newClient[0]));
-            else
-                dispatch(allActions.appActions.clientSelected(selectedClient));
+        if(selectedClient != null && selectedClient.cid != null) {
+            // Check pilots
+            const newPilot = clients.pilots.filter(p => p.cid === selectedClient.cid);
+            if(newPilot.length > 0) {
+                dispatch(allActions.appActions.clientSelected(newPilot[0]));
+                return;
+            }
+            // Check airport ATC controllers
+            for (const icao in clients.airportAtc) {
+                const atcMatch = clients.airportAtc[icao].find(c => c.cid === selectedClient.cid);
+                if (atcMatch) {
+                    dispatch(allActions.appActions.clientSelected(atcMatch));
+                    return;
+                }
+            }
+            // Check CTR controllers
+            for (const prefix in clients.ctr) {
+                const ctrMatch = clients.ctr[prefix].find(c => c.cid === selectedClient.cid);
+                if (ctrMatch) {
+                    dispatch(allActions.appActions.clientSelected(ctrMatch));
+                    return;
+                }
+            }
+            // Check FSS controllers
+            for (const prefix in clients.fss) {
+                const fssMatch = clients.fss[prefix].find(c => c.cid === selectedClient.cid);
+                if (fssMatch) {
+                    dispatch(allActions.appActions.clientSelected(fssMatch));
+                    return;
+                }
+            }
+            // Client disconnected — clear selection
+            dispatch(allActions.appActions.clientSelected(null));
         }
     }, [clients]);
 
