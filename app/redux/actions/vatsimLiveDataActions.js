@@ -2,9 +2,7 @@ import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import createKey from '../../common/createKey';
 import {
-    getAirportsByCodesArray,
-    getFirsFromDB,
-    getFirPointsFromDB
+    getAirportsByCodesArray
 } from '../../common/staticDataAcessLayer';
 import {findAirportByCodeInAptList} from '../../common/airportTools';
 
@@ -178,19 +176,13 @@ const updateData = async (dispatch, getState) => {
                 });
             });
 
-            getFirsFromDB(firsTocCache).then(async firs => {
-                await Promise.all(firs.map(async (fir) => {
-                    const firWithPoints = await getFirPointsFromDB(fir);
-                    if (json.cachedFirBoundaries[firWithPoints.icao] == null) {
-                        json.cachedFirBoundaries[firWithPoints.icao] = [];
-                    }
-                    json.cachedFirBoundaries[firWithPoints.icao].push(firWithPoints);
-                }));
-                dispatch(dataUpdated(json));
-            }).catch(err => {
-                console.error('getFirsFromDB error, dispatching without FIR boundaries:', err);
-                dispatch(dataUpdated(json));
+            const firBoundaryLookup = getState().staticAirspaceData.firBoundaryLookup;
+            firsTocCache.forEach(icao => {
+                if (firBoundaryLookup[icao]) {
+                    json.cachedFirBoundaries[icao] = firBoundaryLookup[icao];
+                }
             });
+            dispatch(dataUpdated(json));
         };
 
     } catch (error) {

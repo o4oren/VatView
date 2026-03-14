@@ -5,6 +5,7 @@ import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
+import {parseFirGeoJson, parseTraconJson} from './app/common/boundaryService';
 import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
@@ -73,9 +74,23 @@ export default function App() {
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();
+            let firBoundaryLookup = {};
+            let traconBoundaryLookup = {};
+            try {
+                if (savedState.firGeoJson) {
+                    firBoundaryLookup = parseFirGeoJson(JSON.parse(savedState.firGeoJson));
+                }
+                if (savedState.traconBoundaries) {
+                    traconBoundaryLookup = parseTraconJson(JSON.parse(savedState.traconBoundaries));
+                }
+            } catch (err) {
+                console.log('Error parsing boundary data on startup', err);
+            }
             setState({
                 isReady: true,
-                savedState: savedState
+                savedState: savedState,
+                firBoundaryLookup: firBoundaryLookup,
+                traconBoundaryLookup: traconBoundaryLookup
             });
         }
         loadStateFromStorage();
@@ -93,20 +108,23 @@ export default function App() {
             selectedAirport: state.savedState.selectedAirport != null ? state.savedState.selectedAirport : null,
             filters: {pilots: true, atc: true, searchQuery: ''},
             airportsLoaded: state.savedState.airportsLoaded || false,
-            firBoundariesLoaded: state.savedState.firBoundariesLoaded || false,
+            firBoundariesLoaded: (state.savedState.firGeoJson && state.savedState.traconBoundaries)
+                ? (state.savedState.firBoundariesLoaded || false)
+                : false,
             loadingDb: {
                 airports: 0,
                 firs: 0
             },
         },
         staticAirspaceData: {
-            firBoundaries: {},
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
             airports: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.airports : {},
             firs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.firs : {},
             uirs: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.uirs : {},
             lastUpdated: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.lastUpdated : 0,
-            version: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.version : 0
+            version: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.version : 0,
+            firBoundaryLookup: state.firBoundaryLookup,
+            traconBoundaryLookup: state.traconBoundaryLookup
         }
     };
     // console.log(preloadedState);

@@ -1,9 +1,10 @@
-import {storeFirBoundaries, storeStaticAirspaceData} from '../../common/storageService';
+import {storeStaticAirspaceData, storeFirGeoJson, storeTraconBoundaries, storeReleaseTag, getReleaseTag, FIR_GEOJSON_RELEASE_TAG_KEY, TRACON_RELEASE_TAG_KEY} from '../../common/storageService';
 import {STATIC_DATA_VERSION} from '../../common/consts';
-import {countAirports, insertAirports, insertFirBoundaries} from '../../common/staticDataAcessLayer';
+import {countAirports, insertAirports} from '../../common/staticDataAcessLayer';
 import appActions from './appActions';
+import {fetchLatestRelease, findAssetUrl, parseFirGeoJson, parseTraconJson} from '../../common/boundaryService';
 
-export const FIR_BOUNDARIES_UPDATED = 'FIR_BOUNDARIES_UPDATED';
+export const BOUNDARY_DATA_UPDATED = 'BOUNDARY_DATA_UPDATED';
 export const VATSPY_DATA_UPDATED = 'VATSPY_DATA_UPDATED';
 
 const COUNTRIES = '[Countries]';
@@ -14,10 +15,10 @@ const IDL = '[IDL]';
 const AIRPORTS_CHUNK_SIZE = 140;
 
 
-export const firBoundariesUpdated = (firBoundaries) => {
+const boundaryDataUpdated = (firBoundaryLookup, traconBoundaryLookup) => {
     return {
-        type: FIR_BOUNDARIES_UPDATED,
-        payload: {firBoundaries: firBoundaries}
+        type: BOUNDARY_DATA_UPDATED,
+        payload: {firBoundaryLookup, traconBoundaryLookup}
     };
 };
 
@@ -35,89 +36,61 @@ const vatspyDataUpdated = (countries, airports, firs, uirs, lastUpdated, version
     };
 };
 
-// FIR boundaries fields are as follow:
-// 0 - ICAO
-// 1 - Is Oceanic
-// 2 - Is Extension
-// 3 - Point Count
-// 4 - Min Lat
-// 5 - Min Lon
-// 6 - Max Lat
-// 7 - Max Lon
-// 8 - Center Lat
-// 9 - Center Lon
-const getFirBoundaries = async (dispatch, getState) => {
-    const dataUrls = await fetch(
-        'https://api.vatsim.net/api/map_data/');
-    const dataUrlsJson = await dataUrls.json();
-    const response = await fetch(
-        dataUrlsJson.fir_boundaries_dat_url);
-    let body = await response.text();
-    const lines = body.trim().split(/\r?\n/);
-    let numInsertedFirs = 0;
+const getBoundaryData = async (dispatch) => {
+    try {
+        const firRelease = await fetchLatestRelease('vatsimnetwork', 'vatspy-data-project');
+        const firAssetUrl = findAssetUrl(firRelease.assets, 'Boundaries.geojson');
+        const firResponse = await fetch(firAssetUrl);
+        const firRawJson = await firResponse.text();
+        await storeFirGeoJson(firRawJson);
+        await storeReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY, firRelease.tag);
 
-    for (let i = 0; i <= lines.length; i++) {
-        if (lines[i] && !lines[i].match(/^\d/)) {
-            let fir = {};
-            const fields = lines[i].split('|');
-            fir.icao = fields[0];
-            fir.pointCount = fields[3];
-            fir.center = {
-                latitude: Number(fields[8]),
-                longitude: Number(fields[9])
-            };
-            fir.isOceanic = fields[1];
-            fir.isExtention = fields[2];
-            const points = [];
-            const anchor = i;
-            for (let j = 1; j <= fields[3]; j++) {
-                const point = lines[anchor + j].split('|');
-                if (point[0] == 90) point[0] = 85;
-                if (point[0] == -90) point[0] = -85;
-                points.push({
-                    latitude: Number(point[0]),
-                    longitude: Number(point[1])
-                });
-                i++;
-            }
-            fir.points = points;
+        const traconRelease = await fetchLatestRelease('vatsimnetwork', 'simaware-tracon-project');
+        const traconAssetUrl = findAssetUrl(traconRelease.assets, 'TRACONBoundaries.geojson');
+        const traconResponse = await fetch(traconAssetUrl);
+        const traconRawJson = await traconResponse.text();
+        await storeTraconBoundaries(traconRawJson);
+        await storeReleaseTag(TRACON_RELEASE_TAG_KEY, traconRelease.tag);
 
-            if(fir.icao && fir.icao.length > 0) {
-                await insertFirBoundaries(fir, (isSuccess) => {
-                    if(isSuccess) {
-                        ++numInsertedFirs;
-                        if(numInsertedFirs % 100 == 0) {
-                            dispatch(appActions.loadingDb({
-                                airports: getState().app.loadingDb.airports,
-                                firs: numInsertedFirs
-                            }));
-                        }
-                    }
-
-                });
-                if(i == lines.length - 1) {
-                    // we're at the end of the file
-                    console.log('===================', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
-                    if(getState().app.loadingDb.firs > 520) {
-                        console.log('***************=', getState().app.loadingDb.airports + '  ' + getState().app.loadingDb.firs);
-                        dispatch(appActions.saveFirBoundariesLoaded(true));
-                    }
-                }
-            }
-        }
+        const firLookup = parseFirGeoJson(JSON.parse(firRawJson));
+        const traconLookup = parseTraconJson(JSON.parse(traconRawJson));
+        dispatch(boundaryDataUpdated(firLookup, traconLookup));
+        dispatch(appActions.saveFirBoundariesLoaded(true));
+    } catch (err) {
+        console.error('getBoundaryData failed:', err);
+        // Set Redux state so app proceeds past loading screen, but do NOT
+        // persist to AsyncStorage — App.js will force retry on next cold start
+        // if boundary files are missing from disk.
+        dispatch({type: 'FIR_BOUNDARIES_LOADED', payload: {firBoundariesLoaded: true}});
     }
+};
 
-    console.log({
-        airports: getState().app.loadingDb.airports,
-        firs: numInsertedFirs
-    });
-    dispatch(appActions.loadingDb({
-        airports: getState().app.loadingDb.airports,
-        firs: numInsertedFirs
-    }));
-
-    // used to store the empty object. TODO remove this
-    storeFirBoundaries(null);
+// eslint-disable-next-line no-unused-vars
+const checkBoundaryUpdates = async (dispatch) => {
+    try {
+        const [currentFirTag, currentTraconTag] = await Promise.all([
+            getReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY),
+            getReleaseTag(TRACON_RELEASE_TAG_KEY)
+        ]);
+        const [firRelease, traconRelease] = await Promise.all([
+            fetchLatestRelease('vatsimnetwork', 'vatspy-data-project'),
+            fetchLatestRelease('vatsimnetwork', 'simaware-tracon-project')
+        ]);
+        if (firRelease.tag !== currentFirTag) {
+            const url = findAssetUrl(firRelease.assets, 'Boundaries.geojson');
+            const resp = await fetch(url);
+            await storeFirGeoJson(await resp.text());
+            await storeReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY, firRelease.tag);
+        }
+        if (traconRelease.tag !== currentTraconTag) {
+            const url = findAssetUrl(traconRelease.assets, 'TRACONBoundaries.geojson');
+            const resp = await fetch(url);
+            await storeTraconBoundaries(await resp.text());
+            await storeReleaseTag(TRACON_RELEASE_TAG_KEY, traconRelease.tag);
+        }
+    } catch (err) {
+        console.log('Background boundary update check failed:', err);
+    }
 };
 
 /**
@@ -218,8 +191,9 @@ const getVATSpyData = async (dispatch) => {
 };
 
 export default {
-    firBoundariesUpdated: firBoundariesUpdated,
+    boundaryDataUpdated: boundaryDataUpdated,
     vatspyDataUpdated: vatspyDataUpdated,
-    getFirBoundaries: getFirBoundaries,
+    getBoundaryData: getBoundaryData,
+    checkBoundaryUpdates: checkBoundaryUpdates,
     getVATSpyData: getVATSpyData
 };

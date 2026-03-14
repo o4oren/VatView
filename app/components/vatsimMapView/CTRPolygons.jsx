@@ -115,6 +115,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                     <Polygon
                         key={client.cid + '-uir--polygon-' + i}
                         coordinates={fir.points}
+                        holes={fir.holes || []}
                         strokeColor={theme.blueGrey.uirStrokeColor}
                         fillColor={theme.blueGrey.uirFill}
                         strokeWidth={theme.blueGrey.uirStrokeWidth}
@@ -149,6 +150,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                     <Polygon
                         key={client.cid + '-polygon-' + i}
                         coordinates={fir.points}
+                        holes={fir.holes || []}
                         strokeColor={theme.blueGrey.firStrokeColor}
                         fillColor={theme.blueGrey.firFill}
                         strokeWidth={theme.blueGrey.firStrokeWidth}

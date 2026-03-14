@@ -1,12 +1,13 @@
-import {Circle, Marker} from 'react-native-maps';
+import {Circle, Marker, Polygon} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
 import React, {useCallback} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
 import theme from '../../common/theme';
 import {mapIcons, getAtcIcon} from '../../common/iconsHelper';
 import {getAirportByCode} from '../../common/airportTools';
+import {lookupTracon} from '../../common/boundaryService';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -41,6 +42,7 @@ const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
 
 export default function generateAirportMarkers(airportAtc, airports) {
     const dispatch = useDispatch();
+    const traconBoundaryLookup = useSelector(state => state.staticAirspaceData.traconBoundaryLookup);
     const airportMarkers = [];
 
     const onPress = useCallback((airport) => {
@@ -51,6 +53,8 @@ export default function generateAirportMarkers(airportAtc, airports) {
         console.log('return empty', airportAtc);
         return [];
     }
+
+    const renderedTracons = new Set();
 
     for (const icao in airportAtc) {
         // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
@@ -65,20 +69,46 @@ export default function generateAirportMarkers(airportAtc, airports) {
         if (airport != null && airportAtc && airportAtc[airport.icao] && airportAtc[airport.icao].length > 0) {
             airportAtc[airport.icao].forEach(atc => {
                 switch (atc.facility) {
-                case APP:
+                case APP: {
                     app = true;
-                    airportMarkers.push(
-                        <Circle
-                            key={atc.key}
-                            center={{latitude: atc.latitude, longitude: atc.longitude}}
-                            radius={APP_RADIUS}
-                            title={atc.callsign}
-                            strokeColor={theme.blueGrey.appCircleStroke}
-                            fillColor={theme.blueGrey.appCircleFill}
-                            strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                        />
-                    );
+                    const callsignPrefix = atc.callsign.split('_')[0];
+                    const callsignSuffix = atc.callsign.split('_').pop();
+                    const tracon = lookupTracon(traconBoundaryLookup, callsignPrefix, callsignSuffix);
+                    if (tracon) {
+                        const traconKey = tracon.id;
+                        if (!renderedTracons.has(traconKey)) {
+                            renderedTracons.add(traconKey);
+                            tracon.polygons.forEach((poly, i) => {
+                                airportMarkers.push(
+                                    <Polygon
+                                        key={atc.key + '-tracon-' + i}
+                                        coordinates={poly.coordinates}
+                                        holes={poly.holes}
+                                        strokeColor={theme.blueGrey.appCircleStroke}
+                                        fillColor={theme.blueGrey.appCircleFill}
+                                        strokeWidth={theme.blueGrey.appCircleStrokeWidth}
+                                        geodesic={true}
+                                        tappable={true}
+                                        onPress={() => onPress(airport)}
+                                    />
+                                );
+                            });
+                        }
+                    } else {
+                        airportMarkers.push(
+                            <Circle
+                                key={atc.key}
+                                center={{latitude: atc.latitude, longitude: atc.longitude}}
+                                radius={APP_RADIUS}
+                                title={atc.callsign}
+                                strokeColor={theme.blueGrey.appCircleStroke}
+                                fillColor={theme.blueGrey.appCircleFill}
+                                strokeWidth={theme.blueGrey.appCircleStrokeWidth}
+                            />
+                        );
+                    }
                     break;
+                }
                 case DEL:
                     delivery = true;
                     break;
