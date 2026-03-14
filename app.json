@@ -11,7 +11,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/700dac5e-72d8-45e4-8bf5-693f1bb78b70"
     },
     "assetBundlePatterns": [
       "assets/**/*"
@@ -43,6 +44,10 @@
         }
       },
       "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "com.google.android.gms.permission.AD_ID",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "INTERNET",
@@ -87,6 +92,9 @@
         "projectId": "700dac5e-72d8-45e4-8bf5-693f1bb78b70"
       }
     },
-    "owner": "ogeva"
+    "owner": "ogeva",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
