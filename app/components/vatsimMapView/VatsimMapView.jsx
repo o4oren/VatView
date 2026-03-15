@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
-import FloatingNavIsland from '../navigation/FloatingNavIsland';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import analytics from '../../common/analytics';
 
@@ -70,8 +69,6 @@ export default function VatsimMapView() {
     return (
         <View style={StyleSheet.absoluteFillObject}>
             <MapComponent />
-            {/* TODO: Story 2.4 will move FloatingNavIsland into MapOverlayGroup */}
-            <FloatingNavIsland />
             <BottomSheet
                 ref={sheetRef}
                 enablePanDownToClose={true}

@@ -1,5 +1,5 @@
 import React, {useRef, useCallback} from 'react';
-import {Animated} from 'react-native';
+import {Animated, View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useFocusEffect} from '@react-navigation/native';
 import {useTheme} from '../../common/ThemeProvider';
@@ -9,6 +9,7 @@ import VatsimListView from '../vatsimListView/VatsimListView';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import FloatingNavIsland from '../navigation/FloatingNavIsland';
 import analytics from '../../common/analytics';
 
 function FadeScreen({children}) {
@@ -42,7 +43,8 @@ function EventsTab() { return <FadeScreen><VatsimEventsView /></FadeScreen>; }
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
     const {activeTheme} = useTheme();
-    return <tab.Navigator
+    return <View style={StyleSheet.absoluteFillObject}>
+        <tab.Navigator
         screenListeners={({ route }) => ({
             tabPress: () => {
                 analytics.logEvent('nav_tab_switch', { tab_name: route.name });
@@ -107,5 +109,8 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-    </tab.Navigator>;
+    </tab.Navigator>
+        {/* TODO: Story 2.4 will move FloatingNavIsland into MapOverlayGroup */}
+        <FloatingNavIsland />
+    </View>;
 }
