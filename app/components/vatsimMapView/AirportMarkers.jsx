@@ -1,6 +1,6 @@
 import {Circle, Marker, Polygon} from 'react-native-maps';
 import {Image, Platform} from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
@@ -10,6 +10,8 @@ import {getAirportByCode} from '../../common/airportTools';
 import {lookupTracon} from '../../common/boundaryService';
 
 const isAndroid = Platform.OS === 'android';
+// Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
+const TRANSPARENT = 'rgba(0,0,0,0)';
 
 const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
     return isAndroid ? (
@@ -46,19 +48,18 @@ const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
     prev.onPress === next.onPress
 );
 
-export default function generateAirportMarkers(airportAtc, airports) {
+export default function generateAirportMarkers(airportAtc, airports, visible = true) {
     const dispatch = useDispatch();
     const traconBoundaryLookup = useSelector(state => state.staticAirspaceData.traconBoundaryLookup);
+    const traconPolygonCacheRef = useRef(new Map());
+    const appCircleCacheRef = useRef(new Map());
     const airportMarkers = [];
+    const visibleTraconKeys = new Set();
+    const visibleCircleKeys = new Set();
 
     const onPress = useCallback((airport) => {
         dispatch(allActions.appActions.clientSelected(airport));
     }, [dispatch]);
-
-    if(Object.keys(airportAtc).length==0) {
-        console.log('return empty', airportAtc);
-        return [];
-    }
 
     const renderedTracons = new Set();
 
@@ -85,33 +86,22 @@ export default function generateAirportMarkers(airportAtc, airports) {
                         if (!renderedTracons.has(traconKey)) {
                             renderedTracons.add(traconKey);
                             tracon.polygons.forEach((poly, i) => {
-                                airportMarkers.push(
-                                    <Polygon
-                                        key={atc.key + '-tracon-' + i}
-                                        coordinates={poly.coordinates}
-                                        holes={poly.holes}
-                                        strokeColor={theme.blueGrey.appCircleStroke}
-                                        fillColor={theme.blueGrey.appCircleFill}
-                                        strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                                        geodesic={true}
-                                        tappable={true}
-                                        onPress={() => onPress(airport)}
-                                    />
-                                );
+                                const overlayKey = `${traconKey}-polygon-${i}`;
+                                traconPolygonCacheRef.current.set(overlayKey, {
+                                    coordinates: poly.coordinates,
+                                    holes: poly.holes,
+                                    airport,
+                                });
+                                visibleTraconKeys.add(overlayKey);
                             });
                         }
                     } else {
-                        airportMarkers.push(
-                            <Circle
-                                key={atc.key}
-                                center={{latitude: atc.latitude, longitude: atc.longitude}}
-                                radius={APP_RADIUS}
-                                title={atc.callsign}
-                                strokeColor={theme.blueGrey.appCircleStroke}
-                                fillColor={theme.blueGrey.appCircleFill}
-                                strokeWidth={theme.blueGrey.appCircleStrokeWidth}
-                            />
-                        );
+                        const circleKey = `${atc.callsign}-app-circle`;
+                        appCircleCacheRef.current.set(circleKey, {
+                            center: {latitude: atc.latitude, longitude: atc.longitude},
+                            title: atc.callsign,
+                        });
+                        visibleCircleKeys.add(circleKey);
                     }
                     break;
                 }
@@ -151,21 +141,53 @@ export default function generateAirportMarkers(airportAtc, airports) {
                 image = getAtcIcon('tower');
             }
 
-            // Key includes ATC composition so marker updates when staffing changes
-            const atcSuffix = `${app ? 'a' : ''}${tower ? 't' : ''}${ground ? 'g' : ''}${atis ? 's' : ''}${delivery ? 'd' : ''}`;
-
-            airportMarkers.push(
-                <AirportMarkerItem
-                    key={airport.icao + '_' + atcSuffix}
-                    airport={airport}
-                    image={image}
-                    onPress={onPress}
-                    tracksViewChanges={false}
-                />
-            );
+            if (visible) {
+                airportMarkers.push(
+                    <AirportMarkerItem
+                        key={airport.icao}
+                        airport={airport}
+                        image={image}
+                        onPress={onPress}
+                        tracksViewChanges={false}
+                    />
+                );
+            }
         } else {
             console.log('cannot add marker', airport);
         }
     }
+
+    traconPolygonCacheRef.current.forEach((overlay, overlayKey) => {
+        const isVisible = visible && visibleTraconKeys.has(overlayKey);
+        airportMarkers.push(
+            <Polygon
+                key={overlayKey}
+                coordinates={overlay.coordinates}
+                holes={overlay.holes}
+                strokeColor={isVisible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
+                fillColor={isVisible ? theme.blueGrey.appCircleFill : TRANSPARENT}
+                strokeWidth={isVisible ? theme.blueGrey.appCircleStrokeWidth : 0}
+                geodesic={true}
+                tappable={isVisible}
+                onPress={() => onPress(overlay.airport)}
+            />
+        );
+    });
+
+    appCircleCacheRef.current.forEach((circle, circleKey) => {
+        const isVisible = visible && visibleCircleKeys.has(circleKey);
+        airportMarkers.push(
+            <Circle
+                key={circleKey}
+                center={circle.center}
+                radius={APP_RADIUS}
+                title={circle.title}
+                strokeColor={isVisible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
+                fillColor={isVisible ? theme.blueGrey.appCircleFill : TRANSPARENT}
+                strokeWidth={isVisible ? theme.blueGrey.appCircleStrokeWidth : 0}
+            />
+        );
+    });
+
     return airportMarkers;
 }

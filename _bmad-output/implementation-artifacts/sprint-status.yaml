@@ -54,7 +54,7 @@ development_status:
   2-1-full-bleed-map-and-remove-chrome: done
   2-2-floating-navigation-island: done
   2-3-floating-filter-chips: done
-  2-4-mapoverlaygroup-floating-element-orchestrator: backlog
+  2-4-mapoverlaygroup-floating-element-orchestrator: done
   epic-2-retrospective: optional
 
   # Epic 3: Map Data Layers — Pilots, ATC & Airports

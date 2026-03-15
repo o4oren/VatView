@@ -1,29 +1,64 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
-import FloatingFilterChips from '../filterBar/FloatingFilterChips';
+import MapOverlayGroup from '../mapOverlay/MapOverlayGroup';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import analytics from '../../common/analytics';
 
+function getDataStatus(general) {
+    if (!general || !general.update_timestamp) {
+        return 'error';
+    }
+    const updateTime = new Date(general.update_timestamp).getTime();
+    if (Number.isNaN(updateTime)) {
+        return 'error';
+    }
+    const delta = Date.now() - updateTime;
+    return delta < 90000 ? 'live' : 'stale';
+}
+
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
+    const general = useSelector(state => state.vatsimLiveData.general);
+    const dataStatus = getDataStatus(general);
     const dispatch = useDispatch();
     const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const lastLoggedClientRef = useRef(null);
+    const filters = useSelector(state => state.app.filters);
+    const handleMapPress = useCallback((event) => {
+        if (event?.nativeEvent?.action === 'marker-press') {
+            return;
+        }
+        dispatch(allActions.appActions.clientSelected(null));
+    }, [dispatch]);
+
+    // Deselect pilot when the pilots filter is turned off (pilots have flight_plan)
+    useEffect(() => {
+        if (!filters.pilots && selectedClient?.flight_plan != null) {
+            dispatch(allActions.appActions.clientSelected(null));
+        }
+    }, [filters.pilots]);
+
+    // Deselect ATC when the ATC filter is turned off (ATC has no flight_plan)
+    useEffect(() => {
+        if (!filters.atc && selectedClient != null && selectedClient.flight_plan == null) {
+            dispatch(allActions.appActions.clientSelected(null));
+        }
+    }, [filters.atc]);
 
     useEffect(() => {
-        if (selectedClient == null)
-            sheetRef.current.snapToIndex(0);
-        else if(prevSelectedClient == null || (
+        if (selectedClient == null) {
+            sheetRef.current?.snapToIndex(-1);
+        } else if(prevSelectedClient == null || (
             (selectedClient.cid != null && selectedClient.cid !== prevSelectedClient.cid) ||
             (selectedClient.icao != null && selectedClient.icao !== prevSelectedClient.icao)
         )) {
-            sheetRef.current.snapToIndex(0);
+            sheetRef.current?.snapToIndex(0);
         } else if(selectedClient.cid == prevSelectedClient.cid || selectedClient.icao !== prevSelectedClient.icao)
             return;
         setPrevSelectedClient(selectedClient);
@@ -68,9 +103,14 @@ export default function VatsimMapView() {
     }, [clients]);
 
     return (
-        <View style={StyleSheet.absoluteFillObject}>
-            <MapComponent />
-            <FloatingFilterChips />
+        <View
+            style={StyleSheet.absoluteFillObject}
+            experimental_accessibilityOrder={['map-overlay-group', 'map-content']}
+        >
+            <View style={StyleSheet.absoluteFillObject} nativeID='map-content'>
+                <MapComponent onMapPress={handleMapPress} />
+            </View>
+            <MapOverlayGroup dataStatus={dataStatus} />
             <BottomSheet
                 ref={sheetRef}
                 enablePanDownToClose={true}
@@ -80,6 +120,9 @@ export default function VatsimMapView() {
                 onChange={(index) => {
                     if (index === -1) {
                         lastLoggedClientRef.current = null;
+                        if (selectedClient != null) {
+                            dispatch(allActions.appActions.clientSelected(null));
+                        }
                         return;
                     }
                     const client = selectedClient;
@@ -106,4 +149,3 @@ export default function VatsimMapView() {
         </View>
     );
 }
-
