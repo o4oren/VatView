@@ -52,8 +52,8 @@ development_status:
   # Epic 2: Immersive Map & Floating Navigation
   epic-2: in-progress
   2-1-full-bleed-map-and-remove-chrome: done
-  2-2-floating-navigation-island: review
-  2-3-floating-filter-chips: backlog
+  2-2-floating-navigation-island: done
+  2-3-floating-filter-chips: review
   2-4-mapoverlaygroup-floating-element-orchestrator: backlog
   epic-2-retrospective: optional
 
