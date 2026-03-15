@@ -13,6 +13,9 @@ const isAndroid = Platform.OS === 'android';
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
 
+// Evict cached overlays after this many consecutive polls without the controller (~100s at 20s polling)
+const STALE_EVICT_THRESHOLD = 5;
+
 const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
     return isAndroid ? (
         <Marker
@@ -53,6 +56,7 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
     const traconBoundaryLookup = useSelector(state => state.staticAirspaceData.traconBoundaryLookup);
     const traconPolygonCacheRef = useRef(new Map());
     const appCircleCacheRef = useRef(new Map());
+    const staleTallyRef = useRef(new Map());
     const airportMarkers = [];
     const visibleTraconKeys = new Set();
     const visibleCircleKeys = new Set();
@@ -157,36 +161,81 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
         }
     }
 
+    // Render cached TRACON polygons, evict stale ones
     traconPolygonCacheRef.current.forEach((overlay, overlayKey) => {
-        const isVisible = visible && visibleTraconKeys.has(overlayKey);
-        airportMarkers.push(
-            <Polygon
-                key={overlayKey}
-                coordinates={overlay.coordinates}
-                holes={overlay.holes}
-                strokeColor={isVisible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
-                fillColor={isVisible ? theme.blueGrey.appCircleFill : TRANSPARENT}
-                strokeWidth={isVisible ? theme.blueGrey.appCircleStrokeWidth : 0}
-                geodesic={true}
-                tappable={isVisible}
-                onPress={() => onPress(overlay.airport)}
-            />
-        );
+        if (visibleTraconKeys.has(overlayKey)) {
+            staleTallyRef.current.delete(overlayKey);
+            airportMarkers.push(
+                <Polygon
+                    key={overlayKey}
+                    coordinates={overlay.coordinates}
+                    holes={overlay.holes}
+                    strokeColor={visible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
+                    fillColor={visible ? theme.blueGrey.appCircleFill : TRANSPARENT}
+                    strokeWidth={visible ? theme.blueGrey.appCircleStrokeWidth : 0}
+                    geodesic={true}
+                    tappable={visible}
+                    onPress={() => onPress(overlay.airport)}
+                />
+            );
+        } else {
+            const tally = (staleTallyRef.current.get(overlayKey) || 0) + 1;
+            if (tally > STALE_EVICT_THRESHOLD) {
+                traconPolygonCacheRef.current.delete(overlayKey);
+                staleTallyRef.current.delete(overlayKey);
+            } else {
+                staleTallyRef.current.set(overlayKey, tally);
+                airportMarkers.push(
+                    <Polygon
+                        key={overlayKey}
+                        coordinates={overlay.coordinates}
+                        holes={overlay.holes}
+                        strokeColor={TRANSPARENT}
+                        fillColor={TRANSPARENT}
+                        strokeWidth={0}
+                        geodesic={true}
+                        tappable={false}
+                    />
+                );
+            }
+        }
     });
 
+    // Render cached APP circles, evict stale ones
     appCircleCacheRef.current.forEach((circle, circleKey) => {
-        const isVisible = visible && visibleCircleKeys.has(circleKey);
-        airportMarkers.push(
-            <Circle
-                key={circleKey}
-                center={circle.center}
-                radius={APP_RADIUS}
-                title={circle.title}
-                strokeColor={isVisible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
-                fillColor={isVisible ? theme.blueGrey.appCircleFill : TRANSPARENT}
-                strokeWidth={isVisible ? theme.blueGrey.appCircleStrokeWidth : 0}
-            />
-        );
+        if (visibleCircleKeys.has(circleKey)) {
+            staleTallyRef.current.delete(circleKey);
+            airportMarkers.push(
+                <Circle
+                    key={circleKey}
+                    center={circle.center}
+                    radius={APP_RADIUS}
+                    title={circle.title}
+                    strokeColor={visible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
+                    fillColor={visible ? theme.blueGrey.appCircleFill : TRANSPARENT}
+                    strokeWidth={visible ? theme.blueGrey.appCircleStrokeWidth : 0}
+                />
+            );
+        } else {
+            const tally = (staleTallyRef.current.get(circleKey) || 0) + 1;
+            if (tally > STALE_EVICT_THRESHOLD) {
+                appCircleCacheRef.current.delete(circleKey);
+                staleTallyRef.current.delete(circleKey);
+            } else {
+                staleTallyRef.current.set(circleKey, tally);
+                airportMarkers.push(
+                    <Circle
+                        key={circleKey}
+                        center={circle.center}
+                        radius={APP_RADIUS}
+                        title={circle.title}
+                        strokeColor={TRANSPARENT}
+                        fillColor={TRANSPARENT}
+                        strokeWidth={0}
+                    />
+                );
+            }
+        }
     });
 
     return airportMarkers;

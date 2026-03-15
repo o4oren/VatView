@@ -9,28 +9,27 @@ import allActions from '../../redux/actions';
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
 
+// Evict cached overlays after this many consecutive polls without the controller (~100s at 20s polling)
+const STALE_EVICT_THRESHOLD = 5;
+
 export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visible = true) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    const cachedClientsRef = useRef(new Map());
+    // Cache resolved airspace data (not raw clients) to avoid recomputing getAirspaceCoordinates
+    // for disconnected controllers on every render
+    const airspaceCacheRef = useRef(new Map());
+    const staleTallyRef = useRef(new Map());
     const polygons = [];
-    const visibleAirspaceKeys = new Set();
+    const activeKeys = new Set();
 
     let onPress = (client) => {
-        // Analytics.logEvent('SelectAirport', {
-        //     callsign: client.callsign,
-        //     purpose: 'Clicking a CTR polygon',
-        // });
         dispatch(allActions.appActions.clientSelected(client));
     };
 
     const getAirspaceCoordinates = client => {
-        // console.log(client);
         // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
-        // console.log(callsignPrefix, client);
-        // TODO proper condition to determine oceanic firs
 
         let airspace = {
             isUir: false,
@@ -83,14 +82,13 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
             const uir = staticAirspaceData.uirs[callsignPrefix];
             if (uir) {
                 airspace.isUir = true;
-                // calclute center of centers
                 let latitudeSum = 0;
                 let longitudeSum = 0;
                 if (uir.firs !== undefined && uir.firs.length > 0) {
                     uir.firs.forEach(firIcao => {
                         if (!cachedFirBoundaries[firIcao]) return;
                         cachedFirBoundaries[firIcao].forEach(fir => {
-                            if (fir) {     // preventing crash when not every fir in UIR can be resolved
+                            if (fir) {
                                 airspace.firs.push(fir);
                                 latitudeSum += fir.center.latitude;
                                 longitudeSum += fir.center.longitude;
@@ -111,8 +109,8 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
         return airspace;
     };
 
-    const calculatePolygon = (clientKey, client, isVisible) => {
-        const airspace = getAirspaceCoordinates(client);
+    const renderPolygonElements = (clientKey, cached, isVisible) => {
+        const {client, airspace} = cached;
         const elements = [];
         if (airspace.isUir) {
             airspace.firs.forEach((fir, i) => {
@@ -186,24 +184,53 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
         return elements;
     };
 
+    // Resolve airspace for active controllers and cache the result
     for (let icao in fss) {
-        fss[icao].forEach(fssClient =>{
+        fss[icao].forEach(fssClient => {
             const clientKey = `fss-${fssClient.callsign}`;
-            cachedClientsRef.current.set(clientKey, fssClient);
-            visibleAirspaceKeys.add(clientKey);
+            activeKeys.add(clientKey);
+            if (!airspaceCacheRef.current.has(clientKey)) {
+                airspaceCacheRef.current.set(clientKey, {
+                    client: fssClient,
+                    airspace: getAirspaceCoordinates(fssClient),
+                });
+            } else {
+                // Update client data (e.g. frequency changes) but keep cached airspace
+                airspaceCacheRef.current.get(clientKey).client = fssClient;
+            }
         });
     }
 
     for (let icao in ctr) {
-        ctr[icao].forEach(ctrClient =>{
+        ctr[icao].forEach(ctrClient => {
             const clientKey = `ctr-${ctrClient.callsign}`;
-            cachedClientsRef.current.set(clientKey, ctrClient);
-            visibleAirspaceKeys.add(clientKey);
+            activeKeys.add(clientKey);
+            if (!airspaceCacheRef.current.has(clientKey)) {
+                airspaceCacheRef.current.set(clientKey, {
+                    client: ctrClient,
+                    airspace: getAirspaceCoordinates(ctrClient),
+                });
+            } else {
+                airspaceCacheRef.current.get(clientKey).client = ctrClient;
+            }
         });
     }
 
-    cachedClientsRef.current.forEach((client, clientKey) => {
-        polygons.push(calculatePolygon(clientKey, client, visible && visibleAirspaceKeys.has(clientKey)));
+    // Render all cached entries, evict stale ones
+    airspaceCacheRef.current.forEach((cached, clientKey) => {
+        if (activeKeys.has(clientKey)) {
+            staleTallyRef.current.delete(clientKey);
+            polygons.push(renderPolygonElements(clientKey, cached, visible));
+        } else {
+            const tally = (staleTallyRef.current.get(clientKey) || 0) + 1;
+            if (tally > STALE_EVICT_THRESHOLD) {
+                airspaceCacheRef.current.delete(clientKey);
+                staleTallyRef.current.delete(clientKey);
+            } else {
+                staleTallyRef.current.set(clientKey, tally);
+                polygons.push(renderPolygonElements(clientKey, cached, false));
+            }
+        }
     });
 
     return polygons;
