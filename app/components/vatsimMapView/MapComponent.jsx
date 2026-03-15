@@ -4,14 +4,39 @@ import allActions from '../../redux/actions';
 import generateCtrPolygons from './CTRPolygons';
 import PilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
-import {StyleSheet, View} from 'react-native';
-import React, {useRef} from 'react';
+import {AppState, Platform, StyleSheet, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
+
+// ANDROID WORKAROUND: When the app resumes from background, the native
+// Google Maps view can retain stale marker overlays from its saved instance
+// state. React's reconciliation updates its own markers correctly, but the
+// native ghosts persist outside React's control. Incrementing the MapView
+// key forces a full native remount, clearing all ghost overlays.
+const useMapRemountKey = () => {
+    const [mapKey, setMapKey] = useState(0);
+    const appStateRef = useRef(AppState.currentState);
+
+    useEffect(() => {
+        if (Platform.OS !== 'android') return;
+
+        const sub = AppState.addEventListener('change', (nextState) => {
+            if (appStateRef.current.match(/inactive|background/) && nextState === 'active') {
+                setMapKey(k => k + 1);
+            }
+            appStateRef.current = nextState;
+        });
+        return () => sub.remove();
+    }, []);
+
+    return mapKey;
+};
 
 const MapComponent = ({onMapPress}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
+    const mapKey = useMapRemountKey();
     const {activeMapStyle} = useTheme();
     const ctr = useSelector(state => state.vatsimLiveData.clients.ctr);
     const fss = useSelector(state => state.vatsimLiveData.clients.fss);
@@ -23,6 +48,7 @@ const MapComponent = ({onMapPress}) => {
     const filters = useSelector(state => state.app.filters);
 
     return <MapView
+        key={mapKey}
         ref={ref}
         style={styles.mapStyle}
         customMapStyle={activeMapStyle}
