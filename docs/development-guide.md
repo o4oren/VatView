@@ -77,6 +77,21 @@ No test suite is configured. Manual testing on device/emulator.
 
 ---
 
+## Aircraft Icon Sizing Behavior
+
+`AircraftIconService` intentionally caches **one bitmap size per icon key** (for example `B737`, `A320`, `C172`) rather than multiple size variants.
+
+Why:
+- Android `react-native-maps` marker rendering from file URIs showed inconsistent visual sizing with variant-based assets across build modes/devices.
+- A single resolved display size (`sizeDp`) per icon key produced stable cross-platform marker sizing.
+
+How:
+- Display size is `sizeDp` (derived from icon scale and a 32dp base).
+- Render size is `sizeDp * PixelRatio` to keep markers sharp on high-density screens.
+- `iconsHelper.getAircraftIcon()` returns `[imageSource, sizeDp]`; callers should treat `sizeDp` as the source of truth for marker dimensions.
+
+---
+
 ## Build & Distribution (EAS)
 
 ### Development Workflow

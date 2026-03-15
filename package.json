@@ -11,7 +11,10 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*)"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@shopify/react-native-skia)"
+    ],
+    "setupFiles": [
+      "./jest.setup.js"
     ]
   },
   "dependencies": {
@@ -34,6 +37,7 @@
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/native-stack": "^7.0.0",
     "@redux-devtools/extension": "^3.3.0",
+    "@shopify/react-native-skia": "2.4.18",
     "aewx-metar-parser": "^0.10.1",
     "expo": "^55.0.6",
     "expo-blur": "~55.0.9",

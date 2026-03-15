@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import allActions from '../../redux/actions';
 import {ONE_MONTH, STATIC_DATA_VERSION} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
@@ -14,6 +14,8 @@ import BookingsView from '../BookingsView/BookingsView';
 import * as NavigationBar from 'expo-navigation-bar';
 import {Platform} from 'react-native';
 import analytics from '../../common/analytics';
+import {useTheme} from '../../common/ThemeProvider';
+import {init as initAircraftIcons} from '../../common/aircraftIconService';
 
 
 export default function mainApp() {
@@ -21,6 +23,21 @@ export default function mainApp() {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const airportsLoaded = useSelector(state => state.app.airportsLoaded);
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
+    const {activeTheme} = useTheme();
+    const [iconsReady, setIconsReady] = useState(false);
+
+    // Initialize aircraft icon cache with current theme
+    useEffect(() => {
+        initAircraftIcons(activeTheme)
+            .catch((error) => {
+                // Keep app startup non-blocking: PilotMarkers has a PNG fallback path.
+                console.warn('Aircraft icon init failed, using fallback icons:', error);
+            })
+            .finally(() => {
+                setIconsReady(true);
+            });
+    }, [activeTheme]);
+
     useEffect(() => {
         analytics.setUserProperty('user_type', 'anonymous');
         if (Platform.OS === 'android') {
@@ -66,7 +83,7 @@ export default function mainApp() {
 
     function isReady() {
         console.log("airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length", airportsLoaded + ' ' + firBoundariesLoaded + ' ' +  Object.keys(staticAirspaceData.firs).length)
-            return airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length > 0;
+            return airportsLoaded && firBoundariesLoaded && iconsReady && Object.keys(staticAirspaceData.firs).length > 0;
     }
 
     useEffect(() => {
@@ -78,7 +95,7 @@ export default function mainApp() {
                 clearInterval(interval);
             };
         }
-    }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded]);
+    }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded, iconsReady]);
 
     const Stack = createNativeStackNavigator();
     const navigationRef = useRef();

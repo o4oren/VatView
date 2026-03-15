@@ -28,6 +28,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Crash Reporting:** Firebase Crashlytics (@react-native-firebase 23.x)
 - **HTML Rendering:** react-native-render-html 6.x (requires `contentWidth` prop)
 - **Intl Polyfills:** @formatjs/intl-* suite (required on Hermes/Android)
+- **SVG Rendering:** @shopify/react-native-skia 2.x (offscreen SVG-to-bitmap rendering for aircraft icon pipeline)
 - **Linting:** ESLint 8 with eslint:recommended + react-native plugins
 
 ## Critical Implementation Rules
