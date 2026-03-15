@@ -31,16 +31,16 @@ const MapComponent = ({screenSize}) => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, selectedClient, airports, cachedFirBoundaries)}
+        {getMarkers(clients, airports, cachedFirBoundaries)}
+        {renderFromToPath(selectedClient, airports)}
     </MapView>;
 };
 
-const getMarkers = (clients, selectedClient, airports, cachedFirBoundaries) => {
+const getMarkers = (clients, airports, cachedFirBoundaries) => {
     const markers = [
         generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
         generatePilotMarkers(),
         generateAirportMarkers(clients.airportAtc, airports),
-        renderFromToPath(selectedClient,airports)
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
     });
@@ -76,6 +76,7 @@ const renderFromToPath = (selectedClient, airports) => {
 
         return [depLine, arrLine].filter(Boolean);
     }
+    return [];
 };
 
 const styles = StyleSheet.create({
