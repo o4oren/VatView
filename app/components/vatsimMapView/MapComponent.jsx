@@ -1,10 +1,10 @@
 import MapView, {Polyline} from 'react-native-maps';
 import {useTheme} from '../../common/ThemeProvider';
 import allActions from '../../redux/actions';
-import generateCtrPolygons from './CTRPolygons';
+import CTRPolygons from './CTRPolygons';
 import PilotMarkers from './PilotMarkers';
-import generateAirportMarkers from './AirportMarkers';
-import {AppState, Platform, StyleSheet, View} from 'react-native';
+import AirportMarkers from './AirportMarkers';
+import {AppState, Platform, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
@@ -38,11 +38,7 @@ const MapComponent = ({onMapPress}) => {
     const ref = useRef(null);
     const mapKey = useMapRemountKey();
     const {activeMapStyle} = useTheme();
-    const ctr = useSelector(state => state.vatsimLiveData.clients.ctr);
-    const fss = useSelector(state => state.vatsimLiveData.clients.fss);
-    const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc);
     const cachedAirports = useSelector(state => state.vatsimLiveData.cachedAirports);
-    const cachedFirBoundaries = useSelector(state => state.vatsimLiveData.cachedFirBoundaries);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
     const filters = useSelector(state => state.app.filters);
@@ -59,35 +55,15 @@ const MapComponent = ({onMapPress}) => {
         onPress={onMapPress}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(ctr, fss, airportAtc, cachedAirports, cachedFirBoundaries, filters)}
+        <CTRPolygons visible={filters.atc} />
+        <AirportMarkers visible={filters.atc} />
         {filters.pilots && <PilotMarkers />}
         {renderFromToPath(selectedClient, cachedAirports, filters.pilots)}
     </MapView>;
 };
 
-const getMarkers = (ctr, fss, airportAtc, cachedAirports, cachedFirBoundaries, filters) => {
-    // ANDROID WORKAROUND: react-native-maps does not properly remove native
-    // Polygon/Circle overlays when their React elements unmount on Android
-    // (see https://github.com/react-native-maps/react-native-maps/issues/5052,
-    // #5080, #3783). Removing polygons from the tree leaves invisible "ghost"
-    // overlays that accumulate on each 20s data poll, causing doubled polygons
-    // and polygons that stay visible after the ATC filter is toggled off.
-    // Fix: always keep polygons in the React tree and toggle their fill/stroke
-    // to transparent when hidden. React reconciles by stable overlay keys,
-    // so no extra native overlays are created — only props are updated.
-    const ctrMarkers = generateCtrPolygons(ctr, fss, cachedFirBoundaries, filters.atc);
-    const airportMarkers = generateAirportMarkers(airportAtc, cachedAirports, filters.atc);
-    const markers = [
-        ctrMarkers,
-        airportMarkers,
-    ].flat(1).sort((a,b) => {
-        return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
-    });
-    return markers;
-};
-
 // ANDROID WORKAROUND: Polylines suffer from the same ghost overlay issue as
-// Polygons (see getMarkers comment). Use two permanent Polyline elements with
+// Polygons (see above). Use two permanent Polyline elements with
 // fixed keys that never unmount. Toggle coordinates and color instead.
 const TRANSPARENT = 'rgba(0,0,0,0)';
 const ZERO_COORD = [{latitude: 0, longitude: 0}, {latitude: 0, longitude: 0}];

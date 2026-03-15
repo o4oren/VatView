@@ -1,7 +1,7 @@
-import MapView, {Marker, Polygon} from 'react-native-maps';
+import {Marker, Polygon} from 'react-native-maps';
 import {Text} from 'react-native';
 import React, {useRef} from 'react';
-import theme from '../../common/theme';
+import {useTheme} from '../../common/ThemeProvider';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -12,11 +12,14 @@ const TRANSPARENT = 'rgba(0,0,0,0)';
 // Evict cached overlays after this many consecutive polls without the controller (~100s at 20s polling)
 const STALE_EVICT_THRESHOLD = 5;
 
-export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visible = true) {
+const CTRPolygons = React.memo(function CTRPolygons({visible = true}) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
-    // Cache resolved airspace data (not raw clients) to avoid recomputing getAirspaceCoordinates
-    // for disconnected controllers on every render
+    const ctr = useSelector(state => state.vatsimLiveData.clients.ctr);
+    const fss = useSelector(state => state.vatsimLiveData.clients.fss);
+    const cachedFirBoundaries = useSelector(state => state.vatsimLiveData.cachedFirBoundaries);
+    const {activeTheme} = useTheme();
+
     const airspaceCacheRef = useRef(new Map());
     const staleTallyRef = useRef(new Map());
     const polygons = [];
@@ -27,7 +30,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
     };
 
     const getAirspaceCoordinates = client => {
-        // Because of CZEG_FSS actually being a CTR, returned the logic from before relying on facilitytype
         let isOceanic = false;
         const callsignPrefix = client.callsign.split('_')[0];
 
@@ -39,12 +41,10 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
 
         // exclude problematic FSSs
         if (EXCLUDED_CALLSIGNS.includes(client.callsign) || client.frequency === '199.998' || client.callsign.split('_').pop() === 'OBS') {
-            console.log('Excluded client: ' + client.callsign);
             return airspace;
         }
         // If client is FIR
         if (cachedFirBoundaries[callsignPrefix]) {
-            console.log(callsignPrefix + ' is in cached boundaries');
             cachedFirBoundaries[callsignPrefix].forEach(fir => {
                 airspace.firs.push(fir);
             });
@@ -52,7 +52,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
             // if we did not find by icao
             const fir = staticAirspaceData.firs.find(f => f.prefix == callsignPrefix);
             if(fir && fir.icao) {
-                console.log(callsignPrefix + ' is not in cached boundaries');
                 if (cachedFirBoundaries[fir.icao]) {
                     cachedFirBoundaries[fir.icao].forEach(f => airspace.firs.push(f));
                 }
@@ -104,8 +103,6 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
             }
         }
 
-        if (airspace.firs.length === 0)
-            console.log('Airspace could not be resolved - ' + client.callsign + ' facility type: ' + client.facility + ' prefix used: ' + callsignPrefix);
         return airspace;
     };
 
@@ -113,15 +110,16 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
         const {client, airspace} = cached;
         const elements = [];
         if (airspace.isUir) {
+            const uirTextStyle = {fontSize: 16, fontWeight: 'bold', color: activeTheme.atc.uir};
             airspace.firs.forEach((fir, i) => {
                 elements.push(
                     <Polygon
                         key={`${clientKey}-uir-polygon-${i}`}
                         coordinates={fir.points}
                         holes={fir.holes || []}
-                        strokeColor={isVisible ? theme.blueGrey.uirStrokeColor : TRANSPARENT}
-                        fillColor={isVisible ? theme.blueGrey.uirFill : TRANSPARENT}
-                        strokeWidth={isVisible ? theme.blueGrey.uirStrokeWidth : 0}
+                        strokeColor={isVisible ? activeTheme.atc.uir : TRANSPARENT}
+                        fillColor={isVisible ? activeTheme.atc.uirFill : TRANSPARENT}
+                        strokeWidth={isVisible ? activeTheme.atc.uirStrokeWidth : 0}
                         geodesic={true}
                         tappable={isVisible}
                         onPress={() => onPress(client)}
@@ -138,7 +136,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
                     >
                         <Text
                             key={`${clientKey}-uir-text`}
-                            style={theme.blueGrey.uirTextStyle}
+                            style={uirTextStyle}
                             onPress={() => onPress(client)}
                         >
                             {client.callsign}
@@ -147,6 +145,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
                 );
             }
         } else {
+            const firTextStyle = {fontSize: 16, fontWeight: 'bold', color: activeTheme.atc.fir};
             airspace.firs.forEach((fir, i) => {
                 if (!fir.center) return;
                 elements.push(
@@ -154,9 +153,9 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
                         key={`${clientKey}-polygon-${fir.icao || 'segment'}-${i}`}
                         coordinates={fir.points}
                         holes={fir.holes || []}
-                        strokeColor={isVisible ? theme.blueGrey.firStrokeColor : TRANSPARENT}
-                        fillColor={isVisible ? theme.blueGrey.firFill : TRANSPARENT}
-                        strokeWidth={isVisible ? theme.blueGrey.firStrokeWidth : 0}
+                        strokeColor={isVisible ? activeTheme.atc.fir : TRANSPARENT}
+                        fillColor={isVisible ? activeTheme.atc.firFill : TRANSPARENT}
+                        strokeWidth={isVisible ? activeTheme.atc.firStrokeWidth : 0}
                         geodesic={true}
                         tappable={isVisible}
                         onPress={() => onPress(client)}
@@ -171,7 +170,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
                             tracksInfoWindowChanges={false}
                         >
                             <Text
-                                style={theme.blueGrey.firTextStyle}
+                                style={firTextStyle}
                                 onPress={() => onPress(client)}
                             >
                                 {fir.icao}
@@ -233,5 +232,7 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visib
         }
     });
 
-    return polygons;
-}
+    return <>{polygons}</>;
+});
+
+export default CTRPolygons;

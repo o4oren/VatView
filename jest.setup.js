@@ -16,6 +16,8 @@ jest.mock('react-native-maps', () => {
         __esModule: true,
         default: 'MapView',
         Marker: 'Marker',
+        Polygon: 'Polygon',
+        Circle: 'Circle',
         Polyline: 'Polyline',
     };
 });
