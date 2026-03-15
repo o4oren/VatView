@@ -16,6 +16,7 @@ const MapComponent = () => {
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
+    const filters = useSelector(state => state.app.filters);
 
     const clients = vatsimLiveData.clients;
     const airports = vatsimLiveData.cachedAirports;
@@ -31,16 +32,19 @@ const MapComponent = () => {
         initialRegion={initialRegion}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, airports, cachedFirBoundaries)}
+        {getMarkers(clients, airports, cachedFirBoundaries, filters)}
         {renderFromToPath(selectedClient, airports)}
     </MapView>;
 };
 
-const getMarkers = (clients, airports, cachedFirBoundaries) => {
+const getMarkers = (clients, airports, cachedFirBoundaries, filters) => {
+    const ctrMarkers = generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries);
+    const pilotMarkers = generatePilotMarkers();
+    const airportMarkers = generateAirportMarkers(clients.airportAtc, airports);
     const markers = [
-        generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries),
-        generatePilotMarkers(),
-        generateAirportMarkers(clients.airportAtc, airports),
+        filters.atc ? ctrMarkers : [],
+        filters.pilots ? pilotMarkers : [],
+        filters.atc ? airportMarkers : [],
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);
     });

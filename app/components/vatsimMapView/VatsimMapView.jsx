@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
+import FloatingFilterChips from '../filterBar/FloatingFilterChips';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import analytics from '../../common/analytics';
 
@@ -69,6 +70,7 @@ export default function VatsimMapView() {
     return (
         <View style={StyleSheet.absoluteFillObject}>
             <MapComponent />
+            <FloatingFilterChips />
             <BottomSheet
                 ref={sheetRef}
                 enablePanDownToClose={true}
