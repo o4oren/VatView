@@ -1,5 +1,5 @@
 import {
-    CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
+    CLIENT_SELECTED, INITIAL_REGION_LOADED, REGION_UPDATED, AIRPORT_SELECTED,
     ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED
 } from '../actions/appActions';
 
@@ -20,6 +20,8 @@ const appReducer = (state = {
     switch (action.type) {
     case INITIAL_REGION_LOADED:
         return {...state, initialRegion: action.payload.initialRegion};
+    case REGION_UPDATED:
+        return {...state, initialRegion: action.payload.region.region};
     case CLIENT_SELECTED:
         return {...state, selectedClient: action.payload.selectedClient};
     case AIRPORT_SELECTED:
