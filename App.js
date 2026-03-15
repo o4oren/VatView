@@ -12,10 +12,12 @@ import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
 import theme from './app/common/theme';
 import {StyleSheet, Text, View} from 'react-native';
-import {StatusBar} from 'expo-status-bar';
+
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import analyticsMiddleware from './app/common/analyticsMiddleware';
 import {useFonts, JetBrainsMono_400Regular, JetBrainsMono_700Bold} from '@expo-google-fonts/jetbrains-mono';
+import ThemeProvider from './app/common/ThemeProvider';
+import StatusBarController from './app/common/StatusBarController';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, analyticsMiddleware));
 
@@ -137,15 +139,14 @@ export default function App() {
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
         <GestureHandlerRootView style={styles.root}>
-            <Provider store={store}>
-                <PaperProvider theme={theme.blueGrey.theme}>
-                    <StatusBar
-                        backgroundColor={theme.blueGrey.theme.colors.primary}
-                        style="light"
-                    />
-                    <MainApp />
-                </PaperProvider>
-            </Provider>
+            <ThemeProvider>
+                <Provider store={store}>
+                    <PaperProvider theme={theme.blueGrey.theme}>
+                        <StatusBarController />
+                        <MainApp />
+                    </PaperProvider>
+                </Provider>
+            </ThemeProvider>
         </GestureHandlerRootView>
     );
 }
