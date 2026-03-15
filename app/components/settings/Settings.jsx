@@ -26,6 +26,30 @@ const Settings = () => {
             end={end}
             style={styles.container}>
             <ScrollView style={styles.textArea}>
+                <View style={styles.aboutHeader}>
+                    <View style={styles.logoRow}>
+                        <View style={styles.aboutTitleBlock}>
+                            <Text variant="titleLarge">VatView</Text>
+                            <Text variant="bodySmall" style={styles.muted}>
+                                Your mobile VATSIM companion
+                            </Text>
+                        </View>
+                        <View style={styles.logoContainer}>
+                            <Image
+                                source={require('../../../assets/icon-256.png')}
+                                style={styles.logo}
+                            />
+                        </View>
+                    </View>
+                </View>
+
+                <Text variant="bodySmall" style={styles.muted}>
+                    Track live VATSIM traffic, ATC coverage, ATIS, and events — all without leaving the sim. Not affiliated with VATSIM.
+                </Text>
+
+                <Divider style={styles.divider} />
+
+                <Text variant="titleSmall">Settings</Text>
                 <List.Item
                     title="Auto-refresh static data"
                     description="Auto refresh the app's static data - FIR Boundaries, Airport codes, etc."
@@ -38,29 +62,6 @@ const Settings = () => {
                             }}
                         />
                     }/>
-
-                <Divider style={styles.divider} />
-
-                <View style={styles.aboutHeader}>
-                    <View style={styles.logoRow}>
-                        <View style={styles.logoContainer}>
-                            <Image
-                                source={require('../../../assets/icon-256.png')}
-                                style={styles.logo}
-                            />
-                        </View>
-                        <View style={styles.aboutTitleBlock}>
-                            <Text variant="titleLarge">VatView</Text>
-                            <Text variant="bodySmall" style={styles.muted}>
-                                Your mobile VATSIM companion
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-
-                <Text variant="bodySmall" style={styles.muted}>
-                    Track live VATSIM traffic, ATC coverage, ATIS, and events — all without leaving the sim. Not affiliated with VATSIM.
-                </Text>
 
                 <Divider style={styles.divider} />
 
@@ -92,7 +93,7 @@ const Settings = () => {
                 <Text variant="bodySmall">TRACON Boundaries: {traconReleaseTag || 'N/A'}</Text>
 
                 <Divider style={styles.divider} />
-                <Text variant="bodySmall" style={styles.muted}>© Oren Geva 2021</Text>
+                <Text variant="bodySmall" style={styles.muted}>© Oren Geva 2021-{new Date().getFullYear()}</Text>
             </ScrollView>
         </LinearGradient>
     </View>;
@@ -108,7 +109,8 @@ const styles = StyleSheet.create({
         flex: 1
     },
     aboutHeader: {
-        marginVertical: 8,
+        marginTop: 40,
+        marginBottom: 8,
     },
     logoRow: {
         flexDirection: 'row',
