@@ -2,7 +2,7 @@ import MapView, {Polyline} from 'react-native-maps';
 import {useTheme} from '../../common/ThemeProvider';
 import allActions from '../../redux/actions';
 import generateCtrPolygons from './CTRPolygons';
-import generatePilotMarkers from './PilotMarkers';
+import PilotMarkers from './PilotMarkers';
 import generateAirportMarkers from './AirportMarkers';
 import {StyleSheet, View} from 'react-native';
 import React, {useRef} from 'react';
@@ -13,14 +13,14 @@ const MapComponent = ({onMapPress}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
     const {activeMapStyle} = useTheme();
-    const vatsimLiveData = useSelector(state => state.vatsimLiveData);
+    const ctr = useSelector(state => state.vatsimLiveData.clients.ctr);
+    const fss = useSelector(state => state.vatsimLiveData.clients.fss);
+    const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc);
+    const cachedAirports = useSelector(state => state.vatsimLiveData.cachedAirports);
+    const cachedFirBoundaries = useSelector(state => state.vatsimLiveData.cachedFirBoundaries);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
     const filters = useSelector(state => state.app.filters);
-
-    const clients = vatsimLiveData.clients;
-    const airports = vatsimLiveData.cachedAirports;
-    const cachedFirBoundaries = vatsimLiveData.cachedFirBoundaries;
 
     return <MapView
         ref={ref}
@@ -33,12 +33,13 @@ const MapComponent = ({onMapPress}) => {
         onPress={onMapPress}
         onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
     >
-        {getMarkers(clients, airports, cachedFirBoundaries, filters)}
-        {renderFromToPath(selectedClient, airports, filters.pilots)}
+        {getMarkers(ctr, fss, airportAtc, cachedAirports, cachedFirBoundaries, filters)}
+        {filters.pilots && <PilotMarkers />}
+        {renderFromToPath(selectedClient, cachedAirports, filters.pilots)}
     </MapView>;
 };
 
-const getMarkers = (clients, airports, cachedFirBoundaries, filters) => {
+const getMarkers = (ctr, fss, airportAtc, cachedAirports, cachedFirBoundaries, filters) => {
     // ANDROID WORKAROUND: react-native-maps does not properly remove native
     // Polygon/Circle overlays when their React elements unmount on Android
     // (see https://github.com/react-native-maps/react-native-maps/issues/5052,
@@ -48,12 +49,10 @@ const getMarkers = (clients, airports, cachedFirBoundaries, filters) => {
     // Fix: always keep polygons in the React tree and toggle their fill/stroke
     // to transparent when hidden. React reconciles by stable overlay keys,
     // so no extra native overlays are created — only props are updated.
-    const ctrMarkers = generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries, filters.atc);
-    const pilotMarkers = generatePilotMarkers();
-    const airportMarkers = generateAirportMarkers(clients.airportAtc, airports, filters.atc);
+    const ctrMarkers = generateCtrPolygons(ctr, fss, cachedFirBoundaries, filters.atc);
+    const airportMarkers = generateAirportMarkers(airportAtc, cachedAirports, filters.atc);
     const markers = [
         ctrMarkers,
-        filters.pilots ? pilotMarkers : [],
         airportMarkers,
     ].flat(1).sort((a,b) => {
         return a.key > b.key ? 1 : (b.key > a.key ? -1 : 0);

@@ -60,7 +60,7 @@ development_status:
   # Epic 3: Map Data Layers — Pilots, ATC & Airports
   epic-3: in-progress
   3-1-aircrafticonservice-svg-to-bitmap-pipeline: done
-  3-2-pilot-markers-with-svg-aircraft-icons: backlog
+  3-2-pilot-markers-with-svg-aircraft-icons: done
   3-3-atc-polygon-overlays-fir-and-tracon: backlog
   3-4-zoom-aware-airport-markers-infrastructure-and-image-markers: backlog
   3-5-airport-markers-local-zoom-atc-badges-and-traffic-counts: backlog

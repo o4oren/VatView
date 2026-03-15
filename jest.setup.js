@@ -1,3 +1,25 @@
+// Mock AsyncStorage for Jest
+jest.mock('@react-native-async-storage/async-storage', () => ({
+    __esModule: true,
+    default: {
+        getItem: jest.fn(() => Promise.resolve(null)),
+        setItem: jest.fn(() => Promise.resolve()),
+        removeItem: jest.fn(() => Promise.resolve()),
+        multiGet: jest.fn(() => Promise.resolve([])),
+        multiSet: jest.fn(() => Promise.resolve()),
+    },
+}));
+
+// Mock react-native-maps for Jest
+jest.mock('react-native-maps', () => {
+    return {
+        __esModule: true,
+        default: 'MapView',
+        Marker: 'Marker',
+        Polyline: 'Polyline',
+    };
+});
+
 // Mock @shopify/react-native-skia for Jest
 jest.mock('@shopify/react-native-skia', () => ({
     Skia: {

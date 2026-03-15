@@ -7,6 +7,14 @@ import {mapIcons} from '../../common/iconsHelper';
 
 const isAndroid = Platform.OS === 'android';
 
+export const pilotMarkerItemPropsEqual = (prev, next) =>
+    prev.pilot.key === next.pilot.key &&
+    prev.pilot.latitude === next.pilot.latitude &&
+    prev.pilot.longitude === next.pilot.longitude &&
+    prev.pilot.heading === next.pilot.heading &&
+    prev.pilotImage === next.pilotImage &&
+    prev.onPress === next.onPress;
+
 const PilotMarkerItem = React.memo(({pilot, pilotImage, pilotImageSize, onPress}) => {
     return isAndroid ? (
         <Marker
@@ -36,21 +44,15 @@ const PilotMarkerItem = React.memo(({pilot, pilotImage, pilotImageSize, onPress}
             />
         </Marker>
     );
-}, (prev, next) =>
-    prev.pilot.key === next.pilot.key &&
-    prev.pilot.latitude === next.pilot.latitude &&
-    prev.pilot.longitude === next.pilot.longitude &&
-    prev.pilot.heading === next.pilot.heading &&
-    prev.pilotImage === next.pilotImage &&
-    prev.onPress === next.onPress
-);
+}, pilotMarkerItemPropsEqual);
 
-export default function generatePilotMarkers() {
+const defaultImageSize = isAndroid ? 64 : 32;
+
+const PilotMarkers = React.memo(function PilotMarkers() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
 
     const dispatch = useDispatch();
-    const defaultImageSize = isAndroid ? 64 : 32;
     const selectedClientRef = useRef(selectedClient);
     useEffect(() => {
         selectedClientRef.current = selectedClient;
@@ -63,12 +65,9 @@ export default function generatePilotMarkers() {
         }
     }, [dispatch]);
 
-    const pilotMarkers = pilots.map( pilot => {
+    return pilots.map(pilot => {
         const pilotImage = pilot.image || mapIcons.B737;
         const pilotImageSize = pilot.image ? pilot.imageSize : defaultImageSize;
-        if (!pilot.image) {
-            console.warn('Pilot missing image:', pilot.callsign);
-        }
 
         return <PilotMarkerItem
             key={pilot.key}
@@ -76,9 +75,8 @@ export default function generatePilotMarkers() {
             pilotImage={pilotImage}
             pilotImageSize={pilotImageSize}
             onPress={onPress}
-            tracksViewChanges={false}
         />;
     });
+});
 
-    return pilotMarkers;
-}
+export default PilotMarkers;

@@ -11,7 +11,7 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@shopify/react-native-skia)"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@shopify/react-native-skia|react-redux|redux)"
     ],
     "setupFiles": [
       "./jest.setup.js"
@@ -61,6 +61,7 @@
     "react-native": "0.83.2",
     "react-native-css-interop": "^0.2.2",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-map-clustering": "^4.0.0",
     "react-native-maps": "1.26.20",
     "react-native-pager-view": "8.0.0",
     "react-native-paper": "^5.0.0",
