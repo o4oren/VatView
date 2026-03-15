@@ -421,6 +421,8 @@ So that I can identify aircraft types and flight directions at a glance.
 **And** pilot markers are hidden when the Pilots filter chip is toggled off
 **And** `ClusteredPilotMarkers.jsx` continues functioning with the new marker images
 
+**Epic 2 Retro — Performance Refactor Note:** `generatePilotMarkers` is currently a hook-calling function, not a component. As part of this story, refactor it into a proper React component with `React.memo` so React can manage its render lifecycle independently of `MapComponent`. This avoids re-running the full pilot marker loop on every 20s poll when inputs haven't changed.
+
 ### Story 3.3: ATC Polygon Overlays — FIR & TRACON
 
 As a user,
@@ -439,6 +441,8 @@ So that I can visually assess ATC coverage at a glance.
 **And** all existing polygon functionality (FIR boundaries, TRACON circles/polygons, fallback circles) continues identically (FR43)
 **And** polygon styles use `StyleSheet.create()` (not NativeWind) as required for `react-native-maps` Polygon components
 
+**Epic 2 Retro — Performance Refactor Note:** `generateCtrPolygons` is currently a hook-calling function, not a component. As part of this story, refactor it into a proper React component with `React.memo`. Also memoize `getMarkers` in `MapComponent.jsx` with `useMemo` and replace the broad `vatsimLiveData` selector with targeted selectors (`clients`, `cachedAirports`, `cachedFirBoundaries`).
+
 ### Story 3.4: Zoom-Aware Airport Markers — Infrastructure & Image Markers
 
 As a user,
@@ -456,6 +460,8 @@ So that the map stays clean at continental view but reveals more airports as I f
 **And** airport dot color is blue when any ATC is staffed, grey when unstaffed
 **And** touch targets meet 44x44px minimum (expanded hit area beyond visual bounds)
 **And** rendering hundreds of airports at continental/regional zoom maintains 60fps panning
+
+**Epic 2 Retro — Performance Refactor Note:** `generateAirportMarkers` is currently a hook-calling function, not a component. As part of this story, refactor it into a proper React component with `React.memo` so React can independently manage its render lifecycle and bail out when inputs haven't changed.
 
 ### Story 3.5: Airport Markers — Local Zoom ATC Badges & Traffic Counts
 
