@@ -15,7 +15,7 @@ import {StyleSheet, Text, View} from 'react-native';
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import analyticsMiddleware from './app/common/analyticsMiddleware';
-import {useFonts, JetBrainsMono_400Regular, JetBrainsMono_700Bold} from '@expo-google-fonts/jetbrains-mono';
+import {useFonts, JetBrainsMono_400Regular, JetBrainsMono_500Medium, JetBrainsMono_700Bold} from '@expo-google-fonts/jetbrains-mono';
 import ThemeProvider from './app/common/ThemeProvider';
 import StatusBarController from './app/common/StatusBarController';
 
@@ -74,6 +74,7 @@ if (isHermesEnabled || isAndroid) {
 export default function App() {
     const [fontsLoaded] = useFonts({
         JetBrainsMono_400Regular,
+        JetBrainsMono_500Medium,
         JetBrainsMono_700Bold,
     });
     const [state, setState] = useState({isReady: false});
