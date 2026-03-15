@@ -7,10 +7,10 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import analytics from '../../common/analytics';
 
 const TAB_DEFS = [
-    { name: 'Map',      icon: 'map',                 label: 'Map, tab, 1 of 4' },
-    { name: 'List',     icon: 'format-list-bulleted', label: 'List, tab, 2 of 4' },
-    { name: 'Airports', icon: 'airport',              label: 'Airports, tab, 3 of 4' },
-    { name: 'Events',   icon: 'calendar-star',        label: 'Events, tab, 4 of 4' },
+    { name: 'Map',      icon: 'map',                  label: 'Map, tab, 1 of 5' },
+    { name: 'List',     icon: 'format-list-bulleted', label: 'List, tab, 2 of 5' },
+    { name: 'Airports', icon: 'airport',              label: 'Airports, tab, 3 of 5' },
+    { name: 'Events',   icon: 'calendar-star',        label: 'Events, tab, 4 of 5' },
 ];
 
 const ICON_SIZE = 24;
