@@ -77,6 +77,7 @@ const tokens = {
     fontFamily: {
         sans: 'System',
         mono: 'JetBrainsMono_400Regular',
+        monoMedium: 'JetBrainsMono_500Medium',
     },
 };
 
