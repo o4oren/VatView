@@ -41,17 +41,17 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   # Epic 1: Foundation — Theme System & Design Tokens
-  epic-1: in-progress
+  epic-1: done
   1-1-nativewind-infrastructure-and-design-token-system: done
   1-2-theme-provider-and-dual-map-styling: done
   1-3-blurwrapper-and-translucentsurface-components: done
   1-4-themedtext-and-shared-typography-components: done
-  1-5-listitem-base-component-and-staleindicator: backlog
-  epic-1-retrospective: optional
+  1-5-listitem-base-component-and-staleindicator: done
+  epic-1-retrospective: done
 
   # Epic 2: Immersive Map & Floating Navigation
-  epic-2: backlog
-  2-1-full-bleed-map-and-remove-chrome: backlog
+  epic-2: in-progress
+  2-1-full-bleed-map-and-remove-chrome: done
   2-2-floating-navigation-island: backlog
   2-3-floating-filter-chips: backlog
   2-4-mapoverlaygroup-floating-element-orchestrator: backlog

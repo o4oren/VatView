@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, Dimensions} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
-import theme from '../../common/theme';
 import ClientDetails from '../clientDetails/ClientDetails';
 import MapComponent from './MapComponent';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
@@ -15,10 +14,6 @@ export default function VatsimMapView() {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const [prevSelectedClient, setPrevSelectedClient] = useState({});
     const lastLoggedClientRef = useRef(null);
-    const [screenSize, setScreenSize] = useState({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    const updateScreenSize = () => {
-        setScreenSize({width: Dimensions.get('window').width, height: Dimensions.get('window').height});
-    };
 
     useEffect(() => {
         if (selectedClient == null)
@@ -72,13 +67,8 @@ export default function VatsimMapView() {
     }, [clients]);
 
     return (
-        <SafeAreaView
-            style={[theme.blueGrey.safeAreaView, {width: screenSize.width, flex: 1}]}
-            onLayout={updateScreenSize}
-        >
-            <MapComponent
-                screenSize={screenSize}
-            />
+        <View style={StyleSheet.absoluteFillObject}>
+            <MapComponent />
             <BottomSheet
                 ref={sheetRef}
                 enablePanDownToClose={true}
@@ -111,7 +101,7 @@ export default function VatsimMapView() {
                     />
                 </BottomSheetView>
             </BottomSheet>
-        </SafeAreaView>
+        </View>
     );
 }
 
