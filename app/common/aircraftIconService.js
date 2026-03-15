@@ -38,7 +38,7 @@ const AIRCRAFT_TYPES = {
     B787: {
         svgFile: require('../../assets/svg/b787.svg'),
         scale: 0.9,
-        candidates: ['B788', 'B789', 'B78X', 'B78J'],
+        candidates: ['B788', 'B789', 'B78X', 'B78J', 'MD11', 'MD10', 'DC10', 'DC1F'],
     },
     A340: {
         svgFile: require('../../assets/svg/a340.svg'),
