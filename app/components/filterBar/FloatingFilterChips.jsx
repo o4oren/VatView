@@ -35,7 +35,7 @@ export default function FloatingFilterChips() {
     }
 
     return (
-        <View style={[styles.container, {top: insets.top + 16}]}>
+        <View style={[styles.container, {top: insets.top + 16, left: insets.left + 16}]}>
             {CHIP_DEFS.map((chip) => {
                 const isActive = filters[chip.key];
                 const borderColor = isActive
@@ -53,12 +53,12 @@ export default function FloatingFilterChips() {
                         key={chip.key}
                         onPress={() => handleChipPress(chip)}
                         accessibilityRole='button'
-                        accessibilityLabel={`${chip.label} filter, ${isActive ? 'on' : 'off'}`}
+                        accessibilityLabel={`${chip.label} filter, toggle button, ${isActive ? 'on' : 'off'}`}
                         accessibilityState={{checked: isActive}}
                         style={styles.chipPressable}
                     >
                         <TranslucentSurface
-                            rounded='sm'
+                            rounded='md'
                             style={[
                                 styles.chipSurface,
                                 {borderWidth: 1, borderColor: borderColor},
@@ -84,7 +84,6 @@ export default function FloatingFilterChips() {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        left: 16,
         flexDirection: 'row',
         gap: 8,
         zIndex: 10,
