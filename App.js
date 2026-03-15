@@ -4,13 +4,11 @@ import {Provider} from 'react-redux';
 import {applyMiddleware, legacy_createStore as createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
-import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
 import {parseFirGeoJson, parseTraconJson} from './app/common/boundaryService';
 import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
-import theme from './app/common/theme';
 import {StyleSheet, Text, View} from 'react-native';
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -142,10 +140,8 @@ export default function App() {
         <GestureHandlerRootView style={styles.root}>
             <ThemeProvider>
                 <Provider store={store}>
-                    <PaperProvider theme={theme.blueGrey.theme}>
-                        <StatusBarController />
-                        <MainApp />
-                    </PaperProvider>
+                    <StatusBarController />
+                    <MainApp />
                 </Provider>
             </ThemeProvider>
         </GestureHandlerRootView>

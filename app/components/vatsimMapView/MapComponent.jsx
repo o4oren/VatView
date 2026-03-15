@@ -9,7 +9,7 @@ import React, {useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
 
-const MapComponent = ({screenSize}) => {
+const MapComponent = () => {
     const dispatch = useDispatch();
     const ref = useRef(null);
     const {activeMapStyle} = useTheme();
@@ -23,7 +23,7 @@ const MapComponent = ({screenSize}) => {
 
     return <MapView
         ref={ref}
-        style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
+        style={styles.mapStyle}
         customMapStyle={activeMapStyle}
         // provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
