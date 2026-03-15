@@ -62,18 +62,21 @@ On startup, `App.js` calls `retrieveSavedState()` to rehydrate the store before 
 
 ### Navigation
 
-React Navigation stack navigator at root with a bottom tab navigator inside:
+React Navigation stack navigator at root with a bottom tab navigator inside. The native tab bar is replaced by `FloatingNavIsland` — a translucent floating pill rendered via the `tabBar` prop. Settings and About are merged into a single Settings tab.
 
 ```
 Stack.Navigator
-├── MainTabNavigator (bottom tabs)
+├── MainTabNavigator (bottom tabs, custom tabBar = FloatingNavIsland)
 │   ├── Map → VatsimMapView (map + bottom sheet for client details)
 │   ├── List → VatsimListView (filterable pilot/ATC list)
 │   ├── Airports → AirportDetailsView
-│   └── Events → VatsimEventsView
-├── About, Settings, Network Status (modal screens)
+│   ├── Events → VatsimEventsView
+│   └── Settings → Settings (includes About info)
+├── Network Status (modal screen)
 ├── Event Details, ATC Bookings, Metar (stack screens)
 ```
+
+Tab screens are wrapped in `FadeScreen` for a 250ms cross-fade transition on focus.
 
 ### Key Directories
 

@@ -1,5 +1,5 @@
 import React, {useRef, useCallback} from 'react';
-import {Animated, View, StyleSheet} from 'react-native';
+import {Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useFocusEffect} from '@react-navigation/native';
 import {useTheme} from '../../common/ThemeProvider';
@@ -8,6 +8,7 @@ import VatsimMapView from '../vatsimMapView/VatsimMapView';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
+import Settings from '../settings/Settings';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import FloatingNavIsland from '../navigation/FloatingNavIsland';
 import analytics from '../../common/analytics';
@@ -39,12 +40,13 @@ function MapTab() { return <FadeScreen><VatsimMapView /></FadeScreen>; }
 function ListTab() { return <FadeScreen><VatsimListView /></FadeScreen>; }
 function AirportsTab() { return <FadeScreen><AirportDetailsView /></FadeScreen>; }
 function EventsTab() { return <FadeScreen><VatsimEventsView /></FadeScreen>; }
+function SettingsTab() { return <FadeScreen><Settings /></FadeScreen>; }
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
     const {activeTheme} = useTheme();
-    return <View style={StyleSheet.absoluteFillObject}>
-        <tab.Navigator
+    return <tab.Navigator
+        tabBar={(props) => <FloatingNavIsland {...props} />}
         screenListeners={({ route }) => ({
             tabPress: () => {
                 analytics.logEvent('nav_tab_switch', { tab_name: route.name });
@@ -54,7 +56,6 @@ export default function MainTabNavigator() {
             tabBarActiveTintColor: activeTheme.accent.primary,
             tabBarInactiveTintColor: activeTheme.text.secondary,
             headerShown: false,
-            tabBarStyle: { display: 'none' }
         }}
     >
         <tab.Screen
@@ -109,8 +110,18 @@ export default function MainTabNavigator() {
                 ),
             }}
         />
-    </tab.Navigator>
-        {/* TODO: Story 2.4 will move FloatingNavIsland into MapOverlayGroup */}
-        <FloatingNavIsland />
-    </View>;
+        <tab.Screen
+            name="Settings"
+            component={SettingsTab}
+            options={{
+                tabBarIcon: ({color, size}) => (
+                    <MaterialCommunityIcons
+                        name="cog-outline"
+                        size={size}
+                        color={color}
+                    />
+                ),
+            }}
+        />
+    </tab.Navigator>;
 }

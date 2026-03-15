@@ -359,9 +359,13 @@ claude-opus-4-6
 
 ### Completion Notes List
 
-- Created `app/components/navigation/FloatingNavIsland.jsx` — translucent pill with 4 tab icons + settings, absolute positioned via StyleSheet, safe area aware, accessible
+- Created `app/components/navigation/FloatingNavIsland.jsx` — translucent pill with 5 tabs (Map, List, Airports, Events, Settings), absolute positioned via StyleSheet, safe area aware, accessible
 - Restored and updated `MainTabNavigator.jsx` — fixed corruption from Story 2-1, added FadeScreen wrapper (250ms fade-in via useFocusEffect), module-level tab components to avoid re-mounting
-- Added FloatingNavIsland to VatsimMapView.jsx between MapComponent and BottomSheet (correct z-order), with TODO comment for Story 2.4 refactor
+- FloatingNavIsland uses `tabBar` prop on tab navigator (not rendered inside a single screen) — persists across all tabs
+- FloatingNavIsland accepts `{state, navigation}` props from tab navigator for tab switching
+- Settings moved from Stack screen to tab screen so FloatingNavIsland is visible on it
+- About screen merged into Settings (compact: small logo, shortened text, attributions, versions, copyright)
+- About screen and Stack.Screen registration removed from MainApp.jsx
 - ESLint: 0 new errors (5 pre-existing plugin warnings only)
 - All 10 acceptance criteria satisfied
 - Tasks 4.2–4.6 are manual verification items (require device testing)
@@ -369,10 +373,13 @@ claude-opus-4-6
 ### Change Log
 
 - 2026-03-15: Implemented Story 2.2 — FloatingNavIsland, FadeScreen tab transitions, restored MainTabNavigator
+- 2026-03-15: Moved FloatingNavIsland to tabBar prop for cross-tab persistence; Settings to tab; merged About into Settings
 
 ### File List
 
 - NEW: `app/components/navigation/FloatingNavIsland.jsx`
-- MODIFIED: `app/components/mainApp/MainTabNavigator.jsx` (restored from corruption + FadeScreen + tab wrappers)
-- MODIFIED: `app/components/vatsimMapView/VatsimMapView.jsx` (added FloatingNavIsland import and render)
+- MODIFIED: `app/components/mainApp/MainTabNavigator.jsx` (restored from corruption + FadeScreen + tab wrappers + tabBar prop + Settings tab)
+- MODIFIED: `app/components/mainApp/MainApp.jsx` (removed Settings and About Stack.Screens and imports)
+- MODIFIED: `app/components/settings/Settings.jsx` (merged About content: logo, attributions, versions)
+- MODIFIED: `CLAUDE.md` (updated Navigation section)
 - MODIFIED: `_bmad-output/implementation-artifacts/sprint-status.yaml` (status update)
