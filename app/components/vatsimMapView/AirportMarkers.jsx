@@ -1,11 +1,11 @@
 import {Circle, Marker, Polygon} from 'react-native-maps';
-import {Image, Platform} from 'react-native';
+import {Image, Platform, StyleSheet} from 'react-native';
 import React, {useCallback, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS, DEL, GND, TWR_ATIS} from '../../common/consts';
-import theme from '../../common/theme';
-import {mapIcons, getAtcIcon} from '../../common/iconsHelper';
+import {useTheme} from '../../common/ThemeProvider';
+import {getAtcIcon} from '../../common/iconsHelper';
 import {getAirportByCode} from '../../common/airportTools';
 import {lookupTracon} from '../../common/boundaryService';
 
@@ -39,7 +39,7 @@ const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
             <Image
                 source={image}
                 fadeDuration={0}
-                style={{height: 32, width: 32}}
+                style={styles.markerImage}
             />
         </Marker>
     );
@@ -51,9 +51,13 @@ const AirportMarkerItem = React.memo(({airport, image, onPress}) => {
     prev.onPress === next.onPress
 );
 
-export default function generateAirportMarkers(airportAtc, airports, visible = true) {
+const AirportMarkers = React.memo(function AirportMarkers({visible = true}) {
     const dispatch = useDispatch();
+    const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc);
+    const airports = useSelector(state => state.vatsimLiveData.cachedAirports);
     const traconBoundaryLookup = useSelector(state => state.staticAirspaceData.traconBoundaryLookup);
+    const {activeTheme} = useTheme();
+
     const traconPolygonCacheRef = useRef(new Map());
     const appCircleCacheRef = useRef(new Map());
     const staleTallyRef = useRef(new Map());
@@ -68,7 +72,6 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
     const renderedTracons = new Set();
 
     for (const icao in airportAtc) {
-        // const tower = props.airports[icao].filter(client => client.facility === TWR_ATIS && client.callsign.split('_').pop() == 'TWR');
         const airport = getAirportByCode(icao, airports);
         let delivery = false;
         let ground = false;
@@ -141,7 +144,6 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
 
             // Fallback for unrecognized facility types — prevents red pin markers
             if (!image) {
-                console.warn('Unknown ATC facility type at', airport.icao);
                 image = getAtcIcon('tower');
             }
 
@@ -156,8 +158,6 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
                     />
                 );
             }
-        } else {
-            console.log('cannot add marker', airport);
         }
     }
 
@@ -170,9 +170,9 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
                     key={overlayKey}
                     coordinates={overlay.coordinates}
                     holes={overlay.holes}
-                    strokeColor={visible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
-                    fillColor={visible ? theme.blueGrey.appCircleFill : TRANSPARENT}
-                    strokeWidth={visible ? theme.blueGrey.appCircleStrokeWidth : 0}
+                    strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
+                    fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
+                    strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
                     geodesic={true}
                     tappable={visible}
                     onPress={() => onPress(overlay.airport)}
@@ -211,9 +211,9 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
                     center={circle.center}
                     radius={APP_RADIUS}
                     title={circle.title}
-                    strokeColor={visible ? theme.blueGrey.appCircleStroke : TRANSPARENT}
-                    fillColor={visible ? theme.blueGrey.appCircleFill : TRANSPARENT}
-                    strokeWidth={visible ? theme.blueGrey.appCircleStrokeWidth : 0}
+                    strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
+                    fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
+                    strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
                 />
             );
         } else {
@@ -238,5 +238,14 @@ export default function generateAirportMarkers(airportAtc, airports, visible = t
         }
     });
 
-    return airportMarkers;
-}
+    return <>{airportMarkers}</>;
+});
+
+export default AirportMarkers;
+
+const styles = StyleSheet.create({
+    markerImage: {
+        height: 32,
+        width: 32,
+    },
+});

@@ -315,7 +315,7 @@ tailwind.config.js (source of truth)
 │   ├── surface: { base, elevated, overlay } — translucent surface colors per theme
 │   ├── text: { primary, secondary, muted } — text hierarchy per theme
 │   ├── accent: { primary, secondary } — brand accent (evolved from #2a5d99)
-│   ├── atc: { staffed, unstaffed, tracon, fir } — aviation-domain semantic colors
+│   ├── atc: { staffed, unstaffed, tracon, fir, uir } — aviation-domain semantic colors
 │   └── status: { online, offline, stale } — data state indicators
 ├── opacity
 │   ├── surface: 0.45 — default translucent surface
@@ -548,6 +548,7 @@ The current `#2a5d99` (blue-grey) evolves into a slightly cooler, more luminous 
 | `atc.staffed` | `#3B7DD8` | Staffed ATC polygon fill (primary accent, low opacity) |
 | `atc.tracon` | `#2EA043` | TRACON polygon fill — distinct from FIR |
 | `atc.fir` | `#3B7DD8` | FIR boundary stroke |
+| `atc.uir` | `#A371F7` | UIR boundary stroke — purple to distinguish from FIR blue and TRACON green |
 | `status.online` | `#3FB950` | Online/active indicators |
 | `status.offline` | `#484F58` | Offline/inactive indicators |
 | `status.stale` | `#D29922` | Stale data warning |
@@ -568,6 +569,7 @@ The current `#2a5d99` (blue-grey) evolves into a slightly cooler, more luminous 
 | `accent.secondary` | `#3B7DD8` | Hover/focus states |
 | `atc.staffed` | `#2A6BC4` | Staffed ATC polygon fill |
 | `atc.tracon` | `#1A7F37` | TRACON polygon fill |
+| `atc.uir` | `#8250DF` | UIR boundary stroke — purple to distinguish from FIR blue and TRACON green |
 | `status.online` | `#1A7F37` | Online indicators |
 | `status.stale` | `#BF8700` | Stale data warning |
 
@@ -575,7 +577,7 @@ The current `#2a5d99` (blue-grey) evolves into a slightly cooler, more luminous 
 
 1. **No hardcoded colors** — every color value flows from the token system. ESLint `react-native/no-color-literals` rule enforced.
 2. **Accent is a single hue** — one blue, used consistently. No secondary brand colors. The aviation instrument metaphor uses a single backlight color.
-3. **Data colors are domain-semantic** — ATC staffed, TRACON, FIR, online/offline/stale have dedicated tokens. These are functional, not decorative.
+3. **Data colors are domain-semantic** — ATC staffed, TRACON, FIR, UIR, online/offline/stale have dedicated tokens. These are functional, not decorative. UIR uses purple to visually distinguish supranational boundaries from FIR (blue) and TRACON (green).
 4. **Surface opacity scales with information density** — 0.45 default, 0.65 when map beneath is busy, 0.85 for full-detail panels. The dynamic opacity strategy from Design Challenges #2.
 
 ### Typography System
