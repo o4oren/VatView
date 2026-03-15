@@ -132,6 +132,7 @@ All must ship together as a single store release:
 - Full micro-animation suite + radar sweep effects
 - Time slider history replay
 - Social features (show friends, track me, airspace alerts)
+- Flight track visualization — show a pilot's flown route on the map using StatSim API (`api.statsim.net`) for historical position data; optionally accumulate live trails client-side from the 20s poll
 - VATGlasses sector-level ATC visualization (Phase 1.5)
 
 ## User Journeys
