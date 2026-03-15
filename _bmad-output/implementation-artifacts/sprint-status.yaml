@@ -43,7 +43,7 @@ development_status:
   # Epic 1: Foundation — Theme System & Design Tokens
   epic-1: in-progress
   1-1-nativewind-infrastructure-and-design-token-system: done
-  1-2-theme-provider-and-dual-map-styling: backlog
+  1-2-theme-provider-and-dual-map-styling: done
   1-3-blurwrapper-and-translucentsurface-components: backlog
   1-4-themedtext-and-shared-typography-components: backlog
   1-5-listitem-base-component-and-staleindicator: backlog

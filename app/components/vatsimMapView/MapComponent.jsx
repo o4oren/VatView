@@ -1,5 +1,5 @@
 import MapView, {Polyline} from 'react-native-maps';
-import theme from '../../common/theme';
+import {useTheme} from '../../common/ThemeProvider';
 import allActions from '../../redux/actions';
 import generateCtrPolygons from './CTRPolygons';
 import generatePilotMarkers from './PilotMarkers';
@@ -12,6 +12,7 @@ import {getAirportByCode} from '../../common/airportTools';
 const MapComponent = ({screenSize}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
+    const {activeMapStyle} = useTheme();
     const vatsimLiveData = useSelector(state => state.vatsimLiveData);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
@@ -23,7 +24,7 @@ const MapComponent = ({screenSize}) => {
     return <MapView
         ref={ref}
         style={[styles.mapStyle, {width: screenSize.width, height: screenSize.height}]}
-        customMapStyle={theme.blueGrey.customMapStyle}
+        customMapStyle={activeMapStyle}
         // provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
         toolbarEnabled={false}
