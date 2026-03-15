@@ -172,6 +172,7 @@ FR40: Epic 6 — Events/bookings loaded on launch
 FR41: Epic 6 — Network connectivity status
 FR42: Epic 3 — Persisted state on cold start
 FR43: Epic 3 — Feature parity (all existing features)
+FR44: Epic 3 — Ground aircraft hidden at non-local zoom, fade in at local zoom
 
 ## Epic List
 
@@ -185,9 +186,9 @@ Users experience the full-bleed edge-to-edge map as the primary app surface. Nav
 
 ### Epic 3: Map Data Layers — Pilots, ATC & Airports
 Users see live pilots as SVG-based aircraft markers, ATC coverage as polygon overlays, and airports with zoom-aware ATC badges and traffic indicators — all updated every 20 seconds on the immersive map.
-**FRs covered:** FR2, FR3, FR4, FR39, FR42, FR43
+**FRs covered:** FR2, FR3, FR4, FR39, FR42, FR43, FR44
 
-### Epic 3 contains 5 stories (3.1-3.5) after splitting zoom-aware airport markers.
+### Epic 3 contains 6 stories (3.1-3.6) after adding ground aircraft zoom filtering.
 
 ### Epic 4: Progressive Disclosure Detail Panels
 Users tap any map element (pilot, controller, airport) and get a translucent bottom sheet with 3-level progressive disclosure — glanceable summary, expanded detail, full information — all rendered over the visible map.
@@ -481,6 +482,25 @@ So that I can assess airport staffing and activity at a glance without tapping.
 **And** badge colors use theme tokens and adapt to light/dark theme
 **And** the switch between Image and View markers is seamless as user zooms across the threshold
 **And** touch targets meet 44x44px minimum
+
+### Story 3.6: Ground Aircraft Zoom-Dependent Visibility
+
+As a user,
+I want ground aircraft to be hidden when I'm viewing the map at regional or continental zoom,
+So that the map is not cluttered with parked aircraft and I can focus on en-route traffic.
+
+**Acceptance Criteria:**
+
+**Given** PilotMarkers from Story 3.2 renders pilot markers on the map
+**When** a pilot's groundspeed is 5 knots or below
+**And** the map is at regional or continental zoom level
+**Then** that pilot's marker is not rendered on the map
+**And** as the user zooms toward local level, ground aircraft markers fade in progressively (opacity scales with zoom level)
+**And** at full local zoom (airport fills the viewport), ground aircraft markers are fully opaque
+**And** the fade transition is smooth and continuous as the user zooms, not a hard threshold
+**And** this filtering applies to the map view only — the list view shows all pilots regardless of zoom level
+**And** ground aircraft that begin moving (groundspeed exceeds 5 knots) immediately appear at full opacity regardless of zoom level
+**And** the groundspeed threshold and zoom breakpoints are defined as constants for easy tuning
 
 ## Epic 4: Progressive Disclosure Detail Panels
 
