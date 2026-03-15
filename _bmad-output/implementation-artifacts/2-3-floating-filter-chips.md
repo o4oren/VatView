@@ -29,21 +29,21 @@ So that I can control map layer visibility without leaving the map view.
   - [x] 1.1: Import dependencies: `React` from 'react'; `Pressable, StyleSheet, View, Text` from 'react-native'; `useSafeAreaInsets` from 'react-native-safe-area-context'; `useSelector, useDispatch` from 'react-redux'; `useTheme` from `../../common/ThemeProvider`; `TranslucentSurface` from `../../common/TranslucentSurface`; `MaterialCommunityIcons` from `@expo/vector-icons`; `allActions` from `../../redux/actions`; `analytics` from `../../common/analytics`
   - [x] 1.2: Define `CHIP_DEFS` array: `[{ key: 'pilots', icon: 'airplane', label: 'Pilots' }, { key: 'atc', icon: 'radar', label: 'ATC' }]`
   - [x] 1.3: Implement `FloatingFilterChips` component: read `filters` from `useSelector(state => state.app.filters)`, dispatch `allActions.appActions.pilotsFilterClicked()` or `allActions.appActions.atcFilterClicked()` on press
-  - [x] 1.4: Each chip wraps content in its own `TranslucentSurface` with `rounded='sm'` (8px border radius per UX spec `rounded-sm` for chips)
+  - [x] 1.4: Each chip wraps content in its own `TranslucentSurface` with an 8px corner radius (`rounded='md'` with the current TranslucentSurface radius mapping)
   - [x] 1.5: Active chip styling: 1px border using `activeTheme.accent.primary`, icon color `activeTheme.accent.primary`, label text `activeTheme.text.primary`
   - [x] 1.6: Inactive chip styling: 1px border using `activeTheme.surface.border`, icon color `activeTheme.text.secondary`, label text `activeTheme.text.secondary`; reduced opacity (0.7) to visually indicate off state
   - [x] 1.7: Chip layout: horizontal row with `space-2` (8px) gap between chips; each chip has icon + label text side by side with `space-1` (4px) gap
-  - [x] 1.8: Position using `StyleSheet.create()`: `position: 'absolute'`, `top: insets.top + 16`, `left: 16`, `flexDirection: 'row'`, `gap: 8`
+  - [x] 1.8: Position using `StyleSheet.create()` plus inset-aware overrides: `position: 'absolute'`, `top: insets.top + 16`, `left: insets.left + 16`, `flexDirection: 'row'`, `gap: 8`
   - [x] 1.9: Touch targets: each `Pressable` wrapping the chip has `minHeight: 44` for touch target, with compact visual chip inside via padding
-  - [x] 1.10: Accessibility: `accessibilityRole="button"`, `accessibilityLabel` dynamically set (e.g., "Pilots filter, on" / "ATC filter, off"), `accessibilityState={{ checked: isActive }}`
+  - [x] 1.10: Accessibility: `accessibilityRole="button"`, `accessibilityLabel` dynamically set (e.g., "Pilots filter, toggle button, on" / "ATC filter, toggle button, off"), `accessibilityState={{ checked: isActive }}`
   - [x] 1.11: Analytics: `analytics.logEvent('filter_toggle', { filter_type: chip.key, enabled: !currentState })` on each press
 
-- [x] Task 2: Wire filter state to map markers — conditional rendering (AC: #3, #8, #9)
+- [x] Task 2: Wire filter state to map markers — conditional rendering (AC: #8, #9)
   - [x] 2.1: In `MapComponent.jsx`, add `useSelector(state => state.app.filters)` to read filter state (adapted from story spec — markers live in MapComponent, not VatsimMapView)
   - [x] 2.2: Conditionally render `<PilotMarkers>` only when `filters.pilots === true`
   - [x] 2.3: Conditionally render `<CTRPolygons>` only when `filters.atc === true`
   - [x] 2.4: Conditionally render `<AirportMarkers>` only when `filters.atc === true`
-  - [x] 2.5: Use simple conditional rendering — NOT opacity/animated fade for Phase 1 (animation deferred; the AC says "fades" but conditional mount/unmount is acceptable since the map re-renders every 20s anyway)
+  - [ ] 2.5: Fade pilot and ATC map layers over `duration.fast` (150ms) — deferred to a later phase after the attempted transition felt clunky on-device with `react-native-maps`
 
 - [x] Task 3: Render `FloatingFilterChips` in `VatsimMapView.jsx` (AC: #1, #5)
   - [x] 3.1: Import `FloatingFilterChips` from `../filterBar/FloatingFilterChips`
@@ -65,19 +65,21 @@ So that I can control map layer visibility without leaving the map view.
 ### New Files
 
 | File | Action |
-|---|---|
+| --- | --- |
 | `app/components/filterBar/FloatingFilterChips.jsx` | NEW file |
 
 ### Modified Files
 
 | File | Change |
-|---|---|
-| `app/components/vatsimMapView/VatsimMapView.jsx` | Add filter state selector; conditional render of PilotMarkers, CTRPolygons, AirportMarkers; render FloatingFilterChips |
+| --- | --- |
+| `app/components/filterBar/FloatingFilterChips.jsx` | Add floating filter chip UI, inset-aware positioning, corrected accessibility labels, and 8px chip radius |
+| `app/components/vatsimMapView/VatsimMapView.jsx` | Render `FloatingFilterChips` above the map and below the bottom sheet |
+| `app/components/vatsimMapView/MapComponent.jsx` | Add shared Redux filter selector and conditional marker rendering for pilots and ATC layers |
 
 ### Existing Files NOT Modified
 
 | File | Reason |
-|---|---|
+| --- | --- |
 | `app/components/filterBar/FilterBar.jsx` | Remains as-is for List view search + toggles |
 | `app/redux/reducers/appReducer.js` | Filter state already exists: `filters.pilots`, `filters.atc` — no changes needed |
 | `app/redux/actions/appActions.js` | Actions already exist: `pilotsFilterClicked()`, `atcFilterClicked()` — no changes needed |
@@ -122,7 +124,7 @@ export default function FloatingFilterChips() {
     }
 
     return (
-        <View style={[styles.container, {top: insets.top + 16}]}>
+        <View style={[styles.container, {top: insets.top + 16, left: insets.left + 16}]}>
             {CHIP_DEFS.map((chip) => {
                 const isActive = filters[chip.key];
                 const borderColor = isActive
@@ -140,12 +142,12 @@ export default function FloatingFilterChips() {
                         key={chip.key}
                         onPress={() => handleChipPress(chip)}
                         accessibilityRole='button'
-                        accessibilityLabel={`${chip.label} filter, ${isActive ? 'on' : 'off'}`}
+                        accessibilityLabel={`${chip.label} filter, toggle button, ${isActive ? 'on' : 'off'}`}
                         accessibilityState={{checked: isActive}}
                         style={styles.chipPressable}
                     >
                         <TranslucentSurface
-                            rounded='sm'
+                            rounded='md'
                             style={[
                                 styles.chipSurface,
                                 {borderWidth: 1, borderColor: borderColor},
@@ -171,7 +173,6 @@ export default function FloatingFilterChips() {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        left: 16,
         flexDirection: 'row',
         gap: 8,
         zIndex: 10,
@@ -198,9 +199,10 @@ const styles = StyleSheet.create({
 ```
 
 **Key implementation notes:**
+
 - `position: 'absolute'` uses `StyleSheet.create()` per ESLint `no-inline-styles` rule
-- `top: insets.top + 16` is an inline override (data-driven, acceptable like FloatingNavIsland's `bottom:`)
-- `TranslucentSurface` with `rounded='sm'` for chip shape (8px border radius per UX spec)
+- `top: insets.top + 16` and `left: insets.left + 16` are inline overrides (data-driven, acceptable like FloatingNavIsland's `bottom:`)
+- `TranslucentSurface` with `rounded='md'` yields the required 8px chip radius with the current radius mapping
 - `borderWidth: 1` + `borderColor` provides the active/inactive visual distinction — active gets accent border, inactive gets subtle `surface.border`
 - `opacity: 0.7` on inactive chips provides additional visual differentiation
 - `zIndex: 10` ensures chips render above the map but below any modals
@@ -208,21 +210,21 @@ const styles = StyleSheet.create({
 - The `Pressable` wrapper is 44px minHeight for touch target; the visual chip inside is more compact
 - `gap: 4` between icon and label, `gap: 8` between chips
 
-### VatsimMapView.jsx — Filter Integration
+### MapComponent.jsx — Filter Integration
 
-The map view currently renders markers unconditionally. Add filter-aware conditional rendering:
+The map view still renders `FloatingFilterChips` from `VatsimMapView.jsx`, but the layer filtering lives in `MapComponent.jsx` because the marker generators are invoked there.
 
 ```javascript
-// Add to existing imports/selectors:
 const filters = useSelector(state => state.app.filters);
 
-// In the render, wrap marker components conditionally:
-{filters.pilots && <PilotMarkers ... />}
-{filters.atc && <CTRPolygons ... />}
-{filters.atc && <AirportMarkers ... />}
+// Marker generators are always called to preserve hook order,
+// then their results are conditionally included based on Redux filters.
+generatePilotMarkers();
+generateCtrPolygons(clients.ctr, clients.fss, cachedFirBoundaries);
+generateAirportMarkers(clients.airportAtc, airports);
 ```
 
-**Important:** The map re-renders markers every 20 seconds on live data refresh. Conditional mount/unmount is clean and efficient — no need for animated fade on the markers themselves. The 150ms fade mentioned in the AC refers to the chip visual state change, not the marker layer transition.
+**Important:** The attempted 150ms layer fade was reverted because it felt clunky on-device. For now this story uses simple conditional rendering, and the map-layer transition is deferred to a later phase.
 
 ### Redux Filter State (Already Exists — No Changes)
 
@@ -261,7 +263,7 @@ The Redux infrastructure is complete. No new actions, reducers, or state shape c
 - [Source: ux-design-specification.md — FilterChip component spec: "Floating toggle for map layer visibility. Phase 1 chips: Pilots (default on), ATC (default on). Tap toggles on/off. Map layer fades with `duration.fast` (150ms)."]
 - [Source: ux-design-specification.md — Border radius: `rounded-sm` = 8px for chips]
 - [Source: ux-design-specification.md — Spacing: `space-3` (12px) standard inner padding for chips; `space-4` (16px) margin from screen edges]
-- [Source: ux-design-specification.md — Animation: `duration.fast` (150ms) for micro-interactions like chip toggle]
+- [Source: ux-design-specification.md — Animation: `duration.fast` (150ms) for micro-interactions like chip toggle and map-layer fade]
 - [Source: ux-design-specification.md — Accent usage: "selected filter chip border" uses accent color]
 - [Source: ux-design-specification.md — Screen reader navigation order: "NavIsland → filter chips → StaleIndicator → map markers"]
 - [Source: ux-design-specification.md — FilterBar split: "Floating FilterChip on map; search stays in List view"]
@@ -269,22 +271,23 @@ The Redux infrastructure is complete. No new actions, reducers, or state shape c
 ### What This Story Does NOT Do
 
 - Does NOT add `MapOverlayGroup` — that is Story 2.4 (which will refactor chip positioning into the orchestrator)
-- Does NOT add animated fade on map marker layers (conditional render is sufficient; animation can be added in Story 2.4 if needed)
+- Does NOT add animated fade on map marker layers — deferred to a later phase after the attempted transition felt clunky with `react-native-maps`
 - Does NOT modify `FilterBar.jsx` — list view search + toggles remain as-is
 - Does NOT add search functionality to the map — search stays in List view only
 - Does NOT add a third "Airports" filter chip — airports are controlled by the ATC filter
 - Does NOT add auto-hide behavior for chips — deferred to Story 2.4 (MapOverlayGroup manages visibility based on sheet state)
 - Does NOT change the existing `BottomSheet` behavior in `VatsimMapView`
-- Does NOT change any map rendering logic in `MapComponent.jsx` — only wraps existing marker components in conditionals
 
 ### Previous Story Intelligence (from Story 2.2)
 
 **Patterns to follow:**
+
 - `FloatingNavIsland.jsx` pattern: `TranslucentSurface` wrapper, `StyleSheet.create()` for positioning, `useSafeAreaInsets()` for safe area, `useTheme()` for colors, `analytics.logEvent()` for tracking
 - Dynamic style overrides for inset-dependent positioning (e.g., `{top: insets.top + 16}`) are acceptable per ESLint rules
 - Module-level component definitions (not inline lambdas) for tab wrappers — but FloatingFilterChips is simpler (no wrapper components needed)
 
 **Learnings to apply:**
+
 - Story 2.2 initially placed the island in `VatsimMapView.jsx`, then refactored to use `tabBar` prop. For filter chips, placement in `VatsimMapView.jsx` is correct (chips are map-specific, not cross-tab)
 - The `state?.routes?.[state.index]?.name` pattern from FloatingNavIsland shows how to safely access nested navigation state — not needed here since we use Redux selectors instead
 - ESLint caught inline style issues in Story 2.2 — all positioning MUST be in StyleSheet.create()
@@ -307,9 +310,9 @@ The Redux infrastructure is complete. No new actions, reducers, or state shape c
 - [Source: app/components/filterBar/FilterBar.jsx — existing filter toggle pattern (ToggleButton for pilots/atc, Searchbar)]
 - [Source: app/redux/reducers/appReducer.js — filter state shape: filters.pilots, filters.atc, filters.searchQuery]
 - [Source: app/redux/actions/appActions.js — pilotsFilterClicked(), atcFilterClicked() action creators]
-- [Source: app/components/vatsimMapView/VatsimMapView.jsx — current marker rendering (PilotMarkers, AirportMarkers, CTRPolygons) — no filter checks currently]
+- [Source: app/components/vatsimMapView/MapComponent.jsx — current marker rendering and conditional filter lifecycle for PilotMarkers, AirportMarkers, and CTRPolygons]
 - [Source: app/components/navigation/FloatingNavIsland.jsx — pattern reference for TranslucentSurface usage, StyleSheet positioning, safe area, analytics]
-- [Source: app/common/TranslucentSurface.jsx — rounded='sm' → borderRadius: 8]
+- [Source: app/common/TranslucentSurface.jsx — `rounded='md'` currently yields the required 8px chip radius]
 - [Source: app/common/themeTokens.js — animation.duration.fast=150ms, opacity.surface=0.45]
 - [Source: _bmad-output/implementation-artifacts/2-2-floating-navigation-island.md — ESLint conventions, positioning patterns, previous learnings]
 
@@ -323,27 +326,31 @@ Claude Opus 4.6 (1M context)
 
 - Filter selector placed in `MapComponent.jsx` instead of `VatsimMapView.jsx` (story spec deviation): markers are generated inside MapComponent's `getMarkers()` function, so filter logic was added there. The filters are passed as a parameter to `getMarkers()` and used for conditional inclusion of each marker generator's output.
 - **Bug fix:** Initial implementation conditionally called `generatePilotMarkers()` etc. inside ternaries, which violated Rules of Hooks since those functions contain `useSelector`/`useDispatch`. Fixed by always calling all generators and filtering the *results* based on filter state.
+- **Review fixes applied:** Corrected chip accessibility labels to include "toggle button", applied left safe-area offset, and updated the chip radius to a true 8px rendering.
+- **Transition note:** Attempted 150ms map-layer fade was reverted after device testing felt clunky. Leave transition work for a later phase with a map-native animation approach.
 
 ### Completion Notes List
 
 - Created `FloatingFilterChips.jsx` following the exact pattern from FloatingNavIsland: TranslucentSurface, StyleSheet positioning, safe area insets, theme tokens, analytics
 - Two chips ("Pilots" and "ATC") read from existing Redux `state.app.filters` — shared state with List view's FilterBar
 - Active chips show accent-colored border; inactive chips show muted border with 0.7 opacity
-- Chips positioned top-left with 16px margins, offset by safe area insets
-- Full accessibility support: role="button", dynamic labels, checked state
+- Chips positioned top-left with 16px margins, offset by both top and left safe area insets
+- Full accessibility support: role="button", labels in the "toggle button" format, checked state
 - Analytics `filter_toggle` event logged on each toggle
-- Map markers conditionally rendered via `getMarkers()` in MapComponent — pilots filter controls PilotMarkers, ATC filter controls CTRPolygons + AirportMarkers
+- Map layers currently use conditional rendering only; transition animation is deferred to a later phase
 - ESLint: 0 new errors (5 pre-existing plugin warnings unchanged)
 - FilterBar.jsx in List view remains completely unchanged
 
 ### Change Log
 
 - 2026-03-15: Implemented Story 2.3 — Floating filter chips for map layer visibility control
+- 2026-03-15: Applied code review fixes — corrected accessibility labels, inset-aware left positioning, and 8px chip radius
+- 2026-03-15: Reverted attempted map-layer fade after clunky on-device behavior; transition deferred to a later phase
 
 ### File List
 
 | File | Action |
-|---|---|
+| --- | --- |
 | `app/components/filterBar/FloatingFilterChips.jsx` | NEW — floating translucent filter chip component |
 | `app/components/vatsimMapView/VatsimMapView.jsx` | MODIFIED — import and render FloatingFilterChips |
-| `app/components/vatsimMapView/MapComponent.jsx` | MODIFIED — add filter selector, conditional marker rendering |
+| `app/components/vatsimMapView/MapComponent.jsx` | MODIFIED — add filter selector and conditional marker rendering |
