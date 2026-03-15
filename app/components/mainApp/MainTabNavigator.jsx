@@ -49,7 +49,7 @@ export default function MainTabNavigator() {
             },
         })}
         screenOptions={{
-            tabBarActiveTintColor: activeTheme.primary,
+            tabBarActiveTintColor: activeTheme.accent.primary,
             tabBarInactiveTintColor: activeTheme.text.secondary,
             headerShown: false,
             tabBarStyle: { display: 'none' }
@@ -100,7 +100,7 @@ export default function MainTabNavigator() {
             options={{
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons
-                        name="calendar"
+                        name="calendar-star"
                         size={size}
                         color={color}
                     />
