@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useEffect, useCallback} from 'react';
+import React, {createContext, useContext, useState, useEffect, useCallback, useMemo} from 'react';
 import {useColorScheme} from 'react-native';
 import {useColorScheme as useNativeWindColorScheme} from 'nativewind';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -60,13 +60,13 @@ export default function ThemeProvider({children}) {
         }
     }, []);
 
-    const value = {
+    const value = useMemo(() => ({
         isDark,
         activeTheme: isDark ? darkTheme : lightTheme,
         activeMapStyle: isDark ? darkMapStyle : lightMapStyle,
         themePreference,
         toggleTheme,
-    };
+    }), [isDark, themePreference, toggleTheme]);
 
     return (
         <ThemeContext.Provider value={value}>

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
@@ -23,7 +23,7 @@ function getDataStatus(general) {
 export default function VatsimMapView() {
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const general = useSelector(state => state.vatsimLiveData.general);
-    const dataStatus = getDataStatus(general);
+    const dataStatus = useMemo(() => getDataStatus(general), [general]);
     const dispatch = useDispatch();
     const sheetRef = useRef(null);
     const selectedClient = useSelector(state => state.app.selectedClient);
