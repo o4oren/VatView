@@ -14,6 +14,13 @@ stepsCompleted:
   - step-10-nonfunctional
   - step-11-polish
   - step-12-complete
+  - step-e-01-discovery
+  - step-e-02-review
+  - step-e-03-edit
+lastEdited: '2026-03-16'
+editHistory:
+  - date: '2026-03-16'
+    changes: 'Added FR44: Ground aircraft zoom-dependent visibility — hide parked/slow aircraft (≤5kt) at non-local zoom, fade in progressively at local zoom. Map view only.'
 classification:
   projectType: mobile_app
   domain: aviation_simulation
@@ -289,6 +296,10 @@ Marcus is already in his sim but needs a quick weather check for his alternate a
 - **FR6:** User can tap a pilot marker to view pilot details in a translucent bottom sheet
 - **FR7:** User can tap a controller/ATC element to view controller details in a translucent bottom sheet
 - **FR8:** User can tap an airport marker to view airport ATC details in a translucent bottom sheet
+
+### Map Filtering
+
+- **FR44:** Ground aircraft (groundspeed 5 knots or below) are not rendered on the map at regional and continental zoom levels. As the user zooms toward local level, ground aircraft markers fade in progressively (opacity scales with zoom). At full local zoom (airport fills the viewport), ground aircraft are fully opaque. This filtering applies to the map view only; list view shows all pilots regardless of zoom.
 
 ### Progressive Disclosure
 

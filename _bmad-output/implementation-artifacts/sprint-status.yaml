@@ -64,6 +64,7 @@ development_status:
   3-3-atc-polygon-overlays-fir-and-tracon: review
   3-4-zoom-aware-airport-markers-infrastructure-and-image-markers: backlog
   3-5-airport-markers-local-zoom-atc-badges-and-traffic-counts: backlog
+  3-6-ground-aircraft-zoom-dependent-visibility: backlog
   epic-3-retrospective: optional
 
   # Epic 4: Progressive Disclosure Detail Panels
