@@ -91,7 +91,7 @@ NFR17: Custom Google Maps styling must visually complement each theme (light and
 - NativeWind v4.2.2 must be validated for compatibility with @gorhom/bottom-sheet v5 before migrating detail panels
 - BlurWrapper component must implement platform-based rendering: iOS native backdrop blur (expo-blur), Android semi-transparent solid background with 1px border + elevation shadow (permanent design decision, no Android blur)
 - ThemeContext architecture: NativeWind `dark:` variants for UI + lightweight React context for Maps styling, manual override, and persisted preference
-- FloatingNavIsland hides existing tab bar (`tabBarStyle: { display: 'none' }`) and uses `useNavigation()` — React Navigation continues managing screen state
+- FloatingNavIsland is wired as the Tab Navigator's custom `tabBar` and overlays content via absolute `tabBarStyle`; it receives `{ state, navigation }` and calls `navigation.navigate()` — React Navigation continues managing screen state
 - DetailPanelProvider abstraction built now (portrait bottom sheet), landscape side panel container deferred but abstraction ready
 - Progressive disclosure uses additive content rendering: Level 1 always shown, Level 2 adds, Level 3 adds (never replaces)
 - AircraftIconService: SVG-to-bitmap pipeline replacing iconsHelper.js — pre-renders FSTrAk SVG silhouettes into cached ImageSource objects for native map markers
@@ -335,12 +335,12 @@ So that I can navigate between views without a chrome-heavy tab bar eating map s
 **When** `FloatingNavIsland.jsx` is created in `app/components/navigation/`
 **Then** it renders as a translucent pill (using TranslucentSurface) with four tab icons: Map, List, Airports, Events
 **And** the active tab has an accent-colored indicator (`accent.primary` token)
-**And** `MainTabNavigator.jsx` hides the built-in tab bar with `tabBarStyle: { display: 'none' }`
-**And** tapping a tab calls `navigation.navigate()` via `useNavigation()` — React Navigation manages screen state
+**And** `MainTabNavigator.jsx` wires `FloatingNavIsland` as the Tab Navigator's custom `tabBar` with overlay styling (no built-in tab bar UI)
+**And** tapping a tab calls `navigation.navigate(tabName)` via the `tabBar` props — React Navigation manages screen state
 **And** tab switches use cross-fade transition animation (`duration.normal`, 250ms)
-**And** a settings icon is included for direct access to Settings screen
+**And** a settings icon is included for direct access to Settings screen (Settings may be provided as a tab in this implementation)
 **And** the NavIsland is positioned using `useSafeAreaInsets()` to avoid system UI overlap
-**And** each tab has `accessibilityRole="tab"` and `accessibilityLabel` (e.g., "Map, tab, 1 of 4")
+**And** each tab has `accessibilityRole="tab"` and `accessibilityLabel` (e.g., "Map, tab, 1 of 5")
 **And** all touch targets meet 44x44px minimum
 
 ### Story 2.3: Floating Filter Chips

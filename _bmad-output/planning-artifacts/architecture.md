@@ -205,18 +205,17 @@ npx expo install expo-screen-orientation
 
 ### Navigation Island Architecture
 
-**Decision:** Hide existing tab bar + custom `FloatingNavIsland` overlay component.
+**Decision:** Use a custom `FloatingNavIsland` as the Tab Navigator's `tabBar` with overlay styling (no per-screen render).
 
 **Rationale:** Lowest-risk approach. React Navigation's tab navigator continues to manage screen state, caching, and back behavior. The floating island is a styled button group that calls `navigate()`. Instant fallback: re-enable tab bar visibility.
 
 **Implementation:**
-- `MainTabNavigator` keeps its tab navigator with `tabBarStyle: { display: 'none' }`
-- `FloatingNavIsland` component positioned absolutely at bottom of map screen
-- Uses `useNavigation()` to call `navigation.navigate()` for tab switches
-- Wrapped in `BlurWrapper` for frosted-glass appearance
-- Auto-hide behavior: hides during map pan gestures, reappears on tap/idle
-- Safe area handling via `useSafeAreaInsets()`
-- **Affects:** MainTabNavigator, VatsimMapView (island placement), all tab screens (visual context)
+- `MainTabNavigator` sets `tabBar={(props) => <FloatingNavIsland {...props} />}`
+- Overlay style applied via `tabBarStyle: { position: 'absolute', backgroundColor: 'transparent', borderTopWidth: 0, elevation: 0 }`
+- `FloatingNavIsland` receives `{ state, navigation }` from React Navigation and calls `navigation.navigate(tabName)`; logs `analytics.logEvent('nav_tab_switch', { tab_name })` on press
+- Positioned with `TranslucentSurface` and `useSafeAreaInsets()`; not rendered inside `VatsimMapView`
+- Auto-hide behavior (planned): hides during map pan gestures, reappears on tap/idle
+- **Affects:** MainTabNavigator (centralized), all tab screens (visual context)
 
 ### Detail Panel Abstraction
 
