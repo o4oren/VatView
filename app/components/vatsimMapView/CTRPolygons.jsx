@@ -1,15 +1,20 @@
 import MapView, {Marker, Polygon} from 'react-native-maps';
 import {Text} from 'react-native';
-import React from 'react';
+import React, {useRef} from 'react';
 import theme from '../../common/theme';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 
-export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
+// Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
+const TRANSPARENT = 'rgba(0,0,0,0)';
+
+export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries, visible = true) {
     const dispatch = useDispatch();
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
+    const cachedClientsRef = useRef(new Map());
     const polygons = [];
+    const visibleAirspaceKeys = new Set();
 
     let onPress = (client) => {
         // Analytics.logEvent('SelectAirport', {
@@ -106,35 +111,35 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
         return airspace;
     };
 
-    const calculatePolygon = client => {
+    const calculatePolygon = (clientKey, client, isVisible) => {
         const airspace = getAirspaceCoordinates(client);
         const elements = [];
         if (airspace.isUir) {
             airspace.firs.forEach((fir, i) => {
                 elements.push(
                     <Polygon
-                        key={client.cid + '-uir--polygon-' + i}
+                        key={`${clientKey}-uir-polygon-${i}`}
                         coordinates={fir.points}
                         holes={fir.holes || []}
-                        strokeColor={theme.blueGrey.uirStrokeColor}
-                        fillColor={theme.blueGrey.uirFill}
-                        strokeWidth={theme.blueGrey.uirStrokeWidth}
+                        strokeColor={isVisible ? theme.blueGrey.uirStrokeColor : TRANSPARENT}
+                        fillColor={isVisible ? theme.blueGrey.uirFill : TRANSPARENT}
+                        strokeWidth={isVisible ? theme.blueGrey.uirStrokeWidth : 0}
                         geodesic={true}
-                        tappable={true}
+                        tappable={isVisible}
                         onPress={() => onPress(client)}
                     />
                 );
             });
-            if (airspace.center) {
+            if (airspace.center && isVisible) {
                 elements.push(
                     <Marker
-                        key={client.callsign + '_' + client.cid + '-marker'}
+                        key={`${clientKey}-uir-marker`}
                         coordinate={airspace.center}
                         tracksViewChanges={false}
                         tracksInfoWindowChanges={false}
                     >
                         <Text
-                            key={client.cid + '-uir-text'}
+                            key={`${clientKey}-uir-text`}
                             style={theme.blueGrey.uirTextStyle}
                             onPress={() => onPress(client)}
                         >
@@ -148,32 +153,34 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
                 if (!fir.center) return;
                 elements.push(
                     <Polygon
-                        key={client.cid + '-polygon-' + i}
+                        key={`${clientKey}-polygon-${fir.icao || 'segment'}-${i}`}
                         coordinates={fir.points}
                         holes={fir.holes || []}
-                        strokeColor={theme.blueGrey.firStrokeColor}
-                        fillColor={theme.blueGrey.firFill}
-                        strokeWidth={theme.blueGrey.firStrokeWidth}
+                        strokeColor={isVisible ? theme.blueGrey.firStrokeColor : TRANSPARENT}
+                        fillColor={isVisible ? theme.blueGrey.firFill : TRANSPARENT}
+                        strokeWidth={isVisible ? theme.blueGrey.firStrokeWidth : 0}
                         geodesic={true}
-                        tappable={true}
+                        tappable={isVisible}
                         onPress={() => onPress(client)}
                     />
                 );
-                elements.push(
-                    <Marker
-                        key={client.cid + '-marker-' + i}
-                        coordinate={fir.center}
-                        tracksViewChanges={false}
-                        tracksInfoWindowChanges={false}
-                    >
-                        <Text
-                            style={theme.blueGrey.firTextStyle}
-                            onPress={() => onPress(client)}
+                if (isVisible) {
+                    elements.push(
+                        <Marker
+                            key={`${clientKey}-marker-${fir.icao || 'segment'}-${i}`}
+                            coordinate={fir.center}
+                            tracksViewChanges={false}
+                            tracksInfoWindowChanges={false}
                         >
-                            {fir.icao}
-                        </Text>
-                    </Marker>
-                );
+                            <Text
+                                style={theme.blueGrey.firTextStyle}
+                                onPress={() => onPress(client)}
+                            >
+                                {fir.icao}
+                            </Text>
+                        </Marker>
+                    );
+                }
             });
         }
         return elements;
@@ -181,15 +188,23 @@ export default function generateCtrPolygons(ctr, fss, cachedFirBoundaries) {
 
     for (let icao in fss) {
         fss[icao].forEach(fssClient =>{
-            polygons.push(calculatePolygon(fssClient));
+            const clientKey = `fss-${fssClient.callsign}`;
+            cachedClientsRef.current.set(clientKey, fssClient);
+            visibleAirspaceKeys.add(clientKey);
         });
     }
 
     for (let icao in ctr) {
         ctr[icao].forEach(ctrClient =>{
-            polygons.push(calculatePolygon(ctrClient));
+            const clientKey = `ctr-${ctrClient.callsign}`;
+            cachedClientsRef.current.set(clientKey, ctrClient);
+            visibleAirspaceKeys.add(clientKey);
         });
     }
+
+    cachedClientsRef.current.forEach((client, clientKey) => {
+        polygons.push(calculatePolygon(clientKey, client, visible && visibleAirspaceKeys.has(clientKey)));
+    });
 
     return polygons;
 }
