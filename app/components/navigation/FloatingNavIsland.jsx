@@ -1,6 +1,5 @@
 import React from 'react';
 import {Pressable, StyleSheet} from 'react-native';
-import {useNavigation, useNavigationState} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../../common/ThemeProvider';
 import TranslucentSurface from '../../common/TranslucentSurface';
@@ -16,17 +15,10 @@ const TAB_DEFS = [
 
 const ICON_SIZE = 24;
 
-export default function FloatingNavIsland() {
-    const navigation = useNavigation();
+export default function FloatingNavIsland({state, navigation}) {
     const {activeTheme} = useTheme();
     const insets = useSafeAreaInsets();
-    const activeRouteName = useNavigationState(state => {
-        const activeRoute = state.routes[state.index];
-        if (activeRoute.state?.index !== undefined) {
-            return activeRoute.state.routes[activeRoute.state.index]?.name ?? 'Map';
-        }
-        return 'Map';
-    });
+    const activeRouteName = state.routes[state.index]?.name ?? 'Map';
 
     function handleTabPress(tabName) {
         navigation.navigate(tabName);
@@ -62,14 +54,17 @@ export default function FloatingNavIsland() {
             })}
             <Pressable
                 style={styles.tabHitTarget}
-                onPress={() => navigation.navigate('Settings')}
-                accessibilityRole='button'
-                accessibilityLabel='Settings'
+                onPress={() => handleTabPress('Settings')}
+                accessibilityRole='tab'
+                accessibilityLabel='Settings, tab, 5 of 5'
+                accessibilityState={{ selected: activeRouteName === 'Settings' }}
             >
                 <MaterialCommunityIcons
                     name='cog-outline'
                     size={ICON_SIZE}
-                    color={activeTheme.text.secondary}
+                    color={activeRouteName === 'Settings'
+                        ? activeTheme.accent.primary
+                        : activeTheme.text.secondary}
                 />
             </Pressable>
         </TranslucentSurface>
