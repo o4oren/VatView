@@ -29,6 +29,8 @@ jest.mock('@shopify/react-native-skia', () => ({
             MakeOffscreen: jest.fn(() => ({
                 getCanvas: jest.fn(() => ({
                     drawSvg: jest.fn(),
+                    drawCircle: jest.fn(),
+                    drawText: jest.fn(),
                 })),
                 flush: jest.fn(),
                 makeImageSnapshot: jest.fn(() => ({
@@ -41,6 +43,15 @@ jest.mock('@shopify/react-native-skia', () => ({
         },
         SVG: {
             MakeFromString: jest.fn(() => ({})),
+        },
+        Paint: jest.fn(() => ({
+            setColor: jest.fn(),
+            setAntiAlias: jest.fn(),
+        })),
+        Font: jest.fn(() => ({})),
+        Color: jest.fn((c) => c),
+        FontMgr: {
+            System: jest.fn(() => ({})),
         },
     },
     ImageFormat: {

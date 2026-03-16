@@ -65,5 +65,19 @@ export const facilities = [
 
 export const APP_RADIUS = 80 * 1000;
 
+// Zoom band thresholds for airport marker rendering
+export const ZOOM_CONTINENTAL_MAX = 4;
+export const ZOOM_REGIONAL_MAX = 6;
+export const ZOOM_LOCAL_MIN = 7;
+
+export const AIRPORT_MARKER_FONT_CONTINENTAL = 13;
+export const AIRPORT_MARKER_FONT_REGIONAL = 15;
+
+export const getZoomBand = (zoomLevel) => {
+    if (zoomLevel <= ZOOM_CONTINENTAL_MAX) return 'continental';
+    if (zoomLevel <= ZOOM_REGIONAL_MAX) return 'regional';
+    return 'local';
+};
+
 
 

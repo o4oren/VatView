@@ -33,6 +33,11 @@ const useMapRemountKey = () => {
     return mapKey;
 };
 
+const computeZoomLevel = (latitudeDelta) => {
+    if (!latitudeDelta || latitudeDelta <= 0) return 4;
+    return Math.log2(360 / latitudeDelta);
+};
+
 const MapComponent = ({onMapPress}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
@@ -42,6 +47,9 @@ const MapComponent = ({onMapPress}) => {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
     const filters = useSelector(state => state.app.filters);
+    const [zoomLevel, setZoomLevel] = useState(
+        () => computeZoomLevel(initialRegion?.latitudeDelta)
+    );
 
     return <MapView
         key={mapKey}
@@ -53,10 +61,13 @@ const MapComponent = ({onMapPress}) => {
         toolbarEnabled={false}
         initialRegion={initialRegion}
         onPress={onMapPress}
-        onRegionChangeComplete={region => dispatch(allActions.appActions.saveInitialRegion(region))}
+        onRegionChangeComplete={region => {
+            dispatch(allActions.appActions.saveInitialRegion(region));
+            setZoomLevel(computeZoomLevel(region.latitudeDelta));
+        }}
     >
         <CTRPolygons visible={filters.atc} />
-        <AirportMarkers visible={filters.atc} />
+        <AirportMarkers visible={filters.atc} zoomLevel={zoomLevel} />
         {filters.pilots && <PilotMarkers />}
         {renderFromToPath(selectedClient, cachedAirports, filters.pilots)}
     </MapView>;

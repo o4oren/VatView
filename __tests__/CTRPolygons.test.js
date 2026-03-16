@@ -221,6 +221,14 @@ describe('CTRPolygons', () => {
             mockActiveTheme = {
                 atc: darkAtcTheme,
             };
+            // Toggle visible to force React.memo re-render
+            tree.update(
+                <Provider store={store}>
+                    <CTRPolygons visible={false} />
+                </Provider>
+            );
+        });
+        act(() => {
             tree.update(
                 <Provider store={store}>
                     <CTRPolygons visible={true} />

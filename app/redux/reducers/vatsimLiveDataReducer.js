@@ -16,7 +16,8 @@ clients: {
     pilots: [],
     obs: [],
     other: [],
-    controllerCount: 0
+    controllerCount: 0,
+    trafficCounts: {}
 },
 servers: [], prefiles: [], events: [],
 bookings: []
