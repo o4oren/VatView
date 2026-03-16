@@ -58,7 +58,7 @@ const AIRCRAFT_TYPES = {
     ERJ: {
         svgFile: require('../../assets/svg/erj.svg'),
         scale: 0.6,
-        candidates: ['E170', 'E175', 'E190', 'CRJ1', 'CRJ2', 'CRJX', 'CR9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'F2TH', 'FA50', 'F27', 'F28', 'B721', 'B722'],
+        candidates: ['E170', 'E175', 'E190', 'CRJ1', 'CRJ2', 'CRJX', 'CR9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'C700', 'F2TH', 'FA50', 'F27', 'F28', 'B721', 'B722'],
     },
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),

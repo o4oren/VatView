@@ -66,13 +66,11 @@ const updateData = async (dispatch, getState) => {
         });
 
         json.pilots.forEach(p => {
-            if(p.flight_plan && p.flight_plan.departure) {
-                if(!prefixes.includes(p.flight_plan.departure)) {
-                    prefixes.push(p.flight_plan.departure);
-                }
-                if(!prefixes.includes(p.flight_plan.arrival)) {
-                    prefixes.push(p.flight_plan.arrival);
-                }
+            if (p.flight_plan?.departure && !prefixes.includes(p.flight_plan.departure)) {
+                prefixes.push(p.flight_plan.departure);
+            }
+            if (p.flight_plan?.arrival && !prefixes.includes(p.flight_plan.arrival)) {
+                prefixes.push(p.flight_plan.arrival);
             }
         });
 
@@ -96,6 +94,24 @@ const updateData = async (dispatch, getState) => {
                 });
             }
 
+
+            // Compute traffic counts per airport (departures/arrivals)
+            const trafficCounts = {};
+            json.pilots.forEach((pilot) => {
+                if (pilot.flight_plan) {
+                    const dep = pilot.flight_plan.departure;
+                    const arr = pilot.flight_plan.arrival;
+                    if (dep) {
+                        if (!trafficCounts[dep]) trafficCounts[dep] = {departures: 0, arrivals: 0};
+                        trafficCounts[dep].departures++;
+                    }
+                    if (arr) {
+                        if (!trafficCounts[arr]) trafficCounts[arr] = {departures: 0, arrivals: 0};
+                        trafficCounts[arr].arrivals++;
+                    }
+                }
+            });
+            clients.trafficCounts = trafficCounts;
 
             json.pilots.forEach((pilot) => {
                 const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');

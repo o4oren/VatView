@@ -20,6 +20,8 @@ const lightTheme = {
     },
     atc: {
         staffed: '#2A6BC4',
+        airportDot: '#1A4F8C',
+        airportDotUnstaffed: '#5A6370',
         tracon: '#1A7F37',
         fir: '#2A6BC4',
         firFill: 'rgba(42, 107, 196, 0.12)',
@@ -56,6 +58,8 @@ const darkTheme = {
     },
     atc: {
         staffed: '#3B7DD8',
+        airportDot: '#3B7DD8',
+        airportDotUnstaffed: '#484F58',
         tracon: '#2EA043',
         fir: '#3B7DD8',
         firFill: 'rgba(59, 125, 216, 0.15)',
