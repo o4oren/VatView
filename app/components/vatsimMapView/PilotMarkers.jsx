@@ -4,6 +4,7 @@ import React, {useCallback, useRef, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {mapIcons} from '../../common/iconsHelper';
+import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -48,7 +49,7 @@ const PilotMarkerItem = React.memo(({pilot, pilotImage, pilotImageSize, onPress}
 
 const defaultImageSize = isAndroid ? 64 : 32;
 
-const PilotMarkers = React.memo(function PilotMarkers() {
+const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
 
@@ -65,18 +66,32 @@ const PilotMarkers = React.memo(function PilotMarkers() {
         }
     }, [dispatch]);
 
-    return pilots.map(pilot => {
-        const pilotImage = pilot.image || mapIcons.B737;
-        const pilotImageSize = pilot.image ? pilot.imageSize : defaultImageSize;
+    const zoomBand = getZoomBand(zoomLevel);
 
-        return <PilotMarkerItem
-            key={pilot.key}
-            pilot={pilot}
-            pilotImage={pilotImage}
-            pilotImageSize={pilotImageSize}
-            onPress={onPress}
-        />;
-    });
+    return pilots
+        .filter(pilot => {
+            const groundspeed = Number(pilot.groundspeed);
+            const hasValidGroundspeed = Number.isFinite(groundspeed);
+
+            return (
+                zoomBand === 'airport' ||
+                pilot.callsign === selectedClient?.callsign ||
+                !hasValidGroundspeed ||
+                groundspeed > GROUND_SPEED_THRESHOLD
+            );
+        })
+        .map(pilot => {
+            const pilotImage = pilot.image || mapIcons.B737;
+            const pilotImageSize = pilot.image ? pilot.imageSize : defaultImageSize;
+
+            return <PilotMarkerItem
+                key={pilot.key}
+                pilot={pilot}
+                pilotImage={pilotImage}
+                pilotImageSize={pilotImageSize}
+                onPress={onPress}
+            />;
+        });
 });
 
 export default PilotMarkers;

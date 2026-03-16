@@ -141,7 +141,7 @@ describe('AirportMarkers', () => {
             'EGLL',
             'global',
             mockActiveTheme,
-            undefined
+            null
         );
     });
 

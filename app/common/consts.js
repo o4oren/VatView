@@ -74,6 +74,9 @@ export const ZOOM_LOCAL_MAX = 10;
 export const AIRPORT_MARKER_FONT_CONTINENTAL = 13;
 export const AIRPORT_MARKER_FONT_REGIONAL = 15;
 
+// Ground aircraft (≤ this speed in knots) hidden below Airport zoom
+export const GROUND_SPEED_THRESHOLD = 5;
+
 export const getZoomBand = (zoomLevel) => {
     if (zoomLevel <= ZOOM_GLOBAL_MAX) return 'global';
     if (zoomLevel <= ZOOM_CONTINENTAL_MAX) return 'continental';

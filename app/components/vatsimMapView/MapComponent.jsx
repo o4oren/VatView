@@ -70,7 +70,7 @@ const MapComponent = ({onMapPress}) => {
     >
         <CTRPolygons visible={filters.atc} />
         <AirportMarkers visible={filters.atc} zoomLevel={zoomLevel} />
-        {filters.pilots && <PilotMarkers />}
+        {filters.pilots && <PilotMarkers zoomLevel={zoomLevel} />}
         {renderFromToPath(selectedClient, cachedAirports, filters.pilots)}
     </MapView>;
 };
