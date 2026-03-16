@@ -242,10 +242,6 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
         backgroundColor: activeTheme.text.muted,
     }), [activeTheme]);
 
-    const sheetBackgroundStyle = useMemo(() => ({
-        backgroundColor: activeTheme.surface.elevated,
-    }), [activeTheme]);
-
     return (
         <DetailPanelContext.Provider value={contextValue}>
             {children}
@@ -257,10 +253,10 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
                 onChange={handleSheetChange}
                 animationConfigs={animationConfigs}
                 style={styles.sheet}
-                handleStyle={sheetBackgroundStyle}
+                handleStyle={styles.handleTransparent}
                 handleIndicatorStyle={handleIndicatorStyle}
-                backgroundStyle={sheetBackgroundStyle}
-                backgroundComponent={() => null}
+                backgroundComponent={null}
+                containerStyle={styles.containerTransparent}
                 accessibilityRole="adjustable"
             >
                 <BottomSheetView style={styles.sheetContent}>
@@ -288,6 +284,7 @@ export function useDetailPanel() {
 const styles = StyleSheet.create({
     sheet: {
         zIndex: 10,
+        backgroundColor: 'transparent',
     },
     sheetContent: {
         flex: 1,
@@ -296,5 +293,11 @@ const styles = StyleSheet.create({
         flex: 1,
         borderWidth: 0,
         elevation: 0,
+    },
+    handleTransparent: {
+        backgroundColor: 'transparent',
+    },
+    containerTransparent: {
+        backgroundColor: 'transparent',
     },
 });
