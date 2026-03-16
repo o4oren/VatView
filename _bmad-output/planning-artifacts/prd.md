@@ -300,7 +300,7 @@ Marcus is already in his sim but needs a quick weather check for his alternate a
 
 ### Map Filtering
 
-- **FR44:** Ground aircraft (groundspeed 5 knots or below) are not rendered on the map at regional and continental zoom levels. As the user zooms toward local level, ground aircraft markers fade in progressively (opacity scales with zoom). At full local zoom (airport fills the viewport), ground aircraft are fully opaque. This filtering applies to the map view only; list view shows all pilots regardless of zoom.
+- **FR44:** Ground aircraft (groundspeed 5 knots or below) are only rendered on the map at Airport zoom (>10). At all other zoom levels (Global, Continental, Regional, Local), ground aircraft are hidden. Ground aircraft that begin moving (groundspeed exceeds 5 knots) immediately appear regardless of zoom level. This filtering applies to the map view only; list view shows all pilots regardless of zoom. Zoom bands: Global (≤4), Continental (5-6), Regional (7-8), Local (9-10), Airport (>10).
 
 ### Progressive Disclosure
 

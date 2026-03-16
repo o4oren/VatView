@@ -734,19 +734,21 @@ ATC staffing is shown via colored single-letter badges. Both Approach and ATIS u
 - Traffic counts: green ▲ departures / red ▼ arrivals (with number)
 - Only staffed positions show badges — unstaffed airports show ICAO only (no visual noise)
 
-**Zoom-Dependent Airport Display (Three Bands):**
+**Zoom-Dependent Airport Display (Five Bands):**
 
-Airport rendering changes with zoom level. This is a **new component behavior** — the current `AirportMarkers.jsx` renders identically at all zoom levels and does not receive zoom as input. Phase 1 must add zoom-level awareness.
+Airport rendering changes with zoom level. `AirportMarkers.jsx` receives current zoom level via `onRegionChangeComplete` from `MapComponent` and conditionally renders the appropriate marker type per zoom band.
 
 | Zoom Band | Zoom Level | Airport Display | Marker Type |
 |---|---|---|---|
-| **Continental** | 3–4 | Staffed airports: small dot + ICAO at reduced size. Unstaffed: hidden. | Image marker (performance) |
-| **Regional** | 5–6 | Staffed airports: dot + ICAO at full size. Unstaffed with active traffic: grey dot + green ▲ departures + red ▼ arrivals (no ICAO label). Unstaffed with no traffic: hidden. | Image marker (performance) |
-| **Local** | 7+ | Full treatment: dot, ICAO, ATC letter badges, traffic count arrows. | View-based marker (rich layout) |
+| **Global** | ≤4 | Staffed airports: small dot + ICAO at reduced size. No traffic counts. Unstaffed: hidden. | Image marker (performance) |
+| **Continental** | 5–6 | Staffed airports: dot + ICAO + ATC letter badges + traffic counts. Unstaffed with active traffic: grey dot + ICAO + ▲/▼ counts. | View-based marker (rich layout) |
+| **Regional** | 7–8 | Same as Continental — View-based markers with badges and traffic counts. | View-based marker (rich layout) |
+| **Local** | 9–10 | Same as Continental — View-based markers with badges and traffic counts. | View-based marker (rich layout) |
+| **Airport** | >10 | Same as Continental — View-based markers with badges and traffic counts. | View-based marker (rich layout) |
 
-**Performance rationale:** At Continental/Regional zoom, potentially hundreds of airports are visible. Using native `Image` markers (simple bitmaps) ensures smooth 60fps panning. At Local zoom (7+), fewer airports are on screen, allowing the switch to `View`-based markers with full badge/count layout without performance degradation.
+**Performance rationale:** At Global zoom, potentially hundreds of airports are visible. Using native `Image` markers (simple bitmaps) ensures smooth 60fps panning. At Continental zoom and above (5+), fewer airports are on screen, allowing the switch to `View`-based markers with full badge/count layout without performance degradation.
 
-`AirportMarkers.jsx` must receive current zoom level via `onRegionChangeComplete` from `MapComponent` and conditionally render the appropriate marker type per zoom band.
+**ATC badge layout (View-based markers):** Two-row layout. Row 1: colored dot + ICAO (monospace) + traffic counts (▲/▼). Row 2: ATC letter badges as colored pills with white text, aligned under the ICAO code. Badge colors are the pill background (not text color), matching the VATSIM Radar style.
 
 **Aircraft Markers:**
 
@@ -1121,7 +1123,7 @@ All 28 current components mapped to their Phase 1 equivalent:
 | **MapComponent.jsx** | Migrate: Add dual theme map JSON styles | Add zoom-level callback for progressive display |
 | **PilotMarkers.jsx** | Migrate: Use `AircraftIconService` for Image sources | SVG→bitmap pipeline, same native Image marker performance |
 | **ClusteredPilotMarkers.jsx** | Migrate: Restyle clusters | NativeWind token-based styling |
-| **AirportMarkers.jsx** | **Replace:** Simple markers → zoom-aware markers | Three zoom bands, ATC badges at local zoom |
+| **AirportMarkers.jsx** | **Replace:** Simple markers → zoom-aware markers | Five zoom bands (Global/Continental/Regional/Local/Airport), ATC badges at Continental+ zoom |
 | **CTRPolygons.jsx** | Migrate: Token-based polygon colors | `atc.staffed`, `atc.fir`, `atc.tracon` tokens |
 | **ClientDetails.jsx** | Migrate: Router logic unchanged | Delegates to pilot/ATC detail components |
 | **PilotDetails.jsx** | **Redesign:** Three-level progressive disclosure | Peek/half/full content defined in Journey 5 |
@@ -1242,11 +1244,13 @@ Built on `@gorhom/bottom-sheet` for spring-physics gestures.
 
 | Zoom Band | Display | Marker Type |
 |---|---|---|
-| Continental (3–4) | Small dot + ICAO at 8px. Staffed only. | Image marker |
-| Regional (5–6) | Dot + ICAO at 11px. Unstaffed with traffic: grey dot + ▲/▼ counts. No traffic: hidden. | Image marker |
-| Local (7+) | Dot + ICAO + ATC letter badges + traffic counts | View-based marker |
+| Global (≤4) | Small dot + ICAO. Staffed only. No traffic counts. | Image marker |
+| Continental (5–6) | Dot + ICAO + ATC letter badges + traffic counts. Unstaffed with traffic shown. | View-based marker |
+| Regional (7–8) | Same as Continental. | View-based marker |
+| Local (9–10) | Same as Continental. | View-based marker |
+| Airport (>10) | Same as Continental. | View-based marker |
 
-**ATC Badges:** C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS).
+**ATC Badges:** Colored pill background with white letter text. C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS). Two-row layout: ICAO + traffic on row 1, badges on row 2.
 
 **Traffic Counts:** Green ▲ departures, Red ▼ arrivals.
 

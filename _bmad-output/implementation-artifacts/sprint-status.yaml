@@ -63,7 +63,7 @@ development_status:
   3-2-pilot-markers-with-svg-aircraft-icons: done
   3-3-atc-polygon-overlays-fir-and-tracon: done
   3-4-zoom-aware-airport-markers-infrastructure-and-image-markers: done
-  3-5-airport-markers-local-zoom-atc-badges-and-traffic-counts: backlog
+  3-5-airport-markers-local-zoom-atc-badges-and-traffic-counts: done
   3-6-ground-aircraft-zoom-dependent-visibility: backlog
   epic-3-retrospective: optional
 

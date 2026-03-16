@@ -63,7 +63,9 @@ const MapComponent = ({onMapPress}) => {
         onPress={onMapPress}
         onRegionChangeComplete={region => {
             dispatch(allActions.appActions.saveInitialRegion(region));
-            setZoomLevel(computeZoomLevel(region.latitudeDelta));
+            const zoom = computeZoomLevel(region.latitudeDelta);
+            console.log(`zoom: ${zoom.toFixed(2)}, latDelta: ${region.latitudeDelta.toFixed(4)}`);
+            setZoomLevel(zoom);
         }}
     >
         <CTRPolygons visible={filters.atc} />
