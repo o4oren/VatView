@@ -4,8 +4,10 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FloatingFilterChips from '../filterBar/FloatingFilterChips';
 import StaleIndicator from '../shared/StaleIndicator';
 
-export default function MapOverlayGroup({dataStatus = 'live'}) {
+export default function MapOverlayGroup({dataStatus = 'live', sheetState = 'closed'}) {
     const insets = useSafeAreaInsets();
+    const isHalfOpen = sheetState === 'half';
+    const isFullOpen = sheetState === 'full';
 
     return (
         <View
@@ -19,7 +21,10 @@ export default function MapOverlayGroup({dataStatus = 'live'}) {
                 importantForAccessibility="yes"
                 nativeID='filter-chips-container'
             >
-                <FloatingFilterChips />
+                <FloatingFilterChips
+                    hidden={isFullOpen}
+                    topOffset={isHalfOpen ? -8 : 0}
+                />
             </View>
             <View
                 style={[

@@ -1,7 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
-import {getAirportByCode} from '../../common/airportTools';
 import PilotDetails from './PilotDetails';
 import AirportAtcDetils from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
@@ -50,16 +49,18 @@ export default function ClientDetails(props) {
     };
 
     return (
-        <View
-            style={
-                {
-                    backgroundColor: 'white',
-                    paddingHorizontal: 20,
-                    minHeight: props.fill ? 450 : null
-                }
-            }
-        >
+        <View style={props.fill ? styles.containerFill : styles.container}>
             {renderBody()}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: 20,
+    },
+    containerFill: {
+        paddingHorizontal: 20,
+        minHeight: 450,
+    },
+});
