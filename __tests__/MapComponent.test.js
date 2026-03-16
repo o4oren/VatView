@@ -10,6 +10,7 @@ const mockSaveInitialRegion = jest.fn(region => ({
 }));
 
 let capturedAirportMarkersProps = null;
+let capturedPilotMarkersProps = null;
 
 jest.mock('react-redux', () => ({
     useDispatch: jest.fn(),
@@ -23,7 +24,10 @@ jest.mock('../app/common/ThemeProvider', () => ({
 }));
 
 jest.mock('../app/components/vatsimMapView/CTRPolygons', () => 'CTRPolygons');
-jest.mock('../app/components/vatsimMapView/PilotMarkers', () => 'PilotMarkers');
+jest.mock('../app/components/vatsimMapView/PilotMarkers', () => (props) => {
+    capturedPilotMarkersProps = props;
+    return 'PilotMarkers';
+});
 jest.mock('../app/components/vatsimMapView/AirportMarkers', () => (props) => {
     capturedAirportMarkersProps = props;
     return 'AirportMarkers';
@@ -66,6 +70,7 @@ describe('MapComponent', () => {
         mockDispatch.mockClear();
         mockSaveInitialRegion.mockClear();
         capturedAirportMarkersProps = null;
+        capturedPilotMarkersProps = null;
         useDispatch.mockReturnValue(mockDispatch);
         useSelector.mockImplementation(selector => selector(mockState));
     });
@@ -78,6 +83,7 @@ describe('MapComponent', () => {
 
         expect(capturedAirportMarkersProps.visible).toBe(true);
         expect(capturedAirportMarkersProps.zoomLevel).toBeCloseTo(Math.log2(360 / 20), 5);
+        expect(capturedPilotMarkersProps.zoomLevel).toBeCloseTo(Math.log2(360 / 20), 5);
 
         const nextRegion = {
             latitude: 51.5,
@@ -97,5 +103,27 @@ describe('MapComponent', () => {
             payload: nextRegion,
         });
         expect(capturedAirportMarkersProps.zoomLevel).toBeCloseTo(5, 5);
+        expect(capturedPilotMarkersProps.zoomLevel).toBeCloseTo(5, 5);
+    });
+
+    it('does not render PilotMarkers when the pilots filter is off', () => {
+        const pilotsHiddenState = {
+            ...mockState,
+            app: {
+                ...mockState.app,
+                filters: {
+                    ...mockState.app.filters,
+                    pilots: false,
+                },
+            },
+        };
+
+        useSelector.mockImplementation(selector => selector(pilotsHiddenState));
+
+        act(() => {
+            renderer.create(<MapComponent onMapPress={jest.fn()} />);
+        });
+
+        expect(capturedPilotMarkersProps).toBeNull();
     });
 });
