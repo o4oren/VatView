@@ -15,11 +15,15 @@ const CHIP_DEFS = [
 
 const ICON_SIZE = 16;
 
-export default function FloatingFilterChips() {
+export default function FloatingFilterChips({hidden = false, topOffset = 0}) {
     const {activeTheme} = useTheme();
     const insets = useSafeAreaInsets();
     const filters = useSelector(state => state.app.filters);
     const dispatch = useDispatch();
+
+    if (hidden) {
+        return null;
+    }
 
     function handleChipPress(chip) {
         const isCurrentlyActive = filters[chip.key];
@@ -35,7 +39,7 @@ export default function FloatingFilterChips() {
     }
 
     return (
-        <View style={[styles.container, {top: insets.top + 16, left: insets.left + 16}]}>
+        <View style={[styles.container, {top: insets.top + 16 + topOffset, left: insets.left + 16}]}>
             {CHIP_DEFS.map((chip) => {
                 const isActive = filters[chip.key];
                 const borderColor = isActive
@@ -61,7 +65,8 @@ export default function FloatingFilterChips() {
                             rounded='md'
                             style={[
                                 styles.chipSurface,
-                                {borderWidth: 1, borderColor: borderColor},
+                                styles.chipBorder,
+                                {borderColor: borderColor},
                                 !isActive && styles.chipInactive,
                             ]}
                         >
@@ -98,6 +103,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 6,
         gap: 4,
+    },
+    chipBorder: {
+        borderWidth: 1,
     },
     chipInactive: {
         opacity: 0.7,
