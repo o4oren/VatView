@@ -456,9 +456,9 @@ So that the map stays clean at continental view but reveals more airports as I f
 **When** `MapComponent.jsx` is updated to provide current zoom level via `onRegionChangeComplete` callback
 **And** `AirportMarkers.jsx` is redesigned to receive zoom level and render conditionally
 **Then** at Continental zoom (3-4): only staffed airports show as small dot + ICAO at 8px, using native Image markers for performance
-**And** at Regional zoom (5-6): staffed airports show dot + ICAO at 11px; unstaffed show grey dot only, using native Image markers
+**And** at Regional zoom (5-6): staffed airports show dot + ICAO at 11px; unstaffed airports with active traffic (pilot departures/arrivals) show grey dot + green ▲ departure count + red ▼ arrival count, using native Image markers. Unstaffed airports with no traffic do not render.
 **And** airport markers are hidden when the ATC filter chip is toggled off
-**And** airport dot color is blue when any ATC is staffed, grey when unstaffed
+**And** airport dot color is blue when any ATC is staffed, grey when unstaffed with traffic
 **And** touch targets meet 44x44px minimum (expanded hit area beyond visual bounds)
 **And** rendering hundreds of airports at continental/regional zoom maintains 60fps panning
 
