@@ -741,7 +741,7 @@ Airport rendering changes with zoom level. This is a **new component behavior** 
 | Zoom Band | Zoom Level | Airport Display | Marker Type |
 |---|---|---|---|
 | **Continental** | 3–4 | Staffed airports: small dot + ICAO at reduced size. Unstaffed: hidden. | Image marker (performance) |
-| **Regional** | 5–6 | Staffed airports: dot + ICAO at full size. Unstaffed: small grey dot, no label. | Image marker (performance) |
+| **Regional** | 5–6 | Staffed airports: dot + ICAO at full size. Unstaffed with active traffic: grey dot + green ▲ departures + red ▼ arrivals (no ICAO label). Unstaffed with no traffic: hidden. | Image marker (performance) |
 | **Local** | 7+ | Full treatment: dot, ICAO, ATC letter badges, traffic count arrows. | View-based marker (rich layout) |
 
 **Performance rationale:** At Continental/Regional zoom, potentially hundreds of airports are visible. Using native `Image` markers (simple bitmaps) ensures smooth 60fps panning. At Local zoom (7+), fewer airports are on screen, allowing the switch to `View`-based markers with full badge/count layout without performance degradation.
@@ -1243,7 +1243,7 @@ Built on `@gorhom/bottom-sheet` for spring-physics gestures.
 | Zoom Band | Display | Marker Type |
 |---|---|---|
 | Continental (3–4) | Small dot + ICAO at 8px. Staffed only. | Image marker |
-| Regional (5–6) | Dot + ICAO at 11px. Unstaffed: grey dot. | Image marker |
+| Regional (5–6) | Dot + ICAO at 11px. Unstaffed with traffic: grey dot + ▲/▼ counts. No traffic: hidden. | Image marker |
 | Local (7+) | Dot + ICAO + ATC letter badges + traffic counts | View-based marker |
 
 **ATC Badges:** C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS).
