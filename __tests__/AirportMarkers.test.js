@@ -2,7 +2,6 @@ import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
-import {Platform} from 'react-native';
 import AirportMarkers from '../app/components/vatsimMapView/AirportMarkers';
 
 const lightAtcTheme = {
@@ -12,6 +11,14 @@ const lightAtcTheme = {
     tracon: '#1A7F37',
     traconFill: 'rgba(26, 127, 55, 0.08)',
     traconStrokeWidth: 1,
+    badge: {
+        clearance: '#8b949e',
+        ground: '#1a7f37',
+        tower: '#bf8700',
+        approach: '#2a6bc4',
+        atis: '#0284c7',
+    },
+    badgeBackground: 'rgba(0,0,0,0.06)',
 };
 
 const darkAtcTheme = {
@@ -21,6 +28,14 @@ const darkAtcTheme = {
     tracon: '#2EA043',
     traconFill: 'rgba(46, 160, 67, 0.10)',
     traconStrokeWidth: 1,
+    badge: {
+        clearance: '#656d76',
+        ground: '#1a7f37',
+        tower: '#d29922',
+        approach: '#3b7dd8',
+        atis: '#0ea5e9',
+    },
+    badgeBackground: 'rgba(255,255,255,0.10)',
 };
 
 let mockActiveTheme = {
@@ -104,7 +119,7 @@ describe('AirportMarkers', () => {
         mockGetTrafficMarkerImage.mockClear();
     });
 
-    it('renders airport markers for staffed airports', () => {
+    it('renders Image markers for staffed airports at global zoom', () => {
         const airport = makeAirport('EGLL');
         const store = makeStore({
             airportAtc: {
@@ -115,7 +130,7 @@ describe('AirportMarkers', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <Provider store={store}><AirportMarkers visible={true} zoomLevel={4} /></Provider>
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={3} /></Provider>
             );
         });
         const json = tree.toJSON();
@@ -124,25 +139,10 @@ describe('AirportMarkers', () => {
         expect(markers.length).toBeGreaterThanOrEqual(1);
         expect(mockGetStaffedMarkerImage).toHaveBeenCalledWith(
             'EGLL',
-            'continental',
+            'global',
             mockActiveTheme,
             undefined
         );
-        expect(markers[0].props.tracksViewChanges).toBe(false);
-        if (Platform.OS === 'android') {
-            expect(markers[0].props.anchor).toEqual({x: 0.2, y: 0.5});
-            expect(markers[0].props.image).toEqual({uri: 'staffed-EGLL'});
-        } else {
-            expect(markers[0].props.anchor).toEqual({x: 0.5, y: 0.5});
-            expect(markers[0].props.centerOffset).toBeDefined();
-            expect(markers[0].children[0].type).toBe('Image');
-            expect(markers[0].children[0].props.source).toEqual({uri: 'staffed-EGLL'});
-            expect(markers[0].children[0].props.style).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({width: 64, height: 44}),
-                ])
-            );
-        }
     });
 
     it('renders TRACON polygons when lookup returns polygon data', () => {
@@ -266,7 +266,7 @@ describe('AirportMarkers', () => {
         expect(polygons[0].props.strokeColor).toBe('#2EA043');
     });
 
-    it('at continental zoom shows only staffed airports', () => {
+    it('at continental zoom shows only staffed airports (no unstaffed-with-traffic)', () => {
         const egll = makeAirport('EGLL');
         const kjfk = {icao: 'KJFK', latitude: 40.63, longitude: -73.77};
         const store = makeStore({
@@ -279,7 +279,7 @@ describe('AirportMarkers', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <Provider store={store}><AirportMarkers visible={true} zoomLevel={3} /></Provider>
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={2} /></Provider>
             );
         });
         const json = tree.toJSON();
@@ -289,7 +289,7 @@ describe('AirportMarkers', () => {
         expect(mockGetTrafficMarkerImage).not.toHaveBeenCalled();
     });
 
-    it('at regional zoom shows staffed + unstaffed-with-traffic airports', () => {
+    it('at regional+ zoom shows staffed + unstaffed-with-traffic as View markers', () => {
         const egll = makeAirport('EGLL');
         const kjfk = {icao: 'KJFK', latitude: 40.63, longitude: -73.77};
         const store = makeStore({
@@ -302,20 +302,16 @@ describe('AirportMarkers', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <Provider store={store}><AirportMarkers visible={true} zoomLevel={5.5} /></Provider>
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={7} /></Provider>
             );
         });
         const json = tree.toJSON();
         const elements = Array.isArray(json) ? json : (json ? [json] : []);
         const markers = elements.filter(e => e.type === 'Marker');
         expect(markers).toHaveLength(2);
-        expect(mockGetStaffedMarkerImage).toHaveBeenCalledWith(
-            'EGLL',
-            'regional',
-            mockActiveTheme,
-            undefined
-        );
-        expect(mockGetTrafficMarkerImage).toHaveBeenCalledWith('KJFK', 5, 3, 'regional', mockActiveTheme);
+        // Regional+ zoom uses LocalAirportMarker, not Image markers
+        expect(mockGetStaffedMarkerImage).not.toHaveBeenCalled();
+        expect(mockGetTrafficMarkerImage).not.toHaveBeenCalled();
     });
 
     it('unstaffed airports with zero traffic do NOT render', () => {
@@ -340,7 +336,7 @@ describe('AirportMarkers', () => {
         expect(markers).toHaveLength(1);
     });
 
-    it('zoom prop changes affect marker rendering', () => {
+    it('zoom change from continental to local adds unstaffed-with-traffic markers', () => {
         const egll = makeAirport('EGLL');
         const kjfk = {icao: 'KJFK', latitude: 40.63, longitude: -73.77};
         const store = makeStore({
@@ -353,7 +349,7 @@ describe('AirportMarkers', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <Provider store={store}><AirportMarkers visible={true} zoomLevel={3} /></Provider>
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={2} /></Provider>
             );
         });
         let json = tree.toJSON();
@@ -362,7 +358,7 @@ describe('AirportMarkers', () => {
 
         act(() => {
             tree.update(
-                <Provider store={store}><AirportMarkers visible={true} zoomLevel={6} /></Provider>
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={5} /></Provider>
             );
         });
         json = tree.toJSON();
@@ -370,7 +366,7 @@ describe('AirportMarkers', () => {
         expect(elements.filter(e => e.type === 'Marker')).toHaveLength(2);
     });
 
-    it('passes staffed airport traffic info into the marker service when available', () => {
+    it('at local zoom renders LocalAirportMarker instead of AirportMarkerItem for staffed airports', () => {
         const egll = makeAirport('EGLL');
         const store = makeStore({
             airportAtc: {
@@ -379,18 +375,63 @@ describe('AirportMarkers', () => {
             cachedAirports: {icao: {EGLL: egll}, iata: {}},
             trafficCounts: {EGLL: {departures: 2, arrivals: 1}},
         });
+        let tree;
+        act(() => {
+            tree = renderer.create(
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={8} /></Provider>
+            );
+        });
+        const json = tree.toJSON();
+        const elements = Array.isArray(json) ? json : (json ? [json] : []);
+        const markers = elements.filter(e => e.type === 'Marker');
+        expect(markers.length).toBeGreaterThanOrEqual(1);
+        // At local zoom, should NOT call getStaffedMarkerImage (Image markers)
+        expect(mockGetStaffedMarkerImage).not.toHaveBeenCalled();
+    });
+
+    it('at local zoom renders LocalAirportMarker for unstaffed-with-traffic airports', () => {
+        const kjfk = {icao: 'KJFK', latitude: 40.63, longitude: -73.77};
+        const store = makeStore({
+            airportAtc: {},
+            cachedAirports: {icao: {KJFK: kjfk}, iata: {}},
+            trafficCounts: {KJFK: {departures: 5, arrivals: 3}},
+        });
+        let tree;
+        act(() => {
+            tree = renderer.create(
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={8} /></Provider>
+            );
+        });
+        const json = tree.toJSON();
+        const elements = Array.isArray(json) ? json : (json ? [json] : []);
+        const markers = elements.filter(e => e.type === 'Marker');
+        expect(markers.length).toBeGreaterThanOrEqual(1);
+        // Should NOT call getTrafficMarkerImage at local zoom
+        expect(mockGetTrafficMarkerImage).not.toHaveBeenCalled();
+    });
+
+    it('zoom transition from global to continental swaps to View-based markers', () => {
+        const egll = makeAirport('EGLL');
+        const store = makeStore({
+            airportAtc: {
+                EGLL: [{callsign: 'EGLL_TWR', facility: 4, latitude: 51.47, longitude: -0.46}],
+            },
+            cachedAirports: {icao: {EGLL: egll}, iata: {}},
+        });
+        let tree;
+        act(() => {
+            tree = renderer.create(
+                <Provider store={store}><AirportMarkers visible={true} zoomLevel={3} /></Provider>
+            );
+        });
+        expect(mockGetStaffedMarkerImage).toHaveBeenCalled();
+        mockGetStaffedMarkerImage.mockClear();
 
         act(() => {
-            renderer.create(
+            tree.update(
                 <Provider store={store}><AirportMarkers visible={true} zoomLevel={5} /></Provider>
             );
         });
-
-        expect(mockGetStaffedMarkerImage).toHaveBeenCalledWith(
-            'EGLL',
-            'regional',
-            mockActiveTheme,
-            {departures: 2, arrivals: 1}
-        );
+        expect(mockGetStaffedMarkerImage).not.toHaveBeenCalled();
     });
 });

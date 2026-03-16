@@ -9,6 +9,7 @@ import {useTheme} from '../../common/ThemeProvider';
 import {getAirportByCode} from '../../common/airportTools';
 import {lookupTracon} from '../../common/boundaryService';
 import {getStaffedMarkerImage, getTrafficMarkerImage} from '../../common/airportMarkerService';
+import LocalAirportMarker from './LocalAirportMarker';
 
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
@@ -114,37 +115,65 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
 
             if (visible) {
                 const traffic = trafficCounts ? trafficCounts[airport.icao] : null;
-                const markerImage = getStaffedMarkerImage(airport.icao, zoomBand, activeTheme, traffic);
-                airportMarkers.push(
-                    <AirportMarkerItem
-                        key={airport.icao}
-                        airport={airport}
-                        markerImage={markerImage}
-                        onPress={onPress}
-                    />
-                );
+                const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
+                if (useViewMarker) {
+                    airportMarkers.push(
+                        <LocalAirportMarker
+                            key={airport.icao}
+                            airport={airport}
+                            atcList={airportAtc[airport.icao]}
+                            trafficInfo={traffic}
+                            activeTheme={activeTheme}
+                            onPress={onPress}
+                        />
+                    );
+                } else {
+                    const markerImage = getStaffedMarkerImage(airport.icao, zoomBand, activeTheme, null);
+                    airportMarkers.push(
+                        <AirportMarkerItem
+                            key={airport.icao}
+                            airport={airport}
+                            markerImage={markerImage}
+                            onPress={onPress}
+                        />
+                    );
+                }
             }
         }
     }
 
-    // Render unstaffed airports with traffic at regional+ zoom
-    if (visible && zoomBand !== 'continental' && trafficCounts) {
+    // Render unstaffed airports with traffic (hidden at global zoom)
+    if (visible && zoomBand !== 'global' && trafficCounts) {
+        const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
         for (const icao in trafficCounts) {
             if (renderedStaffedIcaos.has(icao)) continue;
             const airport = getAirportByCode(icao, airports);
             if (!airport) continue;
             const traffic = trafficCounts[icao];
             if (!traffic || (traffic.departures === 0 && traffic.arrivals === 0)) continue;
-            const markerImage = getTrafficMarkerImage(icao, traffic.departures, traffic.arrivals, zoomBand, activeTheme);
 
-            airportMarkers.push(
-                <AirportMarkerItem
-                    key={`unstaffed-${icao}`}
-                    airport={airport}
-                    markerImage={markerImage}
-                    onPress={onPress}
-                />
-            );
+            if (useViewMarker) {
+                airportMarkers.push(
+                    <LocalAirportMarker
+                        key={`unstaffed-${icao}`}
+                        airport={airport}
+                        atcList={[]}
+                        trafficInfo={traffic}
+                        activeTheme={activeTheme}
+                        onPress={onPress}
+                    />
+                );
+            } else {
+                const markerImage = getTrafficMarkerImage(icao, traffic.departures, traffic.arrivals, zoomBand, activeTheme);
+                airportMarkers.push(
+                    <AirportMarkerItem
+                        key={`unstaffed-${icao}`}
+                        airport={airport}
+                        markerImage={markerImage}
+                        onPress={onPress}
+                    />
+                );
+            }
         }
     }
 

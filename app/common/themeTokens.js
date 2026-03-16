@@ -31,6 +31,14 @@ const lightTheme = {
         firStrokeWidth: 1,
         uirStrokeWidth: 0,
         traconStrokeWidth: 1,
+        badge: {
+            clearance: '#8b949e',
+            ground: '#1a7f37',
+            tower: '#bf8700',
+            approach: '#2a6bc4',
+            atis: '#0284c7',
+        },
+        badgeBackground: 'rgba(0,0,0,0.06)',
     },
     status: {
         online: '#1A7F37',
@@ -69,6 +77,14 @@ const darkTheme = {
         firStrokeWidth: 1,
         uirStrokeWidth: 0,
         traconStrokeWidth: 1,
+        badge: {
+            clearance: '#656d76',
+            ground: '#1a7f37',
+            tower: '#d29922',
+            approach: '#3b7dd8',
+            atis: '#0ea5e9',
+        },
+        badgeBackground: 'rgba(255,255,255,0.10)',
     },
     status: {
         online: '#3FB950',

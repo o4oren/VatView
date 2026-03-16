@@ -95,7 +95,7 @@ NFR17: Custom Google Maps styling must visually complement each theme (light and
 - DetailPanelProvider abstraction built now (portrait bottom sheet), landscape side panel container deferred but abstraction ready
 - Progressive disclosure uses additive content rendering: Level 1 always shown, Level 2 adds, Level 3 adds (never replaces)
 - AircraftIconService: SVG-to-bitmap pipeline replacing iconsHelper.js — pre-renders FSTrAk SVG silhouettes into cached ImageSource objects for native map markers
-- Zoom-aware airport markers: three bands (Continental 3-4, Regional 5-6, Local 7+) with Image markers at low zoom and View-based markers at local zoom
+- Zoom-aware airport markers: five bands (Global ≤4, Continental 5-6, Regional 7-8, Local 9-10, Airport >10) with Image markers at Global zoom and View-based markers with ATC badges at Continental+ zoom
 - Animation token system: duration.fast (150ms), duration.normal (250ms), duration.slow (400ms), spring.sheet (damping 20, stiffness 300)
 - Tab cross-fade transitions (250ms) instead of hard cuts
 - MapOverlayGroup orchestrates all floating element positions based on sheet state, orientation, and nav island visibility
@@ -455,8 +455,8 @@ So that the map stays clean at continental view but reveals more airports as I f
 **Given** the theme tokens are available
 **When** `MapComponent.jsx` is updated to provide current zoom level via `onRegionChangeComplete` callback
 **And** `AirportMarkers.jsx` is redesigned to receive zoom level and render conditionally
-**Then** at Continental zoom (3-4): only staffed airports show as small dot + ICAO at 8px, using native Image markers for performance
-**And** at Regional zoom (5-6): staffed airports show dot + ICAO at 11px; unstaffed airports with active traffic (pilot departures/arrivals) show grey dot + green ▲ departure count + red ▼ arrival count, using native Image markers. Unstaffed airports with no traffic do not render.
+**Then** at Global zoom (≤4): only staffed airports show as small dot + ICAO, no traffic counts, using native Image markers for performance
+**And** at Continental zoom (5-6) and above: staffed airports show as View-based markers with dot + ICAO + ATC badges + traffic counts; unstaffed airports with active traffic show grey dot + ICAO + ▲/▼ counts (no badges). Unstaffed airports with no traffic do not render.
 **And** airport markers are hidden when the ATC filter chip is toggled off
 **And** airport dot color is blue when any ATC is staffed, grey when unstaffed with traffic
 **And** touch targets meet 44x44px minimum (expanded hit area beyond visual bounds)
@@ -473,31 +473,30 @@ So that I can assess airport staffing and activity at a glance without tapping.
 **Acceptance Criteria:**
 
 **Given** zoom-aware airport marker infrastructure from Story 3.4 is in place
-**When** the map is at Local zoom (7+)
-**Then** airport markers switch from Image markers to View-based markers with full layout
-**And** ATC letter badges render next to the ICAO code: C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS)
-**And** only staffed positions show badges — unstaffed airports show ICAO only
+**When** the map is at Continental zoom (5+) or above
+**Then** airport markers render as View-based markers with two-row layout: Row 1 = dot + ICAO (monospace) + traffic counts, Row 2 = ATC letter badges as colored pills with white text
+**And** ATC letter badges render below the ICAO code: C (grey/Clearance), G (green/Ground), T (amber/Tower), A (blue/Approach), A (cyan/ATIS)
+**And** badge colors are pill backgrounds (not text color) — white letter on colored pill, matching VATSIM Radar style
+**And** only staffed positions show badges — unstaffed airports show ICAO + traffic only (no badge row)
 **And** traffic count indicators show: green ▲ with departure count, red ▼ with arrival count
-**And** ICAO code renders in monospace (ThemedText callsign variant)
+**And** ICAO code renders in monospace (JetBrains Mono Medium)
 **And** badge colors use theme tokens and adapt to light/dark theme
-**And** the switch between Image and View markers is seamless as user zooms across the threshold
-**And** touch targets meet 44x44px minimum
+**And** the switch between Image (Global) and View markers (Continental+) is seamless as user zooms across the threshold
+**And** dot anchor is computed dynamically via onLayout to sit precisely on the airport coordinate
 
 ### Story 3.6: Ground Aircraft Zoom-Dependent Visibility
 
 As a user,
-I want ground aircraft to be hidden when I'm viewing the map at regional or continental zoom,
+I want ground aircraft to only appear when I'm zoomed in to airport level,
 So that the map is not cluttered with parked aircraft and I can focus on en-route traffic.
 
 **Acceptance Criteria:**
 
 **Given** PilotMarkers from Story 3.2 renders pilot markers on the map
 **When** a pilot's groundspeed is 5 knots or below
-**And** the map is at regional or continental zoom level
+**And** the map is at any zoom level below Airport (≤10)
 **Then** that pilot's marker is not rendered on the map
-**And** as the user zooms toward local level, ground aircraft markers fade in progressively (opacity scales with zoom level)
-**And** at full local zoom (airport fills the viewport), ground aircraft markers are fully opaque
-**And** the fade transition is smooth and continuous as the user zooms, not a hard threshold
+**And** at Airport zoom (>10), ground aircraft markers appear
 **And** this filtering applies to the map view only — the list view shows all pilots regardless of zoom level
 **And** ground aircraft that begin moving (groundspeed exceeds 5 knots) immediately appear at full opacity regardless of zoom level
 **And** the groundspeed threshold and zoom breakpoints are defined as constants for easy tuning

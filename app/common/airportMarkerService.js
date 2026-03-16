@@ -154,7 +154,7 @@ export const getStaffedMarkerImage = (icao, zoomBand, activeTheme, trafficInfo =
         currentThemeKey = themeKey;
     }
     const color = activeTheme.atc.airportDot;
-    if (zoomBand === 'continental') {
+    if (zoomBand === 'global') {
         return generateAirportDotWithIcao(color, icao, AIRPORT_MARKER_FONT_CONTINENTAL, 10, trafficInfo);
     }
     return generateAirportDotWithIcao(color, icao, AIRPORT_MARKER_FONT_REGIONAL, 12, trafficInfo);
@@ -168,7 +168,7 @@ export const getTrafficMarkerImage = (icao, departures, arrivals, zoomBand, acti
     }
     const color = activeTheme.atc.airportDotUnstaffed;
     const trafficInfo = (departures > 0 || arrivals > 0) ? {departures, arrivals} : null;
-    if (zoomBand === 'continental') {
+    if (zoomBand === 'global') {
         return generateAirportDotWithIcao(color, icao, AIRPORT_MARKER_FONT_CONTINENTAL, 10, trafficInfo);
     }
     return generateAirportDotWithIcao(color, icao, AIRPORT_MARKER_FONT_REGIONAL, 12, trafficInfo);
