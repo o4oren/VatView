@@ -2,19 +2,22 @@
 
 ## Prerequisites
 
-| Requirement | Version | Notes |
-|---|---|---|
-| Node.js | LTS recommended | |
-| npm | bundled with Node | |
-| Expo CLI | via `npx expo` | No global install needed |
-| EAS CLI | `>= 9.2.0` | For builds: `npm install -g eas-cli` |
-| Android Studio | Latest | For Android emulator + SDK |
-| Xcode | Latest | For iOS simulator (macOS only) |
-| Expo Go / Dev Client | — | Dev client required (not plain Expo Go) |
+
+| Requirement          | Version           | Notes                                   |
+| -------------------- | ----------------- | --------------------------------------- |
+| Node.js              | LTS recommended   |                                         |
+| npm                  | bundled with Node |                                         |
+| Expo CLI             | via `npx expo`    | No global install needed                |
+| EAS CLI              | `>= 9.2.0`        | For builds: `npm install -g eas-cli`    |
+| Android Studio       | Latest            | For Android emulator + SDK              |
+| Xcode                | Latest            | For iOS simulator (macOS only)          |
+| Expo Go / Dev Client | —                 | Dev client required (not plain Expo Go) |
+
 
 **Google Maps API Key** required for both iOS and Android — configured in `app.json`.
 
 **Firebase** config files required:
+
 - `google-services.json` — Android (root)
 - `GoogleService-Info.plist` — iOS (root)
 
@@ -61,6 +64,7 @@ npm run lint
 ```
 
 **Key ESLint rules enforced:**
+
 - `react-native/no-inline-styles` — ERROR
 - `react-native/no-color-literals` — ERROR
 - `react-native/no-raw-text` — ERROR
@@ -82,10 +86,12 @@ No test suite is configured. Manual testing on device/emulator.
 `AircraftIconService` intentionally caches **one bitmap size per icon key** (for example `B737`, `A320`, `C172`) rather than multiple size variants.
 
 Why:
+
 - Android `react-native-maps` marker rendering from file URIs showed inconsistent visual sizing with variant-based assets across build modes/devices.
 - A single resolved display size (`sizeDp`) per icon key produced stable cross-platform marker sizing.
 
 How:
+
 - Display size is `sizeDp` (derived from icon scale and a 32dp base).
 - Render size is `sizeDp * PixelRatio` to keep markers sharp on high-density screens.
 - `iconsHelper.getAircraftIcon()` returns `[imageSource, sizeDp]`; callers should treat `sizeDp` as the source of truth for marker dimensions.
@@ -152,12 +158,14 @@ eas submit --platform android    # → Google Play Console
 
 Profiles are defined in `eas.json`:
 
-| Profile | Purpose | Distribution | Needs Metro? |
-|---|---|---|---|
-| `development` | Dev client for physical devices | Internal | Yes |
-| `ios-simulator` | Dev client for iOS simulator | Internal | Yes |
-| `preview` | Test builds (JS bundled) | Internal | No |
-| `production` | App store submission | Store | No |
+
+| Profile         | Purpose                         | Distribution | Needs Metro? |
+| --------------- | ------------------------------- | ------------ | ------------ |
+| `development`   | Dev client for physical devices | Internal     | Yes          |
+| `ios-simulator` | Dev client for iOS simulator    | Internal     | Yes          |
+| `preview`       | Test builds (JS bundled)        | Internal     | No           |
+| `production`    | App store submission            | Store        | No           |
+
 
 ---
 
@@ -168,6 +176,7 @@ Production uses Expo OTA updates (`expo-updates ~0.25.25`). OTA updates push JS-
 ```bash
 # Publish an OTA update
 eas update --branch production --message "Fix: ..."
+eas update --branch preview --message "Fix: ..." --platform android --environment preview
 ```
 
 > **Note:** OTA updates can only change JS/assets. Native dependency changes (new libraries, SDK upgrades) require a full `eas build` + store submission.
@@ -178,8 +187,8 @@ eas update --branch production --message "Fix: ..."
 
 App versioning uses **EAS remote version source** (`cli.appVersionSource: "remote"` in `eas.json`). This means:
 
-- **`expo.version`** in `app.json` — The user-facing version string (e.g., "1.9.2"). You bump this manually when releasing a new version.
-- **`buildNumber` (iOS) / `versionCode` (Android)** — Auto-incremented by EAS on each build. You don't need to manage these.
+- `**expo.version`** in `app.json` — The user-facing version string (e.g., "1.9.2"). You bump this manually when releasing a new version.
+- `**buildNumber` (iOS) / `versionCode` (Android)** — Auto-incremented by EAS on each build. You don't need to manage these.
 
 To check or manually set the remote build numbers:
 
@@ -208,13 +217,15 @@ When the SQLite schema or airport/FIR data format changes:
 
 All sensitive keys live in `app.json` (checked in — use environment substitution for CI):
 
-| Key | Location | Used For |
-|---|---|---|
-| Google Maps API Key | `app.json` → ios.config + android.config | Map rendering |
-| Firebase (web) | `app.json` → web.config.firebase | Web analytics |
-| EAS Project ID | `app.json` → extra.eas.projectId | EAS Build |
-| Firebase Android | `google-services.json` | Crashlytics, Auth |
-| Firebase iOS | `GoogleService-Info.plist` | Crashlytics, Auth |
+
+| Key                 | Location                                 | Used For          |
+| ------------------- | ---------------------------------------- | ----------------- |
+| Google Maps API Key | `app.json` → ios.config + android.config | Map rendering     |
+| Firebase (web)      | `app.json` → web.config.firebase         | Web analytics     |
+| EAS Project ID      | `app.json` → extra.eas.projectId         | EAS Build         |
+| Firebase Android    | `google-services.json`                   | Crashlytics, Auth |
+| Firebase iOS        | `GoogleService-Info.plist`               | Crashlytics, Auth |
+
 
 ---
 
@@ -224,3 +235,4 @@ All sensitive keys live in `app.json` (checked in — use environment substituti
 - **Console logs:** Extensive `console.log` throughout actions — useful for tracing data flow
 - **Crashlytics:** Production crashes auto-reported to Firebase
 - **SQLite issues:** Check `STATIC_DATA_VERSION` and `airportsLoaded`/`firBoundariesLoaded` flags in Redux state
+
