@@ -93,6 +93,7 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
             setIsOpen(false);
             setDisclosureLevel(1);
             setOpacity('surface');
+            sheetOpenRef.current = false;
             lastLoggedClientRef.current = null;
             if (selectedClient != null) {
                 dispatch(allActions.appActions.clientSelected(null));
@@ -160,13 +161,13 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
             // Keep current snap point on client swap; only open from closed state.
             // sheetOpenRef is set synchronously here (not via onChange callback),
             // so it's always accurate regardless of animation state.
-            if (!sheetOpenRef.current) {
+            if (!sheetOpenRef.current || sheetState === 'closed') {
                 sheetOpenRef.current = true;
                 sheetRef.current?.snapToIndex(0);
             }
         }
         prevSelectedClientRef.current = selectedClient;
-    }, [selectedClient]);
+    }, [selectedClient, sheetState]);
 
     // Filter-based auto-close (AC10)
     useEffect(() => {

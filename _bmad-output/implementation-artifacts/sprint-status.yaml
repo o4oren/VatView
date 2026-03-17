@@ -71,6 +71,7 @@ development_status:
   epic-4: in-progress
   4-1-detailpanelprovider-bottom-sheet-abstraction: done
   4-2-pilot-detail-three-level-progressive-disclosure: done
+  4-2-1-refactor-pilot-detail-single-card: done
   4-3-atc-and-ctr-detail-three-level-progressive-disclosure: backlog
   4-4-airport-detail-three-level-progressive-disclosure: backlog
   epic-4-retrospective: optional

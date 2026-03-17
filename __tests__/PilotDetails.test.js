@@ -1,19 +1,6 @@
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 
-let mockDisclosureLevel = 1;
-
-jest.mock('../app/components/detailPanel/DetailPanelProvider', () => ({
-    useDetailPanel: () => ({
-        disclosureLevel: mockDisclosureLevel,
-        isOpen: true,
-        open: jest.fn(),
-        close: jest.fn(),
-        selectedClient: null,
-        sheetState: 'peek',
-    }),
-}));
-
 jest.mock('../app/common/ThemeProvider', () => ({
     useTheme: () => ({
         isDark: false,
@@ -64,91 +51,39 @@ const basePilot = {
 };
 
 describe('PilotDetails', () => {
-    beforeEach(() => {
-        mockDisclosureLevel = 1;
-    });
-
-    it('always renders PilotLevel1Summary', () => {
+    it('renders PilotDetailCard unconditionally with all content', async () => {
         let tree;
-        act(() => {
+        await act(async () => {
             tree = renderer.create(<PilotDetails pilot={basePilot} />);
         });
         const allText = JSON.stringify(tree.toJSON());
 
+        // Section 1 content (always visible)
         expect(allText).toContain('SWR100');
         expect(allText).toContain('B738');
-    });
-
-    it('renders Level 2 when disclosureLevel >= 2', async () => {
-        mockDisclosureLevel = 2;
-        let tree;
-        await act(async () => {
-            tree = renderer.create(<PilotDetails pilot={basePilot} />);
-        });
-        const allText = JSON.stringify(tree.toJSON());
-
+        // Section 2 content (no longer gated by disclosureLevel)
         expect(allText).toContain('HDG');
         expect(allText).toContain('285°');
-    });
-
-    it('does NOT render Level 2 at disclosureLevel 1', () => {
-        mockDisclosureLevel = 1;
-        let tree;
-        act(() => {
-            tree = renderer.create(<PilotDetails pilot={basePilot} />);
-        });
-        const allText = JSON.stringify(tree.toJSON());
-
-        expect(allText).not.toContain('HDG');
-    });
-
-    it('renders Level 3 when disclosureLevel >= 3', async () => {
-        mockDisclosureLevel = 3;
-        let tree;
-        await act(async () => {
-            tree = renderer.create(<PilotDetails pilot={basePilot} />);
-        });
-        const allText = JSON.stringify(tree.toJSON());
-
+        // Section 3 content (no longer gated by disclosureLevel)
         expect(allText).toContain('SQUAWK');
         expect(allText).toContain('2200');
         expect(allText).toContain('CANADA');
     });
 
-    it('does NOT render Level 3 at disclosureLevel 2', async () => {
-        mockDisclosureLevel = 2;
+    it('is a thin wrapper returning PilotDetailCard', async () => {
         let tree;
         await act(async () => {
             tree = renderer.create(<PilotDetails pilot={basePilot} />);
         });
         const allText = JSON.stringify(tree.toJSON());
-
-        expect(allText).not.toContain('SQUAWK');
-    });
-
-    it('all three levels render at disclosureLevel 3 (additive)', async () => {
-        mockDisclosureLevel = 3;
-        let tree;
-        await act(async () => {
-            tree = renderer.create(<PilotDetails pilot={basePilot} />);
-        });
-        const allText = JSON.stringify(tree.toJSON());
-
-        // Level 1
         expect(allText).toContain('SWR100');
-        // Level 2
-        expect(allText).toContain('HDG');
-        // Level 3
-        expect(allText).toContain('SQUAWK');
     });
 
-    it('does not import react-native-paper', () => {
-        // The module should have no Paper dependencies
-        // If Paper were imported, it would throw since we haven't mocked it
-        expect(() => {
-            act(() => {
-                renderer.create(<PilotDetails pilot={basePilot} />);
-            });
-        }).not.toThrow();
+    it('does not import react-native-paper', async () => {
+        let tree;
+        await act(async () => {
+            tree = renderer.create(<PilotDetails pilot={basePilot} />);
+        });
+        expect(tree.toJSON()).not.toBeNull();
     });
 });
