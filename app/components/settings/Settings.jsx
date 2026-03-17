@@ -3,6 +3,7 @@ import {View, ScrollView, StyleSheet, Linking, Platform, Image} from 'react-nati
 import {List, Checkbox, Text, Divider} from 'react-native-paper';
 import {LinearGradient} from 'expo-linear-gradient';
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import {getReleaseTag, FIR_GEOJSON_RELEASE_TAG_KEY, TRACON_RELEASE_TAG_KEY} from '../../common/storageService';
 
 const colors = ['#b4becb', '#e1e8f5'];
@@ -89,6 +90,8 @@ const Settings = () => {
                 <Text variant="bodySmall">React Native: {Platform.constants?.reactNativeVersion ?
                     `${Platform.constants.reactNativeVersion.major}.${Platform.constants.reactNativeVersion.minor}.${Platform.constants.reactNativeVersion.patch}` :
                     'N/A'}</Text>
+                <Text variant="bodySmall">Update Channel: {Updates.channel || 'N/A'}</Text>
+                <Text variant="bodySmall">Update ID: {Updates.updateId || 'N/A'}</Text>
                 <Text variant="bodySmall">VATSpy Boundaries: {firGeoJsonReleaseTag || 'N/A'}</Text>
                 <Text variant="bodySmall">TRACON Boundaries: {traconReleaseTag || 'N/A'}</Text>
 
