@@ -13,6 +13,8 @@ export const AIRPORT_SELECTED = 'AIRPORT_SELECTED';
 export const AIRPORTS_LOADED = 'AIRPORTS_LOADED';
 export const FIR_BOUNDARIES_LOADED = 'FIR_BOUNDARIES_LOADED';
 export const LOADING_DB = 'LOADING_DB';
+export const FLY_TO_CLIENT = 'FLY_TO_CLIENT';
+export const FLY_TO_CONSUMED = 'FLY_TO_CONSUMED';
 
 export const saveAirportsLoaded = (isAirportsLoaded) => {
     return async (dispatch) => {
@@ -99,6 +101,17 @@ const searchQueryChanged = (searchQuery) => {
     };
 };
 
+const flyToClient = (coordinate) => {
+    return {
+        type: FLY_TO_CLIENT,
+        payload: coordinate,
+    };
+};
+
+const flyToConsumed = () => {
+    return {type: FLY_TO_CONSUMED};
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch) {
         const initialRegion = { region };
@@ -118,5 +131,7 @@ export default {
     airportSelected: airportSelected,
     atcFilterClicked: atcFilterClicked,
     pilotsFilterClicked: pilotsFilterClicked,
-    searchQueryChanged: searchQueryChanged
+    searchQueryChanged: searchQueryChanged,
+    flyToClient: flyToClient,
+    flyToConsumed: flyToConsumed,
 };

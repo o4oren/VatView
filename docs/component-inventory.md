@@ -35,7 +35,7 @@ Files: PascalCase `.jsx` | Utilities/Actions/Reducers: camelCase `.js`
 | Tab | Component File | Description |
 |---|---|---|
 | Map | `vatsimMapView/VatsimMapView.jsx` | Interactive map + bottom sheet for client details |
-| List | `vatsimListView/VatsimListView.jsx` | Filterable pilot/ATC list |
+| List | `vatsimListView/VatsimListView.jsx` | Filterable pilot/ATC list. Tapping a client dispatches `clientSelected` + `flyToClient` and navigates to Map. |
 | Airports | `airportView/AirportDetailsView.jsx` | Airport search + details |
 | Events | `EventsView/VatsimEventsView.jsx` | VATSIM events list |
 
@@ -87,11 +87,18 @@ Files: PascalCase `.jsx` | Utilities/Actions/Reducers: camelCase `.js`
 
 ---
 
+## Filter & Navigation Components
+
+| File | Component | Description |
+|---|---|---|
+| `filterBar/FloatingFilterChips.jsx` | `FloatingFilterChips` | Absolutely-positioned translucent chip row for the map overlay. Handles analytics. Delegates chip rendering to `FilterChipsRow`. |
+| `shared/FilterChipsRow.jsx` | `FilterChipsRow` | Shared chip row: Pilots + ATC toggles. Used by both `FloatingFilterChips` (map) and `VatsimListView` (list). Accepts `style` and `onChipPress` props. |
+| `navigation/FloatingNavIsland.jsx` | `FloatingNavIsland` | Custom bottom tab bar — translucent floating pill, safe-area aware |
+
 ## Utility Components
 
 | File | Component | Description |
 |---|---|---|
-| `filterBar/FilterBar.jsx` | `FilterBar` | Pilot/ATC toggle filters + search input |
 | `MetarView/MetarView.jsx` | `MetarView` | METAR weather data display |
 | `networkStatus/networkStatus.jsx` | `NetworkStatus` | Connection/data status screen |
 | `settings/Settings.jsx` | `Settings` | App settings screen |
@@ -104,6 +111,10 @@ Files: PascalCase `.jsx` | Utilities/Actions/Reducers: camelCase `.js`
 | File | Exports | Description |
 |---|---|---|
 | `theme.js` | `default` (blueGrey object) | All colors, map style, react-native-paper theme |
+| `themeTokens.js` | `tokens` | Design tokens: font families, blur intensities, animation durations |
+| `ThemeProvider.jsx` | `useTheme` | Theme context: `activeTheme`, `isDark`, `activeMapStyle` |
+| `TranslucentSurface.jsx` | `TranslucentSurface` | Cross-platform frosted glass surface with `overflow:hidden` border radius clipping |
+| `BlurWrapper.jsx` | `BlurWrapper` | iOS: `expo-blur` BlurView. Android: plain `View` with semi-transparent background. No `elevation` (would create opaque white overlay on Android with semi-transparent colors). |
 | `consts.js` | Named constants | Facility codes, STATIC_DATA_VERSION, timeouts, VATSIM codes |
 | `iconsHelper.js` | `getAircraftIcon`, `mapIcons`, `iconSizes` | Aircraft type → icon/size mapping |
 | `staticDataAcessLayer.js` | DB functions | SQLite singleton + CRUD for airports + FIR tables |

@@ -2,11 +2,14 @@ import React, {useEffect, useRef, useState} from 'react';
 import {FlatList, Keyboard, Platform, Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../../common/ThemeProvider';
 import {tokens} from '../../common/themeTokens';
 import ThemedText from '../shared/ThemedText';
+import FilterChipsRow from '../shared/FilterChipsRow';
 import ClientCard from './ClientCard';
 import allActions from '../../redux/actions';
+import {CTR} from '../../common/consts';
 
 /* eslint-disable react-native/no-raw-text */
 
@@ -44,6 +47,7 @@ export default function VatsimListView() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
     const {activeTheme} = useTheme();
+    const insets = useSafeAreaInsets();
 
     const clients = useSelector(state => state.vatsimLiveData.clients);
     const filters = useSelector(state => state.app.filters);
@@ -84,6 +88,14 @@ export default function VatsimListView() {
     const onItemPress = (client) => {
         Keyboard.dismiss();
         dispatch(allActions.appActions.clientSelected(client));
+        if (client.latitude != null && client.longitude != null) {
+            const delta = client.facility === CTR ? 8 : 0.35;
+            dispatch(allActions.appActions.flyToClient({
+                latitude: client.latitude,
+                longitude: client.longitude,
+                delta,
+            }));
+        }
         navigation.navigate('Map');
     };
 
@@ -95,14 +107,6 @@ export default function VatsimListView() {
 
     const keyExtractor = (client, i) => `${client.callsign}${client.cid}_${i}`;
 
-    const pilotsBtnBg = filters.pilots ? activeTheme.accent.primary + '33' : activeTheme.surface.base;
-    const pilotsBtnBorder = filters.pilots ? activeTheme.accent.primary : activeTheme.surface.border;
-    const pilotsTextColor = filters.pilots ? activeTheme.accent.primary : activeTheme.text.muted;
-
-    const atcBtnBg = filters.atc ? activeTheme.accent.primary + '33' : activeTheme.surface.base;
-    const atcBtnBorder = filters.atc ? activeTheme.accent.primary : activeTheme.surface.border;
-    const atcTextColor = filters.atc ? activeTheme.accent.primary : activeTheme.text.muted;
-
     const searchInputBg = activeTheme.surface.elevated;
     const searchTextColor = activeTheme.text.primary;
 
@@ -110,22 +114,7 @@ export default function VatsimListView() {
 
     return (
         <View style={[styles.container, {backgroundColor: activeTheme.surface.base}]}>
-            <View style={styles.controlsRow}>
-                <Pressable
-                    onPress={() => dispatch(allActions.appActions.pilotsFilterClicked())}
-                    style={[styles.filterBtn, {backgroundColor: pilotsBtnBg, borderColor: pilotsBtnBorder}]}
-                    accessibilityLabel="Pilots filter"
-                >
-                    <ThemedText variant="caption" color={pilotsTextColor}>✈ Pilots</ThemedText>
-                </Pressable>
-                <Pressable
-                    onPress={() => dispatch(allActions.appActions.atcFilterClicked())}
-                    style={[styles.filterBtn, {backgroundColor: atcBtnBg, borderColor: atcBtnBorder}]}
-                    accessibilityLabel="ATC filter"
-                >
-                    <ThemedText variant="caption" color={atcTextColor}>📡 ATC</ThemedText>
-                </Pressable>
-            </View>
+            <FilterChipsRow style={[styles.controlsRow, {paddingTop: insets.top + 12}]} />
 
             <View style={styles.searchContainer}>
                 <TextInput
@@ -169,17 +158,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     controlsRow: {
-        flexDirection: 'row',
         paddingHorizontal: 16,
-        paddingTop: 12,
         paddingBottom: 4,
-        gap: 8,
-    },
-    filterBtn: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
-        borderWidth: 1,
     },
     searchContainer: {
         paddingHorizontal: 16,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Platform, View, StyleSheet} from 'react-native';
+import {Platform, View} from 'react-native';
 import {BlurView} from 'expo-blur';
 import {useTheme} from './ThemeProvider';
 import {tokens} from './themeTokens';
@@ -46,17 +46,10 @@ export default function BlurWrapper({
 
     return (
         <View
-            style={[styles.androidBase, {backgroundColor, borderColor: activeTheme.surface.border}, style]}
+            style={[{backgroundColor}, style]}
             {...props}
         >
             {children}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    androidBase: {
-        borderWidth: 1,
-        elevation: 4,
-    },
-});

@@ -73,6 +73,8 @@ dispatch(allActions.appActions.clientSelected(client));
 | `ATC_FILTER_CLICKED` | Filter bar toggle |
 | `PILOTS_FILTER_CLICKED` | Filter bar toggle |
 | `SEARCH_QUERY_CHANGED` | Search input change |
+| `FLY_TO_CLIENT` | List item tap — stores `{latitude, longitude, delta}` in `pendingFlyTo` |
+| `FLY_TO_CONSUMED` | Dispatched by `MapComponent` after `animateToRegion` is called |
 
 ### `staticAirspaceDataActions.js`
 | Action | Trigger |

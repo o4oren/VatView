@@ -224,6 +224,29 @@ const updateData = async (dispatch, getState) => {
                     json.cachedFirBoundaries[icao] = firBoundaryLookup[icao];
                 }
             });
+
+            // Assign FIR center coordinates to CTR clients using the same resolution
+            // logic as cachedFirBoundaries: direct key → UIR firs → fir prefix match.
+            const {uirs, firs} = getState().staticAirspaceData;
+            Object.entries(clients.ctr).forEach(([prefix, ctrs]) => {
+                let center = firBoundaryLookup[prefix]?.[0]?.center;
+                if (!center && uirs[prefix]) {
+                    const resolvedIcao = uirs[prefix].firs.find(icao => firBoundaryLookup[icao]);
+                    center = resolvedIcao ? firBoundaryLookup[resolvedIcao][0]?.center : null;
+                }
+                if (!center) {
+                    const matched = firs.find(fir => fir.prefix === prefix && firBoundaryLookup[fir.icao]);
+                    center = matched ? firBoundaryLookup[matched.icao][0]?.center : null;
+                }
+                if (center) {
+                    ctrs.forEach(client => {
+                        if (client.latitude == null) {
+                            client.latitude = center.latitude;
+                            client.longitude = center.longitude;
+                        }
+                    });
+                }
+            });
             dispatch(dataUpdated(json));
         };
 
