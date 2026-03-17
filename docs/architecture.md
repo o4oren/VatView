@@ -98,9 +98,11 @@ getAirportsByCodesArray(prefixes) → SQLite sync query
     ↓
 Enrich pilots: aircraft icon + size (iconsHelper) + createKey()
 Sort controllers: ctr{} / fss{} / airportAtc{} / obs{} / other{}
+  Airport ATC (TWR/GND/DEL/APP/ATIS): latitude/longitude from airport lookup
+  CTR: latitude/longitude assigned from FIR boundary center after FIR resolution
+       (direct key → UIR firs → fir prefix match, same logic as cachedFirBoundaries)
     ↓
-getFirsFromDB(active CTR+FSS prefixes) → SQLite
-getFirPointsFromDB(each FIR) → SQLite
+Resolve FIR boundaries for active CTR+FSS (direct / UIR / prefix match)
     ↓
 dispatch DATA_UPDATED → Redux store → component re-render
 ```
@@ -115,9 +117,11 @@ dispatch DATA_UPDATED → Redux store → component re-render
 rootReducer
 ├── vatsimLiveData    clients{pilots,ctr,fss,airportAtc}, events, bookings, cachedFirBoundaries
 ├── staticAirspaceData countries, airports, firs, uirs, lastUpdated, version
-├── app               selectedClient, selectedAirport, filters, loadingDb, airportsLoaded, firBoundariesLoaded
+├── app               selectedClient, selectedAirport, pendingFlyTo, filters, loadingDb, airportsLoaded, firBoundariesLoaded
 └── metar             { [icao]: parsedMetarObject }
 ```
+
+`pendingFlyTo: {latitude, longitude, delta}` — one-shot map pan/zoom request. Set by list item tap via `FLY_TO_CLIENT`, consumed by `MapComponent` via `animateToRegion` + `FLY_TO_CONSUMED`. Android defers 350ms to clear tab transition.
 
 ### Action Modules (via `allActions` aggregator)
 - `appActions` — UI state: selection, filters, DB load flags
@@ -182,6 +186,13 @@ VatsimMapView (screen)
 No automated test suite configured. Manual testing on physical device and emulator.
 
 Firebase Crashlytics captures production crashes automatically.
+
+---
+
+## Android Platform Notes
+
+- **`elevation` + semi-transparent backgrounds:** Android's `elevation` prop triggers a system-rendered opaque white overlay to simulate shadow depth. This fights directly with `rgba` background colors — avoid `elevation` on any `View` that uses a semi-transparent `backgroundColor`. Use border styling for visual separation instead.
+- **`animateToRegion` on tab switch:** Calling `animateToRegion` immediately after navigating to the Map tab fails silently on Android because the MapView is still in the tab transition. Defer by 350ms (the `FadeScreen` transition is 250ms + buffer).
 
 ---
 

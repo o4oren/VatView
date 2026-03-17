@@ -47,9 +47,29 @@ const MapComponent = ({onMapPress}) => {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
     const filters = useSelector(state => state.app.filters);
+    const pendingFlyTo = useSelector(state => state.app.pendingFlyTo);
     const [zoomLevel, setZoomLevel] = useState(
         () => computeZoomLevel(initialRegion?.latitudeDelta)
     );
+
+    useEffect(() => {
+        if (!pendingFlyTo || !ref.current) return;
+        // On Android the map tab is still mid-transition when this fires,
+        // so animateToRegion is silently dropped. Defer past the transition.
+        const delay = Platform.OS === 'android' ? 350 : 0;
+        const timer = setTimeout(() => {
+            if (!ref.current) return;
+            const delta = pendingFlyTo.delta ?? 0.35;
+            ref.current.animateToRegion({
+                latitude: pendingFlyTo.latitude,
+                longitude: pendingFlyTo.longitude,
+                latitudeDelta: delta,
+                longitudeDelta: delta,
+            }, 600);
+            dispatch(allActions.appActions.flyToConsumed());
+        }, delay);
+        return () => clearTimeout(timer);
+    }, [pendingFlyTo, dispatch]);
 
     return <MapView
         key={mapKey}

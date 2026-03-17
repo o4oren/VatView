@@ -17,6 +17,10 @@ VatView/                                    # Project root
 ├── app/                                    # 📦 All application source code
 │   ├── common/                             # 🔧 Shared utilities and constants
 │   │   ├── theme.js                        # ⭐ ALL colors + map style + react-native-paper theme
+│   │   ├── themeTokens.js                  # Design tokens: fonts, blur, animation durations
+│   │   ├── ThemeProvider.jsx               # Theme context: useTheme() hook
+│   │   ├── TranslucentSurface.jsx          # Frosted glass surface with border-radius clipping
+│   │   ├── BlurWrapper.jsx                 # iOS: BlurView; Android: semi-transparent View (no elevation)
 │   │   ├── consts.js                       # ⭐ STATIC_DATA_VERSION, facility codes, timeouts
 │   │   ├── staticDataAcessLayer.js         # ⭐ SQLite singleton + CRUD (note: intentional typo)
 │   │   ├── storageService.js               # AsyncStorage + FileSystem persistence helpers
@@ -31,7 +35,7 @@ VatView/                                    # Project root
 │   │   │   └── MainTabNavigator.jsx        # Bottom tab navigator (Map, List, Airports, Events)
 │   │   ├── vatsimMapView/
 │   │   │   ├── VatsimMapView.jsx           # Map screen + @gorhom/bottom-sheet for client details
-│   │   │   ├── MapComponent.jsx            # react-native-maps core component
+│   │   │   ├── MapComponent.jsx            # react-native-maps core; watches pendingFlyTo → animateToRegion
 │   │   │   ├── PilotMarkers.jsx            # Individual aircraft map markers
 │   │   │   ├── ClusteredPilotMarkers.jsx   # Clustered markers (new feature, in-progress)
 │   │   │   ├── AirportMarkers.jsx          # Airport markers with ATC status indicators
@@ -47,7 +51,8 @@ VatView/                                    # Project root
 │   │   │   ├── AirportSearchList.jsx       # Search results
 │   │   │   └── AirportListItem.jsx         # Single airport row
 │   │   ├── vatsimListView/
-│   │   │   └── VatsimListView.jsx          # Filterable pilot+ATC list
+│   │   │   ├── VatsimListView.jsx          # Filterable pilot+ATC list; tap dispatches flyToClient
+│   │   │   └── ClientCard.jsx              # Single client row
 │   │   ├── EventsView/
 │   │   │   ├── VatsimEventsView.jsx        # Events list screen
 │   │   │   ├── EventListItem.jsx           # Single event row
@@ -56,7 +61,14 @@ VatView/                                    # Project root
 │   │   │   ├── BookingsView.jsx            # ATC bookings list
 │   │   │   └── BookingDeatils.jsx          # Booking details (note: intentional typo in filename)
 │   │   ├── filterBar/
-│   │   │   └── FilterBar.jsx               # Pilot/ATC toggle filters + search
+│   │   │   └── FloatingFilterChips.jsx     # Absolutely-positioned chip row for map overlay; delegates to FilterChipsRow
+│   │   ├── navigation/
+│   │   │   └── FloatingNavIsland.jsx       # Custom bottom tab bar — translucent pill, safe-area aware
+│   │   ├── shared/
+│   │   │   ├── FilterChipsRow.jsx          # Shared Pilots/ATC chip row (used by map + list)
+│   │   │   ├── ThemedText.jsx              # Theme-aware text component
+│   │   │   ├── StaleIndicator.jsx          # Stale data indicator
+│   │   │   └── ListItem.jsx                # Generic list item
 │   │   ├── MetarView/
 │   │   │   └── MetarView.jsx               # METAR weather display
 │   │   ├── networkStatus/
