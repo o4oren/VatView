@@ -6,9 +6,60 @@ import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {markNewSelection} from '../detailPanel/DetailPanelProvider';
+import {union} from '@turf/union';
+import {polygon as turfPolygon, featureCollection} from '@turf/helpers';
 
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
+
+// Convert our {latitude, longitude} ring to GeoJSON [lng, lat] ring (closed)
+const toGeoRing = (points) => {
+    const ring = points.map(p => [p.longitude, p.latitude]);
+    // GeoJSON rings must be closed
+    if (ring.length > 0 && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) {
+        ring.push(ring[0]);
+    }
+    return ring;
+};
+
+// Convert GeoJSON [lng, lat] ring back to {latitude, longitude}
+const fromGeoRing = (ring) => ring.slice(0, -1).map(c => ({latitude: c[1], longitude: c[0]}));
+
+// Union all FIR polygons for a UIR into merged outer boundary polygons.
+// Returns array of {points, holes} or null on failure (caller falls back to individual FIRs).
+const unionFirs = (firs) => {
+    try {
+        const features = [];
+        for (const fir of firs) {
+            if (!fir || !fir.points || fir.points.length < 3) continue;
+            const outerRing = toGeoRing(fir.points);
+            if (outerRing.length < 4) continue;
+            const holeRings = (fir.holes || []).map(toGeoRing).filter(r => r.length >= 4);
+            features.push(turfPolygon([outerRing, ...holeRings]));
+        }
+        if (features.length < 2) return null;
+
+        const merged = union(featureCollection(features));
+        if (!merged) return null;
+
+        const geom = merged.geometry;
+        if (geom.type === 'Polygon') {
+            return [{
+                points: fromGeoRing(geom.coordinates[0]),
+                holes: geom.coordinates.slice(1).map(fromGeoRing)
+            }];
+        } else if (geom.type === 'MultiPolygon') {
+            return geom.coordinates.map(poly => ({
+                points: fromGeoRing(poly[0]),
+                holes: poly.slice(1).map(fromGeoRing)
+            }));
+        }
+        return null;
+    } catch (e) {
+        console.warn('UIR union failed, falling back to individual FIRs', e);
+        return null;
+    }
+};
 
 // Evict cached overlays after this many consecutive polls without the controller (~100s at 20s polling)
 const STALE_EVICT_THRESHOLD = 5;
@@ -101,6 +152,9 @@ const CTRPolygons = React.memo(function CTRPolygons({visible = true}) {
                         latitude: latitudeSum / uir.firs.length,
                         longitude: longitudeSum / uir.firs.length
                     };
+                    // Pre-compute union once at cache-fill time, not at render time
+                    airspace.mergedPolygons = unionFirs(airspace.firs)
+                        || airspace.firs.map(f => ({points: f.points, holes: f.holes || []}));
                 }
             }
         }
@@ -113,12 +167,14 @@ const CTRPolygons = React.memo(function CTRPolygons({visible = true}) {
         const elements = [];
         if (airspace.isUir) {
             const uirTextStyle = {fontSize: 16, fontWeight: 'bold', color: activeTheme.atc.uir};
-            airspace.firs.forEach((fir, i) => {
+            // mergedPolygons is pre-computed and stored in cache — no union work at render time
+            const mergedPolygons = airspace.mergedPolygons;
+            mergedPolygons.forEach((poly, i) => {
                 elements.push(
                     <Polygon
                         key={`${clientKey}-uir-polygon-${i}`}
-                        coordinates={fir.points}
-                        holes={fir.holes || []}
+                        coordinates={poly.points}
+                        holes={poly.holes || []}
                         strokeColor={isVisible ? activeTheme.atc.uir : TRANSPARENT}
                         fillColor={isVisible ? activeTheme.atc.uirFill : TRANSPARENT}
                         strokeWidth={isVisible ? activeTheme.atc.uirStrokeWidth : 0}

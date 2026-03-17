@@ -29,7 +29,7 @@ const lightTheme = {
         uirFill: 'rgba(130, 80, 223, 0.15)',
         traconFill: 'rgba(26, 127, 55, 0.08)',
         firStrokeWidth: 1,
-        uirStrokeWidth: 0,
+        uirStrokeWidth: 1.5,
         traconStrokeWidth: 1,
         badge: {
             clearance: '#8b949e',
@@ -75,7 +75,7 @@ const darkTheme = {
         uirFill: 'rgba(163, 113, 247, 0.18)',
         traconFill: 'rgba(46, 160, 67, 0.10)',
         firStrokeWidth: 1,
-        uirStrokeWidth: 0,
+        uirStrokeWidth: 1.5,
         traconStrokeWidth: 1,
         badge: {
             clearance: '#656d76',

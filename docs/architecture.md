@@ -18,6 +18,7 @@ VatView is a cross-platform React Native mobile app (iOS + Android) that provide
 | UI Library | react-native-paper (Material Design v2) | ^4.4.1 |
 | Navigation | React Navigation (Stack + Bottom Tabs) | ^6.x |
 | Maps | react-native-maps (Google Maps) | 1.14.0 |
+| Geometry | @turf/union + @turf/helpers | latest |
 | State Management | Redux + redux-thunk | 4.0.5 / 2.3.0 |
 | Local Database | expo-sqlite | ~14.0.6 |
 | Storage | AsyncStorage + Expo FileSystem | 1.23.1 / ^17.0.1 |
@@ -141,6 +142,8 @@ VatsimMapView (screen)
         ├── CtrDetails
         └── AirportAtcDetails
 ```
+
+**UIR polygon union:** UIR boundaries are composed of multiple adjacent FIR polygons. `CTRPolygons.jsx` uses `@turf/union` to merge all constituent FIR polygons into a single outer boundary, eliminating internal border lines. The union is computed once when the airspace entry is first cached (`airspace.mergedPolygons`) and reused on subsequent renders. Falls back to individual FIR polygons if the union fails.
 
 **Bottom sheet lifecycle:**
 - `snapToIndex(0)` — open to 300px on client selection
