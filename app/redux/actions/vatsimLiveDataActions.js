@@ -34,6 +34,23 @@ const updateData = async (dispatch, getState) => {
         );
         let json = await response.json();
 
+        // Uncomment to preview a UIR boundary without an active controller (e.g. for UIR development/testing)
+        // json.controllers = [];
+        // json.pilots = [];
+        // json.controllers.push({
+        //     cid: 0,
+        //     name: 'TEMP EURN Preview',
+        //     callsign: 'EURN_FSS',
+        //     frequency: '133.000',
+        //     facility: 1,
+        //     rating: 1,
+        //     server: 'LOCAL',
+        //     visual_range: 0,
+        //     text_atis: [],
+        //     last_updated: new Date().toISOString(),
+        //     logon_time: new Date().toISOString()
+        // });
+
         json.cachedAirports = {
             icao: {},
             iata: {}
@@ -184,6 +201,8 @@ const updateData = async (dispatch, getState) => {
             // get airspace
             const firsTocCache = Object.keys(clients.ctr);
             Array.prototype.push.apply(firsTocCache, Object.keys(clients.fss));
+            // Uncomment alongside the controller injection above to force-cache UIR FIR boundaries for preview
+            // if (!firsTocCache.includes('EURN')) firsTocCache.push('EURN');
             // get also UIR firs
             firsTocCache.forEach(icao => {
                 // if UIR

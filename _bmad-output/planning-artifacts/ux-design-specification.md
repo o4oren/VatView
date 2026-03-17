@@ -552,6 +552,7 @@ The current `#2a5d99` (blue-grey) evolves into a slightly cooler, more luminous 
 | `atc.tracon` | `#2EA043` | TRACON polygon fill — distinct from FIR |
 | `atc.fir` | `#3B7DD8` | FIR boundary stroke |
 | `atc.uir` | `#A371F7` | UIR boundary stroke — purple to distinguish from FIR blue and TRACON green |
+| `atc.uirStrokeWidth` | `1.5` | UIR outer boundary stroke width — thicker than FIR (1) to emphasise supranational boundary |
 | `status.online` | `#3FB950` | Online/active indicators |
 | `status.offline` | `#484F58` | Offline/inactive indicators |
 | `status.stale` | `#D29922` | Stale data warning |
@@ -573,6 +574,7 @@ The current `#2a5d99` (blue-grey) evolves into a slightly cooler, more luminous 
 | `atc.staffed` | `#2A6BC4` | Staffed ATC polygon fill |
 | `atc.tracon` | `#1A7F37` | TRACON polygon fill |
 | `atc.uir` | `#8250DF` | UIR boundary stroke — purple to distinguish from FIR blue and TRACON green |
+| `atc.uirStrokeWidth` | `1.5` | UIR outer boundary stroke width |
 | `status.online` | `#1A7F37` | Online indicators |
 | `status.stale` | `#BF8700` | Stale data warning |
 

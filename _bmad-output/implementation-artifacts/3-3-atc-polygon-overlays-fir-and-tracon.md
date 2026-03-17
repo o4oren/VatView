@@ -28,7 +28,7 @@ so that I can visually assess ATC coverage at a glance.
   - [x] 1.2: Add `atc.uir` token — light: `'#8250DF'`, dark: `'#A371F7'` (purple — distinct from FIR blue and TRACON green for supranational boundaries)
   - [x] 1.3: Add `atc.uirFill` token — light: `'rgba(130, 80, 223, 0.15)'`, dark: `'rgba(163, 113, 247, 0.18)'`
   - [x] 1.4: Add `atc.traconFill` token — light: `'rgba(26, 127, 55, 0.08)'`, dark: `'rgba(46, 160, 67, 0.10)'`
-  - [x] 1.5: Add `atc.firStrokeWidth` (1), `atc.uirStrokeWidth` (0), `atc.traconStrokeWidth` (1) as numeric tokens
+  - [x] 1.5: Add `atc.firStrokeWidth` (1), `atc.uirStrokeWidth` (1.5), `atc.traconStrokeWidth` (1) as numeric tokens
 
 - [x] Task 2: Refactor `generateCtrPolygons` into a proper `<CTRPolygons />` component (AC: #6, #4)
   - [x] 2.1: Convert `generateCtrPolygons()` export to `export default React.memo(function CTRPolygons({...}) {...})`. Accept props: `ctr`, `fss`, `cachedFirBoundaries`, `visible`
@@ -212,7 +212,7 @@ Note: These cannot be in `StyleSheet.create()` since the color depends on the ac
 | `theme.blueGrey.firTextStyle.color` | CTRPolygons | `activeTheme.atc.fir` | `#2A6BC4` | `#3B7DD8` |
 | `theme.blueGrey.uirStrokeColor` | CTRPolygons | `activeTheme.atc.uir` | `#8250DF` | `#A371F7` |
 | `theme.blueGrey.uirFill` | CTRPolygons | `activeTheme.atc.uirFill` | `rgba(130,80,223,0.15)` | `rgba(163,113,247,0.18)` |
-| `theme.blueGrey.uirStrokeWidth` | CTRPolygons | `0` (literal) | 0 | 0 |
+| `theme.blueGrey.uirStrokeWidth` | CTRPolygons | `activeTheme.atc.uirStrokeWidth` | 1.5 | 1.5 |
 | `theme.blueGrey.uirTextStyle.color` | CTRPolygons | `activeTheme.atc.uir` | `#8250DF` | `#A371F7` |
 | `theme.blueGrey.appCircleStroke` | AirportMarkers | `activeTheme.atc.tracon` | `#1A7F37` | `#2EA043` |
 | `theme.blueGrey.appCircleFill` | AirportMarkers | `activeTheme.atc.traconFill` | `rgba(26,127,55,0.08)` | `rgba(46,160,67,0.10)` |
@@ -281,6 +281,7 @@ None — clean implementation with no blocking issues.
 
 - 2026-03-15: Implemented story 3.3 — ATC polygon overlays with theme tokens and component refactoring
 - 2026-03-16: Changed UIR color from green to purple (#8250DF/#A371F7) to distinguish from TRACON green. Updated UX design spec accordingly.
+- 2026-03-17: Added `@turf/union` + `@turf/helpers` dependencies. UIR composite boundaries are now merged via polygon union in `CTRPolygons.jsx` (`unionFirs()`) — internal FIR boundary lines are removed, only the outer UIR perimeter is stroked. Union is computed once at cache-fill time (stored in `airspace.mergedPolygons`), not at render time. Falls back to individual FIR polygons if union fails. `uirStrokeWidth` changed from 0 → 1.5 to make the outer boundary visible.
 
 ### File List
 
