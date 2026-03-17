@@ -364,8 +364,10 @@ Both platforms use the same opacity tokens and color values. The visual distinct
 | `DetailSheet` | Bottom sheet chrome wrapper | Three snap points (peek/half/full), frosted glass, notifies MapOverlayGroup of state changes |
 | `SidePanel` | Landscape detail panel | Same content as DetailSheet, side-anchored, managed by MapOverlayGroup |
 | `ThemedText` | Typography with theme + mono support | Variant (heading/body/caption/callsign), theme-aware |
-| `ClientCard` | Pilot/ATC summary in sheet peek | Callsign (mono), key info, progressive disclosure cue |
-| `AirportCard` | Airport summary with ATC status | ICAO, staffed positions, traffic count |
+| `PilotDetailCard` | Single complete pilot detail card | Content ordered by priority: glanceable summary (callsign, route, alt, speed) at top, flight data mid, full flight plan/remarks at bottom. Sheet snap points control visible area. |
+| `AtcDetailCard` | Single complete ATC detail card | Callsign, frequency, facility type at top; ATIS, rating mid; remarks, sector info at bottom. |
+| `CtrDetailCard` | Single complete CTR detail card | CTR callsign, frequency at top; controller list mid; ATIS, bookings at bottom. |
+| `AirportDetailCard` | Single complete airport detail card | ICAO, staffed positions, traffic counts at top; position list mid; METAR, bookings, traffic board at bottom. |
 | `EventCard` | Event list item | Event name, time, banner image |
 | `StaleIndicator` | Data freshness warning | Subtle, non-blocking, theme-aware, positioned by MapOverlayGroup |
 
@@ -480,22 +482,23 @@ What no existing app does — and what defines VatView Phase 1 — is combining 
 **3. Tap: Discover Details**
 
 - User taps any element: pilot marker, ATC polygon, airport marker.
-- The bottom sheet slides up to **peek position** (Level 1 — glanceable). Frosted glass, map visible beneath.
-  - **Pilot peek:** Callsign (mono), aircraft type, departure → arrival, altitude, groundspeed
-  - **ATC peek:** Callsign (mono), frequency, facility type, ATIS status indicator
-  - **Airport peek:** ICAO/name, number of staffed positions, arriving/departing count
+- The bottom sheet slides up to **peek position** showing the top portion of a single complete detail card. Frosted glass, map visible beneath.
+  - **Pilot card top:** Callsign (mono), aircraft type, departure → arrival, altitude, groundspeed
+  - **ATC card top:** Callsign (mono), frequency, facility type, ATIS status indicator
+  - **Airport card top:** ICAO/name, number of staffed positions, arriving/departing count
 - Animation: `duration.slow` (400ms), spring physics. The sheet arrives with weight, not a snap.
 
 **4. Drill: Progressive Disclosure (optional)**
 
-- User swipes up to **half position** (Level 2 — moderate detail):
-  - **Pilot:** Full flight plan (route string), time enroute, distance remaining, altitude chart
+- User swipes up to **half position** — more of the card becomes visible, revealing moderate detail:
+  - **Pilot:** Route summary string, heading, distance remaining, time enroute
   - **ATC:** Full ATIS text, controller rating, logon time
   - **Airport:** List of staffed positions with frequencies, traffic list
-- User swipes up further to **full position** (Level 3 — complete detail):
-  - **Pilot:** Server info, transponder, remarks, flight plan amendments
+- User swipes up further to **full position** — the complete card is visible:
+  - **Pilot:** Full flight plan text, transponder code, server info, remarks, time online, pilot rating
   - **ATC:** Sector boundary info (Phase 1.5), historical coverage
   - **Airport:** METAR link, ATC bookings for this airport, full traffic board
+- Note: Each detail type renders a single complete card. Content is ordered by priority (most glanceable at top). The sheet snap points — not conditional rendering — determine how much the user sees.
 - At any level, the map remains partially visible above the sheet. The user never loses spatial context.
 
 **5. Return: Back to Map**
@@ -640,7 +643,7 @@ JetBrains Mono is chosen for aviation data display:
 2. **Map breathing room** — Floating elements maintain `space-4` (16px) minimum margin from screen edges and from each other. The map should always be visible between floating elements.
 3. **List item height: 64px minimum** — In List view, Airport view, Events view. Touch target meets iOS/Android guidelines (44px) with room for two-line content.
 4. **Card spacing: `space-4` between cards** — Inside the bottom sheet, between ClientCard, AirportCard, or other list items.
-5. **Progressive disclosure spacing increases with depth** — Peek (Level 1) is compact. Half (Level 2) uses standard spacing. Full (Level 3) is most spacious. This reinforces the "zoom into detail" mental model.
+5. **Detail card spacing uses consistent rhythm** — Content is laid out with standard spacing throughout the card. The "zoom into detail" mental model is reinforced by the sheet expanding to reveal more content, not by spacing changes.
 
 **Border Radius Scale:**
 
@@ -991,16 +994,16 @@ flowchart TD
 
 **Three ATC tap targets, three different sheet contents:**
 
-| Tap Target | Sheet Peek (Level 1) | Half Sheet (Level 2) | Full Sheet (Level 3) |
+| Tap Target | Peek (card top visible) | Half (more visible) | Full (complete card) |
 |---|---|---|---|
 | **FIR polygon** | CTR callsign, frequency, facility type | Full ATIS, rating, logon time | Remarks, sector info, bookings |
 | **TRACON circle** | APP/DEP callsign, frequency, facility type | Full ATIS, rating, logon time | Remarks, sector info |
 | **Airport marker** | Airport name, all staffed positions summary, traffic counts | Position list with individual frequencies | Full traffic board, METAR link, airport bookings |
 
 **Key interactions:**
-- Each ATC element type has its own progressive disclosure content — not one-size-fits-all
-- FIR and TRACON taps show the *controller*, airport taps show the *airport's ATC summary*
-- Three-level disclosure works the same mechanically (peek → half → full) but content differs by context
+- Each ATC element type has its own detail card with content ordered by priority — not one-size-fits-all
+- FIR and TRACON taps show the *controller* card, airport taps show the *airport* card
+- All cards work the same mechanically (peek → half → full snap points) but card content differs by type
 - Dismiss is always swipe-down or tap-map — consistent across all tap targets
 
 ---
@@ -1073,7 +1076,7 @@ flowchart TD
 - **Map as home** — Every journey starts and ends at the map. Non-map views (Events, Airports, List) are excursions; the map is home base. Transition animations reinforce this (fade out from map, fade back to map).
 
 **Disclosure Patterns:**
-- **Peek → Half → Full is universal** — Every tappable element (pilot, ATC, airport) follows the same three-level sheet disclosure. The gesture is identical; only the content changes.
+- **Peek → Half → Full is universal** — Every tappable element (pilot, ATC, airport) renders a single complete detail card. The sheet snap points control how much is visible. The gesture is identical; the card layout differs by detail type.
 - **Dismiss is always the same** — Swipe down or tap the map above the sheet. Never a back button, never a close icon. The map IS the dismiss target.
 
 **Decision Patterns:**
@@ -1126,9 +1129,9 @@ All 28 current components mapped to their Phase 1 equivalent:
 | **AirportMarkers.jsx** | **Replace:** Simple markers → zoom-aware markers | Five zoom bands (Global/Continental/Regional/Local/Airport), ATC badges at Continental+ zoom |
 | **CTRPolygons.jsx** | Migrate: Token-based polygon colors | `atc.staffed`, `atc.fir`, `atc.tracon` tokens |
 | **ClientDetails.jsx** | Migrate: Router logic unchanged | Delegates to pilot/ATC detail components |
-| **PilotDetails.jsx** | **Redesign:** Three-level progressive disclosure | Peek/half/full content defined in Journey 5 |
-| **AtcDetails.jsx** | **Redesign:** Three-level progressive disclosure | Controller-specific peek/half/full |
-| **CtrDetails.jsx** | **Redesign:** Three-level progressive disclosure | FIR/CTR controller detail |
+| **PilotDetails.jsx** | **Redesign:** Single complete detail card | PilotDetailCard — content ordered by priority, sheet snap points control visibility |
+| **AtcDetails.jsx** | **Redesign:** Single complete detail card | AtcDetailCard — controller info ordered by priority |
+| **CtrDetails.jsx** | **Redesign:** Single complete detail card | CtrDetailCard — FIR/CTR controller info ordered by priority |
 | **AirportAtcDetails.jsx** | **Redesign:** Airport summary with ATC badges | Letter badges, traffic counts, position list |
 | **VatsimListView.jsx** | Migrate: Restyle with `ListItem` base | Search field + filterable list, translucent cards |
 | **FilterBar.jsx** | **Split:** Map chips + List search | Floating `FilterChip` on map; search stays in List view |
@@ -1209,14 +1212,14 @@ All 28 current components mapped to their Phase 1 equivalent:
 
 #### DetailSheet
 
-**Purpose:** Bottom sheet with three-level progressive disclosure.
+**Purpose:** Bottom sheet that reveals a single complete detail card progressively via snap points.
 
 **Snap points:**
-| Level | Height | Opacity | Content |
+| Position | Height | Opacity | Visible portion |
 |---|---|---|---|
-| Peek | ~155px | 0.45 | ClientCard / AirportCard summary |
-| Half | ~50% | 0.65 | Data grid, route, ATIS |
-| Full | ~70% | 0.85 | Complete info, scrollable |
+| Peek | ~155px | 0.45 | Top of detail card — glanceable summary |
+| Half | ~50% | 0.65 | Upper portion — moderate detail |
+| Full | ~70% | 0.85 | Complete card, scrollable |
 
 Built on `@gorhom/bottom-sheet` for spring-physics gestures.
 
@@ -1334,7 +1337,7 @@ Export: getMarkerImage(aircraftType, sizeVariant) → ImageSource
 | 4 | `FilterChip` | Validates glass treatment. |
 | 5 | `NavIsland` | Core navigation — unlocks tab switching. |
 | 6 | `MapOverlayGroup` | Orchestrates floating elements. |
-| 7 | `DetailSheet` | Core interaction — progressive disclosure. |
+| 7 | `DetailSheet` | Core interaction — single card revealed by snap points. |
 | 8 | `SidePanel` | Landscape support. |
 | 9 | `ClientCard` (pilot) | Content for DetailSheet peek. |
 | 10 | `ClientCard` (ATC) | ATC variant. |
@@ -1348,7 +1351,7 @@ Export: getMarkerImage(aircraftType, sizeVariant) → ImageSource
 **Migration sequence:**
 1. Map view: Replace MainTabNavigator with NavIsland + MapOverlayGroup
 2. Map markers: Update PilotMarkers via AircraftIconService, replace AirportMarkers with zoom-aware AirportMarker
-3. Detail panels: Progressive disclosure cards in DetailSheet
+3. Detail panels: Single complete detail cards in DetailSheet
 4. Non-map views: Restyle List (ListItem base), Events (EventCard + search/filter), Airports, Bookings, METAR
 5. Settings: Add ThemePicker
 6. Clean up: Remove react-native-paper
@@ -1577,7 +1580,7 @@ VatView is a **native mobile app** (iOS + Android). There is no web or desktop v
 ```
 
 **Landscape-specific behaviors:**
-- SidePanel replaces DetailSheet — same content, side-anchored, no snap points (scrolls instead)
+- SidePanel replaces DetailSheet — same single detail card, side-anchored, no snap points (scrolls instead)
 - NavIsland centers in the remaining map width (not the full screen width)
 - Filter chips position relative to remaining map area
 - Non-map views (List, Events, Airports) use full width in landscape — no side panel for these views

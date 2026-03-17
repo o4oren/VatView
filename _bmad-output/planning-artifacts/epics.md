@@ -93,7 +93,7 @@ NFR17: Custom Google Maps styling must visually complement each theme (light and
 - ThemeContext architecture: NativeWind `dark:` variants for UI + lightweight React context for Maps styling, manual override, and persisted preference
 - FloatingNavIsland is wired as the Tab Navigator's custom `tabBar` and overlays content via absolute `tabBarStyle`; it receives `{ state, navigation }` and calls `navigation.navigate()` — React Navigation continues managing screen state
 - DetailPanelProvider abstraction built now (portrait bottom sheet), landscape side panel container deferred but abstraction ready
-- Progressive disclosure uses additive content rendering: Level 1 always shown, Level 2 adds, Level 3 adds (never replaces)
+- Progressive disclosure uses a single complete card per detail type with content ordered by information priority; the bottom sheet snap points control how much of the card is physically visible — no conditional content rendering
 - AircraftIconService: SVG-to-bitmap pipeline replacing iconsHelper.js — pre-renders FSTrAk SVG silhouettes into cached ImageSource objects for native map markers
 - Zoom-aware airport markers: five bands (Global ≤4, Continental 5-6, Regional 7-8, Local 9-10, Airport >10) with Image markers at Global zoom and View-based markers with ATC badges at Continental+ zoom
 - Animation token system: duration.fast (150ms), duration.normal (250ms), duration.slow (400ms), spring.sheet (damping 20, stiffness 300)
@@ -103,7 +103,7 @@ NFR17: Custom Google Maps styling must visually complement each theme (light and
 - NativeWind and StyleSheet.create() coexistence rules: never mix within a single component; use StyleSheet for @gorhom/bottom-sheet container and react-native-maps Marker/Polygon styles
 - All Reanimated animations must use `useAnimatedStyle()` with shared values, never NativeWind class toggling
 - JetBrains Mono font bundled for aviation data display (callsigns, frequencies, ICAO codes, flight plan strings)
-- 15 new Level sub-components for progressive disclosure (5 detail types × 3 levels)
+- 5 new detail card components for progressive disclosure (1 per detail type: pilot, ATC, CTR, airport-ATC, airport)
 
 **From UX Design:**
 - Custom design system built on NativeWind/Tailwind primitives — no off-the-shelf component library for visible UI elements
@@ -189,10 +189,11 @@ Users see live pilots as SVG-based aircraft markers, ATC coverage as polygon ove
 **FRs covered:** FR2, FR3, FR4, FR39, FR42, FR43, FR44
 
 ### Epic 3 contains 6 stories (3.1-3.6) after adding ground aircraft zoom filtering.
+### Epic 4 contains 5 stories (4.1-4.4 + 4.2.1) after single-card refactor.
 
 ### Epic 4: Progressive Disclosure Detail Panels
-Users tap any map element (pilot, controller, airport) and get a translucent bottom sheet with 3-level progressive disclosure — glanceable summary, expanded detail, full information — all rendered over the visible map.
-**FRs covered:** FR6, FR7, FR8, FR9, FR10, FR11
+Users tap any map element (pilot, controller, airport) and get a translucent bottom sheet with a single complete detail card — the sheet snap points (peek/half/full) control how much of the card is physically visible. All rendered over the visible map.
+**FRs covered:** FR6, FR7, FR8, FR9, FR10, FR11, FR11a
 
 ### Epic 5: List, Airport & Search Views
 Users browse filterable lists of pilots/controllers, search and view airport details (ATC, traffic, METAR), and search by callsign or ICAO code — all restyled in the new design language.
@@ -503,7 +504,7 @@ So that the map is not cluttered with parked aircraft and I can focus on en-rout
 
 ## Epic 4: Progressive Disclosure Detail Panels
 
-Users tap any map element (pilot, controller, airport) and get a translucent bottom sheet with 3-level progressive disclosure — glanceable summary, expanded detail, full information — all rendered over the visible map.
+Users tap any map element (pilot, controller, airport) and get a translucent bottom sheet with a single complete detail card — the sheet snap points (peek/half/full) control how much of the card is physically visible. All rendered over the visible map.
 
 ### Story 4.1: DetailPanelProvider — Bottom Sheet Abstraction
 
@@ -515,7 +516,7 @@ So that I can see details overlaid on the map without losing spatial context.
 
 **Given** TranslucentSurface and the theme system from Epic 1 are in place
 **When** `DetailPanelProvider.jsx` is created in `app/components/detailPanel/`
-**Then** it wraps the map screen and provides context API: `disclosureLevel` (1/2/3), `isOpen`, `open(client)`, `close()`, `selectedClient`
+**Then** it wraps the map screen and provides context API: `isOpen`, `open(client)`, `close()`, `selectedClient`
 **And** it renders `@gorhom/bottom-sheet` with three snap points: peek (~155px, opacity 0.45), half (~50%, opacity 0.65), full (~90%, opacity 0.85)
 **And** the sheet uses TranslucentSurface/BlurWrapper for frosted-glass appearance (StyleSheet for container, NativeWind for content)
 **And** sheet open/close uses spring physics animation (`damping: 20, stiffness: 300`)
@@ -527,7 +528,7 @@ So that I can see details overlaid on the map without losing spatial context.
 **And** `MapOverlayGroup` is notified of sheet state changes to coordinate floating element positions (DetailPanelProvider owns the `sheetState` and passes it up to MapOverlayGroup via callback prop)
 **And** hardware back button dismisses the sheet if open (before navigating back). Back priority: dismiss sheet → return to Map tab → exit app
 
-### Story 4.2: Pilot Detail — Three-Level Progressive Disclosure
+### Story 4.2: Pilot Detail — Three-Level Progressive Disclosure *(implemented)*
 
 As a user,
 I want to tap a pilot marker and see their details progressively — callsign and route at a glance, then flight data, then full flight plan,
@@ -545,7 +546,31 @@ So that I can get exactly the depth of information I need without navigating awa
 **And** `PilotDetails.jsx` uses `useDetailPanel()` to read `disclosureLevel` and conditionally render Level sub-components
 **And** `ClientDetails.jsx` routes to `PilotDetails` when the selected client is a pilot
 
-### Story 4.3: ATC & CTR Detail — Three-Level Progressive Disclosure
+*Note: Story 4.2.1 refactors this implementation to the single-card model.*
+
+### Story 4.2.1: Refactor Pilot Detail from Three-Level Components to Single Card
+
+As a developer,
+I want to consolidate PilotLevel1Summary, PilotLevel2Details, and PilotLevel3Full into a single PilotDetailCard component,
+So that the progressive disclosure is driven purely by sheet snap points rather than conditional content rendering.
+
+**Acceptance Criteria:**
+
+**Given** PilotLevel1Summary, PilotLevel2Details, and PilotLevel3Full exist from the original 4.2 implementation
+**When** the refactor is complete
+**Then** a single `PilotDetailCard.jsx` component exists in `app/components/clientDetails/` containing all pilot detail content ordered by information priority (glanceable summary at top, full flight plan at bottom)
+**And** `PilotLevel1Summary.jsx`, `PilotLevel2Details.jsx`, and `PilotLevel3Full.jsx` are removed
+**And** `PilotDetails.jsx` no longer reads `disclosureLevel` from `useDetailPanel()` — it renders `PilotDetailCard` unconditionally
+**And** the card scrolls within the sheet when content exceeds the visible area at any snap point
+**And** at peek (~155px), the visible portion shows: callsign, aircraft type, departure → arrival, altitude, groundspeed
+**And** at half (~50%), the visible portion additionally shows: route summary string, heading, distance remaining, time enroute
+**And** at full (~90%), the complete card is visible: full flight plan text, transponder code, server info, remarks, time online, pilot rating
+**And** the visual result is identical to the previous three-level implementation — same content, same order, same styling
+**And** DetailPanelProvider's `disclosureLevel` context field may be removed or retained for MapOverlayGroup coordination — but it is no longer consumed by detail content components
+**And** all existing ThemedText variants and JetBrains Mono usage carry over unchanged
+**And** manual testing confirms peek/half/full snap points show the expected content portions on both iOS and Android
+
+### Story 4.3: ATC & CTR Detail — Single Complete Cards
 
 As a user,
 I want to tap an ATC polygon or controller element and see their details progressively,
@@ -553,20 +578,21 @@ So that I can quickly check frequencies and coverage without leaving the map.
 
 **Acceptance Criteria:**
 
-**Given** DetailPanelProvider from Story 4.1 is in place
-**When** a user taps a TRACON polygon
-**Then** the sheet opens to peek with `AtcLevel1Summary`: callsign (mono), frequency (mono), facility type (Approach/Departure)
-**And** half shows `AtcLevel2Details` added: full ATIS text (if available), controller rating, logon time
-**And** full shows `AtcLevel3Full` added: remarks, sector info, coverage area detail
-**When** a user taps a FIR polygon
-**Then** the sheet opens to peek with `CtrLevel1Summary`: callsign (mono), frequency (mono), sector name
-**And** half shows `CtrLevel2Details` added: rating, FIR boundary info
-**And** full shows `CtrLevel3Full` added: full ATIS text, coverage area detail, ATC bookings for position
-**And** if multiple controllers share a FIR, peek shows the primary (highest facility type); half-sheet lists all
+**Given** DetailPanelProvider from Story 4.1 and the single-card pattern validated in Story 4.2.1 are in place
+**When** a user taps a TRACON polygon or APP/DEP controller element
+**Then** the sheet opens to peek showing the top of `AtcDetailCard`: callsign (mono), frequency, facility type (TWR/APP/DEP), ATIS indicator
+**And** swiping to half reveals more of the card: controller rating, logon time, ATIS summary
+**And** swiping to full reveals the complete card: full ATIS text, remarks, sector coverage detail
+**When** a user taps a FIR/CTR polygon
+**Then** the sheet opens to peek showing the top of `CtrDetailCard`: CTR callsign, frequency, facility type
+**And** swiping to half reveals more: controller rating, logon time, ATIS summary, list of all controllers in FIR
+**And** swiping to full reveals the complete card: full ATIS text, coverage area detail, ATC bookings for position
+**And** both `AtcDetailCard` and `CtrDetailCard` are single components rendering all content ordered by priority — no conditional rendering based on disclosure level
+**And** if multiple controllers share a FIR, the card top shows the primary (highest facility type); scrolling reveals all
 **And** overlapping polygons: tap targets the smallest (most specific) — TRACON takes priority over FIR
 **And** `ClientDetails.jsx` routes to `AtcDetails` or `CtrDetails` based on selected client type
 
-### Story 4.4: Airport Detail — Three-Level Progressive Disclosure
+### Story 4.4: Airport Detail — Single Complete Card
 
 As a user,
 I want to tap an airport marker and see its staffing, traffic, and details progressively,
@@ -574,14 +600,14 @@ So that I can assess airport activity from the map without switching views.
 
 **Acceptance Criteria:**
 
-**Given** DetailPanelProvider from Story 4.1 is in place
+**Given** DetailPanelProvider from Story 4.1 and the single-card pattern validated in Story 4.2.1 are in place
 **When** a user taps an airport marker on the map
-**Then** the sheet opens to peek with `AirportAtcLevel1Summary`: airport name + ICAO (mono), number of staffed positions, ATC letter badge row, traffic counts (▲ departures / ▼ arrivals)
-**And** half shows `AirportAtcLevel2Details` added: list of all staffed positions with individual frequencies, departure/arrival counts
-**And** full shows `AirportAtcLevel3Full` added: individual controller details per position, METAR link, ATC bookings for this airport, full traffic board
-**And** content is additive across all three levels
+**Then** the sheet opens to peek showing the top of `AirportDetailCard`: airport name + ICAO (mono), number of staffed positions, ATC letter badge row, traffic counts (▲ departures / ▼ arrivals)
+**And** swiping to half reveals more of the card: list of all staffed positions with individual frequencies, departure/arrival counts
+**And** swiping to full reveals the complete card: individual controller details per position, METAR link, ATC bookings for this airport, full traffic board
+**And** `AirportDetailCard` is a single component rendering all content ordered by priority — no conditional rendering based on disclosure level
 **And** `ClientDetails.jsx` routes to `AirportAtcDetails` when the selected client is an airport
-**And** unstaffed airports show ICAO and "No ATC online" in muted text at peek level
+**And** unstaffed airports show ICAO and "No ATC online" in muted text at the card top
 
 ## Epic 5: List, Airport & Search Views
 
@@ -768,7 +794,7 @@ So that I get maximum map width for the companion display experience.
 **When** the device is in landscape orientation
 **Then** `DetailPanelProvider` renders a `SidePanel` (fixed width: 360px phone, 400px tablet) instead of the bottom sheet
 **And** the SidePanel is anchored to the right side of the screen with scrollable content (no snap points)
-**And** the same content components (Level1/Level2/Level3 for all detail types) render in the SidePanel without modification
+**And** the same single detail card components (PilotDetailCard, AtcDetailCard, CtrDetailCard, AirportDetailCard) render in the SidePanel with scrollable content — no modification needed
 **And** the map camera adjusts to account for side panel occlusion (offset center point)
 **And** switching between portrait and landscape transitions layout with `duration.slow` (400ms) morph animation (FR36)
 **And** the animation respects reduced motion setting

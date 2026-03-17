@@ -304,9 +304,10 @@ Marcus is already in his sim but needs a quick weather check for his alternate a
 
 ### Progressive Disclosure
 
-- **FR9:** User can view glanceable summary information (level 1) for any selected client without additional interaction
-- **FR10:** User can tap to expand to moderate detail (level 2) for a selected client
-- **FR11:** User can pull up to view full detail (level 3) for a selected client, including flight plan, ATIS text, or full ATC info
+- **FR9:** User can view glanceable summary information for any selected client at the bottom sheet peek position without additional interaction
+- **FR10:** User can swipe up to reveal moderate detail for a selected client at the half-sheet position
+- **FR11:** User can swipe to full-sheet position to view complete detail for a selected client, including flight plan, ATIS text, or full ATC info
+- **FR11a:** Each detail type (pilot, ATC, airport) renders a single complete card with content ordered by priority; the bottom sheet snap points control how much of the card is physically visible
 
 ### Navigation
 
