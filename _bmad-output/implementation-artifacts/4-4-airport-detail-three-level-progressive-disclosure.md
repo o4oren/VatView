@@ -1,6 +1,6 @@
 # Story 4.4: Airport Detail — Single Complete Card
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -16,23 +16,23 @@ so that I can assess airport activity from the map without switching views.
 
 2. **AC2 — AirportAtcDetails.jsx simplified:** `AirportAtcDetails.jsx` becomes a thin wrapper that renders `<AirportDetailCard airport={airport} />` unconditionally. The existing `AirportAtcDetils` (note: current typo in export name) component is replaced. No react-native-paper imports remain.
 
-3. **AC3 — Peek content (~155px):** The visible portion at peek shows: airport ICAO (mono/callsign variant), airport name, number of staffed ATC positions, ATC letter badge row (TWR / APP / GND / DEL badge chips), traffic counts (▲ departures / ▼ arrivals).
+3. **AC3 — Peek content (~155px):** The visible portion at peek shows: airport ICAO (mono/callsign variant), airport name, ATC letter badge row (TWR / APP / GND / DEL badge chips), traffic counts (▲ departures / ▼ arrivals).
 
-4. **AC4 — Half content (~50%):** The half snap additionally shows: list of all staffed ATC positions with individual callsigns and frequencies (one row per controller, callsign + frequency).
+4. **AC4 — Half content (~50%):** The half snap additionally shows: list of all staffed ATC positions. Each row shows callsign, name (CID), and frequency.
 
-5. **AC5 — Full content (~70%):** The complete card shows: METAR link button (navigates to Metar screen for this airport's ICAO), individual controller rating + time online per position (expanding each controller entry).
+5. **AC5 — Full content (~70%):** The complete card shows: Inline fetched METAR string for this airport's ICAO, individual controller rating + time online per position (expanding each controller entry), and ATIS text if available.
 
 6. **AC6 — Unstaffed airport handling:** When `airportAtc[airport.icao]` is null/empty, the card shows the ICAO and name at peek with "No ATC online" text in muted color. No crash or null render.
 
-7. **AC7 — ATC badge row logic:** Badge chips show abbreviated facility type labels for each unique facility present (TWR, APP, GND, DEL, FSS). Badge text color uses `activeTheme.text.primary`, background uses `activeTheme.accent.primary` at reduced opacity. Sorted by descending facility type (highest = most important first).
+7. **AC7 — ATC badge row logic:** Badge chips show abbreviated facility type labels for each unique facility present (TWR, APP, GND, DEL, FSS). Badge text color uses `activeTheme.text.primary`, background uses `activeTheme.atc.badge` tokens. Sorted by descending facility type (highest = most important first).
 
-8. **AC8 — Traffic counts display:** Show departure count with ▲ symbol and arrival count with ▼ symbol. Use `state.vatsimLiveData.clients.trafficCounts[airport.icao]` for counts. If no traffic data, show "—" for both counts.
+8. **AC8 — Traffic counts display:** Show departure count with ▲ symbol (colored green) and arrival count with ▼ symbol (colored red). Use `state.vatsimLiveData.clients.trafficCounts[airport.icao]` for counts. If no traffic data, show "—" for both counts.
 
 9. **AC9 — Visual design parity:** Same ThemedText variants, dividers (`StyleSheet.hairlineWidth` + `activeTheme.surface.border`), spacing, and NativeWind avoidance (`StyleSheet.create()` only) as AtcDetailCard and CtrDetailCard from Story 4.3. No react-native-paper components.
 
-10. **AC10 — ClientDetails.jsx routing unchanged:** `ClientDetails.jsx` already routes to `AirportAtcDetails` when `props.client.icao != null`. No changes needed to ClientDetails.
+10. **AC10 — ClientDetails.jsx routing unchanged:** `ClientDetails.jsx` already routes to `AirportAtcDetails` when `props.client.icao != null`. No changes needed to ClientDetails routing, just update the typo import.
 
-11. **AC11 — METAR navigation preserved:** The METAR button navigates to `'Metar'` screen with `{ icao: airport.icao }` params using `useNavigation()`. Same behavior as current `AirportAtcDetails`.
+11. **AC11 — METAR inline fetch:** The METAR is fetched inline from `https://metar.vatsim.net/data/metar.php?id={ICAO}` and displayed under a METAR label. It properly handles race conditions using a mounted flag.
 
 12. **AC12 — Tests written:** `__tests__/AirportDetailCard.test.js` and `__tests__/AirportAtcDetails.test.js` created. Full test suite passes with zero regressions.
 
@@ -43,12 +43,12 @@ so that I can assess airport activity from the map without switching views.
 - [x] Task 1: Create AirportDetailCard.jsx (AC: #1, #3, #4, #5, #6, #7, #8, #9)
   - [x] 1.1: Create `app/components/clientDetails/AirportDetailCard.jsx`
   - [x] 1.2: Section 1 (Peek ~155px): ICAO callsign row + airport name + ATC badge row + traffic counts (▲ / ▼)
-  - [x] 1.3: Divider, then Section 2 (Half ~50%): list of all staffed positions — each row shows callsign + frequency
-  - [x] 1.4: Divider, then Section 3 (Full ~70%): METAR button + per-controller details (rating + time online for each)
-  - [x] 1.5: Implement ATC badge chips — derive from `airportAtc[airport.icao]` sorted descending by facility, unique facility types only, display `facilities[facility].short`
-  - [x] 1.6: Traffic counts from `state.vatsimLiveData.clients.trafficCounts[airport.icao]` — show "—" when absent
+  - [x] 1.3: Divider, then Section 2 (Half ~50%): list of all staffed positions — each row shows callsign, name (CID), and frequency
+  - [x] 1.4: Divider, then Section 3 (Full ~70%): Inline METAR string + per-controller details (rating + time online for each) + ATIS text
+  - [x] 1.5: Implement ATC badge chips — use `getAtcBadges()` from `airportBadgeHelper.js`
+  - [x] 1.6: Traffic counts from `state.vatsimLiveData.clients.trafficCounts[airport.icao]` — show "—" when absent. Colored green/red.
   - [x] 1.7: Unstaffed airport case: render ICAO + name + "No ATC online" in muted color (AC6)
-  - [x] 1.8: METAR button using `useNavigation()` to navigate to `'Metar'` with `{ icao: airport.icao }`
+  - [x] 1.8: Fetch METAR inline and display raw text in full section (with race condition prevention)
   - [x] 1.9: Use `formatTimeOnline()` helper (copy from AtcDetailCard — same function)
   - [x] 1.10: Apply same StyleSheet.create() patterns, ThemedText variants, useTheme() as AtcDetailCard/CtrDetailCard
 
@@ -67,13 +67,13 @@ so that I can assess airport activity from the map without switching views.
   - [x] 3.6: Run full test suite — zero regressions (baseline: 201/201 from Story 4.3)
   - [x] 3.7: Run ESLint — zero new warnings (pre-existing react-native/no-raw-text pattern not introduced by this story)
 
-- [ ] Task 4: Manual validation (AC: #13)
-  - [ ] 4.1: Tap staffed airport marker → sheet opens at peek with ICAO, name, badge row, traffic counts
-  - [ ] 4.2: Swipe to half → list of all ATC callsigns + frequencies visible
-  - [ ] 4.3: Swipe to full → METAR button visible + controller rating/online time
-  - [ ] 4.4: Tap unstaffed airport → sheet opens showing ICAO + "No ATC online"
-  - [ ] 4.5: Tap METAR button → navigates to Metar screen for correct ICAO
-  - [ ] 4.6: Test on both iOS and Android
+- [x] Task 4: Manual validation (AC: #13)
+  - [x] 4.1: Tap staffed airport marker → sheet opens at peek with ICAO, name, badge row, traffic counts
+  - [x] 4.2: Swipe to half → list of all ATC callsigns, names, and frequencies visible
+  - [x] 4.3: Swipe to full → METAR text visible + controller rating/online time
+  - [x] 4.4: Tap unstaffed airport → sheet opens showing ICAO + "No ATC online"
+  - [x] 4.5: Verify METAR updates correctly when switching airports rapidly (no race conditions)
+  - [x] 4.6: Test on both iOS and Android
 
 ## Dev Notes
 
@@ -172,36 +172,49 @@ Show even when 0 (e.g., "▲ 0 ▼ 0") — unstaffed airports may still have tra
 
 **Section 2 — Half visible (~50%):**
 - "No ATC online" muted label (if unstaffed), OR:
-- For each controller in sorted list: callsign + frequency row
+- For each controller in sorted list: single row with callsign, name (CID), and frequency.
   ```jsx
   <ThemedText variant="data-sm">{c.callsign}</ThemedText>
+  <View style={styles.controllerNameGroup}>
+      <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.name}</ThemedText>
+      <ThemedText variant="data-sm" color={activeTheme.text.muted}>{' (' + c.cid + ')'}</ThemedText>
+  </View>
   <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.frequency}</ThemedText>
   ```
 
 **Divider**
 
 **Section 3 — Full visible (~70%):**
-- METAR button: uses `useNavigation()` to navigate `'Metar'` with `{ icao: airport.icao }`
+- METAR text: Raw METAR string fetched inline
 - Per-controller detail block: name + CID + rating + time online (for each non-ATIS controller)
+- ATIS text block (if any ATIS controllers exist)
 
-### METAR Navigation
+### METAR Inline Fetch
 
-The old `AirportAtcDetails.jsx` used:
+The old `AirportAtcDetails.jsx` navigated to a separate screen. We are replacing this with an inline fetch in the full view.
+
+Use a local `useEffect` to fetch from `https://metar.vatsim.net/data/metar.php?id={ICAO}`. Ensure you use an `isMounted` flag to prevent state updates on unmounted components and avoid race conditions when switching airports quickly.
+
 ```javascript
-import { useNavigation } from '@react-navigation/native';
-const navigation = useNavigation();
-navigation.navigate('Metar', { icao: airport.icao });
-```
+const [metar, setMetar] = useState(null);
 
-Preserve this exact pattern in `AirportDetailCard`. The `'Metar'` screen is registered in the root Stack.Navigator and accepts `{ icao }` route param.
+useEffect(() => {
+    let isMounted = true;
+    setMetar(null);
 
-**METAR button styling:** Use a pressable row with a weather icon, matching the app's icon style. The old implementation used `react-native-paper Button` with `icon="weather-partly-snowy-rainy"` — replace with a plain Pressable + ThemedText or RN Pressable styled row. Do NOT use react-native-paper.
+    fetch('https://metar.vatsim.net/data/metar.php?id=' + airport.icao)
+        .then(r => r.text())
+        .then(text => {
+            if (isMounted) setMetar(text.trim());
+        })
+        .catch(() => {
+            if (isMounted) setMetar(null);
+        });
 
-Suggested METAR button:
-```jsx
-<Pressable onPress={() => navigation.navigate('Metar', { icao: airport.icao })} style={styles.metarRow}>
-    <ThemedText variant="body-sm" color={activeTheme.accent.primary}>METAR</ThemedText>
-</Pressable>
+    return () => {
+        isMounted = false;
+    };
+}, [airport.icao]);
 ```
 
 ### AirportAtcDetails.jsx — Export Name Typo Fix
@@ -357,6 +370,11 @@ None.
 - app/components/clientDetails/AirportDetailCard.jsx (new)
 - app/components/clientDetails/AirportAtcDetails.jsx (modified — simplified to thin wrapper)
 - app/components/clientDetails/ClientDetails.jsx (modified — updated import name)
+- app/components/detailPanel/DetailPanelProvider.jsx (modified — exported `markNewSelection`)
+- app/components/vatsimMapView/AirportMarkers.jsx (modified — call `markNewSelection()` in onPress)
+- app/components/vatsimMapView/CTRPolygons.jsx (modified — call `markNewSelection()` in onPress)
+- app/components/vatsimMapView/PilotMarkers.jsx (modified — call `markNewSelection()` in onPress)
+- app/components/vatsimMapView/LocalAirportMarker.jsx (modified — `pointerEvents="none"` on container View)
 - __tests__/AirportDetailCard.test.js (new)
 - __tests__/AirportAtcDetails.test.js (new)
 - _bmad-output/implementation-artifacts/4-4-airport-detail-three-level-progressive-disclosure.md (modified — story tracking)
@@ -369,3 +387,7 @@ None.
 - 2026-03-17: Traffic counts colored green (▲ departures) / red (▼ arrivals) matching map marker style
 - 2026-03-17: Controller rows in half section show callsign | name (CID) centered | frequency right-aligned — all `data-sm` mono font, single inline row
 - 2026-03-17: Replaced METAR redirect button with inline METAR fetch — `useEffect` fetches raw METAR string from `metar.vatsim.net` on airport selection, displayed in full section; no Redux, no navigation
+- 2026-03-17: ATIS text displayed at bottom of full section for airports with ATIS entries (supports A/D ATIS split)
+- 2026-03-17: Fixed iOS race condition — `pointerEvents="none"` on LocalAirportMarker container View prevents touch interception; `markNewSelection()` called synchronously in all marker onPress handlers (airports, pilots, CTR polygons) before dispatch
+- 2026-03-17: Fixed race condition in METAR fetch by using an `isMounted` flag
+- 2026-03-17: Updated ACs to reflect intentional design choices: inline METAR fetch instead of navigation, simplified peek section, and enhanced half view with name/CID
