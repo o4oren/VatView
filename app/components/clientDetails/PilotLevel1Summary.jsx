@@ -37,8 +37,8 @@ export default function PilotLevel1Summary({pilot}) {
         <View
             style={styles.container}
             accessibilityLabel={
-                `Pilot ${pilot.callsign}, ${fp.aircraft_short}, ` +
-                `from ${fp.departure} to ${fp.arrival}, ` +
+                `Pilot ${pilot.callsign}, ${fp.aircraft_short || 'unknown aircraft'}, ` +
+                `from ${fp.departure || 'unknown'} to ${fp.arrival || 'unknown'}, ` +
                 `altitude ${formatAltitude(pilot.altitude)} feet, ` +
                 `groundspeed ${pilot.groundspeed} knots`
             }

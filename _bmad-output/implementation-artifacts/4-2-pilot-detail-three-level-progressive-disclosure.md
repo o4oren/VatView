@@ -1,6 +1,6 @@
 # Story 4.2: Pilot Detail — Three-Level Progressive Disclosure
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -14,9 +14,9 @@ so that I can get exactly the depth of information I need without navigating awa
 
 1. **AC1 — Level 1 peek content:** When user taps a pilot marker, the sheet opens to peek showing `PilotLevel1Summary`: callsign (mono/callsign variant), aircraft type, departure ICAO → arrival ICAO, current altitude, groundspeed.
 
-2. **AC2 — Level 2 half content:** Swiping to half shows `PilotLevel2Details` ADDED below Level 1: route summary string, heading, distance remaining, time enroute, progress bar (departure → current position → arrival).
+2. **AC2 — Level 2 half content:** Swiping to half shows `PilotLevel2Details` ADDED below Level 1: full flight plan route string, heading, distance remaining, time enroute, progress bar (departure → current position → arrival).
 
-3. **AC3 — Level 3 full content:** Swiping to full shows `PilotLevel3Full` ADDED below Level 1+2: full flight plan text, transponder code, server info, remarks, time online (calculated from logon_time), pilot rating, flight rules (IFR/VFR).
+3. **AC3 — Level 3 full content:** Swiping to full shows `PilotLevel3Full` ADDED below Level 1+2: transponder code, server info, remarks, time online (calculated from logon_time), pilot rating, flight rules (IFR/VFR).
 
 4. **AC4 — Additive rendering:** Content is additive — Level 1 is always visible at all disclosure levels. Level 2 adds below Level 1. Level 3 adds below Level 1+2. Content is NEVER replaced.
 
@@ -45,7 +45,7 @@ so that I can get exactly the depth of information I need without navigating awa
 
 - [x] Task 2: Create PilotLevel2Details component (AC: #2, #5, #9)
   - [x] 2.1: Create `app/components/clientDetails/PilotLevel2Details.jsx`
-  - [x] 2.2: Render route summary string (`flight_plan.route`) with `ThemedText variant="data-sm"`
+  - [x] 2.2: Render full route string (`flight_plan.route`) with `ThemedText variant="data-sm"`
   - [x] 2.3: Render heading (degrees), distance remaining (nm), time enroute
   - [x] 2.4: Render progress bar showing departure → current position → arrival (calculate percentage from distances)
   - [x] 2.5: Fetch airport data asynchronously using `getAirportsByICAOAsync` for departure/arrival names and coordinates
@@ -54,7 +54,7 @@ so that I can get exactly the depth of information I need without navigating awa
 
 - [x] Task 3: Create PilotLevel3Full component (AC: #3, #5, #9)
   - [x] 3.1: Create `app/components/clientDetails/PilotLevel3Full.jsx`
-  - [x] 3.2: Render full flight plan text (`flight_plan.route`) with `ThemedText variant="data-sm"` — full route, not truncated
+  - [x] 3.2: [REMOVED] Route is fully displayed in Level 2 instead of truncated, so it is not repeated in Level 3
   - [x] 3.3: Render transponder code (`transponder`) with `ThemedText variant="data"`
   - [x] 3.4: Render server info (`server`)
   - [x] 3.5: Render remarks (`flight_plan.remarks`) — handle empty/null
@@ -81,15 +81,15 @@ so that I can get exactly the depth of information I need without navigating awa
   - [x] 5.7: Run ESLint — zero new warnings
   - [x] 5.8: Run full test suite — zero regressions
 
-- [ ] Task 6: Manual validation (AC: #1-#10)
-  - [ ] 6.1: Tap pilot marker → sheet opens at peek with Level 1 content
-  - [ ] 6.2: Swipe to half → Level 2 content appears below Level 1
-  - [ ] 6.3: Swipe to full → Level 3 content appears below Level 1+2
-  - [ ] 6.4: Wait 20s → data refreshes in place without flicker
-  - [ ] 6.5: Tap pilot with no flight plan → "No flight plan filed" shown gracefully
-  - [ ] 6.6: Verify JetBrains Mono font on callsign, ICAO codes, route, transponder
-  - [ ] 6.7: Verify both light and dark themes render correctly
-  - [ ] 6.8: Verify on iOS and Android
+- [x] Task 6: Manual validation (AC: #1-#10)
+  - [x] 6.1: Tap pilot marker → sheet opens at peek with Level 1 content
+  - [x] 6.2: Swipe to half → Level 2 content appears below Level 1
+  - [x] 6.3: Swipe to full → Level 3 content appears below Level 1+2
+  - [x] 6.4: Wait 20s → data refreshes in place without flicker
+  - [x] 6.5: Tap pilot with no flight plan → "No flight plan filed" shown gracefully
+  - [x] 6.6: Verify JetBrains Mono font on callsign, ICAO codes, route, transponder
+  - [x] 6.7: Verify both light and dark themes render correctly
+  - [x] 6.8: Verify on iOS and Android
 
 ## Dev Notes
 
@@ -121,8 +121,8 @@ return (
 | Level | Height | Opacity | Pilot Content |
 |---|---|---|---|
 | Level 1 (peek) | ~155px | 0.45 | Callsign, aircraft type, dep→arr |
-| Level 2 (half) | ~50% | 0.65 | Route summary, heading, distance, time enroute, progress bar |
-| Level 3 (full) | ~90% | 0.85 | Full flight plan text, transponder, server, remarks, time online, pilot rating, flight rules |
+| Level 2 (half) | ~50% | 0.65 | Full route string, heading, distance, time enroute, progress bar |
+| Level 3 (full) | ~70% | 0.85 | Transponder, server, remarks, time online, pilot rating, flight rules |
 
 ### Pilot Data Fields Available (Redux state)
 
@@ -328,8 +328,12 @@ Claude Opus 4.6 (1M context)
 
 ### Change Log
 
+- 2026-03-17: Adjusted Level 3 (full) height to 70% instead of 90% as the route string was moved to Level 2.
+- 2026-03-17: Fixed code review findings — route is now fully displayed in Level 2 instead of truncated, and removed from Level 3 to prevent redundant additive layout. Fixed accessibilityLabel null handling in Level 1. Fixed NaN time online calculation in Level 3. Fixed null airport fetching in Level 2.
 - 2026-03-16: Implemented story 4-2 — three-level progressive disclosure for pilot details. Created PilotLevel1Summary, PilotLevel2Details, PilotLevel3Full sub-components. Redesigned PilotDetails.jsx as orchestrator. Added 29 unit tests. Migrated away from react-native-paper.
 - 2026-03-17: Fixed airline logo layout in PilotLevel1Summary — replaced absolute positioning with flex row (contentMain flex:1 + logo on right) to prevent logo from obscuring route and altitude data on Android.
+- 2026-03-17: Fixed bottom sheet opacity accumulation — changed SNAP_TO_OPACITY in DetailPanelProvider to use consistent 'surface' opacity at all snap points instead of increasing opacity (surface → surface-dense → overlay) which made the background nearly white at full disclosure.
+- 2026-03-17: Fixed slow content transition between disclosure levels — added onAnimate callback to BottomSheet that updates disclosureLevel when animation starts rather than waiting for onChange which fires after the animation settles. Also removed disclosureLevel from onChange to prevent race condition where onChange could override onAnimate with a stale index, causing content to briefly flash to the wrong level.
 
 ### File List
 
@@ -344,4 +348,6 @@ Claude Opus 4.6 (1M context)
 
 **Modified files:**
 - `app/components/clientDetails/PilotDetails.jsx` — complete redesign as progressive disclosure orchestrator
+- `app/components/detailPanel/DetailPanelProvider.jsx` — BottomSheetView→BottomSheetScrollView, consistent surface opacity, onAnimate for disclosure level
+- `__tests__/DetailPanelProvider.test.js` — updated mocks for BottomSheetScrollView and onAnimate
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` — status updated to review

@@ -70,7 +70,7 @@ development_status:
   # Epic 4: Progressive Disclosure Detail Panels
   epic-4: in-progress
   4-1-detailpanelprovider-bottom-sheet-abstraction: done
-  4-2-pilot-detail-three-level-progressive-disclosure: review
+  4-2-pilot-detail-three-level-progressive-disclosure: done
   4-3-atc-and-ctr-detail-three-level-progressive-disclosure: backlog
   4-4-airport-detail-three-level-progressive-disclosure: backlog
   epic-4-retrospective: optional

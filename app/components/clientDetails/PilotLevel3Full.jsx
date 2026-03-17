@@ -24,7 +24,7 @@ function formatTimeOnline(logonTime) {
     const logonDate = new Date(logonTime);
     const now = new Date();
     const diffMs = now - logonDate;
-    if (diffMs < 0) {
+    if (isNaN(diffMs) || diffMs < 0) {
         return '0m';
     }
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -56,13 +56,6 @@ export default function PilotLevel3Full({pilot}) {
             }
         >
             <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
-
-            {fp && fp.route ? (
-                <View style={styles.section}>
-                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'FLIGHT PLAN'}</ThemedText>
-                    <ThemedText variant="data-sm">{fp.route}</ThemedText>
-                </View>
-            ) : null}
 
             <View style={styles.grid}>
                 <DataField

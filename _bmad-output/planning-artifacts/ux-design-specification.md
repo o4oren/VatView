@@ -1216,7 +1216,7 @@ All 28 current components mapped to their Phase 1 equivalent:
 |---|---|---|---|
 | Peek | ~155px | 0.45 | ClientCard / AirportCard summary |
 | Half | ~50% | 0.65 | Data grid, route, ATIS |
-| Full | ~90% | 0.85 | Complete info, scrollable |
+| Full | ~70% | 0.85 | Complete info, scrollable |
 
 Built on `@gorhom/bottom-sheet` for spring-physics gestures.
 
