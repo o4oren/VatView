@@ -1,17 +1,6 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import AtcDetails from './AtcDetails';
+import CtrDetailCard from './CtrDetailCard';
 
-export default function CtrDetails({ctr}) {
-    return <View style={styles.container}>
-        {ctr.map(c => <AtcDetails
-            atc={c}
-            key={c.key}
-        />)}
-    </View>;
+export default function CtrDetails({ctr, prefix}) {
+    return <CtrDetailCard ctr={ctr} prefix={prefix} />;
 }
-
-const styles = StyleSheet.create({
-    container: {
-    },
-});
