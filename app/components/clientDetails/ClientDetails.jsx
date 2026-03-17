@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 import PilotDetails from './PilotDetails';
-import AirportAtcDetils from './AirportAtcDetails';
+import AirportAtcDetails from './AirportAtcDetails';
 import AtcDetails from './AtcDetails';
 import CtrDetails from './CtrDetails';
 import {CTR} from '../../common/consts';
@@ -17,8 +17,8 @@ export default function ClientDetails(props) {
         // if airport
         if(props.client.icao != null) {
             const airport = props.client;
-            return <AirportAtcDetils
-                airport = {airport}
+            return <AirportAtcDetails
+                airport={airport}
             />;
         }
 

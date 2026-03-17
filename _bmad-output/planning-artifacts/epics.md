@@ -602,9 +602,9 @@ So that I can assess airport activity from the map without switching views.
 
 **Given** DetailPanelProvider from Story 4.1 and the single-card pattern validated in Story 4.2.1 are in place
 **When** a user taps an airport marker on the map
-**Then** the sheet opens to peek showing the top of `AirportDetailCard`: airport name + ICAO (mono), number of staffed positions, ATC letter badge row, traffic counts (▲ departures / ▼ arrivals)
-**And** swiping to half reveals more of the card: list of all staffed positions with individual frequencies, departure/arrival counts
-**And** swiping to full reveals the complete card: individual controller details per position, METAR link, ATC bookings for this airport, full traffic board
+**Then** the sheet opens to peek showing the top of `AirportDetailCard`: ICAO (mono), airport name, ATC letter badge row (single-letter pills T/A/G/C using `getAtcBadges()` with `activeTheme.atc.badge` colors — same as map markers), traffic counts (▲ green / ▼ red matching map marker colors)
+**And** swiping to half reveals more of the card: list of all staffed positions — each row shows callsign | name (CID) centered | frequency right-aligned, all in `data-sm` mono font
+**And** swiping to full reveals the complete card: individual controller details (rating, time online per position), raw METAR string fetched inline from `metar.vatsim.net` and displayed under a METAR label (no navigation redirect)
 **And** `AirportDetailCard` is a single component rendering all content ordered by priority — no conditional rendering based on disclosure level
 **And** `ClientDetails.jsx` routes to `AirportAtcDetails` when the selected client is an airport
 **And** unstaffed airports show ICAO and "No ATC online" in muted text at the card top
