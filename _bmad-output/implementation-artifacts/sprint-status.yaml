@@ -68,7 +68,7 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Progressive Disclosure Detail Panels
-  epic-4: in-progress
+  epic-4: done
   4-1-detailpanelprovider-bottom-sheet-abstraction: done
   4-2-pilot-detail-three-level-progressive-disclosure: done
   4-2-1-refactor-pilot-detail-single-card: done
