@@ -79,7 +79,7 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
             tracksViewChanges={tracksViewChanges}
             tracksInfoWindowChanges={false}
         >
-            <View style={styles.container} onLayout={onContainerLayout}>
+            <View pointerEvents="none" style={styles.container} onLayout={onContainerLayout}>
                 <View style={styles.topRow} onLayout={onTopRowLayout}>
                     <View style={[styles.dot, { backgroundColor: dotColor }]} />
                     <Text style={[styles.icao, { color: icaoColor }]}>{airport.icao}</Text>

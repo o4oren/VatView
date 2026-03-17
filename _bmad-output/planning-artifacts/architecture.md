@@ -566,7 +566,7 @@ bottomSheetRef.current.snapToIndex(1);
 | Pilot | Callsign, aircraft type, dep→arr, altitude, groundspeed | Route summary, heading, distance remaining, time enroute | Full flight plan text, transponder, server info, remarks, time online, rating |
 | ATC (airport) | Callsign, frequency, facility type, ATIS indicator | Controller rating, logon time, ATIS summary | Full ATIS text, remarks, sector coverage detail |
 | CTR | Callsign, frequency, sector name | Rating, logon time, list of all controllers in FIR | Full ATIS text, coverage area detail, ATC bookings |
-| Airport ATC | Airport ICAO (mono), airport name, ATC letter badge row (single-letter pills via `getAtcBadges`: T/A/G/C with `activeTheme.atc.badge` colors), traffic counts (▲ green `#1A7F37` / ▼ red `#CF222E`) | List of staffed positions — each row: callsign \| name (CID) centered \| frequency right-aligned, all `data-sm` mono | Individual controller details (rating, time online), raw METAR string fetched inline from `metar.vatsim.net` via `useEffect` |
+| Airport ATC | Airport ICAO (mono), airport name, ATC letter badge row (single-letter pills via `getAtcBadges`: T/A/G/C with `activeTheme.atc.badge` colors), traffic counts (▲ green `#1A7F37` / ▼ red `#CF222E`) | List of staffed positions — each row: callsign \| name (CID) centered \| frequency right-aligned, all `data-sm` mono | Individual controller details (rating, time online), raw METAR string fetched inline from `metar.vatsim.net` via `useEffect`, full ATIS text per station (supports A/D ATIS split) |
 
 ### Navigation Island Patterns
 

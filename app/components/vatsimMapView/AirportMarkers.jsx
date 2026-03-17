@@ -10,6 +10,7 @@ import {getAirportByCode} from '../../common/airportTools';
 import {lookupTracon} from '../../common/boundaryService';
 import {getStaffedMarkerImage, getTrafficMarkerImage} from '../../common/airportMarkerService';
 import LocalAirportMarker from './LocalAirportMarker';
+import {markNewSelection} from '../detailPanel/DetailPanelProvider';
 
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
@@ -70,6 +71,7 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
     const visibleCircleKeys = new Set();
 
     const onPress = useCallback((airport) => {
+        markNewSelection();
         dispatch(allActions.appActions.clientSelected(airport));
     }, [dispatch]);
 

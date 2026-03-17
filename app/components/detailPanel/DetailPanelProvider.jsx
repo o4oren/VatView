@@ -51,7 +51,7 @@ export function requestDismiss(dispatchFn) {
     }, 150);
 }
 
-function markNewSelection() {
+export function markNewSelection() {
     _lastSelectionTime = Date.now();
     clearTimeout(_dismissTimer);
 }
@@ -164,6 +164,10 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
             if (!sheetOpenRef.current || sheetState === 'closed') {
                 sheetOpenRef.current = true;
                 sheetRef.current?.snapToIndex(0);
+            } else if (currentIndexRef.current >= 0) {
+                // Re-assert current snap index so the sheet holds position
+                // through content changes (e.g. switching pilot → airport).
+                sheetRef.current?.snapToIndex(currentIndexRef.current);
             }
         }
         prevSelectedClientRef.current = selectedClient;

@@ -5,6 +5,7 @@ import {useTheme} from '../../common/ThemeProvider';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
+import {markNewSelection} from '../detailPanel/DetailPanelProvider';
 
 // Used to hide polygons while keeping them in the React tree (Android workaround — see MapComponent.jsx)
 const TRANSPARENT = 'rgba(0,0,0,0)';
@@ -26,6 +27,7 @@ const CTRPolygons = React.memo(function CTRPolygons({visible = true}) {
     const activeKeys = new Set();
 
     let onPress = (client) => {
+        markNewSelection();
         dispatch(allActions.appActions.clientSelected(client));
     };
 
