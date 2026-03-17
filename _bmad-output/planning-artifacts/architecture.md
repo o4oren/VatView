@@ -35,7 +35,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 **Functional Requirements:**
 43 functional requirements covering the complete UI transformation. Architecturally, they decompose into:
 - **Map surface layer** (FR1-8): Full-bleed edge-to-edge map as primary app surface, with translucent overlays for all detail panels. This is the foundational architectural change — the map becomes the base layer, everything else floats above it.
-- **Progressive disclosure system** (FR9-11): Three-level information hierarchy (glanceable → tap → pull up). Requires a component architecture that supports collapsible content sections with consistent behavior across pilot, ATC, and airport detail views. **Design dependency:** 5 detail view types (pilot, ATC, CTR, airport ATC, airport) × 3 disclosure levels = 15 distinct view states that must be designed before progressive disclosure components can be built.
+- **Progressive disclosure system** (FR9-11): Single complete card per detail type with content ordered by information priority. The bottom sheet snap points (peek/half/full) control how much of the card is physically visible. 5 detail card components (pilot, ATC, CTR, airport ATC, airport) — no conditional content rendering based on disclosure level.
 - **Navigation replacement** (FR12-14): Bottom tab bar replaced by a floating navigation island. Architecturally the highest-risk structural change — moves from React Navigation's built-in tab bar to a custom overlay component that must drive React Navigation state while managing its own positioning, auto-hide behavior, and safe area handling. Unlike NativeWind (which has styling fallbacks), the floating nav island has no graceful fallback — if it doesn't work cleanly with React Navigation, the core design vision is compromised.
 - **Theming infrastructure** (FR29-33): Design token system for light/dark themes with custom Google Maps styling per theme. Must be extensible for Phase 2 aviation themes without restructuring.
 - **Adaptive layout** (FR34-37): Portrait/landscape orientation support with responsive repositioning of all floating elements and bottom-sheet ↔ side-panel transitions.
@@ -52,7 +52,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 - Primary domain: Cross-platform mobile (React Native / Expo)
 - Complexity level: Medium
-- Estimated architectural components: ~42 (28 existing restyled + new: FloatingNavIsland, ThemeProvider, MapOverlayGroup, BlurWrapper, TranslucentSurface, ThemedText, ListItem, StaleIndicator, ThemePicker, FloatingFilterChips, DetailPanelProvider, AircraftIconService, design token system, 15 level sub-components)
+- Estimated architectural components: ~32 (28 existing restyled + new: FloatingNavIsland, ThemeProvider, MapOverlayGroup, BlurWrapper, TranslucentSurface, ThemedText, ListItem, StaleIndicator, ThemePicker, FloatingFilterChips, DetailPanelProvider, AircraftIconService, design token system, 5 detail card components)
 
 ### Technical Constraints & Dependencies
 
@@ -79,7 +79,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 4. **Translucency/blur rendering** — Floating nav, bottom sheet, filter chips, and any overlay surface. Needs a shared blur wrapper component with platform-based rendering: iOS uses native backdrop blur (`UIVisualEffectView`), Android uses semi-transparent solid background with 1px border + elevation shadow (permanent platform design decision per UX spec — no Android blur attempted, regardless of Android version).
 
-5. **Progressive disclosure content architecture** — 5 detail view types × 3 disclosure levels = 15 distinct view states. Each level (glanceable, expanded, full) needs designed content for each client type. This is a design dependency that blocks implementation of the progressive disclosure components. The architecture must define the snap point → content level mapping.
+5. **Progressive disclosure content architecture** — 5 detail card components (one per detail type). Each card renders all content ordered by information priority (most glanceable at top, full detail below). The bottom sheet snap points control how much of the card is physically visible — no conditional content rendering needed. Design dependency is limited to defining content priority order per detail type.
 
 6. **Migration coexistence** — NativeWind and StyleSheet.create() must work side-by-side during the incremental migration. The architecture must define clear boundaries for which components use which system and when.
 
@@ -225,7 +225,7 @@ npx expo install expo-screen-orientation
 
 **Implementation:**
 - `DetailPanelProvider` wraps the map screen
-- Exposes API: `disclosureLevel` (1/2/3), `isOpen`, `open(client)`, `close()`, `selectedClient`
+- Exposes API: `isOpen`, `open(client)`, `close()`, `selectedClient`
 - Portrait: renders `@gorhom/bottom-sheet` with three snap points
 - Landscape: stub/TODO — renders side panel container when implemented
 - Listens to orientation via `useWindowDimensions()` to select container
@@ -234,16 +234,16 @@ npx expo install expo-screen-orientation
 
 ### Progressive Disclosure Snap Points
 
-**Decision:** Hybrid percentage-based snap points with min/max constraints. Additive content rendering.
+**Decision:** Hybrid percentage-based snap points with min/max constraints. Single complete card per detail type — sheet snap points control physical visibility.
 
-**Rationale:** Scales with device size (phone vs tablet) while guaranteeing minimum usability on small screens.
+**Rationale:** Scales with device size (phone vs tablet) while guaranteeing minimum usability on small screens. Single-card model eliminates conditional content rendering, reducing component count and bug surface.
 
 **Implementation:**
 - Level 1 (peek): ~155px — ClientCard/AirportCard summary, opacity 0.45
 - Level 2 (half): ~50% — data grid, route, ATIS, opacity 0.65
 - Level 3 (full): ~90% — complete info, scrollable, opacity 0.85
-- `DetailPanelProvider` tracks current snap index → maps to `disclosureLevel`
-- Detail views receive level, render additively: always show L1; if >= 2, add L2 section; if === 3, add L3 section
+- `DetailPanelProvider` tracks current snap index for MapOverlayGroup coordination (opacity, floating element positioning)
+- Detail views render a single complete card; the sheet snap points determine how much is physically visible
 - **Affects:** DetailPanelProvider, all 5 detail view components (content organization)
 
 ### Migration Order
@@ -258,7 +258,7 @@ npx expo install expo-screen-orientation
 3. **Shared UI components:** TranslucentSurface, ThemedText, ListItem, StaleIndicator
 4. **Map navigation:** FloatingNavIsland, FloatingFilterChips, MapOverlayGroup, DetailPanelProvider, tab cross-fade transitions
 5. **Map screen:** VatsimMapView (full-bleed + MapOverlayGroup), MapComponent (zoom callback + dual theme styles), AircraftIconService, PilotMarkers (SVG→bitmap), AirportMarkers (zoom-aware 3-band), CTRPolygons
-6. **Detail views:** ClientDetails, PilotDetails, AtcDetails, CtrDetails, AirportAtcDetails — progressive disclosure with Level sub-components
+6. **Detail views:** ClientDetails, PilotDetails, AtcDetails, CtrDetails, AirportAtcDetails — single detail card per type
 7. **List view:** VatsimListView + FilterBar
 8. **Airport view:** AirportDetailsView, AirportSearchList, AirportListItem
 9. **Events + Bookings:** VatsimEventsView, EventListItem, EventDetailsView, BookingsView, BookingDeatils
@@ -543,35 +543,30 @@ import { BlurView } from 'expo-blur';
 
 ```jsx
 // Correct — in a detail view component
-const { disclosureLevel, close } = useDetailPanel();
+const { close } = useDetailPanel();
 return (
-  <>
-    <Level1Summary client={client} />
-    {disclosureLevel >= 2 && <Level2Details client={client} />}
-    {disclosureLevel >= 3 && <Level3Full client={client} />}
-  </>
+  <PilotDetailCard client={client} />
 );
+// The sheet snap points control how much of the card is visible — no conditional rendering needed
 
 // Wrong — reaching into bottom sheet directly
 const bottomSheetRef = useRef();
 bottomSheetRef.current.snapToIndex(1);
 ```
 
-**Disclosure level content rules:**
-- Level 1 is ALWAYS rendered (base content)
-- Level 2 ADDS to Level 1 (never replaces)
-- Level 3 ADDS to Level 1 + Level 2 (never replaces)
-- Each level section is a separate sub-component: `<Level1Summary>`, `<Level2Details>`, `<Level3Full>`
+**Single-card content model:**
+- Each detail type renders a single complete card with ALL content, ordered by information priority (most glanceable at top, full detail at bottom)
+- The sheet snap points (peek/half/full) control how much of the card is physically visible — no conditional rendering
+- Each detail type has one card component: `PilotDetailCard`, `AtcDetailCard`, `CtrDetailCard`, `AirportDetailCard`
 
-**Disclosure Content Mapping (implementation contract):**
+**Content Priority Order (implementation contract):**
 
-| Detail Type | Level 1 (glanceable) | Level 2 (expanded) | Level 3 (full) |
+| Detail Type | Card Top (visible at peek) | Card Middle (visible at half) | Card Bottom (visible at full) |
 |---|---|---|---|
-| Pilot | Callsign, aircraft type, dep→arr | Altitude, speed, heading, route summary | Full flight plan text, time online, rating |
-| ATC (airport) | Callsign, frequency, position type | ATIS text (if available), rating | Full text ATIS, logon time, controller info |
-| CTR | Callsign, frequency, sector name | Rating, FIR boundary info | Full ATIS text, coverage area detail |
-| Airport ATC | Airport name, # positions staffed | List of staffed positions with frequencies | Individual controller details per position |
-| Airport | Airport name + ICAO, staffing indicator | Departures/arrivals count, staffed positions | Full traffic list, METAR link, ATC bookings |
+| Pilot | Callsign, aircraft type, dep→arr, altitude, groundspeed | Route summary, heading, distance remaining, time enroute | Full flight plan text, transponder, server info, remarks, time online, rating |
+| ATC (airport) | Callsign, frequency, facility type, ATIS indicator | Controller rating, logon time, ATIS summary | Full ATIS text, remarks, sector coverage detail |
+| CTR | Callsign, frequency, sector name | Rating, logon time, list of all controllers in FIR | Full ATIS text, coverage area detail, ATC bookings |
+| Airport ATC | Airport name, # positions staffed, ATC badges, traffic counts | List of staffed positions with frequencies | Individual controller details, METAR link, ATC bookings, full traffic board |
 
 ### Navigation Island Patterns
 
@@ -602,7 +597,7 @@ dispatch(appActions.setActiveTab('Map'));
 | MapOverlayGroup | `app/components/mapOverlay/MapOverlayGroup.jsx` | Layout orchestrator for all floating map elements |
 | FloatingFilterChips | `app/components/filterBar/FloatingFilterChips.jsx` | Replaces/augments existing FilterBar |
 | DetailPanelProvider | `app/components/detailPanel/DetailPanelProvider.jsx` | New abstraction for detail views |
-| Level1Summary, Level2Details, Level3Full | Inside each detail view's directory | Co-located with the detail view that owns them |
+| PilotDetailCard, AtcDetailCard, CtrDetailCard, AirportDetailCard | `app/components/clientDetails/` | Co-located with the detail view that owns them |
 
 **Provider import rule:** Providers (`DetailPanelProvider`, `ThemeProvider`) can be imported by any component across directories. Feature components should NOT import from sibling feature directories except for providers.
 
@@ -633,7 +628,7 @@ dispatch(appActions.setActiveTab('Map'));
 - Never import from `react-native-paper` in a component that has been marked as migrated
 - Never import `expo-blur` directly — always use `BlurWrapper` (or `TranslucentSurface` which wraps it)
 - Never access `@gorhom/bottom-sheet` refs from detail view components — always use `DetailPanelProvider`
-- Follow the additive disclosure pattern (L1 always, L2 adds, L3 adds)
+- Use single complete card per detail type — sheet snap points control visibility, no conditional content rendering
 - Use custom theme tokens from `tailwind.config.js`, never NativeWind defaults
 - Use Reanimated `useAnimatedStyle()` for animations, never NativeWind class toggling
 - Use animation duration tokens (`duration.fast`/`normal`/`slow`) — never hardcode timing values
@@ -651,7 +646,7 @@ dispatch(appActions.setActiveTab('Map'));
 | `className="bg-blue-500"` | Uses NativeWind default palette, not project tokens | `className="bg-primary"` (custom token) |
 | `<BlurView>` in a feature component | Bypasses fallback logic | `<BlurWrapper>` |
 | `bottomSheetRef.current.snapToIndex(2)` in PilotDetails | Breaks detail panel abstraction | `useDetailPanel()` API |
-| Conditional rendering that replaces L1 at L2 | Breaks additive disclosure | L2 section adds below L1 |
+| Conditional rendering based on disclosure level | Unnecessary complexity — sheet snap points handle visibility | Single complete card, no conditional rendering |
 | `style={{ position: 'absolute', bottom: 20 }}` on FloatingNavIsland | Inline styles violate ESLint | StyleSheet.create() for positioning |
 | `className={isVisible ? 'opacity-100' : 'opacity-0'}` for animations | Discrete class swaps, not smooth transitions | Reanimated `useAnimatedStyle()` with shared values |
 | `import PilotDetails from '../clientDetails/PilotDetails'` in AirportView | Feature components importing from sibling feature dirs | Only import providers cross-directory |
@@ -718,22 +713,15 @@ VatView/
 │   │   │
 │   │   ├── clientDetails/
 │   │   │   ├── ClientDetails.jsx             ✏️ Use DetailPanelProvider API, route by client type
-│   │   │   ├── PilotDetails.jsx              ✏️ 3-level progressive disclosure (L1/L2/L3 sub-components)
-│   │   │   ├── PilotLevel1Summary.jsx        ➕ Callsign, aircraft, dep→arr
-│   │   │   ├── PilotLevel2Details.jsx        ➕ Altitude, speed, heading, route summary
-│   │   │   ├── PilotLevel3Full.jsx           ➕ Full flight plan, time online, rating
-│   │   │   ├── AtcDetails.jsx                ✏️ 3-level progressive disclosure
-│   │   │   ├── AtcLevel1Summary.jsx          ➕
-│   │   │   ├── AtcLevel2Details.jsx          ➕
-│   │   │   ├── AtcLevel3Full.jsx             ➕
-│   │   │   ├── CtrDetails.jsx                ✏️ 3-level progressive disclosure
-│   │   │   ├── CtrLevel1Summary.jsx          ➕
-│   │   │   ├── CtrLevel2Details.jsx          ➕
-│   │   │   ├── CtrLevel3Full.jsx             ➕
-│   │   │   ├── AirportAtcDetails.jsx         ✏️ 3-level progressive disclosure
-│   │   │   ├── AirportAtcLevel1Summary.jsx   ➕
-│   │   │   ├── AirportAtcLevel2Details.jsx   ➕
-│   │   │   └── AirportAtcLevel3Full.jsx      ➕
+│   │   │   ├── PilotDetails.jsx              ✏️ Renders PilotDetailCard unconditionally
+│   │   │   ├── PilotDetailCard.jsx           ➕ Single complete pilot detail card (content ordered by priority)
+│   │   │   ├── AtcDetails.jsx                ✏️ Renders AtcDetailCard unconditionally
+│   │   │   ├── AtcDetailCard.jsx             ➕ Single complete ATC detail card
+│   │   │   ├── CtrDetails.jsx                ✏️ Renders CtrDetailCard unconditionally
+│   │   │   ├── CtrDetailCard.jsx             ➕ Single complete CTR detail card
+│   │   │   ├── AirportAtcDetails.jsx         ✏️ Renders AirportDetailCard unconditionally
+│   │   │   ├── AirportDetailCard.jsx         ➕ Single complete airport detail card
+│   │   │   └── (PilotLevel1Summary, PilotLevel2Details, PilotLevel3Full removed by 4.2.1)
 │   │   │
 │   │   ├── shared/                           ➕ New directory — shared UI building blocks
 │   │   │   ├── TranslucentSurface.jsx        ➕ Base wrapper for all floating elements (uses BlurWrapper)
@@ -747,10 +735,7 @@ VatView/
 │   │   │   └── FloatingFilterChips.jsx       ➕ Translucent floating filter toggles
 │   │   │
 │   │   ├── airportView/
-│   │   │   ├── AirportDetailsView.jsx        ✏️ NativeWind migration + progressive disclosure
-│   │   │   ├── AirportLevel1Summary.jsx      ➕
-│   │   │   ├── AirportLevel2Details.jsx      ➕
-│   │   │   ├── AirportLevel3Full.jsx         ➕
+│   │   │   ├── AirportDetailsView.jsx        ✏️ NativeWind migration
 │   │   │   ├── AirportSearchList.jsx         ✏️ NativeWind migration
 │   │   │   └── AirportListItem.jsx           ✏️ NativeWind migration
 │   │   │
@@ -828,7 +813,7 @@ VatView/
 | Components → Theme | Read | NativeWind `dark:` classes (automatic) |
 | Components → Map Style | Read | `useTheme()` → `activeMapStyle` |
 | Components → Blur/Translucency | Read | `BlurWrapper` (checks `Platform.OS` internally) |
-| Detail Views → Panel Container | Read/Write | `useDetailPanel()` → `disclosureLevel`, `open()`, `close()` |
+| Detail Views → Panel Container | Read/Write | `useDetailPanel()` → `open()`, `close()`, `selectedClient` |
 | FloatingNavIsland → Navigation | Write | `useNavigation()` → `navigate()` |
 | Map ← Data Pipeline | Read | `useSelector` for pilots, controllers, boundaries (every 20s) |
 
@@ -847,7 +832,7 @@ VatView/
 | FR Category | Primary Files | New Files |
 |---|---|---|
 | **Map Experience** (FR1-8) | `VatsimMapView.jsx`, `MapComponent.jsx`, `PilotMarkers.jsx`, `AirportMarkers.jsx`, `CTRPolygons.jsx` | `FloatingNavIsland.jsx`, `FloatingFilterChips.jsx`, `DetailPanelProvider.jsx`, `MapOverlayGroup.jsx`, `aircraftIconService.js`, `TranslucentSurface.jsx`, `StaleIndicator.jsx` |
-| **Progressive Disclosure** (FR9-11) | `ClientDetails.jsx`, `PilotDetails.jsx`, `AtcDetails.jsx`, `CtrDetails.jsx`, `AirportAtcDetails.jsx` | 15 Level sub-components (`*Level1Summary.jsx`, `*Level2Details.jsx`, `*Level3Full.jsx`) |
+| **Progressive Disclosure** (FR9-11, FR11a) | `ClientDetails.jsx`, `PilotDetails.jsx`, `AtcDetails.jsx`, `CtrDetails.jsx`, `AirportAtcDetails.jsx` | 5 detail card components (`PilotDetailCard`, `AtcDetailCard`, `CtrDetailCard`, `AirportDetailCard`, plus airport view card) |
 | **Navigation** (FR12-14) | `MainTabNavigator.jsx`, `MainApp.jsx` | `FloatingNavIsland.jsx` |
 | **Filtering** (FR15-18) | `FilterBar.jsx`, `VatsimListView.jsx`, `AirportDetailsView.jsx` | `FloatingFilterChips.jsx` |
 | **Theming** (FR29-33) | `theme.js`, `App.js` | `ThemeProvider.jsx`, `tailwind.config.js`, `global.css`, `lightMapStyle`/`darkMapStyle` in theme.js |
@@ -864,7 +849,7 @@ VatView/
 |---|---|
 | Theme tokens | `theme.js` → `tailwind.config.js` → every component via NativeWind classes |
 | Blur rendering | `BlurWrapper.jsx` → TranslucentSurface → FloatingNavIsland, DetailPanelProvider, FloatingFilterChips |
-| Progressive disclosure | `DetailPanelProvider.jsx` → all 5 detail views → 15 level sub-components |
+| Progressive disclosure | `DetailPanelProvider.jsx` → all 5 detail views → 5 detail card components |
 | Migration coexistence | All 28 components during migration; `package.json` retains `react-native-paper` until step 10 |
 | Map performance | `MapComponent.jsx`, `PilotMarkers.jsx`, `CTRPolygons.jsx` — no new performance concerns from overlay components (they render outside the map's child tree) |
 
@@ -888,7 +873,7 @@ New files placed consistently with existing conventions (PascalCase .jsx, utilit
 | FR Range | Status | Architectural Support |
 |---|---|---|
 | FR1-8 (Map Experience) | ✅ | Full-bleed map, FloatingNavIsland, DetailPanelProvider, marker components |
-| FR9-11 (Progressive Disclosure) | ✅ | DetailPanelProvider snap points, 15 level sub-components, additive pattern |
+| FR9-11, FR11a (Progressive Disclosure) | ✅ | DetailPanelProvider snap points, 5 detail card components, single-card pattern |
 | FR12-14 (Navigation) | ✅ | FloatingNavIsland + hidden tab bar |
 | FR15-18 (Filtering/Search) | ✅ | FloatingFilterChips + existing search in list/airport views |
 | FR19-20 (Client List) | ✅ | VatsimListView NativeWind migration |
