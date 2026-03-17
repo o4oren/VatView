@@ -7,6 +7,7 @@ const mockDispatch = jest.fn();
 const mockSnapToIndex = jest.fn();
 const mockCloseSheet = jest.fn();
 let mockBottomSheetOnChange = null;
+let mockBottomSheetOnAnimate = null;
 let mockBackHandlerCallback = null;
 
 jest.mock('react-redux', () => ({
@@ -50,6 +51,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     const ReactLib = require('react');
     const BottomSheet = ReactLib.forwardRef((props, ref) => {
         mockBottomSheetOnChange = props.onChange;
+        mockBottomSheetOnAnimate = props.onAnimate;
         ReactLib.useImperativeHandle(ref, () => ({
             snapToIndex: mockSnapToIndex,
             close: mockCloseSheet,
@@ -58,7 +60,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     });
     BottomSheet.displayName = 'BottomSheet';
 
-    function BottomSheetView() {
+    function BottomSheetScrollView() {
         return null;
     }
 
@@ -69,7 +71,7 @@ jest.mock('@gorhom/bottom-sheet', () => {
     return {
         __esModule: true,
         default: BottomSheet,
-        BottomSheetView,
+        BottomSheetScrollView,
         BottomSheetBackdrop,
     };
 });
@@ -127,6 +129,7 @@ describe('DetailPanelProvider', () => {
         mockSnapToIndex.mockClear();
         mockCloseSheet.mockClear();
         mockBottomSheetOnChange = null;
+        mockBottomSheetOnAnimate = null;
         mockBackHandlerCallback = null;
         analytics.logEvent.mockClear();
         allActions.appActions.clientSelected.mockClear();
@@ -195,6 +198,7 @@ describe('DetailPanelProvider', () => {
         });
 
         act(() => {
+            mockBottomSheetOnAnimate(-1, 0);
             mockBottomSheetOnChange(0);
         });
         expect(ctx.isOpen).toBe(true);
@@ -202,12 +206,14 @@ describe('DetailPanelProvider', () => {
         expect(ctx.sheetState).toBe('peek');
 
         act(() => {
+            mockBottomSheetOnAnimate(0, 1);
             mockBottomSheetOnChange(1);
         });
         expect(ctx.disclosureLevel).toBe(2);
         expect(ctx.sheetState).toBe('half');
 
         act(() => {
+            mockBottomSheetOnAnimate(1, 2);
             mockBottomSheetOnChange(2);
         });
         expect(ctx.disclosureLevel).toBe(3);

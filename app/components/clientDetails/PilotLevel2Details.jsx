@@ -13,7 +13,7 @@ export default function PilotLevel2Details({pilot}) {
     useEffect(() => {
         let mounted = true;
         if (fp) {
-            getAirportsByICAOAsync([fp.departure, fp.arrival]).then(results => {
+            getAirportsByICAOAsync([fp.departure, fp.arrival].filter(Boolean)).then(results => {
                 if (!mounted) {
                     return;
                 }

@@ -1,7 +1,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {BackHandler, StyleSheet, AccessibilityInfo} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useReducedMotion} from 'react-native-reanimated';
 import allActions from '../../redux/actions';
 import analytics from '../../common/analytics';
@@ -9,7 +9,7 @@ import TranslucentSurface from '../../common/TranslucentSurface';
 import {useTheme} from '../../common/ThemeProvider';
 import ClientDetails from '../clientDetails/ClientDetails';
 
-const SNAP_POINTS = [155, '50%', '90%'];
+const SNAP_POINTS = [155, '50%', '70%'];
 
 const SNAP_TO_SHEET_STATE = {
     [-1]: 'closed',
@@ -26,8 +26,8 @@ const SNAP_TO_DISCLOSURE = {
 
 const SNAP_TO_OPACITY = {
     0: 'surface',
-    1: 'surface-dense',
-    2: 'overlay',
+    1: 'surface',
+    2: 'surface',
 };
 
 const LEVEL_NAMES = {1: 'peek', 2: 'half', 3: 'full'};
@@ -101,7 +101,6 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
         }
 
         setIsOpen(true);
-        setDisclosureLevel(SNAP_TO_DISCLOSURE[index] || 1);
         setOpacity(SNAP_TO_OPACITY[index] || 'surface');
 
         // Analytics logging (AC12)
@@ -137,6 +136,12 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
         const level = SNAP_TO_DISCLOSURE[index] || 1;
         AccessibilityInfo.announceForAccessibility(`Detail panel ${LEVEL_NAMES[level]}`);
     }, [selectedClient, dispatch, onSheetStateChange]);
+
+    const handleSheetAnimate = useCallback((fromIndex, toIndex) => {
+        if (toIndex >= 0) {
+            setDisclosureLevel(SNAP_TO_DISCLOSURE[toIndex] || 1);
+        }
+    }, []);
 
     // Open/close based on Redux selectedClient (AC7)
     useEffect(() => {
@@ -251,6 +256,7 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
                 snapPoints={SNAP_POINTS}
                 index={-1}
                 onChange={handleSheetChange}
+                onAnimate={handleSheetAnimate}
                 animationConfigs={animationConfigs}
                 style={styles.sheet}
                 handleStyle={styles.handleTransparent}
@@ -259,7 +265,10 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
                 containerStyle={styles.containerTransparent}
                 accessibilityRole="adjustable"
             >
-                <BottomSheetView style={styles.sheetContent}>
+                <BottomSheetScrollView
+                    style={styles.sheetContent}
+                    contentContainerStyle={styles.scrollContent}
+                >
                     <TranslucentSurface
                         opacity={opacity}
                         rounded="none"
@@ -267,7 +276,7 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
                     >
                         <ClientDetails client={selectedClient} fill={true} />
                     </TranslucentSurface>
-                </BottomSheetView>
+                </BottomSheetScrollView>
             </BottomSheet>
         </DetailPanelContext.Provider>
     );
@@ -288,6 +297,9 @@ const styles = StyleSheet.create({
     },
     sheetContent: {
         flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
     },
     translucentSurface: {
         flex: 1,

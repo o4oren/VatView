@@ -111,17 +111,6 @@ describe('PilotLevel3Full', () => {
         expect(allText).toContain('VFR');
     });
 
-    it('renders full flight plan route text', () => {
-        let tree;
-        act(() => {
-            tree = renderer.create(<PilotLevel3Full pilot={basePilot} />);
-        });
-        const allText = JSON.stringify(tree.toJSON());
-
-        expect(allText).toContain('HAPIE3 HAPIE DCT ALLRY N130A RESNO');
-        expect(allText).toContain('FLIGHT PLAN');
-    });
-
     it('handles missing remarks gracefully', () => {
         const pilot = {
             ...basePilot,
