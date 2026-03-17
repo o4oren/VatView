@@ -7,6 +7,7 @@ import ThemedText from './ThemedText';
 export default function ListItem({
     leftSlot,
     title,
+    titleVariant = 'body',
     subtitle,
     trailingSlot,
     onPress,
@@ -43,7 +44,7 @@ export default function ListItem({
             <Animated.View style={[styles.container, style, {opacity: animValue}]}>
                 {leftSlot && <View style={styles.leftSlot}>{leftSlot}</View>}
                 <View style={styles.body}>
-                    <ThemedText variant="body">{title}</ThemedText>
+                    <ThemedText variant={titleVariant}>{title}</ThemedText>
                     {subtitle ? (
                         <ThemedText variant="body-sm" color={activeTheme.text.secondary}>
                             {subtitle}
