@@ -120,7 +120,7 @@ export default function PilotLevel2Details({pilot}) {
 
             {fp.route ? (
                 <View style={styles.routeSection}>
-                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'ROUTE'}</ThemedText>
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'FLIGHT PLAN'}</ThemedText>
                     <ThemedText variant="data-sm">{fp.route}</ThemedText>
                 </View>
             ) : null}
