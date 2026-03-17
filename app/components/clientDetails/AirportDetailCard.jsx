@@ -57,11 +57,25 @@ export default function AirportDetailCard({airport}) {
     const [metar, setMetar] = useState(null);
 
     useEffect(() => {
+        let isMounted = true;
         setMetar(null);
+
         fetch('https://metar.vatsim.net/data/metar.php?id=' + airport.icao)
             .then(r => r.text())
-            .then(text => setMetar(text.trim()))
-            .catch(() => setMetar(null));
+            .then(text => {
+                if (isMounted) {
+                    setMetar(text.trim());
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setMetar(null);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, [airport.icao]);
 
     const trafficEntry = trafficCounts[airport.icao];
