@@ -3,6 +3,7 @@ import {Image, Platform} from 'react-native';
 import React, {useCallback, useRef, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
+import {markNewSelection} from '../detailPanel/DetailPanelProvider';
 import {mapIcons} from '../../common/iconsHelper';
 import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
@@ -62,6 +63,7 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
         if(selectedClientRef.current && pilot.callsign == selectedClientRef.current.callsign) {
             dispatch(allActions.appActions.clientSelected(null));
         } else {
+            markNewSelection();
             dispatch(allActions.appActions.clientSelected(pilot));
         }
     }, [dispatch]);

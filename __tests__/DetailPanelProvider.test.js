@@ -329,7 +329,8 @@ describe('DetailPanelProvider', () => {
             );
         });
 
-        expect(mockSnapToIndex).not.toHaveBeenCalled();
+        // Re-asserts current snap index (1) to hold position through content change
+        expect(mockSnapToIndex).toHaveBeenCalledWith(1);
     });
 
     it('dispatches clientSelected(null) when pilots filter off and pilot selected', () => {

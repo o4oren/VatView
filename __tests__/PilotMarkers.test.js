@@ -2,6 +2,11 @@ import React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
+
+jest.mock('../app/components/detailPanel/DetailPanelProvider', () => ({
+    markNewSelection: jest.fn(),
+}));
+
 import PilotMarkers, {pilotMarkerItemPropsEqual} from '../app/components/vatsimMapView/PilotMarkers';
 
 // Build a minimal Redux store matching the app shape

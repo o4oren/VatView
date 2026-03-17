@@ -2,6 +2,11 @@ import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
+
+jest.mock('../app/components/detailPanel/DetailPanelProvider', () => ({
+    markNewSelection: jest.fn(),
+}));
+
 import CTRPolygons from '../app/components/vatsimMapView/CTRPolygons';
 
 const lightAtcTheme = {

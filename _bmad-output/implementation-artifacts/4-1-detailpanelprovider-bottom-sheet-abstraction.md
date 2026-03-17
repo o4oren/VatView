@@ -271,7 +271,7 @@ Claude Opus 4.6 (1M context)
 
 - ESLint caught color literal in handleIndicator style — fixed by using `activeTheme.text.muted` via `useTheme()` hook
 - NativeWind babel plugin (`_ReactNativeCSSInterop`) interferes with `jest.mock()` factories using `React.createElement` — resolved by using string mocks for BottomSheet components
-- iOS Apple Maps race condition: custom-view markers (LocalAirportMarker) fire both Marker.onPress and MapView.onPress for the same tap, without setting action:'marker-press'. Fixed with deferred dismiss (150ms timer) + selection timestamp (300ms guard window) pattern
+- iOS Apple Maps race condition: custom-view markers (LocalAirportMarker) fire both Marker.onPress and MapView.onPress for the same tap, without setting action:'marker-press'. Fixed with deferred dismiss (150ms timer) + selection timestamp (300ms guard window) pattern. Further hardened in Story 4.4: `pointerEvents="none"` on LocalAirportMarker container View prevents touch interception; `markNewSelection()` exported and called synchronously in all marker onPress handlers (AirportMarkers, PilotMarkers, CTRPolygons) before dispatch
 - `@gorhom/bottom-sheet` v5: `snapToIndex(-1)` does not reliably close the sheet — must use `close()` method instead
 - Live data auto-update effect can re-dispatch stale client from closure when `clients` changes during dismiss — resolved by keeping `cancelDismiss` scoped to genuinely new client selections only (same-cid re-dispatches don't cancel)
 - AC6 snap-point preservation: `currentIndexRef` and `isOpen` state are both updated asynchronously via onChange (after animation), making them unreliable guards. Replaced with `sheetOpenRef` set synchronously in the selectedClient useEffect
