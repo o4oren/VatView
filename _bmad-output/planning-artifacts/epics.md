@@ -696,58 +696,81 @@ So that I can discover events and plan my participation.
 **And** navigation uses standard React Navigation stack push (slide from right, `duration.normal`)
 **And** all react-native-paper imports are removed from these components
 
-### Story 6.2: ATC Bookings List & Details
+### Story 6.2: Live/Scheduled Toggle in List Tab
 
 As a user,
-I want to browse ATC bookings and view booking details,
-So that I can see what ATC coverage is planned for my flight time.
+I want to switch between live VATSIM clients and scheduled ATC bookings and prefiled flights in the List tab,
+So that I can see both who is on the network now and who is planned to fly or control.
 
 **Acceptance Criteria:**
 
-**Given** ThemedText, ListItem, and the theme system are in place
-**When** `BookingsView.jsx` and `BookingDeatils.jsx` are migrated to NativeWind
-**Then** the bookings list renders using the `ListItem` base component with translucent cards
+**Given** the List tab shows live pilots and controllers
+**When** a segmented toggle (Live | Scheduled) is added at the top of `VatsimListView`
+**Then** Live mode shows the existing live pilots and ATC list with all current filter chips (default, unchanged behaviour)
+**And** Scheduled mode shows ATC bookings and prefiled flights combined in a single list
+**And** in Scheduled mode, ATC booking cards show: callsign, booking type, division/subdivision, and planned time window (start → end in UTC)
+**And** in Scheduled mode, prefile cards show: callsign, departure → arrival airports, aircraft type, and estimated off-block time
+**And** tapping a Scheduled card expands it inline to reveal full available fields (same expand pattern as live cards — no stack push, no separate details screen)
+**And** a date filter chip is available in Scheduled mode (single-date, pure-JS picker matching the Events date picker from 6.1) to filter bookings and prefiles by planned date
+**And** the existing callsign/prefix search field filters by callsign in both Live and Scheduled modes
+**And** if no scheduled entries exist for the selected date, shows "No scheduled traffic" centered in muted text
 **And** bookings load on app launch (FR40)
-**And** if no bookings exist, shows "No ATC bookings scheduled" centered in muted text
-**And** tapping a booking shows its full details (FR27)
-**And** all react-native-paper imports are removed from these components
+**And** `BookingsView.jsx`, `BookingDeatils.jsx` are deleted — their functionality is fully replaced by this story
+**And** any stack screen registration for Bookings is removed from the navigator
+**And** all react-native-paper and react-native-paper-dates imports are removed
 **And** components render correctly in both themes
 
-### Story 6.3: Settings with Theme Picker
+### Story 6.3: Consolidated Settings Screen
 
 As a user,
-I want a Settings screen where I can choose between System, Dark, and Light themes,
-So that I can override the automatic theme detection to suit my preference.
+I want a single Settings screen that combines theme selection, app information, network status, and version details,
+So that I have one place to configure the app and check its status.
 
 **Acceptance Criteria:**
 
 **Given** ThemeProvider from Epic 1 is in place
-**When** `Settings.jsx` is migrated to NativeWind and `ThemePicker.jsx` is created in `app/components/shared/`
-**Then** Settings shows a theme section with three options: System (auto), Dark (always dark), Light (always light) (FR38)
+**When** `Settings.jsx` is migrated to NativeWind with `ThemePicker.jsx` created in `app/components/shared/`
+**Then** Settings is a single scrollable screen with four sections in order: Theme, About, Network Status, Version
+
+**Theme section:**
+**Then** it shows three options: System (auto), Dark (always dark), Light (always light) (FR38)
 **And** the current selection is visually highlighted
 **And** selecting an option calls `toggleTheme()` from ThemeContext and the change applies instantly (FR29, FR31, NFR6)
 **And** the preference persists to AsyncStorage and restores on cold start (FR30)
-**And** the ThemePicker architecture accommodates future Phase 2 aviation themes (additional options can be added without restructuring)
+**And** the ThemePicker architecture accommodates future additional theme options without restructuring
+
+**About section:**
+**Then** it shows the VatView logo, app name, tagline, and a brief description
+**And** it shows attribution links (Freepik, Roundicons from flaticon.com; VAT-Spy Data Project; SimAware TRACON Project)
+**And** content is absorbed from `About.jsx` — that file is deleted
+
+**Network Status section:**
+**Then** it shows live pilot count, ATC count, and the full VATSIM server list (name, location, hostname) sourced from `state.vatsimLiveData` (FR41)
+**And** content is absorbed from `networkStatus.jsx` — that file is deleted
+
+**Version section:**
+**Then** it shows App version, Expo SDK, React Native version, Update Channel, Update ID, VATSpy Boundaries tag, TRACON Boundaries tag
+
+**And** stack screen registrations for About and NetworkStatus are removed from the navigator
 **And** all react-native-paper imports are removed from Settings
+**And** the screen renders correctly in both themes
 
-### Story 6.4: Network Status, About & LoadingView
+### Story 6.4: LoadingView Migration & Navigation Cleanup
 
-As a user,
-I want to check network connectivity status, view app information, and see a proper loading screen on first install,
-So that I have complete access to all app screens in the new design.
+As a developer,
+I want LoadingView migrated to the new design system and dead navigation code removed,
+So that every screen uses NativeWind and the navigator contains no orphaned screen registrations.
 
 **Acceptance Criteria:**
 
-**Given** the theme system and shared components are in place
-**When** `networkStatus.jsx` is migrated to NativeWind
-**Then** it displays network connectivity status using theme tokens and ThemedText (FR41)
-**And** stale/live state aligns with StaleIndicator behavior
-**When** `About.jsx` is migrated to NativeWind
-**Then** it renders with theme-aware tokens and translucent surfaces
+**Given** all other Epic 6 migrations are complete
 **When** `LoadingView.jsx` is migrated to NativeWind
 **Then** it shows a themed loading screen with progress indicator during first-install SQLite population
-**And** all react-native-paper imports are removed from these three components
-**And** all components render correctly in both themes
+**And** it uses theme tokens and ThemedText, with no react-native-paper imports
+**And** it renders correctly in both themes
+**When** the navigator is audited for dead stack screen registrations
+**Then** any remaining stack screens for About, NetworkStatus, and the old Metar stack screen (superseded by the Metar tab) are removed
+**And** `npm run lint` passes with no errors after removal
 
 ### Story 6.5: Remove react-native-paper Dependency
 
@@ -757,15 +780,15 @@ So that the codebase has a single styling system and no unused dependencies.
 
 **Acceptance Criteria:**
 
-**Given** all 28 components have been migrated to NativeWind in Epics 1-6
-**When** react-native-paper is uninstalled
-**Then** `npm uninstall react-native-paper` completes without errors
-**And** no imports from `react-native-paper` remain in any source file
+**Given** all components have been migrated to NativeWind in Epics 1-6
+**When** react-native-paper and react-native-paper-dates are uninstalled
+**Then** `npm uninstall react-native-paper react-native-paper-dates` completes without errors
+**And** no imports from `react-native-paper` or `react-native-paper-dates` remain in any source file
 **And** `PaperProvider` is fully removed from the component tree
 **And** the app builds and runs correctly on both iOS and Android
 **And** `npm run lint` passes with no errors
 **And** all existing features continue to function identically (FR43)
-**And** manual smoke test of all features on both platforms (iOS + Android) confirms zero functional regression: map markers, polygon overlays, bottom sheet details, list view, airport search, events, bookings, METAR, settings, about, network status
+**And** manual smoke test of all features on both platforms (iOS + Android) confirms zero functional regression: map markers, polygon overlays, bottom sheet details, list view (live and scheduled), airport search, events, METAR, settings, network status, loading screen
 
 ## Epic 7: Landscape Orientation & Responsive Layout
 

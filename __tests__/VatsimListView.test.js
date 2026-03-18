@@ -31,6 +31,8 @@ jest.mock('react-redux', () => ({
                 },
                 ctr: {},
             },
+            bookings: [],
+            prefiles: [],
         },
         app: {
             filters: {pilots: true, atc: true, searchQuery: ''},
@@ -63,51 +65,56 @@ jest.mock('@expo/vector-icons', () => ({
     MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
 
+jest.mock('../app/components/shared/DatePickerModal', () => 'DatePickerModal');
+
 const {useSelector} = require('react-redux');
 
-import VatsimListView from '../app/components/vatsimListView/VatsimListView';
+import VatsimListView, {parseDeptime} from '../app/components/vatsimListView/VatsimListView';
 
 afterEach(() => {
     jest.clearAllMocks();
+    jest.clearAllTimers();
 });
 
 function mockState(overrides = {}) {
-    const defaultState = {
-        vatsimLiveData: {
-            clients: {
-                pilots: [
+    const defaultVatsimLiveData = {
+        clients: {
+            pilots: [
+                {
+                    callsign: 'BAW123',
+                    cid: 111,
+                    name: 'John Smith',
+                    altitude: 35000,
+                    groundspeed: 480,
+                    flight_plan: {aircraft_short: 'B738', departure: 'EGLL', arrival: 'KJFK', aircraft: 'B738'},
+                    facility: null,
+                },
+            ],
+            airportAtc: {
+                'EGLL': [
                     {
-                        callsign: 'BAW123',
-                        cid: 111,
-                        name: 'John Smith',
-                        altitude: 35000,
-                        groundspeed: 480,
-                        flight_plan: {aircraft_short: 'B738', departure: 'EGLL', arrival: 'KJFK', aircraft: 'B738'},
-                        facility: null,
+                        callsign: 'EGLL_TWR',
+                        cid: 222,
+                        name: 'Jane Doe',
+                        frequency: '118.700',
+                        facility: 4,
+                        rating: 5,
+                        logon_time: '2024-01-01T00:00:00Z',
                     },
                 ],
-                airportAtc: {
-                    'EGLL': [
-                        {
-                            callsign: 'EGLL_TWR',
-                            cid: 222,
-                            name: 'Jane Doe',
-                            frequency: '118.700',
-                            facility: 4,
-                            rating: 5,
-                            logon_time: '2024-01-01T00:00:00Z',
-                        },
-                    ],
-                },
-                ctr: {},
             },
+            ctr: {},
         },
+        bookings: [],
+        prefiles: [],
+    };
+    return {
+        vatsimLiveData: {...defaultVatsimLiveData, ...(overrides.vatsimLiveData || {})},
         app: {
             filters: {pilots: true, atc: true, searchQuery: ''},
-            ...overrides.app,
+            ...(overrides.app || {}),
         },
     };
-    return {...defaultState, ...overrides};
 }
 
 describe('VatsimListView — renders pilots', () => {
@@ -117,7 +124,9 @@ describe('VatsimListView — renders pilots', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('BAW123');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('BAW123');
     });
 
     it('does not render pilot when pilots filter is false', () => {
@@ -128,7 +137,9 @@ describe('VatsimListView — renders pilots', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).not.toContain('BAW123');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).not.toContain('BAW123');
     });
 });
 
@@ -139,7 +150,9 @@ describe('VatsimListView — renders ATC', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('EGLL_TWR');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('EGLL_TWR');
     });
 
     it('does not render ATC when atc filter is false', () => {
@@ -150,7 +163,9 @@ describe('VatsimListView — renders ATC', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).not.toContain('EGLL_TWR');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).not.toContain('EGLL_TWR');
     });
 });
 
@@ -163,7 +178,9 @@ describe('VatsimListView — empty state', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('No matches for');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('No matches for');
     });
 
     it('does not render empty state when searchQuery is empty', () => {
@@ -172,7 +189,9 @@ describe('VatsimListView — empty state', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).not.toContain('No matches for');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).not.toContain('No matches for');
     });
 });
 
@@ -183,7 +202,9 @@ describe('VatsimListView — controls', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('Search callsign...');
+        const inputs = tree.root.findAllByType(require('react-native').TextInput);
+        expect(inputs.length).toBeGreaterThan(0);
+        expect(inputs[0].props.placeholder).toBe('Search callsign...');
     });
 
     it('renders Pilots filter button', () => {
@@ -192,7 +213,9 @@ describe('VatsimListView — controls', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('Pilots');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('Pilots');
     });
 
     it('renders ATC filter button', () => {
@@ -201,6 +224,205 @@ describe('VatsimListView — controls', () => {
         act(() => {
             tree = renderer.create(<VatsimListView />);
         });
-        expect(JSON.stringify(tree.toJSON())).toContain('ATC');
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('ATC');
+    });
+});
+
+describe('VatsimListView — Live/Scheduled toggle', () => {
+    it('renders Live and Scheduled toggle chips', () => {
+        useSelector.mockImplementation(selector => selector(mockState()));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('Live');
+        expect(text).toContain('Scheduled');
+    });
+
+    it('Live mode shows ClientCard items (pilots visible)', () => {
+        useSelector.mockImplementation(selector => selector(mockState()));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('BAW123');
+    });
+
+    it('Scheduled mode shows booking callsign', () => {
+        const bookingStart = new Date('2026-03-18T14:00:00Z');
+        const bookingEnd = new Date('2026-03-18T16:00:00Z');
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [{
+                    id: 1,
+                    callsign: 'EGLL_APP',
+                    start: bookingStart,
+                    end: bookingEnd,
+                    type: 'APP',
+                    division: 'VATEUD',
+                    subdivision: null,
+                }],
+                prefiles: [],
+            },
+        })));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const instance = tree.root;
+        const scheduledPressable = instance.findAllByProps({accessibilityLabel: 'Scheduled mode'});
+        expect(scheduledPressable.length).toBeGreaterThan(0);
+        act(() => scheduledPressable[0].props.onPress());
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('EGLL_APP');
+    });
+
+    it('Scheduled mode shows prefile callsign and DEP→ARR airports', () => {
+        // Include a booking so isScheduledLoaded becomes true via useEffect
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [{id: 99, callsign: 'INIT_BOOKING', start: new Date(), end: new Date(), type: 'TWR', division: null, subdivision: null}],
+                prefiles: [{
+                    callsign: 'VIR100',
+                    cid: 999,
+                    name: 'Test Pilot',
+                    flight_plan: {
+                        departure: 'EGLL',
+                        arrival: 'KJFK',
+                        aircraft: 'A359',
+                        deptime: '1430',
+                        ete: '0700',
+                        route: 'ROUTE',
+                        altitude: 'FL370',
+                    },
+                }],
+            },
+        })));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const instance = tree.root;
+        const scheduledPressable = instance.findAllByProps({accessibilityLabel: 'Scheduled mode'});
+        act(() => scheduledPressable[0].props.onPress());
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('VIR100');
+        expect(text).toContain('EGLL');
+        expect(text).toContain('KJFK');
+    });
+
+    it('Scheduled mode shows skeleton rows when bookings is empty and not yet loaded', () => {
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [],
+                prefiles: [],
+            },
+        })));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const instance = tree.root;
+        const scheduledPressable = instance.findAllByProps({accessibilityLabel: 'Scheduled mode'});
+        act(() => scheduledPressable[0].props.onPress());
+        // isScheduledLoaded is false initially (bookings empty, timer not fired)
+        // Should NOT show "No scheduled traffic" yet
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).not.toContain('No scheduled traffic');
+    });
+
+    it('Scheduled mode shows empty state "No scheduled traffic" when loaded and no items', () => {
+        // Render with a booking first so isScheduledLoaded becomes true
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [{id: 1, callsign: 'INIT', start: new Date(), end: new Date(), type: 'TWR', division: null, subdivision: null}],
+                prefiles: [],
+            },
+        })));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        // Now update to empty bookings and switch to Scheduled mode
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [],
+                prefiles: [],
+            },
+        })));
+        act(() => {
+            tree.update(<VatsimListView />);
+        });
+        const instance = tree.root;
+        const scheduledPressable = instance.findAllByProps({accessibilityLabel: 'Scheduled mode'});
+        act(() => scheduledPressable[0].props.onPress());
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('No scheduled traffic');
+    });
+
+    it('Search filters scheduled items by callsign prefix (case-insensitive)', () => {
+        useSelector.mockImplementation(selector => selector(mockState({
+            vatsimLiveData: {
+                clients: {pilots: [], airportAtc: {}, ctr: {}},
+                bookings: [
+                    {id: 1, callsign: 'EGLL_APP', start: new Date(), end: new Date(), type: 'APP', division: null, subdivision: null},
+                    {id: 2, callsign: 'EDDM_TWR', start: new Date(), end: new Date(), type: 'TWR', division: null, subdivision: null},
+                ],
+                prefiles: [],
+            },
+        })));
+        let tree;
+        act(() => {
+            tree = renderer.create(<VatsimListView />);
+        });
+        const instance = tree.root;
+        const scheduledPressable = instance.findAllByProps({accessibilityLabel: 'Scheduled mode'});
+        act(() => scheduledPressable[0].props.onPress());
+        const textInputs = instance.findAllByType(require('react-native').TextInput);
+        expect(textInputs.length).toBeGreaterThan(0);
+        act(() => textInputs[0].props.onChangeText('egll'));
+        const textNodes = tree.root.findAllByType('Text');
+        const text = textNodes.map(n => n.props.children).join(' ');
+        expect(text).toContain('EGLL_APP');
+        expect(text).not.toContain('EDDM_TWR');
+    });
+});
+
+describe('parseDeptime', () => {
+    it('returns 0 for undefined', () => {
+        expect(parseDeptime(undefined)).toBe(0);
+    });
+
+    it('returns 0 for null', () => {
+        expect(parseDeptime(null)).toBe(0);
+    });
+
+    it('returns 0 for empty string', () => {
+        expect(parseDeptime('')).toBe(0);
+    });
+
+    it('returns a number for valid "HHMM" input', () => {
+        const result = parseDeptime('1430');
+        expect(typeof result).toBe('number');
+        expect(result).toBeGreaterThan(0);
+    });
+
+    it('returns 0 for short string', () => {
+        expect(parseDeptime('14')).toBe(0);
     });
 });
