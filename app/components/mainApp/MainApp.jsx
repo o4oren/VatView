@@ -5,7 +5,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTabNavigator from './MainTabNavigator';
-import NetworkStatus from '../networkStatus/networkStatus';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
@@ -129,10 +128,6 @@ export default function mainApp() {
             <Stack.Screen
                 name="VatView"
                 component={MainTabNavigator}
-            />
-            <Stack.Screen
-                name="Network status"
-                component={NetworkStatus}
             />
             <Stack.Screen
                 name="Event Details"
