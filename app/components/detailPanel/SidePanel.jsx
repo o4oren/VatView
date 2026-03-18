@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, ScrollView, StyleSheet, useWindowDimensions} from 'react-native';
 import {useReducedMotion} from 'react-native-reanimated';
 import TranslucentSurface from '../../common/TranslucentSurface';
-import tokens from '../../common/themeTokens';
+import {tokens} from '../../common/themeTokens';
 
 const PANEL_WIDTH_PHONE = 360;
 const PANEL_WIDTH_TABLET = 400;
