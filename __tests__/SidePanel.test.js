@@ -16,7 +16,9 @@ jest.mock('react-native-reanimated', () => ({
 jest.mock('../app/common/TranslucentSurface', () => 'TranslucentSurface');
 
 jest.mock('../app/common/themeTokens', () => ({
-    animation: {duration: {fast: 150, normal: 250, slow: 400}},
+    tokens: {
+        animation: {duration: {fast: 150, normal: 250, slow: 400}},
+    },
 }));
 
 import {useReducedMotion} from 'react-native-reanimated';
@@ -33,7 +35,7 @@ describe('SidePanel', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <SidePanel visible={true} onClose={jest.fn()}>
+                <SidePanel visible={true}>
                     <></>
                 </SidePanel>
             );
@@ -45,7 +47,7 @@ describe('SidePanel', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <SidePanel visible={false} onClose={jest.fn()}>
+                <SidePanel visible={false}>
                     <></>
                 </SidePanel>
             );
@@ -60,7 +62,7 @@ describe('SidePanel', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <SidePanel visible={true} onClose={jest.fn()}>
+                <SidePanel visible={true}>
                     <></>
                 </SidePanel>
             );
@@ -80,7 +82,7 @@ describe('SidePanel', () => {
         let tree;
         act(() => {
             tree = renderer.create(
-                <SidePanel visible={true} onClose={jest.fn()}>
+                <SidePanel visible={true}>
                     <></>
                 </SidePanel>
             );

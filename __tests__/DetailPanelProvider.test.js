@@ -144,6 +144,11 @@ describe('DetailPanelProvider', () => {
         useDispatch.mockReturnValue(mockDispatch);
         useSelector.mockImplementation(selector => selector(currentState));
         useOrientation.mockReturnValue('portrait');
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
     it('renders without crashing', () => {
@@ -299,6 +304,11 @@ describe('DetailPanelProvider', () => {
             );
         });
 
+        // Run pending timers because we use setTimeout for snapping
+        act(() => {
+            jest.runAllTimers();
+        });
+
         expect(mockSnapToIndex).toHaveBeenCalledWith(0);
     });
 
@@ -335,6 +345,11 @@ describe('DetailPanelProvider', () => {
                     <></>
                 </DetailPanelProvider>
             );
+        });
+
+        // Run pending timers because we use setTimeout for snapping
+        act(() => {
+            jest.runAllTimers();
         });
 
         // Re-asserts current snap index (1) to hold position through content change

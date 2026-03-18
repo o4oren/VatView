@@ -151,31 +151,55 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
     // Open/close based on Redux selectedClient (AC7)
     useEffect(() => {
         const prev = prevSelectedClientRef.current;
+
+        // Sync local isOpen/sheetState for context consumers in landscape
+        if (isLandscape) {
+            setIsOpen(selectedClient != null);
+            setSheetState(selectedClient != null ? 'half' : 'closed');
+        }
+
         if (selectedClient == null) {
             sheetOpenRef.current = false;
             sheetRef.current?.close();
-        } else if (prev == null || (
-            (selectedClient.cid != null && selectedClient.cid !== prev.cid) ||
-            (selectedClient.icao != null && selectedClient.icao !== prev.icao)
-        )) {
-            // New/different client selected — cancel any pending deferred dismiss
-            // and record timestamp. The timestamp is also checked when the timer
-            // fires, covering cases where events arrive in separate JS tasks.
-            markNewSelection();
-            // Keep current snap point on client swap; only open from closed state.
-            // sheetOpenRef is set synchronously here (not via onChange callback),
-            // so it's always accurate regardless of animation state.
-            if (!sheetOpenRef.current || sheetState === 'closed') {
-                sheetOpenRef.current = true;
-                sheetRef.current?.snapToIndex(0);
-            } else if (currentIndexRef.current >= 0) {
-                // Re-assert current snap index so the sheet holds position
-                // through content changes (e.g. switching pilot → airport).
-                sheetRef.current?.snapToIndex(currentIndexRef.current);
+        } else {
+            // Check if we need to open the sheet or update its position
+            // Trigger if:
+            // - The client is new/different
+            // - The sheet is not open
+            // - We transitioned from landscape back to portrait (isLandscape is false but sheetOpenRef was true)
+            const clientChanged = prev == null || (
+                (selectedClient.cid != null && selectedClient.cid !== prev.cid) ||
+                (selectedClient.icao != null && selectedClient.icao !== prev.icao)
+            );
+
+            const needsOpenInPortrait = !isLandscape && (!sheetOpenRef.current || sheetState === 'closed');
+
+            if (clientChanged || needsOpenInPortrait) {
+                // New/different client selected — cancel any pending deferred dismiss
+                // and record timestamp. The timestamp is also checked when the timer
+                // fires, covering cases where events arrive in separate JS tasks.
+                markNewSelection();
+                // Keep current snap point on client swap; only open from closed state.
+                // sheetOpenRef is set synchronously here (not via onChange callback),
+                // so it's always accurate regardless of animation state.
+                if (!sheetOpenRef.current || sheetState === 'closed' || needsOpenInPortrait) {
+                    sheetOpenRef.current = true;
+                    if (!isLandscape) {
+                        // Use a short timeout to ensure BottomSheet is mounted before snapping
+                        // The timeout handles the transition from landscape (where BottomSheet is unmounted)
+                        setTimeout(() => {
+                            sheetRef.current?.snapToIndex(0);
+                        }, 50);
+                    }
+                } else if (!isLandscape && currentIndexRef.current >= 0) {
+                    // Re-assert current snap index so the sheet holds position
+                    // through content changes (e.g. switching pilot → airport).
+                    sheetRef.current?.snapToIndex(currentIndexRef.current);
+                }
             }
         }
         prevSelectedClientRef.current = selectedClient;
-    }, [selectedClient, sheetState]);
+    }, [selectedClient, sheetState, isLandscape]);
 
     // Filter-based auto-close (AC10)
     useEffect(() => {
@@ -271,7 +295,7 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
         <DetailPanelContext.Provider value={contextValue}>
             {children}
             {isLandscape ? (
-                <SidePanel visible={selectedClient != null} onClose={close}>
+                <SidePanel visible={selectedClient != null}>
                     <ClientDetails client={selectedClient} fill={true} />
                 </SidePanel>
             ) : (
