@@ -8,7 +8,7 @@ const PANEL_WIDTH_PHONE = 360;
 const PANEL_WIDTH_TABLET = 400;
 const TABLET_WIDTH_THRESHOLD = 768;
 
-export default function SidePanel({visible, children, onClose}) {
+export default function SidePanel({visible, children}) {
     const {width} = useWindowDimensions();
     const panelWidth = width >= TABLET_WIDTH_THRESHOLD ? PANEL_WIDTH_TABLET : PANEL_WIDTH_PHONE;
     const reducedMotion = useReducedMotion();

@@ -1,6 +1,6 @@
 # Story 7.2: SidePanel — Landscape Detail Container
 
-Status: review
+Status: done
 
 ## Story
 
@@ -285,3 +285,6 @@ None.
 - `__tests__/SidePanel.test.js` (created)
 - `__tests__/DetailPanelProvider.test.js` (modified)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated status)
+- `app/common/useOrientation.js` (modified)
+- `__tests__/useOrientation.test.js` (modified)
+- `app/components/settings/Settings.jsx` (modified)
