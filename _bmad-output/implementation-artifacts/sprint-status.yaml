@@ -90,12 +90,12 @@ development_status:
   6-2-atc-bookings-list-and-details: done
   6-3-settings-with-theme-picker: done
   6-4-network-status-about-and-loadingview: done
-  6-5-remove-react-native-paper-dependency: backlog
+  6-5-remove-react-native-paper-dependency: done
   epic-6-retrospective: optional
 
   # Epic 7: Landscape Orientation & Responsive Layout
-  epic-7: backlog
-  7-1-unlock-orientation-and-responsive-detection: backlog
+  epic-7: in-progress
+  7-1-unlock-orientation-and-responsive-detection: done
   7-2-sidepanel-landscape-detail-container: backlog
   7-3-responsive-mapoverlaygroup-and-floating-elements: backlog
   epic-7-retrospective: optional
