@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import React, {useEffect, useState, useMemo} from 'react';
-import {FlatList, Keyboard, Modal, Platform, Pressable, StyleSheet, TextInput, View} from 'react-native';
+import {FlatList, Keyboard, Platform, Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,208 +9,27 @@ import {tokens} from '../../common/themeTokens';
 import ThemedText from '../shared/ThemedText';
 import EventListItem from './EventListItem';
 import {getDateFromUTCString} from '../../common/timeDIstanceTools';
-
-const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DAY_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+import DatePickerModal from '../shared/DatePickerModal';
 
 function sameDay(a, b) {
     return a && b
-        && a.getFullYear() === b.getFullYear()
-        && a.getMonth() === b.getMonth()
-        && a.getDate() === b.getDate();
+        && a.getUTCFullYear() === b.getUTCFullYear()
+        && a.getUTCMonth() === b.getUTCMonth()
+        && a.getUTCDate() === b.getUTCDate();
 }
 
-function dayOf(year, month, day) {
-    const d = new Date(year, month, day);
-    d.setHours(0, 0, 0, 0);
-    return d;
-}
-
-function buildCalendarDays(year, month) {
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const cells = [];
-    for (let i = 0; i < firstDay; i++) {
-        cells.push(null);
-    }
-    for (let d = 1; d <= daysInMonth; d++) {
-        cells.push(d);
-    }
-    return cells;
-}
-
-// Range date picker: tap once = startDate, tap again = endDate (must be >= start), tap a third time resets
-function DateRangePickerModal({visible, startDate, endDate, onConfirm, onDismiss, activeTheme}) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [viewYear, setViewYear] = useState(startDate ? startDate.getFullYear() : today.getFullYear());
-    const [viewMonth, setViewMonth] = useState(startDate ? startDate.getMonth() : today.getMonth());
-    // Internal draft range while modal is open
-    const [draftStart, setDraftStart] = useState(startDate || null);
-    const [draftEnd, setDraftEnd] = useState(endDate || null);
-
-    // Reset draft when modal opens
-    useEffect(() => {
-        if (visible) {
-            setDraftStart(startDate || null);
-            setDraftEnd(endDate || null);
-            setViewYear(startDate ? startDate.getFullYear() : today.getFullYear());
-            setViewMonth(startDate ? startDate.getMonth() : today.getMonth());
-        }
-    }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const prevMonth = () => {
-        if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-        else { setViewMonth(m => m - 1); }
-    };
-
-    const nextMonth = () => {
-        if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-        else { setViewMonth(m => m + 1); }
-    };
-
-    const onDayPress = (day) => {
-        const pressed = dayOf(viewYear, viewMonth, day);
-        if (!draftStart || (draftStart && draftEnd)) {
-            // Start fresh
-            setDraftStart(pressed);
-            setDraftEnd(null);
-        } else {
-            // Have start, no end
-            if (pressed < draftStart) {
-                setDraftStart(pressed);
-                setDraftEnd(null);
-            } else if (sameDay(pressed, draftStart)) {
-                setDraftStart(null);
-                setDraftEnd(null);
-            } else {
-                setDraftEnd(pressed);
-            }
-        }
-    };
-
-    const isDraftStart = (day) => day && draftStart && sameDay(dayOf(viewYear, viewMonth, day), draftStart);
-    const isDraftEnd = (day) => day && draftEnd && sameDay(dayOf(viewYear, viewMonth, day), draftEnd);
-    const isInRange = (day) => {
-        if (!day || !draftStart || !draftEnd) {return false;}
-        const d = dayOf(viewYear, viewMonth, day);
-        return d > draftStart && d < draftEnd;
-    };
-    const isToday = (day) => day && sameDay(dayOf(viewYear, viewMonth, day), today);
-
-    const cells = buildCalendarDays(viewYear, viewMonth);
-
-    const canConfirm = draftStart != null;
-
-    const getDayColors = (day) => {
-        const start = isDraftStart(day);
-        const end = isDraftEnd(day);
-        const inRange = isInRange(day);
-        const tod = isToday(day);
-
-        if (start || end) {
-            return {bg: activeTheme.accent.primary, text: '#FFFFFF', range: false};
-        }
-        if (inRange) {
-            return {bg: null, text: activeTheme.text.primary, range: true};
-        }
-        if (tod) {
-            return {bg: null, text: activeTheme.accent.primary, range: false, todayBorder: true};
-        }
-        return {bg: null, text: day ? activeTheme.text.primary : 'transparent', range: false};
-    };
-
-    return (
-        <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
-            <Pressable style={styles.modalOverlay} onPress={onDismiss}>
-                <Pressable style={[styles.calendarSheet, {backgroundColor: activeTheme.surface.base}]} onPress={() => {}}>
-
-                    <View style={styles.calendarHeader}>
-                        <Pressable onPress={prevMonth} style={styles.navBtn} accessibilityLabel="Previous month">
-                            <ThemedText variant="body" color={activeTheme.accent.primary}>{'‹'}</ThemedText>
-                        </Pressable>
-                        <ThemedText variant="body" style={styles.monthLabel}>
-                            {`${MONTH_NAMES[viewMonth]} ${viewYear}`}
-                        </ThemedText>
-                        <Pressable onPress={nextMonth} style={styles.navBtn} accessibilityLabel="Next month">
-                            <ThemedText variant="body" color={activeTheme.accent.primary}>{'›'}</ThemedText>
-                        </Pressable>
-                    </View>
-
-                    <ThemedText variant="caption" color={activeTheme.text.muted} style={styles.rangeHint}>
-                        {!draftStart ? 'Tap a start date' : !draftEnd ? 'Tap an end date (or confirm single day)' : 'Range selected'}
-                    </ThemedText>
-
-                    <View style={styles.dayLabelsRow}>
-                        {DAY_LABELS.map(l => (
-                            <View key={l} style={styles.dayCell}>
-                                <ThemedText variant="caption" color={activeTheme.text.muted}>{l}</ThemedText>
-                            </View>
-                        ))}
-                    </View>
-
-                    <View style={styles.daysGrid}>
-                        {cells.map((day, i) => {
-                            const {bg, text, range, todayBorder} = getDayColors(day);
-                            const endCap = isDraftEnd(day);
-                            const startCap = isDraftStart(day);
-                            return (
-                                <View key={i} style={[styles.dayCell, range && styles.dayRangeBg]}>
-                                    {range && <View style={[StyleSheet.absoluteFill, {backgroundColor: activeTheme.accent.primary, opacity: 0.15}]} />}
-                                    <Pressable
-                                        style={[
-                                            styles.dayCellInner,
-                                            bg && [styles.dayCellSelected, {backgroundColor: bg}],
-                                            todayBorder && [styles.dayCellToday, {borderColor: activeTheme.accent.primary}],
-                                        ]}
-                                        onPress={() => day && onDayPress(day)}
-                                        disabled={!day}
-                                        accessibilityLabel={day ? `${day} ${MONTH_NAMES[viewMonth]}` : undefined}
-                                    >
-                                        <ThemedText variant="body-sm" color={text}>
-                                            {day ? String(day) : ' '}
-                                        </ThemedText>
-                                    </Pressable>
-                                    {/* Range connector strips on left/right edges */}
-                                    {(range || endCap) && !startCap && (
-                                        <View style={[styles.rangeConnectorLeft, {backgroundColor: activeTheme.accent.primary, opacity: 0.15}]} />
-                                    )}
-                                    {(range || startCap) && !endCap && (
-                                        <View style={[styles.rangeConnectorRight, {backgroundColor: activeTheme.accent.primary, opacity: 0.15}]} />
-                                    )}
-                                </View>
-                            );
-                        })}
-                    </View>
-
-                    <View style={styles.calendarFooter}>
-                        <Pressable onPress={onDismiss} style={styles.footerBtn} accessibilityLabel="Cancel">
-                            <ThemedText variant="body-sm" color={activeTheme.text.secondary}>Cancel</ThemedText>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => canConfirm && onConfirm(draftStart, draftEnd || draftStart)}
-                            style={[styles.footerBtn, !canConfirm && styles.footerBtnDisabled]}
-                            accessibilityLabel="Confirm date range"
-                            disabled={!canConfirm}
-                        >
-                            <ThemedText variant="body-sm" color={canConfirm ? activeTheme.accent.primary : activeTheme.text.muted}>
-                                Confirm
-                            </ThemedText>
-                        </Pressable>
-                    </View>
-                </Pressable>
-            </Pressable>
-        </Modal>
-    );
+function formatUTCDate(date) {
+    if (!date) return '';
+    const d = date.getUTCDate();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[date.getUTCMonth()]} ${d}`;
 }
 
 function formatDateRange(startDate, endDate) {
     if (!startDate) {return null;}
-    const opts = {month: 'short', day: 'numeric'};
-    const start = startDate.toLocaleDateString(undefined, opts);
+    const start = formatUTCDate(startDate);
     if (!endDate || sameDay(startDate, endDate)) {return start;}
-    return `${start} – ${endDate.toLocaleDateString(undefined, opts)}`;
+    return `${start} – ${formatUTCDate(endDate)}`;
 }
 
 export default function VatsimEventsView() {
@@ -361,7 +180,7 @@ export default function VatsimEventsView() {
                 </View>
             </View>
 
-            <DateRangePickerModal
+            <DatePickerModal
                 visible={showDatePicker}
                 startDate={dateStart}
                 endDate={dateEnd}
@@ -428,99 +247,5 @@ const styles = StyleSheet.create({
     emptyState: {
         alignItems: 'center',
         paddingTop: 32,
-    },
-    // DateRangePickerModal styles
-    /* eslint-disable react-native/no-color-literals */
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    calendarSheet: {
-        width: 320,
-        borderRadius: tokens.radius.lg,
-        padding: 16,
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-    },
-    /* eslint-enable react-native/no-color-literals */
-    calendarHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-    },
-    navBtn: {
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-    },
-    monthLabel: {
-        fontWeight: '600',
-    },
-    rangeHint: {
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    dayLabelsRow: {
-        flexDirection: 'row',
-        marginBottom: 4,
-    },
-    daysGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    dayCell: {
-        width: `${100 / 7}%`,
-        aspectRatio: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    },
-    dayRangeBg: {
-        // background set dynamically
-    },
-    dayCellInner: {
-        width: 32,
-        height: 32,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 16,
-    },
-    dayCellSelected: {
-        // borderRadius set above in dayCellInner
-    },
-    dayCellToday: {
-        borderWidth: 1,
-    },
-    rangeConnectorLeft: {
-        position: 'absolute',
-        left: 0,
-        top: '25%',
-        width: '50%',
-        height: '50%',
-    },
-    rangeConnectorRight: {
-        position: 'absolute',
-        right: 0,
-        top: '25%',
-        width: '50%',
-        height: '50%',
-    },
-    calendarFooter: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginTop: 12,
-        gap: 8,
-    },
-    footerBtn: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-    },
-    footerBtnDisabled: {
-        opacity: 0.4,
     },
 });

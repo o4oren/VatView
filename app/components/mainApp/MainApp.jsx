@@ -10,7 +10,6 @@ import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
-import BookingsView from '../BookingsView/BookingsView';
 import * as NavigationBar from 'expo-navigation-bar';
 import {Platform} from 'react-native';
 import analytics from '../../common/analytics';
@@ -138,10 +137,6 @@ export default function mainApp() {
             <Stack.Screen
                 name="Event Details"
                 component={EventDetailsView}
-            />
-            <Stack.Screen
-                name="ATC Bookings"
-                component={BookingsView}
             />
             <Stack.Screen
                 name="Metar"
