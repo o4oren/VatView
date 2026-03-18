@@ -27,6 +27,7 @@
     },
     "ios": {
       "supportsTablet": true,
+      "requireFullScreen": false,
       "bundleIdentifier": "com.gevahim.vatview",
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
