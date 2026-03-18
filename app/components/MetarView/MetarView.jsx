@@ -1,165 +1,266 @@
+/* eslint-disable react-native/no-raw-text */
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Keyboard, Platform, Pressable, ScrollView, StyleSheet, TextInput, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import {Divider, Searchbar, Text} from 'react-native-paper';
 import allActions from '../../redux/actions';
 import {translateCondition, translateCloudCode} from '../../common/metarTools';
-import {LinearGradient} from 'expo-linear-gradient';
-import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
-
-const colors=['#b4becb', '#e1e8f5'];
-const start = { x: 0, y: 0 };
-const end = { x: 1, y: 1 };
+import {useTheme} from '../../common/ThemeProvider';
+import ThemedText from '../shared/ThemedText';
+import {tokens} from '../../common/themeTokens';
 
 export default function MetarView({route}) {
+    const {activeTheme} = useTheme();
+    const insets = useSafeAreaInsets();
     const metar = useSelector(state => state.metar.metar);
-    const airports = useSelector(state => state.staticAirspaceData.airports);
     const [searchTerm, setSearchTerm] = useState('');
     const dispatch = useDispatch();
+
     useEffect(() => {
-        if(route.params && route.params.icao) {
+        if (route?.params?.icao) {
             onChangeSearch(route.params.icao);
         }
-    }, [route.params]);
+    }, [route?.params?.icao]);
 
-    const onChangeSearch = (searchTerm) => {
-        setSearchTerm(searchTerm);
-        if(searchTerm.length === 4) {
-            // Analytics.logEvent('request_METAR', {
-            //     icao: searchTerm,
-            //     purpose: 'Getting METAR',
-            // });
-            dispatch(allActions.metarActions.metarRequsted(searchTerm));
+    const onChangeSearch = (text) => {
+        const normalizedText = text.toUpperCase();
+        setSearchTerm(normalizedText);
+        if (normalizedText.length === 4) {
+            dispatch(allActions.metarActions.metarRequsted(normalizedText));
         }
     };
 
-    const displayClouds = () => {
-        if(!metar.clouds || metar.clouds.length === 0) {
-            return <Text>No clouds</Text>;
-        }
-        return <View>
-            <Text>Clouds:</Text>
-            {metar.clouds.map(layer => {
-                return <Text key={layer.code+layer.base_feet_agl}>{translateCloudCode(layer.code)} at {layer.base_feet_agl} ft AGL</Text>;
-            })}
-        </View>;
-    };
+    const isLoading = searchTerm.length === 4 && Object.keys(metar).length === 0;
+    const hasData = metar && Object.keys(metar).length > 0;
+    const hasRawText = hasData && Boolean(metar.raw_text);
+    const hasObserved = typeof metar?.observed?.toUTCString === 'function';
+    const hasPressure = metar?.barometer?.hg != null && metar?.barometer?.mb != null;
+    const hasTemperature = metar?.temperature?.celsius != null && metar?.temperature?.fahrenheit != null;
+    const hasDewpoint = metar?.dewpoint?.celsius != null && metar?.dewpoint?.fahrenheit != null;
+    const hasWind = metar?.wind?.degrees != null && metar?.wind?.speed_kts != null;
+    const hasVisibility = metar?.visibility?.miles != null;
+    const hasHumidity = metar?.humidity_percent != null;
+    const hasDecodedFields = hasRawText
+        && hasObserved
+        && hasPressure
+        && hasTemperature
+        && hasDewpoint
+        && hasWind
+        && hasVisibility
+        && hasHumidity;
+    const isUnavailable = hasData && !hasRawText;
+    const isParseFailure = hasRawText && !hasDecodedFields;
+    const isFullData = hasDecodedFields;
+    const gustKts = metar?.wind?.gust_kts ?? metar?.wind?.speed_kts;
 
-    const displayConditions = () => {
-        if(!metar.conditions || metar.conditions.length === 0) {
+    const displayMetar = () => {
+        if (searchTerm.length !== 4) {
             return null;
         }
-        return <View>
-            <Text>
-                {metar.conditions.map(cond => {
-                    return translateCondition(cond.code) + ' ';
-                })}
-            </Text>
-        </View>;
+
+        if (isLoading) {
+            return (
+                <ThemedText variant="body-sm" color={activeTheme.text.muted}>
+                    {'Loading...'}
+                </ThemedText>
+            );
+        }
+
+        if (isUnavailable) {
+            return (
+                <ThemedText variant="body-sm" color={activeTheme.text.muted}>
+                    {'METAR unavailable for ' + searchTerm}
+                </ThemedText>
+            );
+        }
+
+        if (isParseFailure) {
+            return (
+                <View>
+                    <View style={[styles.metarCard, {
+                        backgroundColor: activeTheme.surface.elevated,
+                        borderColor: activeTheme.surface.border,
+                    }]}>
+                        <ThemedText variant="data">{metar.raw_text}</ThemedText>
+                    </View>
+                    <ThemedText variant="body-sm" color={activeTheme.text.muted}>
+                        {'Unable to parse METAR string'}
+                    </ThemedText>
+                </View>
+            );
+        }
+
+        if (isFullData) {
+            return (
+                <View>
+                    <View style={[styles.metarCard, {
+                        backgroundColor: activeTheme.surface.elevated,
+                        borderColor: activeTheme.surface.border,
+                    }]}>
+                        <ThemedText variant="data">{metar.raw_text}</ThemedText>
+                    </View>
+
+                    <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                    {metar.conditions && metar.conditions.length > 0 && (
+                        <ThemedText variant="body-sm">
+                            {metar.conditions.map(c => translateCondition(c.code)).join(' ')}
+                        </ThemedText>
+                    )}
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Observed'}</ThemedText>
+                    <ThemedText variant="data">{metar.observed.toUTCString()}</ThemedText>
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Flight conditions'}</ThemedText>
+                    <ThemedText variant="data">{metar.flight_category}</ThemedText>
+
+                    <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Altimeter'}</ThemedText>
+                    <ThemedText variant="data">
+                        {Number(metar.barometer.hg).toFixed(2) + ' inHg / ' + Number(metar.barometer.mb).toFixed(0) + ' mb'}
+                    </ThemedText>
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Temperature'}</ThemedText>
+                    <ThemedText variant="data">
+                        {metar.temperature.celsius + '°C / ' + Number(metar.temperature.fahrenheit).toFixed(0) + '°F'}
+                    </ThemedText>
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Dew point'}</ThemedText>
+                    <ThemedText variant="data">
+                        {metar.dewpoint.celsius + '°C / ' + Number(metar.dewpoint.fahrenheit).toFixed(0) + '°F'}
+                    </ThemedText>
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Wind'}</ThemedText>
+                    <ThemedText variant="data">
+                        {metar.wind.degrees + '° at ' + Number(metar.wind.speed_kts).toFixed(0) + ' kts'}
+                    </ThemedText>
+                    {gustKts !== metar.wind.speed_kts && (
+                        <>
+                            <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Gusts'}</ThemedText>
+                            <ThemedText variant="data">{Number(gustKts).toFixed(0) + ' kts'}</ThemedText>
+                        </>
+                    )}
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Humidity'}</ThemedText>
+                    <ThemedText variant="data">{Number(metar.humidity_percent).toFixed(0) + '%'}</ThemedText>
+
+                    <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                    <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Visibility'}</ThemedText>
+                    <ThemedText variant="data">{metar.visibility.miles + ' sm'}</ThemedText>
+
+                    {metar.ceiling && (
+                        <>
+                            <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Ceiling'}</ThemedText>
+                            <ThemedText variant="data">
+                                {translateCloudCode(metar.ceiling.code) + ' at ' + metar.ceiling.feet_agl + ' ft AGL'}
+                            </ThemedText>
+                        </>
+                    )}
+
+                    {metar.clouds && metar.clouds.length > 0 && (
+                        <View>
+                            <ThemedText variant="caption" color={activeTheme.text.secondary}>{'Clouds'}</ThemedText>
+                            {metar.clouds.map(layer => (
+                                <ThemedText key={layer.code + layer.base_feet_agl} variant="body-sm">
+                                    {translateCloudCode(layer.code) + ' at ' + layer.base_feet_agl + ' ft AGL'}
+                                </ThemedText>
+                            ))}
+                        </View>
+                    )}
+
+                    <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                    <ThemedText variant="caption" color={activeTheme.text.muted}>
+                        {'* The weather information presented in this app is obtained via the VATSIM network API, and is for use only in a simulated flight environment. Do not use for real world aviation or other activities.'}
+                    </ThemedText>
+                </View>
+            );
+        }
+
+        return null;
     };
 
-    function displayMetar() {
-        if(searchTerm.length != 4) {
-            return <View></View>;
-        }
-        if(metar && Object.keys(metar).length > 0) {
+    return (
+        <View style={[styles.container, {backgroundColor: activeTheme.surface.base, paddingTop: insets.top}]}>
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={[styles.searchInput, {
+                        backgroundColor: activeTheme.surface.elevated,
+                        color: activeTheme.text.primary,
+                        borderColor: activeTheme.surface.border,
+                    }]}
+                    placeholder="Airport ICAO"
+                    placeholderTextColor={activeTheme.text.muted}
+                    value={searchTerm}
+                    onChangeText={onChangeSearch}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    returnKeyType="done"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                    clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
+                    maxLength={4}
+                />
+                {Platform.OS !== 'ios' && searchTerm.length > 0 && (
+                    <Pressable
+                        onPress={() => setSearchTerm('')}
+                        style={styles.clearBtn}
+                        accessibilityLabel="Clear search"
+                    >
+                        <ThemedText variant="body" color={activeTheme.text.muted}>{'×'}</ThemedText>
+                    </Pressable>
+                )}
+            </View>
 
-            if(!metar.barometer || !metar.temperature) {
-                return <View style={styles.metarDisplay}>
-                    <Text>Unable to parse METAR String</Text>
-                    <Text>{metar.raw_text}</Text>
-                </View>;
-            }
-
-            return   <View style={styles.metarDisplay}>
-                <Text>{metar.raw_text}</Text>
-                <Divider style={styles.divider}/>
-                <Text>{airports && airports.icao && getAirportsByICAOAsync([metar.icao]) ? getAirportsByICAOAsync([metar.icao]).name : ''}</Text>
-                {displayConditions()}
-                <Text>Observed on {metar.observed.toUTCString()}</Text>
-                <Text>Flight conditions: {metar.flight_category}</Text>
-                <Divider style={styles.divider}/>
-                <Text>Altimeter: {Number(metar.barometer.hg).toFixed(2)} hg / {Number(metar.barometer.mb).toFixed(0)} mb</Text>
-                <Text>Temperature: {metar.temperature.celsius} &#x2103; / {Number(metar.temperature.fahrenheit).toFixed(0)} &#x2109;</Text>
-                <Text>Due Point: {metar.dewpoint.celsius} &#x2103; / {Number(metar.dewpoint.fahrenheit).toFixed(0)} &#x2109;</Text>
-                <View style={styles.line}>
-                    {/*<IconButton*/}
-                    {/*    style={{transform: [{rotate: `${metar.wind.degrees - 180}deg`}],}}*/}
-                    {/*    icon={'navigation'}*/}
-                    {/*/>*/}
-                    <Text style={styles.centeredVertically}>Wind: {metar.wind.degrees} at {Number(metar.wind.speed_kts).toFixed(0)} kts {}</Text>
-                </View>
-                {metar.wind.speed_kts != metar.wind.gust_kts ?
-                    <Text>Gust: {Number(metar.wind.gust_kts).toFixed(0)} kts {}</Text>
-                    : null}
-                <Text>Humidity: {Number(metar.humidity_percent).toFixed(0)}%</Text>
-                <Divider style={styles.divider}/>
-                <Text>Visibility: {metar.visibility.miles} sm</Text>
-                {metar.ceiling ? <Text>Ceiling: {translateCloudCode(metar.ceiling.code)} at {metar.ceiling.feet_agl} ft AGL</Text> : <View />}
-                {displayClouds()}
-                <Divider style={styles.divider}/>
-                <Text>* The weather information presented in this app is obtained via the VATSIM network API, and is for use only in a simulated flight environment. Do not use for real world aviation or other activities.</Text>
-            </View>;
-        }
-        return null;
-    }
-
-    return <LinearGradient
-        colors = {colors}
-        start={start}
-        end={end}
-        style={[styles.container, styles.rotate]}>
-        <View style={styles.searchContainer}>
-            <Searchbar
-                style={styles.textInput}
-                placeholder="Airport ICAO"
-                dense='true'
-                onChangeText={onChangeSearch}
-                value={searchTerm}
-            />
+            <ScrollView style={styles.textArea} contentContainerStyle={styles.scrollContent}>
+                {displayMetar()}
+            </ScrollView>
         </View>
-
-        <ScrollView style={styles.textArea}>
-
-            {displayMetar()}
-
-        </ScrollView>
-    </LinearGradient>;
+    );
 }
 
 const styles = StyleSheet.create({
-    searchContainer: {
-        backgroundColor: '#4d7199',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        padding: 15,
-    },
     container: {
+        flex: 1,
+    },
+    searchContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        position: 'relative',
+    },
+    searchInput: {
+        height: 40,
+        borderRadius: 10,
+        borderWidth: 1,
+        paddingHorizontal: 12,
+        fontSize: 15,
+        fontFamily: tokens.fontFamily.mono,
+    },
+    clearBtn: {
+        position: 'absolute',
+        right: 28,
+        top: 0,
+        bottom: 0,
         justifyContent: 'center',
-        flexDirection: 'column',
-        flex: 1
+        paddingHorizontal: 8,
     },
     textArea: {
-        margin: 20,
-        flex: 1
-    },
-    metarDisplay: {
-        padding: 15
-    },
-    centeredVertically: {
-        alignSelf: 'center'
-    },
-    textInput: {
         flex: 1,
-        borderRadius: 25,
-        maxWidth: 300
+        paddingHorizontal: 16,
     },
-    line: {
-        flexDirection: 'row'
+    scrollContent: {
+        paddingBottom: 24,
+    },
+    metarCard: {
+        borderRadius: 12,
+        borderWidth: 1,
+        marginBottom: 8,
+        padding: 12,
     },
     divider: {
-        marginTop: 5,
-        marginBottom: 5
-    }
+        height: StyleSheet.hairlineWidth,
+        marginVertical: 8,
+    },
 });
+/* eslint-enable react-native/no-raw-text */

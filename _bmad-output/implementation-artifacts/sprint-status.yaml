@@ -81,7 +81,7 @@ development_status:
   epic-5: in-progress
   5-1-pilot-and-controller-list-view: done
   5-2-airport-search-and-details-view: done
-  5-3-metar-weather-view: backlog
+  5-3-metar-weather-view: done
   epic-5-retrospective: optional
 
   # Epic 6: Events, Bookings & Secondary Screens

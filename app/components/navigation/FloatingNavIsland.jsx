@@ -7,10 +7,11 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import analytics from '../../common/analytics';
 
 const TAB_DEFS = [
-    { name: 'Map',      icon: 'map',                  label: 'Map, tab, 1 of 5' },
-    { name: 'List',     icon: 'format-list-bulleted', label: 'List, tab, 2 of 5' },
-    { name: 'Airports', icon: 'airport',              label: 'Airports, tab, 3 of 5' },
-    { name: 'Events',   icon: 'calendar-star',        label: 'Events, tab, 4 of 5' },
+    { name: 'Map',      icon: 'map',                  label: 'Map, tab, 1 of 6' },
+    { name: 'List',     icon: 'format-list-bulleted', label: 'List, tab, 2 of 6' },
+    { name: 'Airports', icon: 'airport',              label: 'Airports, tab, 3 of 6' },
+    { name: 'Metar',    icon: 'weather-cloudy',       label: 'METAR, tab, 4 of 6' },
+    { name: 'Events',   icon: 'calendar-star',        label: 'Events, tab, 5 of 6' },
 ];
 
 const ICON_SIZE = 24;
@@ -56,7 +57,7 @@ export default function FloatingNavIsland({state, navigation}) {
                 style={styles.tabHitTarget}
                 onPress={() => handleTabPress('Settings')}
                 accessibilityRole='tab'
-                accessibilityLabel='Settings, tab, 5 of 5'
+                accessibilityLabel='Settings, tab, 6 of 6'
                 accessibilityState={{ selected: activeRouteName === 'Settings' }}
             >
                 <MaterialCommunityIcons

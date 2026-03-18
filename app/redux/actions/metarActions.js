@@ -5,18 +5,23 @@ export const METAR_UPDATED = 'METAR_UPDATED';
 
 const metarRequsted = (icao) => {
     return async (dispatch) => {
-        console.log('fetching metar data for ' + icao);
+        const requestedIcao = icao.trim().toUpperCase();
+        console.log('fetching metar data for ' + requestedIcao);
         dispatch(metarUpdated({})); // clear the result
         try {
             const response = await fetch(
-                'https://metar.vatsim.net/data/metar.php?id=' + icao
+                'https://metar.vatsim.net/data/metar.php?id=' + requestedIcao
             );
-            let metar = await response.text();
+            const metar = await response.text();
             const metarObject = metarParser(metar);
+            const nextMetar = metarObject && metarObject.raw_text
+                ? metarObject
+                : {icao: requestedIcao};
 
-            dispatch(metarUpdated(metarObject));
+            dispatch(metarUpdated(nextMetar));
         } catch (error) {
             console.log(error);
+            dispatch(metarUpdated({icao: requestedIcao}));
             dispatch({type: DATA_FETCH_ERROR});
         }
     };
