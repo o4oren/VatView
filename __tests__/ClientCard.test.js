@@ -8,6 +8,17 @@ jest.mock('../app/common/ThemeProvider', () => ({
             text: {primary: '#1F2328', secondary: '#656D76', muted: '#8B949E'},
             surface: {base: '#FFFFFF', elevated: 'rgba(255,255,255,0.5)', border: 'rgba(0,0,0,0.08)'},
             accent: {primary: '#2A6BC4'},
+            atc: {
+                badge: {
+                    clearance: '#8b949e',
+                    ground: '#1a7f37',
+                    tower: '#bf8700',
+                    approach: '#2a6bc4',
+                    atis: '#0284c7',
+                    ctr: '#1A7A6E',
+                    fss: '#8250DF',
+                },
+            },
         },
     }),
 }));

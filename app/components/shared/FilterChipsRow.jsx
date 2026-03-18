@@ -11,16 +11,20 @@ const CHIP_DEFS = [
     {key: 'atc', icon: 'radar', label: 'ATC'},
 ];
 
-export default function FilterChipsRow({style, onChipPress}) {
+export default function FilterChipsRow({style, onChipPress, filters: controlledFilters}) {
     const {activeTheme} = useTheme();
-    const filters = useSelector(state => state.app.filters);
+    const storeFilters = useSelector(state => state.app.filters);
     const dispatch = useDispatch();
+    const filters = controlledFilters || storeFilters;
+    const isControlled = Boolean(controlledFilters);
 
     function handlePress(chip) {
-        if (chip.key === 'pilots') {
-            dispatch(allActions.appActions.pilotsFilterClicked());
-        } else {
-            dispatch(allActions.appActions.atcFilterClicked());
+        if (!isControlled) {
+            if (chip.key === 'pilots') {
+                dispatch(allActions.appActions.pilotsFilterClicked());
+            } else {
+                dispatch(allActions.appActions.atcFilterClicked());
+            }
         }
         onChipPress?.(chip, !filters[chip.key]);
     }
@@ -43,7 +47,7 @@ export default function FilterChipsRow({style, onChipPress}) {
                     >
                         <TranslucentSurface
                             rounded="md"
-                            style={[styles.chipSurface, {borderColor, borderWidth: 1}, !isActive && styles.chipInactive]}
+                            style={[styles.chipSurface, styles.chipBorder, {borderColor}, !isActive && styles.chipInactive]}
                         >
                             <MaterialCommunityIcons name={chip.icon} size={16} color={iconColor} />
                             <Text style={[styles.chipLabel, {color: textColor}]}>{chip.label}</Text>
@@ -70,6 +74,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 6,
         gap: 4,
+    },
+    chipBorder: {
+        borderWidth: 1,
     },
     chipInactive: {
         opacity: 0.7,

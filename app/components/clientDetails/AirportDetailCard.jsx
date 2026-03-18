@@ -5,6 +5,8 @@ import {useTheme} from '../../common/ThemeProvider';
 import {useSelector} from 'react-redux';
 import {getAtcBadges} from '../../common/airportBadgeHelper';
 
+/* eslint-disable react-native/no-raw-text */
+
 const ATC_RATINGS = {
     1: 'S1',
     2: 'S2',
@@ -35,12 +37,17 @@ function formatTimeOnline(logonTime) {
     return minutes + 'm';
 }
 
-export default function AirportDetailCard({airport}) {
+export default function AirportDetailCard({
+    airport,
+    trafficCounts: trafficCountsOverride = null,
+    showTraffic = true,
+    showAtc = true,
+}) {
     const {activeTheme} = useTheme();
-    const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc);
-    const trafficCounts = useSelector(state => state.vatsimLiveData.clients.trafficCounts);
+    const airportAtc = useSelector(state => state.vatsimLiveData.clients.airportAtc) || {};
+    const reduxTrafficCounts = useSelector(state => state.vatsimLiveData.clients.trafficCounts) || {};
 
-    const rawControllers = airportAtc[airport.icao] || [];
+    const rawControllers = showAtc ? (airportAtc[airport.icao] || []) : [];
 
     const controllers = [...rawControllers].sort((a, b) => {
         if (a.callsign.endsWith('ATIS')) {
@@ -53,6 +60,7 @@ export default function AirportDetailCard({airport}) {
     const atisEntries = controllers.filter(c => c.callsign.endsWith('ATIS') && c.text_atis && c.text_atis.length > 0);
     const isStaffed = nonAtisControllers.length > 0;
     const badges = getAtcBadges(rawControllers, activeTheme);
+    const atisProviders = atisEntries.filter(entry => entry.name || entry.cid || entry.frequency);
 
     const [metar, setMetar] = useState(null);
 
@@ -78,7 +86,7 @@ export default function AirportDetailCard({airport}) {
         };
     }, [airport.icao]);
 
-    const trafficEntry = trafficCounts[airport.icao];
+    const trafficEntry = trafficCountsOverride || (showTraffic ? reduxTrafficCounts[airport.icao] : null);
     const hasCounts = trafficEntry != null;
     const departures = hasCounts ? trafficEntry.departures : null;
     const arrivals = hasCounts ? trafficEntry.arrivals : null;
@@ -101,31 +109,51 @@ export default function AirportDetailCard({airport}) {
                         ))}
                     </View>
                 )}
-                <View style={styles.trafficRow}>
-                    <ThemedText variant="data-sm" color="#1A7F37">{hasCounts ? '▲ ' + departures : '▲ —'}</ThemedText>
-                    <ThemedText variant="data-sm" color="#CF222E">{hasCounts ? '  ▼ ' + arrivals : '  ▼ —'}</ThemedText>
-                </View>
+                {showTraffic && (
+                    <View style={styles.trafficRow}>
+                        <ThemedText variant="data-sm" color="#1A7F37">{hasCounts ? '▲ ' + departures : '▲ —'}</ThemedText>
+                        <ThemedText variant="data-sm" color="#CF222E">{hasCounts ? '  ▼ ' + arrivals : '  ▼ —'}</ThemedText>
+                    </View>
+                )}
             </View>
 
             {/* Divider */}
             <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
             {/* Section 2: Half — ATC list or unstaffed message */}
-            <View>
-                {!isStaffed && (
-                    <ThemedText variant="body-sm" color={activeTheme.text.muted}>{'No ATC online'}</ThemedText>
-                )}
-                {isStaffed && controllers.map(c => (
-                    <View key={c.key || c.callsign} style={styles.controllerRow}>
-                        <ThemedText variant="data-sm">{c.callsign}</ThemedText>
-                        <View style={styles.controllerNameGroup}>
-                            <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.name}</ThemedText>
-                            <ThemedText variant="data-sm" color={activeTheme.text.muted}>{' (' + c.cid + ')'}</ThemedText>
+            {showAtc ? (
+                <View>
+                    {!isStaffed && (
+                        <ThemedText variant="body-sm" color={activeTheme.text.muted}>{'No ATC online'}</ThemedText>
+                    )}
+                    {nonAtisControllers.map(c => (
+                        <View key={c.key || c.callsign} style={styles.controllerRow}>
+                            <ThemedText variant="data-sm">{c.callsign}</ThemedText>
+                            <View style={styles.controllerNameGroup}>
+                                <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.name}</ThemedText>
+                                <ThemedText variant="data-sm" color={activeTheme.text.muted}>{' (' + c.cid + ')'}</ThemedText>
+                            </View>
+                            <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.frequency}</ThemedText>
                         </View>
-                        <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{c.frequency}</ThemedText>
-                    </View>
-                ))}
-            </View>
+                    ))}
+                    {atisProviders.map(a => (
+                        <View key={(a.key || a.callsign) + '_provider'} style={styles.controllerRow}>
+                            <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{'ATIS'}</ThemedText>
+                            <View style={styles.controllerNameGroup}>
+                                <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{a.name || 'Unknown'}</ThemedText>
+                                {a.cid != null ? (
+                                    <ThemedText variant="data-sm" color={activeTheme.text.muted}>{' (' + a.cid + ')'}</ThemedText>
+                                ) : null}
+                            </View>
+                            <ThemedText variant="data-sm" color={activeTheme.text.secondary}>{a.frequency || ''}</ThemedText>
+                        </View>
+                    ))}
+                </View>
+            ) : (
+                <View>
+                    <ThemedText variant="body-sm" color={activeTheme.text.muted}>{'ATC hidden by filters'}</ThemedText>
+                </View>
+            )}
 
             {/* Divider */}
             <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
@@ -138,7 +166,7 @@ export default function AirportDetailCard({airport}) {
                         <ThemedText variant="data-sm">{metar}</ThemedText>
                     </View>
                 )}
-                {nonAtisControllers.map(c => (
+                {showAtc && nonAtisControllers.map(c => (
                     <View key={(c.key || c.callsign) + '_detail'} style={styles.controllerDetail}>
                         <View style={styles.controllerNameRow}>
                             <ThemedText variant="body-sm">{c.name}</ThemedText>
@@ -160,7 +188,7 @@ export default function AirportDetailCard({airport}) {
                         </View>
                     </View>
                 ))}
-                {atisEntries.map(a => {
+                {showAtc && atisEntries.map(a => {
                     const parts = a.callsign.split('_');
                     const label = parts.length >= 3 ? parts[1] + ' ATIS' : 'ATIS';
                     return (
@@ -174,6 +202,8 @@ export default function AirportDetailCard({airport}) {
         </View>
     );
 }
+
+/* eslint-enable react-native/no-raw-text */
 
 const styles = StyleSheet.create({
     container: {

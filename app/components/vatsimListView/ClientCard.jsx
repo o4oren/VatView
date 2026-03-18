@@ -32,10 +32,16 @@ function LeftSlot({client, activeTheme}) {
             </View>
         );
     }
-    const badge = FACILITY_BADGE[client.facility];
+    let badge = FACILITY_BADGE[client.facility];
+    let facilityShort = facilities[client.facility]?.short ?? '';
+    
+    if (client.facility === TWR_ATIS && typeof client.callsign === 'string' && client.callsign.toUpperCase().endsWith('ATIS')) {
+        badge = { letter: 'A', tokenKey: 'atis' };
+        facilityShort = 'ATIS';
+    }
+    
     const letter = badge?.letter ?? '?';
     const color = badge ? activeTheme.atc.badge[badge.tokenKey] : activeTheme.text.muted;
-    const facilityShort = facilities[client.facility]?.short ?? '';
     return (
         <View style={styles.leftSlotInner}>
             <View style={[styles.facilityBadge, {backgroundColor: color}]}>
