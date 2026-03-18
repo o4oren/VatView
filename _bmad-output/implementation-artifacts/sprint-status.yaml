@@ -88,7 +88,7 @@ development_status:
   epic-6: in-progress
   6-1-events-list-and-event-details: done
   6-2-atc-bookings-list-and-details: done
-  6-3-settings-with-theme-picker: backlog
+  6-3-settings-with-theme-picker: done
   6-4-network-status-about-and-loadingview: backlog
   6-5-remove-react-native-paper-dependency: backlog
   epic-6-retrospective: optional

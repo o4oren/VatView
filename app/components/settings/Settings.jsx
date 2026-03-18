@@ -1,146 +1,249 @@
+/* eslint-disable react-native/no-raw-text */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Linking, Platform, Image} from 'react-native';
-import {List, Checkbox, Text, Divider} from 'react-native-paper';
-import {LinearGradient} from 'expo-linear-gradient';
+import {View, ScrollView, StyleSheet, Linking, Image, Platform} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useSelector} from 'react-redux';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
+import {useTheme} from '../../common/ThemeProvider';
+import ThemedText from '../shared/ThemedText';
+import ThemePicker from '../shared/ThemePicker';
 import {getReleaseTag, FIR_GEOJSON_RELEASE_TAG_KEY, TRACON_RELEASE_TAG_KEY} from '../../common/storageService';
 
-const colors = ['#b4becb', '#e1e8f5'];
-const start = { x: 0, y: 0 };
-const end = { x: 1, y: 1 };
-
 const Settings = () => {
-    const [checked, setChecked] = React.useState(true);
+    const insets = useSafeAreaInsets();
+    const {activeTheme} = useTheme();
+    const liveData = useSelector(state => state.vatsimLiveData);
     const [firGeoJsonReleaseTag, setFirGeoJsonReleaseTag] = useState(null);
     const [traconReleaseTag, setTraconReleaseTag] = useState(null);
 
     useEffect(() => {
-        getReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY).then(setFirGeoJsonReleaseTag);
-        getReleaseTag(TRACON_RELEASE_TAG_KEY).then(setTraconReleaseTag);
+        let isMounted = true;
+        
+        getReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY)
+            .then(tag => {
+                if (isMounted) setFirGeoJsonReleaseTag(tag);
+            })
+            .catch(err => console.warn('Failed to load FIR tag', err));
+            
+        getReleaseTag(TRACON_RELEASE_TAG_KEY)
+            .then(tag => {
+                if (isMounted) setTraconReleaseTag(tag);
+            })
+            .catch(err => console.warn('Failed to load TRACON tag', err));
+            
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
-    return <View style={styles.container}>
-        <LinearGradient
-            colors={colors}
-            start={start}
-            end={end}
-            style={styles.container}>
-            <ScrollView style={styles.textArea}>
-                <View style={styles.aboutHeader}>
-                    <View style={styles.logoRow}>
-                        <View style={styles.aboutTitleBlock}>
-                            <Text variant="titleLarge">VatView</Text>
-                            <Text variant="bodySmall" style={styles.muted}>
-                                Your mobile VATSIM companion
-                            </Text>
-                        </View>
-                        <View style={styles.logoContainer}>
-                            <Image
-                                source={require('../../../assets/icon-256.png')}
-                                style={styles.logo}
-                            />
-                        </View>
+    const rnVersion = Platform.constants?.reactNativeVersion;
+    const rnStr = rnVersion
+        ? `${rnVersion.major}.${rnVersion.minor}.${rnVersion.patch}`
+        : 'N/A';
+
+    const pilotCount = liveData?.clients?.pilots?.length ?? 'N/A';
+    const atcCount = liveData?.clients?.controllerCount ?? 'N/A';
+    const servers = liveData?.servers || [];
+
+    return (
+        <View style={[styles.container, {backgroundColor: activeTheme.surface.base}]}>
+            <ScrollView
+                contentContainerStyle={[
+                    styles.scrollContent,
+                    {paddingTop: insets.top + 12},
+                ]}
+            >
+                {/* Header row: logo + title block */}
+                <View style={styles.headerRow}>
+                    <Image
+                        source={require('../../../assets/icon-256.png')}
+                        style={styles.logo}
+                    />
+                    <View style={styles.titleBlock}>
+                        <ThemedText variant="heading">VatView</ThemedText>
+                        <ThemedText variant="caption" color={activeTheme.text.secondary}>
+                            Your mobile VATSIM companion
+                        </ThemedText>
                     </View>
                 </View>
 
-                <Text variant="bodySmall" style={styles.muted}>
+                <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                {/* Appearance section */}
+                <ThemedText variant="heading" style={styles.sectionHeader}>Appearance</ThemedText>
+                <ThemePicker />
+
+                <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
+
+                {/* About section */}
+                <ThemedText variant="heading" style={styles.sectionHeader}>About</ThemedText>
+                <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.description}>
                     Track live VATSIM traffic, ATC coverage, ATIS, and events — all without leaving the sim. Not affiliated with VATSIM.
-                </Text>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.attributionRow}>
+                    {'Icons by '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://www.flaticon.com/authors/freepik').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        Freepik
+                    </ThemedText>
+                    {' & '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://www.flaticon.com/authors/roundicons').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        Roundicons
+                    </ThemedText>
+                    {' from '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://www.flaticon.com').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        flaticon.com
+                    </ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.attributionRow}>
+                    {'Data from '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://github.com/vatsimnetwork/vatspy-data-project').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        VAT-Spy Data Project
+                    </ThemedText>
+                    {' & '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://github.com/vatsimnetwork/simaware-tracon-project').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        SimAware TRACON Project
+                    </ThemedText>
+                </ThemedText>
 
-                <Divider style={styles.divider} />
+                <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
-                <Text variant="titleSmall">Settings</Text>
-                <List.Item
-                    title="Auto-refresh static data"
-                    description="Auto refresh the app's static data - FIR Boundaries, Airport codes, etc."
-                    left={props => <List.Icon {...props} icon="refresh" />}
-                    right={() =>
-                        <Checkbox
-                            status={checked ? 'checked' : 'unchecked'}
-                            onPress={() => {
-                                setChecked(!checked);
-                            }}
-                        />
-                    }/>
+                {/* Network Status section */}
+                <ThemedText variant="heading" style={styles.sectionHeader}>Network Status</ThemedText>
+                <ThemedText variant="body-sm" style={styles.networkRow}>
+                    {'Pilots: '}
+                    <ThemedText variant="data">{String(pilotCount)}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="body-sm" style={styles.networkRow}>
+                    {'ATC: '}
+                    <ThemedText variant="data">{String(atcCount)}</ThemedText>
+                </ThemedText>
+                {servers.map((server) => (
+                    <ThemedText
+                        key={server.name || server.hostname_or_ip}
+                        variant="caption"
+                        color={activeTheme.text.secondary}
+                        style={styles.serverRow}
+                    >
+                        <ThemedText variant="data-sm">{server.name}</ThemedText>
+                        {'  '}
+                        {server.location}
+                        {'  '}
+                        <ThemedText variant="data-sm">{server.hostname_or_ip}</ThemedText>
+                    </ThemedText>
+                ))}
 
-                <Divider style={styles.divider} />
+                <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
-                <Text variant="titleSmall">Attributions</Text>
-                <Text variant="bodySmall">
-                    <Text>Icons by </Text>
-                    <Text style={styles.link} onPress={() => Linking.openURL('https://www.flaticon.com/authors/freepik')}>Freepik</Text>
-                    <Text> & </Text>
-                    <Text style={styles.link} onPress={() => Linking.openURL('https://www.flaticon.com/authors/roundicons')}>Roundicons</Text>
-                    <Text> from </Text>
-                    <Text style={styles.link} onPress={() => Linking.openURL('https://www.flaticon.com')}>flaticon.com</Text>
-                </Text>
-                <Text variant="bodySmall">
-                    <Text>Data from </Text>
-                    <Text style={styles.link} onPress={() => Linking.openURL('https://github.com/vatsimnetwork/vatspy-data-project')}>VAT-Spy Data Project</Text>
-                    <Text> & </Text>
-                    <Text style={styles.link} onPress={() => Linking.openURL('https://github.com/vatsimnetwork/simaware-tracon-project')}>SimAware TRACON Project</Text>
-                </Text>
+                {/* Version section */}
+                <ThemedText variant="heading" style={styles.sectionHeader}>Version</ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'App: '}
+                    <ThemedText variant="data">{Constants.expoConfig?.version || 'N/A'}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'Expo SDK: '}
+                    <ThemedText variant="data">{Constants.expoConfig?.sdkVersion || 'N/A'}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'React Native: '}
+                    <ThemedText variant="data">{rnStr}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'Update Channel: '}
+                    <ThemedText variant="data">{Updates.channel || 'N/A'}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'Update ID: '}
+                    <ThemedText variant="data">{Updates.updateId || 'N/A'}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'VATSpy Boundaries: '}
+                    <ThemedText variant="data">{firGeoJsonReleaseTag || 'N/A'}</ThemedText>
+                </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
+                    {'TRACON Boundaries: '}
+                    <ThemedText variant="data">{traconReleaseTag || 'N/A'}</ThemedText>
+                </ThemedText>
 
-                <Divider style={styles.divider} />
+                <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
-                <Text variant="titleSmall">Version</Text>
-                <Text variant="bodySmall">App: {Constants.expoConfig?.version}</Text>
-                <Text variant="bodySmall">Expo SDK: {Constants.expoConfig?.sdkVersion}</Text>
-                <Text variant="bodySmall">React Native: {Platform.constants?.reactNativeVersion ?
-                    `${Platform.constants.reactNativeVersion.major}.${Platform.constants.reactNativeVersion.minor}.${Platform.constants.reactNativeVersion.patch}` :
-                    'N/A'}</Text>
-                <Text variant="bodySmall">Update Channel: {Updates.channel || 'N/A'}</Text>
-                <Text variant="bodySmall">Update ID: {Updates.updateId || 'N/A'}</Text>
-                <Text variant="bodySmall">VATSpy Boundaries: {firGeoJsonReleaseTag || 'N/A'}</Text>
-                <Text variant="bodySmall">TRACON Boundaries: {traconReleaseTag || 'N/A'}</Text>
-
-                <Divider style={styles.divider} />
-                <Text variant="bodySmall" style={styles.muted}>© Oren Geva 2021-{new Date().getFullYear()}</Text>
+                <ThemedText variant="caption" color={activeTheme.text.muted} style={styles.copyright}>
+                    {`© Oren Geva 2021–${new Date().getFullYear()}`}
+                </ThemedText>
             </ScrollView>
-        </LinearGradient>
-    </View>;
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
         flex: 1,
     },
-    textArea: {
-        margin: 20,
-        flex: 1
+    scrollContent: {
+        paddingHorizontal: 16,
+        paddingBottom: 32,
     },
-    aboutHeader: {
-        marginTop: 40,
-        marginBottom: 8,
-    },
-    logoRow: {
+    headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    logoContainer: {
-        marginRight: 12,
+        gap: 12,
+        marginBottom: 4,
     },
     logo: {
         width: 48,
         height: 48,
         borderRadius: 10,
-        overflow: 'hidden',
     },
-    aboutTitleBlock: {
+    titleBlock: {
         flex: 1,
     },
-    muted: {
-        opacity: 0.6,
-    },
-    link: {
-        color: 'blue',
-        textDecorationLine: 'underline'
-    },
     divider: {
-        marginVertical: 12
-    }
+        height: 1,
+        marginVertical: 16,
+    },
+    sectionHeader: {
+        marginBottom: 12,
+    },
+    description: {
+        marginBottom: 8,
+    },
+    attributionRow: {
+        marginBottom: 4,
+    },
+    networkRow: {
+        marginBottom: 4,
+    },
+    serverRow: {
+        marginBottom: 2,
+    },
+    versionRow: {
+        marginBottom: 4,
+    },
+    copyright: {
+        textAlign: 'center',
+        marginTop: 8,
+    },
 });
 
 export default Settings;
