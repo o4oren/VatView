@@ -2,7 +2,10 @@
   "expo": {
     "name": "VatView",
     "slug": "vatview",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",

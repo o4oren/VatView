@@ -1313,7 +1313,9 @@ Export: getMarkerImage(aircraftType, sizeVariant) → ImageSource
 
 #### EventCard
 
-**Purpose:** Event list item. Composes on `ListItem`. Banner image + name + date. Active/past states.
+**Purpose:** Event list item. Standalone card (Pressable + Animated.View) matching ListItem visual language. Shows event name (`body` variant), start/end times (`caption`, secondary color), full-width 16:9 banner image with bottom borderRadius. Tapping navigates to Event Details stack screen.
+
+**EventDetailsView:** Stack screen with no native header (`headerShown: false` on Stack). Safe area handled via `useSafeAreaInsets` (`paddingTop: insets.top`). Circular back button (semi-transparent, chevron-left icon) overlaid on top-left of banner — calls `navigation.goBack()`. ScrollView with themed surface card, RenderHtml for description, routes section.
 
 ---
 
@@ -1365,7 +1367,7 @@ Export: getMarkerImage(aircraftType, sizeVariant) → ImageSource
 | **Map view** | No search. Filter chips only. | Visual discovery — keyboard destroys immersion |
 | **List view** | Search field at top | Find pilot/controller by callsign |
 | **Airport view** | Search field at top | Find airport by ICAO/IATA/name |
-| **Events view** | Search/filter field at top | Filter by name/region/date. Slot present Phase 1. |
+| **Events view** | Search field + calendar row below | Search filters by name/ICAO (> 2 chars). Calendar icon opens pure-JS date range picker (two-tap start/end); selected range shown inline beside icon with × clear. Filter uses event-window overlap logic. |
 
 Current `FilterBar.jsx` is split: toggles → floating `FilterChip` on map; search → List view.
 

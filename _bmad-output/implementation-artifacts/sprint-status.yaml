@@ -85,8 +85,8 @@ development_status:
   epic-5-retrospective: optional
 
   # Epic 6: Events, Bookings & Secondary Screens
-  epic-6: backlog
-  6-1-events-list-and-event-details: backlog
+  epic-6: in-progress
+  6-1-events-list-and-event-details: done
   6-2-atc-bookings-list-and-details: backlog
   6-3-settings-with-theme-picker: backlog
   6-4-network-status-about-and-loadingview: backlog
