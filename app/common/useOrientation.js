@@ -10,6 +10,8 @@ function getOrientation() {
  * Returns 'landscape' when width > height, otherwise 'portrait'.
  * Uses Dimensions.addEventListener for reliable updates on rotation,
  * avoiding the known useWindowDimensions delay issue on iOS with React Navigation.
+ * 
+ * @returns {'landscape' | 'portrait'} The current orientation
  */
 export function useOrientation() {
     const [orientation, setOrientation] = useState(getOrientation);
