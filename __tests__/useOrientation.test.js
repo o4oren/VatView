@@ -2,25 +2,34 @@
  * Tests for useOrientation hook.
  */
 
-import {renderHook} from '@testing-library/react-native';
+import {renderHook, act} from '@testing-library/react-native';
+import {Dimensions} from 'react-native';
 
-// Store mock dimensions so they can be changed per test
 let mockWidth = 390;
 let mockHeight = 844;
+let dimensionsChangeCallback = null;
 
-jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
-    __esModule: true,
-    default: () => ({
-        width: mockWidth,
-        height: mockHeight,
-        scale: 1,
-        fontScale: 1,
-    }),
+jest.spyOn(Dimensions, 'get').mockImplementation(() => ({
+    width: mockWidth,
+    height: mockHeight,
+    scale: 1,
+    fontScale: 1,
 }));
+
+jest.spyOn(Dimensions, 'addEventListener').mockImplementation((event, callback) => {
+    dimensionsChangeCallback = callback;
+    return {remove: jest.fn()};
+});
 
 import {useOrientation} from '../app/common/useOrientation';
 
 describe('useOrientation', () => {
+    beforeEach(() => {
+        mockWidth = 390;
+        mockHeight = 844;
+        dimensionsChangeCallback = null;
+    });
+
     it('returns portrait when height > width', () => {
         mockWidth = 390;
         mockHeight = 844;
@@ -40,5 +49,19 @@ describe('useOrientation', () => {
         mockHeight = 500;
         const {result} = renderHook(() => useOrientation());
         expect(result.current).toBe('portrait');
+    });
+
+    it('updates orientation when dimensions change', () => {
+        mockWidth = 390;
+        mockHeight = 844;
+        const {result} = renderHook(() => useOrientation());
+        expect(result.current).toBe('portrait');
+
+        act(() => {
+            mockWidth = 844;
+            mockHeight = 390;
+            dimensionsChangeCallback?.();
+        });
+        expect(result.current).toBe('landscape');
     });
 });
