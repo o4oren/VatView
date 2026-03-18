@@ -27,29 +27,11 @@ const eventsUpdated = (data) => {
 };
 
 const updateData = async (dispatch, getState) => {
-    console.log('fetching vatsim data feed');
     try {
         const response = await fetch(
             'https://data.vatsim.net/v3/vatsim-data.json'
         );
         let json = await response.json();
-
-        // Uncomment to preview a UIR boundary without an active controller (e.g. for UIR development/testing)
-        // json.controllers = [];
-        // json.pilots = [];
-        // json.controllers.push({
-        //     cid: 0,
-        //     name: 'TEMP EURN Preview',
-        //     callsign: 'EURN_FSS',
-        //     frequency: '133.000',
-        //     facility: 1,
-        //     rating: 1,
-        //     server: 'LOCAL',
-        //     visual_range: 0,
-        //     text_atis: [],
-        //     last_updated: new Date().toISOString(),
-        //     logon_time: new Date().toISOString()
-        // });
 
         json.cachedAirports = {
             icao: {},
@@ -96,10 +78,6 @@ const updateData = async (dispatch, getState) => {
 
         // generate the json
         const createJsonObject = (json, clients, airports) => {
-            // console.log('c', clients);
-            // console.log('j', json);
-            // console.log('a', airports);
-
             if(Object.keys(airports).length > 0) {
                 airports.forEach(airport => {
                     if(!json.cachedAirports.icao[airport.icao]) {
@@ -201,8 +179,6 @@ const updateData = async (dispatch, getState) => {
             // get airspace
             const firsTocCache = Object.keys(clients.ctr);
             Array.prototype.push.apply(firsTocCache, Object.keys(clients.fss));
-            // Uncomment alongside the controller injection above to force-cache UIR FIR boundaries for preview
-            // if (!firsTocCache.includes('EURN')) firsTocCache.push('EURN');
             // get also UIR firs
             firsTocCache.forEach(icao => {
                 // if UIR
@@ -251,14 +227,12 @@ const updateData = async (dispatch, getState) => {
         };
 
     } catch (error) {
-        console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };
 
 
 const updateEvents = async (dispatch) => {
-    console.log('fetching events feed');
     try {
         const response = await fetch(
             'https://my.vatsim.net/api/v1/events/all'
@@ -272,7 +246,6 @@ const updateEvents = async (dispatch) => {
 };
 
 const updateBookings = async (dispatch) => {
-    console.log('fetching bookings');
     try {
         // old 'http://vatbook.euroutepro.com/xml2.php'
         const response = await fetch(
@@ -290,7 +263,6 @@ const updateBookings = async (dispatch) => {
         });
         dispatch(bookingsUpdated(atcBookings));
     } catch (error) {
-        console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };

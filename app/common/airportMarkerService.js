@@ -174,5 +174,3 @@ export const getTrafficMarkerImage = (icao, departures, arrivals, zoomBand, acti
     return generateAirportDotWithIcao(color, icao, AIRPORT_MARKER_FONT_REGIONAL, 12, trafficInfo);
 };
 
-// For testing
-export const _testGetCacheSize = () => Object.keys(cache).length;

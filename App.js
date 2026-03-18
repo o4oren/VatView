@@ -77,7 +77,6 @@ export default function App() {
     });
     const [state, setState] = useState({isReady: false});
 
-    // clearStorage();
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();
@@ -134,7 +133,6 @@ export default function App() {
             traconBoundaryLookup: state.traconBoundaryLookup
         }
     };
-    // console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
         <GestureHandlerRootView style={styles.root}>

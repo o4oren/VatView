@@ -9,7 +9,6 @@ export const getDb = async () => {
 };
 
 export const initDb = () => {
-    console.log('Initializing db');
     getDb().then(async (tx) => {
         await tx.runAsync('drop table if exists airports');
         await tx.runAsync('drop table if exists fir_boundaries');

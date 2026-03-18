@@ -46,18 +46,13 @@ export default function mainApp() {
     // Kick start api calls get static data as needed
     useEffect(() => {
         const now = Date.now();
-        // console.log('static', staticAirspaceData);
         if(staticAirspaceData.version == null
             || !airportsLoaded
             || !firBoundariesLoaded
             || staticAirspaceData.version < STATIC_DATA_VERSION
             || Object.keys(staticAirspaceData.firs).length === 0
             || now - staticAirspaceData.lastUpdated > ONE_MONTH) {
-            // console.log('ver', staticAirspaceData.version);
-            // console.log('l', Object.keys(staticAirspaceData.firs).length);
-            // console.log('static', STATIC_DATA_VERSION);
             initDb();
-            console.log('Fetching vatspy static data!');
             dispatch(allActions.appActions.saveAirportsLoaded(false));
             dispatch(allActions.appActions.saveFirBoundariesLoaded(false));
             dispatch(allActions.staticAirspaceDataActions.getBoundaryData);
@@ -80,13 +75,11 @@ export default function mainApp() {
 
 
     function isReady() {
-        console.log("airportsLoaded && firBoundariesLoaded &&  Object.keys(staticAirspaceData.firs).length", airportsLoaded + ' ' + firBoundariesLoaded + ' ' +  Object.keys(staticAirspaceData.firs).length)
-            return airportsLoaded && firBoundariesLoaded && iconsReady && Object.keys(staticAirspaceData.firs).length > 0;
+        return airportsLoaded && firBoundariesLoaded && iconsReady && Object.keys(staticAirspaceData.firs).length > 0;
     }
 
     useEffect(() => {
         if(isReady()) {
-            console.log('starting to get data feed');
             dispatch(allActions.vatsimLiveDataActions.updateData);
             const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 20 * 1000);
             return () => {

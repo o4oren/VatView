@@ -3,7 +3,6 @@ import {
     storeFirBoundariesLoaded,
     storeInitialRegion
 } from '../../common/storageService';
-export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
 export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
@@ -51,13 +50,6 @@ const loadingDb = (loadingDb) => {
             airports: loadingDb.airports,
             firs: loadingDb.firs
         }}
-    };
-};
-
-const initialRegionLoaded = (region) => {
-    return {
-        type: INITIAL_REGION_LOADED,
-        payload: {initialRegion: region}
     };
 };
 
@@ -124,7 +116,6 @@ export default {
     saveFirBoundariesLoaded: saveFirBoundariesLoaded,
     saveAirportsLoaded: saveAirportsLoaded,
     loadingDb: loadingDb,
-    initialRegionLoaded: initialRegionLoaded,
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
