@@ -202,6 +202,3 @@ export const getCurrentAccentColor = () => currentAccentColor;
 export const isInitialized = () => Object.keys(cache).length > 0;
 export { AIRCRAFT_TYPES };
 
-// For testing
-export const _testInjectFillColor = injectFillColor;
-export const _testGetTargetDp = getTargetDp;

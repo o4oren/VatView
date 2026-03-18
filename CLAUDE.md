@@ -95,6 +95,34 @@ Tab screens are wrapped in `FadeScreen` for a 250ms cross-fade transition on foc
 5. On marker tap → dispatch `clientSelected` → bottom sheet opens with `ClientDetails`
 6. Background `checkBoundaryUpdates` compares stored release tags against GitHub latest releases, downloads new files if available (picked up on next cold start)
 
+### Debugging: Injecting a Fake Controller for Local Testing
+
+To preview a UIR/FIR/TRACON boundary without an active online controller (e.g. during development), temporarily inject a fake controller into the live data feed inside `updateData` in `app/redux/actions/vatsimLiveDataActions.js`, right after `let json = await response.json();`:
+
+```js
+// Optionally clear real data to isolate the fake controller:
+json.controllers = [];
+json.pilots = [];
+// Push a fake controller with the desired callsign:
+json.controllers.push({
+    cid: 0,
+    name: 'DEBUG Preview',
+    callsign: 'EURN_FSS',   // change to the callsign you want to test
+    frequency: '133.000',
+    facility: 1,
+    rating: 1,
+    server: 'LOCAL',
+    visual_range: 0,
+    text_atis: [],
+    last_updated: new Date().toISOString(),
+    logon_time: new Date().toISOString()
+});
+// To also force-cache the FIR boundary polygon (after firsTocCache is built):
+// if (!firsTocCache.includes('EURN')) firsTocCache.push('EURN');
+```
+
+Remove before committing. Never leave these lines uncommented in production code.
+
 ### Key Technical Details
 
 - **Maps:** `react-native-maps` with Google Maps; custom blueGrey map style defined in `app/common/theme.js`

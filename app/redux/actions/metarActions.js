@@ -6,7 +6,6 @@ export const METAR_UPDATED = 'METAR_UPDATED';
 const metarRequsted = (icao) => {
     return async (dispatch) => {
         const requestedIcao = icao.trim().toUpperCase();
-        console.log('fetching metar data for ' + requestedIcao);
         dispatch(metarUpdated({})); // clear the result
         try {
             const response = await fetch(
@@ -20,7 +19,6 @@ const metarRequsted = (icao) => {
 
             dispatch(metarUpdated(nextMetar));
         } catch (error) {
-            console.log(error);
             dispatch(metarUpdated({icao: requestedIcao}));
             dispatch({type: DATA_FETCH_ERROR});
         }

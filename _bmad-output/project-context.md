@@ -116,6 +116,25 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **`STATIC_DATA_VERSION`** in `consts.js` must be bumped when static airport/FIR data schema changes — triggers SQLite re-population on next app launch
 - **Airport lookup supports both ICAO and IATA** — `cachedAirports.icao` and `cachedAirports.iata` are separate maps; IATA entries only store `{icao}` as a pointer
 
+#### Debugging: Injecting a Fake Controller for Local Testing
+
+To preview a UIR/FIR/TRACON boundary without a live online controller (e.g. during development or boundary data testing), inject a fake controller into the live data feed in `updateData` (`app/redux/actions/vatsimLiveDataActions.js`) immediately after `let json = await response.json();`:
+
+```js
+json.controllers = [];   // optional: clear real controllers to isolate
+json.pilots = [];        // optional: clear pilots
+json.controllers.push({
+    cid: 0, name: 'DEBUG Preview', callsign: 'EURN_FSS',
+    frequency: '133.000', facility: 1, rating: 1, server: 'LOCAL',
+    visual_range: 0, text_atis: [],
+    last_updated: new Date().toISOString(), logon_time: new Date().toISOString()
+});
+// Also force the boundary polygon into cache (after firsTocCache is built):
+// if (!firsTocCache.includes('EURN')) firsTocCache.push('EURN');
+```
+
+**Remove before committing.** Change the `callsign` to the prefix you want to test.
+
 #### Performance Gotchas
 
 - **Map markers re-render on every live data update (every 20s)** — avoid heavy computations inside marker render functions

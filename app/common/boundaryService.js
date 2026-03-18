@@ -1,5 +1,3 @@
-import * as FileSystem from 'expo-file-system/legacy';
-
 export const fetchLatestRelease = async (owner, repo) => {
     const response = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/releases/latest`,
@@ -18,13 +16,6 @@ export const findAssetUrl = (assets, filename) => {
         throw new Error(`Asset "${filename}" not found in release`);
     }
     return asset.browser_download_url;
-};
-
-export const downloadBoundaryFile = async (url, localPath) => {
-    const response = await fetch(url);
-    const text = await response.text();
-    await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + localPath, text);
-    return text;
 };
 
 export const parseFirGeoJson = (geojson) => {
