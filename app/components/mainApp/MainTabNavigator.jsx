@@ -8,6 +8,7 @@ import VatsimListView from '../vatsimListView/VatsimListView';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
 import Settings from '../settings/Settings';
+import MetarView from '../MetarView/MetarView';
 import FloatingNavIsland from '../navigation/FloatingNavIsland';
 
 function FadeScreen({children}) {
@@ -38,6 +39,7 @@ function ListTab() { return <FadeScreen><VatsimListView /></FadeScreen>; }
 function AirportsTab() { return <FadeScreen><AirportDetailsView /></FadeScreen>; }
 function EventsTab() { return <FadeScreen><VatsimEventsView /></FadeScreen>; }
 function SettingsTab() { return <FadeScreen><Settings /></FadeScreen>; }
+function MetarTab() { return <FadeScreen><MetarView route={{params: {}}} /></FadeScreen>; }
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
@@ -59,6 +61,10 @@ export default function MainTabNavigator() {
         <tab.Screen
             name="Airports"
             component={AirportsTab}
+        />
+        <tab.Screen
+            name="Metar"
+            component={MetarTab}
         />
         <tab.Screen
             name="Events"

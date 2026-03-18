@@ -57,9 +57,10 @@ export default function AirportSearchList({filters = {pilots: true, atc: true}})
             {
                 backgroundColor: activeTheme.surface.elevated,
                 color: activeTheme.text.primary,
+                borderColor: activeTheme.surface.border,
             },
         ],
-    }), [activeTheme.surface.elevated, activeTheme.text.primary]);
+    }), [activeTheme.surface.elevated, activeTheme.text.primary, activeTheme.surface.border]);
 
     // Load active airports when airportAtc changes and search is empty
     useEffect(() => {
@@ -201,6 +202,7 @@ const styles = StyleSheet.create({
     searchInput: {
         height: 40,
         borderRadius: 10,
+        borderWidth: 1,
         paddingHorizontal: 12,
         fontSize: 15,
         fontFamily: tokens.fontFamily.mono,

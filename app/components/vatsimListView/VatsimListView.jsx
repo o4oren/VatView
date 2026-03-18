@@ -118,7 +118,7 @@ export default function VatsimListView() {
 
             <View style={styles.searchContainer}>
                 <TextInput
-                    style={[styles.searchInput, {backgroundColor: searchInputBg, color: searchTextColor}]}
+                    style={[styles.searchInput, {backgroundColor: searchInputBg, color: searchTextColor, borderColor: activeTheme.surface.border}]}
                     placeholder="Search callsign..."
                     placeholderTextColor={activeTheme.text.muted}
                     value={localSearch}
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     searchInput: {
         height: 40,
         borderRadius: 10,
+        borderWidth: 1,
         paddingHorizontal: 12,
         fontSize: 15,
         fontFamily: tokens.fontFamily.mono,

@@ -70,10 +70,11 @@ Stack.Navigator
 │   ├── Map → VatsimMapView (map + bottom sheet for client details)
 │   ├── List → VatsimListView (filterable pilot/ATC list)
 │   ├── Airports → AirportDetailsView
+│   ├── Metar → MetarView (METAR weather search)
 │   ├── Events → VatsimEventsView
 │   └── Settings → Settings (includes About info)
 ├── Network Status (modal screen)
-├── Event Details, ATC Bookings, Metar (stack screens)
+├── Event Details, ATC Bookings, Metar (stack screens — Metar stack screen kept for navigation.navigate('Metar', { icao }) pre-fill from other screens)
 ```
 
 Tab screens are wrapped in `FadeScreen` for a 250ms cross-fade transition on focus.

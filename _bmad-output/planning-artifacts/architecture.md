@@ -215,6 +215,7 @@ npx expo install expo-screen-orientation
 - `FloatingNavIsland` receives `{ state, navigation }` from React Navigation and calls `navigation.navigate(tabName)`; logs `analytics.logEvent('nav_tab_switch', { tab_name })` on press
 - Positioned with `TranslucentSurface` and `useSafeAreaInsets()`; not rendered inside `VatsimMapView`
 - Auto-hide behavior (planned): hides during map pan gestures, reappears on tap/idle
+- **Tabs (6):** Map, List, Airports, Metar, Events, Settings — Metar added as tab in story 5.3 (weather-cloudy icon); also retained as a stack screen for `navigation.navigate('Metar', { icao })` pre-fill from other screens
 - **Affects:** MainTabNavigator (centralized), all tab screens (visual context)
 
 ### Detail Panel Abstraction
