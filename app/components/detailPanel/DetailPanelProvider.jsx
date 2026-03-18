@@ -8,6 +8,8 @@ import analytics from '../../common/analytics';
 import TranslucentSurface from '../../common/TranslucentSurface';
 import {useTheme} from '../../common/ThemeProvider';
 import ClientDetails from '../clientDetails/ClientDetails';
+import {useOrientation} from '../../common/useOrientation';
+import SidePanel from './SidePanel';
 
 const SNAP_POINTS = [155, '50%', '70%'];
 
@@ -65,6 +67,8 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
     const currentIndexRef = useRef(-1);
     const reducedMotion = useReducedMotion();
     const {activeTheme} = useTheme();
+    const orientation = useOrientation();
+    const isLandscape = orientation === 'landscape';
 
     const selectedClient = useSelector(state => state.app.selectedClient);
     const filters = useSelector(state => state.app.filters);
@@ -219,17 +223,28 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
         }
     }, [clients]);
 
-    // Hardware back button (AC5)
+    // Landscape sheetState signalling (AC11)
+    useEffect(() => {
+        if (isLandscape) {
+            onSheetStateChange?.(selectedClient != null ? 'half' : 'closed');
+        }
+    }, [isLandscape, selectedClient, onSheetStateChange]);
+
+    // Hardware back button (AC5 / AC10)
     useEffect(() => {
         const handler = BackHandler.addEventListener('hardwareBackPress', () => {
-            if (currentIndexRef.current !== -1) {
+            if (isLandscape && selectedClient != null) {
+                dispatch(allActions.appActions.clientSelected(null));
+                return true;
+            }
+            if (!isLandscape && currentIndexRef.current !== -1) {
                 sheetRef.current?.close();
                 return true;
             }
             return false;
         });
         return () => handler.remove();
-    }, []);
+    }, [isLandscape, selectedClient, dispatch]);
 
     const open = useCallback((client) => {
         dispatch(allActions.appActions.clientSelected(client));
@@ -255,34 +270,40 @@ export default function DetailPanelProvider({children, onSheetStateChange}) {
     return (
         <DetailPanelContext.Provider value={contextValue}>
             {children}
-            <BottomSheet
-                ref={sheetRef}
-                enablePanDownToClose={true}
-                snapPoints={SNAP_POINTS}
-                index={-1}
-                onChange={handleSheetChange}
-                onAnimate={handleSheetAnimate}
-                animationConfigs={animationConfigs}
-                style={styles.sheet}
-                handleStyle={styles.handleTransparent}
-                handleIndicatorStyle={handleIndicatorStyle}
-                backgroundComponent={null}
-                containerStyle={styles.containerTransparent}
-                accessibilityRole="adjustable"
-            >
-                <BottomSheetScrollView
-                    style={styles.sheetContent}
-                    contentContainerStyle={styles.scrollContent}
+            {isLandscape ? (
+                <SidePanel visible={selectedClient != null} onClose={close}>
+                    <ClientDetails client={selectedClient} fill={true} />
+                </SidePanel>
+            ) : (
+                <BottomSheet
+                    ref={sheetRef}
+                    enablePanDownToClose={true}
+                    snapPoints={SNAP_POINTS}
+                    index={-1}
+                    onChange={handleSheetChange}
+                    onAnimate={handleSheetAnimate}
+                    animationConfigs={animationConfigs}
+                    style={styles.sheet}
+                    handleStyle={styles.handleTransparent}
+                    handleIndicatorStyle={handleIndicatorStyle}
+                    backgroundComponent={null}
+                    containerStyle={styles.containerTransparent}
+                    accessibilityRole="adjustable"
                 >
-                    <TranslucentSurface
-                        opacity={opacity}
-                        rounded="none"
-                        style={styles.translucentSurface}
+                    <BottomSheetScrollView
+                        style={styles.sheetContent}
+                        contentContainerStyle={styles.scrollContent}
                     >
-                        <ClientDetails client={selectedClient} fill={true} />
-                    </TranslucentSurface>
-                </BottomSheetScrollView>
-            </BottomSheet>
+                        <TranslucentSurface
+                            opacity={opacity}
+                            rounded="none"
+                            style={styles.translucentSurface}
+                        >
+                            <ClientDetails client={selectedClient} fill={true} />
+                        </TranslucentSurface>
+                    </BottomSheetScrollView>
+                </BottomSheet>
+            )}
         </DetailPanelContext.Provider>
     );
 }
