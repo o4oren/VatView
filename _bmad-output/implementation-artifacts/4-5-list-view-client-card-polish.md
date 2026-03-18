@@ -1,6 +1,6 @@
 # Story 4.5: List View Client Card Polish
 
-Status: review
+Status: done
 
 ## Story
 
@@ -130,9 +130,16 @@ None.
 - app/common/themeTokens.js (modified — added ctr/fss badge color tokens)
 - app/common/airportBadgeHelper.js (modified — added CTR/FSS badge definitions)
 - app/components/clientDetails/AirportDetailCard.jsx (modified — badge letter color #FFFFFF)
-- _bmad-output/implementation-artifacts/4-5-bottom-sheet-card-polish.md (modified — story tracking)
+- _bmad-output/implementation-artifacts/4-5-list-view-client-card-polish.md (modified — story tracking)
 - _bmad-output/implementation-artifacts/sprint-status.yaml (modified — status updated)
 
 ### Change Log
 
 - 2026-03-18: Implemented Story 4.5 — aircraft type icons in pilot list items, single-letter colored ATC badges with facility label, CTR/FSS badge color tokens, bottom sheet airport badge letters fixed to white
+- 2026-03-18: AI Code Review - Fixed ATIS badge mapping bug and updated test suites. Story marked done.
+
+### Senior Developer Review (AI)
+
+- **Findings:** Found ATIS controllers incorrectly identified as Tower in ClientCard. Test suites (airportBadgeHelper.test.js and ClientCard.test.js) were failing due to missing CTR/FSS coverage and incomplete ThemeProvider mocks.
+- **Fixes Applied:** Updated ATIS detection logic in ClientCard.jsx, expanded test coverage and fixed mocks in `__tests__`.
+- **Outcome:** Approved and marked done.
