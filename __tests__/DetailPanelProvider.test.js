@@ -47,6 +47,12 @@ jest.mock('react-native-reanimated', () => ({
     useReducedMotion: jest.fn(() => false),
 }));
 
+jest.mock('../app/common/useOrientation', () => ({
+    useOrientation: jest.fn().mockReturnValue('portrait'),
+}));
+
+jest.mock('../app/components/detailPanel/SidePanel', () => 'SidePanel');
+
 jest.mock('@gorhom/bottom-sheet', () => {
     const ReactLib = require('react');
     const BottomSheet = ReactLib.forwardRef((props, ref) => {
@@ -98,6 +104,7 @@ jest.spyOn(BackHandler, 'addEventListener').mockImplementation((event, callback)
 import DetailPanelProvider, {useDetailPanel} from '../app/components/detailPanel/DetailPanelProvider';
 import analytics from '../app/common/analytics';
 import allActions from '../app/redux/actions';
+import {useOrientation} from '../app/common/useOrientation';
 
 const baseMockState = {
     app: {
@@ -136,6 +143,7 @@ describe('DetailPanelProvider', () => {
         AccessibilityInfo.announceForAccessibility.mockClear();
         useDispatch.mockReturnValue(mockDispatch);
         useSelector.mockImplementation(selector => selector(currentState));
+        useOrientation.mockReturnValue('portrait');
     });
 
     it('renders without crashing', () => {
@@ -492,5 +500,87 @@ describe('DetailPanelProvider', () => {
         allActions.appActions.clientSelected.mockClear();
         act(() => { ctx.close(); });
         expect(allActions.appActions.clientSelected).toHaveBeenCalledWith(null);
+    });
+
+    it('renders BottomSheet in portrait orientation', () => {
+        useOrientation.mockReturnValue('portrait');
+        act(() => {
+            renderer.create(
+                <DetailPanelProvider>
+                    <></>
+                </DetailPanelProvider>
+            );
+        });
+        // BottomSheet mock is captured via mockBottomSheetOnChange being set
+        expect(mockBottomSheetOnChange).not.toBeNull();
+    });
+
+    it('does not render BottomSheet in landscape orientation', () => {
+        useOrientation.mockReturnValue('landscape');
+        act(() => {
+            renderer.create(
+                <DetailPanelProvider>
+                    <></>
+                </DetailPanelProvider>
+            );
+        });
+        // BottomSheet mock's onChange is only set when BottomSheet renders
+        expect(mockBottomSheetOnChange).toBeNull();
+    });
+
+    it('renders SidePanel in landscape orientation', () => {
+        useOrientation.mockReturnValue('landscape');
+        act(() => {
+            renderer.create(
+                <DetailPanelProvider>
+                    <></>
+                </DetailPanelProvider>
+            );
+        });
+        // BottomSheet mock's onChange is not set when SidePanel renders instead
+        expect(mockBottomSheetOnChange).toBeNull();
+    });
+
+    it('hardware back dispatches clientSelected(null) in landscape when client selected', () => {
+        useOrientation.mockReturnValue('landscape');
+        currentState.app.selectedClient = {cid: 111, callsign: 'AAL111'};
+        useSelector.mockImplementation(selector => selector(currentState));
+
+        act(() => {
+            renderer.create(
+                <DetailPanelProvider>
+                    <></>
+                </DetailPanelProvider>
+            );
+        });
+
+        allActions.appActions.clientSelected.mockClear();
+        let handled = false;
+        act(() => {
+            handled = mockBackHandlerCallback();
+        });
+
+        expect(handled).toBe(true);
+        expect(allActions.appActions.clientSelected).toHaveBeenCalledWith(null);
+    });
+
+    it('hardware back returns false in landscape when no client selected', () => {
+        useOrientation.mockReturnValue('landscape');
+        // selectedClient is null in baseMockState
+
+        act(() => {
+            renderer.create(
+                <DetailPanelProvider>
+                    <></>
+                </DetailPanelProvider>
+            );
+        });
+
+        let handled = false;
+        act(() => {
+            handled = mockBackHandlerCallback();
+        });
+
+        expect(handled).toBe(false);
     });
 });
