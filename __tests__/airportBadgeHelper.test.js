@@ -8,6 +8,8 @@ const darkTheme = {
             tower: '#d29922',
             approach: '#3b7dd8',
             atis: '#0ea5e9',
+            ctr: '#2BA99A',
+            fss: '#A371F7',
         },
     },
 };
@@ -20,6 +22,8 @@ const lightTheme = {
             tower: '#bf8700',
             approach: '#2a6bc4',
             atis: '#0284c7',
+            ctr: '#1A7A6E',
+            fss: '#8250DF',
         },
     },
 };
@@ -138,11 +142,22 @@ describe('getAtcBadges', () => {
         ]);
     });
 
+    it('detects CTR and FSS badges', () => {
+        const atcList = [
+            makeController('EGLL_CTR', 6),
+            makeController('EGLL_FSS', 1),
+        ];
+        const badges = getAtcBadges(atcList, darkTheme);
+        expect(badges).toEqual([
+            { letter: 'E', color: '#2BA99A', key: 'ctr' },
+            { letter: 'F', color: '#A371F7', key: 'fss' },
+        ]);
+    });
+
     it('ignores controllers with unrecognized facility types', () => {
         const atcList = [
             makeController('EGLL_OBS', 0),
-            makeController('EGLL_FSS', 1),
-            makeController('EGLL_CTR', 6),
+            makeController('EGLL_XXX', 99),
         ];
         const badges = getAtcBadges(atcList, darkTheme);
         expect(badges).toEqual([]);
