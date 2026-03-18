@@ -1,10 +1,25 @@
-import {useWindowDimensions} from 'react-native';
+import {useState, useEffect} from 'react';
+import {Dimensions} from 'react-native';
+
+function getOrientation() {
+    const {width, height} = Dimensions.get('window');
+    return width > height ? 'landscape' : 'portrait';
+}
 
 /**
  * Returns 'landscape' when width > height, otherwise 'portrait'.
- * Uses react-native's useWindowDimensions for live updates on rotation.
+ * Uses Dimensions.addEventListener for reliable updates on rotation,
+ * avoiding the known useWindowDimensions delay issue on iOS with React Navigation.
  */
 export function useOrientation() {
-    const {width, height} = useWindowDimensions();
-    return width > height ? 'landscape' : 'portrait';
+    const [orientation, setOrientation] = useState(getOrientation);
+
+    useEffect(() => {
+        const subscription = Dimensions.addEventListener('change', () => {
+            setOrientation(getOrientation());
+        });
+        return () => subscription.remove();
+    }, []);
+
+    return orientation;
 }
