@@ -1,73 +1,57 @@
-import * as React from 'react';
-import {Avatar, ProgressBar, Text} from 'react-native-paper';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
+import React from 'react';
+import {ActivityIndicator, Image, StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
-
-const colors=['#b4becb', '#e1e8f5'];
-const start = { x: 0, y: 0 };
-const end = { x: 1, y: 1 };
+import {useTheme} from '../../common/ThemeProvider';
+import ThemedText from '../shared/ThemedText';
 
 const LoadingView = () => {
-
     const loadingDb = useSelector(state => state.app.loadingDb);
+    const {activeTheme} = useTheme();
 
-    const generateContent = () => {
-        return <View style={styles.paragraph}>
-            {
-                (loadingDb.airports + loadingDb.firs < 17500) ? <View style={styles.progressView}>
-                    <Text style={styles.progressView}>
+    const showProgress = loadingDb.airports + loadingDb.firs < 17500;
+
+    return (
+        <View style={[styles.container, {backgroundColor: activeTheme.surface.base}]}>
+            <Image
+                source={require('../../../assets/icon-256.png')}
+                style={styles.image}
+            />
+            {showProgress && (
+                <View style={styles.progressArea}>
+                    <ThemedText variant="body-sm">
                         Please wait while we prepare airspace data
-                    </Text>
-                    <ProgressBar indeterminate={true} style={styles.progressView}/>
-                </View> : null
-            }
-
-        </View>;
-    };
-
-    return <View style={styles.container}>
-        <LinearGradient
-            colors = {colors}
-            start={start}
-            end={end}
-            style={[styles.container, styles.rotate]}>
-            <SafeAreaView style={styles.textArea}>
-                <Avatar.Image style={styles.image} size={256} source={require('../../../assets/icon-256.png')} />
-                {generateContent()}
-                {/*<Image style={styles.image} source={require('../../../assets/VATSIM_Logo_Official_500px.png')} />*/}
-            </SafeAreaView>
-
-        </LinearGradient>
-    </View>;
+                    </ThemedText>
+                    <ActivityIndicator
+                        color={activeTheme.accent.primary}
+                        style={styles.spinner}
+                    />
+                </View>
+            )}
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
         flex: 1,
-        justifyContent:'center',
+        justifyContent: 'center',
         alignItems: 'center',
-        width: '100%'
-    },
-    textArea: {
-        // margin: 20,
-        // flex: 1
     },
     image: {
-        // flex: 1,
-        maxWidth: 256,
-        maxHeight: 256,
+        width: 256,
+        height: 256,
         resizeMode: 'contain',
         marginTop: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
-    paragraph: {
+    progressArea: {
         padding: 20,
-        margin: 20,
+        marginTop: 20,
+        alignItems: 'center',
     },
-    progressView: {
-        marginHorizontal: -20
-    }
+    spinner: {
+        marginTop: 12,
+    },
 });
+
 export default LoadingView;

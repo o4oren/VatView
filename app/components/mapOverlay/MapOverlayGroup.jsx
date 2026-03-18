@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import FloatingFilterChips from '../filterBar/FloatingFilterChips';
+import FloatingFilterChips from './FloatingFilterChips';
 import StaleIndicator from '../shared/StaleIndicator';
 
 export default function MapOverlayGroup({dataStatus = 'live', sheetState = 'closed'}) {
