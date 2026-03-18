@@ -117,6 +117,12 @@ const tokens = {
         mono: 'JetBrainsMono_400Regular',
         monoMedium: 'JetBrainsMono_500Medium',
     },
+    radius: {
+        sm: 8,
+        md: 12,
+        lg: 16,
+        xl: 24,
+    },
 };
 
 module.exports = { lightTheme, darkTheme, tokens };

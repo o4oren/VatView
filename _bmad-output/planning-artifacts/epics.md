@@ -680,14 +680,19 @@ So that I can discover events and plan my participation.
 **Acceptance Criteria:**
 
 **Given** ThemedText, ListItem, and the theme system are in place
-**When** `VatsimEventsView.jsx` and `EventListItem.jsx` are migrated to NativeWind
-**Then** the events list renders using `EventCard` components composed on the `ListItem` base, showing event name, date, and banner image
-**And** a search/filter field is present at the top of the events view (slot present Phase 1, filtering by name)
+**When** `VatsimEventsView.jsx` and `EventListItem.jsx` are migrated to the new design system
+**Then** the events list renders using `EventCard` components showing event name, start/end times, and banner image
+**And** a search field filters by event name or airport ICAO (> 2 characters, as-you-type)
+**And** a calendar icon below the search field opens a date range picker (pure-JS modal, two-tap start/end selection)
+**And** the selected date range label appears inline to the right of the calendar icon with a `×` clear button
+**And** events are filtered by overlap with the selected range (event window intersects selected range)
 **And** events load on app launch (FR40)
 **And** if events API returns empty, shows "No upcoming events" centered in muted text
-**And** skeleton placeholders (shimmer on `ListItem` shapes) show during load (< 2 seconds)
-**When** `EventDetailsView.jsx` is migrated to NativeWind
+**And** skeleton placeholders show during load (< 2 seconds)
+**When** `EventDetailsView.jsx` is migrated to the new design system
 **Then** tapping an event shows full event details on a translucent surface (FR25)
+**And** a circular back button is overlaid on the top-left of the banner, calling `navigation.goBack()`
+**And** the view is guarded by `useSafeAreaInsets` (`paddingTop: insets.top`) so content clears the status bar
 **And** navigation uses standard React Navigation stack push (slide from right, `duration.normal`)
 **And** all react-native-paper imports are removed from these components
 
