@@ -96,7 +96,7 @@ export default function AirportDetailCard({airport}) {
                                 key={badge.key}
                                 style={[styles.badge, {backgroundColor: badge.color}]}
                             >
-                                <ThemedText variant="caption" color={activeTheme.text.primary}>{badge.letter}</ThemedText>
+                                <ThemedText variant="caption" color="#FFFFFF">{badge.letter}</ThemedText>
                             </View>
                         ))}
                     </View>

@@ -1,12 +1,14 @@
-import { DEL, GND, TWR_ATIS, APP } from './consts';
+import { DEL, GND, TWR_ATIS, APP, CTR, FSS } from './consts';
 
-// Badge definitions in facility hierarchy order: C → G → T → A(approach) → A(atis)
+// Badge definitions in facility hierarchy order: C → G → T → A(approach) → A(atis) → E(ctr) → F(fss)
 const BADGE_DEFS = [
     { facility: DEL, letter: 'C', tokenKey: 'clearance', isAtis: false },
     { facility: GND, letter: 'G', tokenKey: 'ground', isAtis: false },
     { facility: TWR_ATIS, letter: 'T', tokenKey: 'tower', isAtis: false },
     { facility: APP, letter: 'A', tokenKey: 'approach', isAtis: false },
     { facility: TWR_ATIS, letter: 'A', tokenKey: 'atis', isAtis: true },
+    { facility: CTR, letter: 'E', tokenKey: 'ctr', isAtis: false },
+    { facility: FSS, letter: 'F', tokenKey: 'fss', isAtis: false },
 ];
 
 const isAtisCallsign = (callsign) =>

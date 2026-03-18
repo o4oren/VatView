@@ -1,25 +1,49 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {Image, View, StyleSheet} from 'react-native';
 import ListItem from '../shared/ListItem';
 import ThemedText from '../shared/ThemedText';
 import {useTheme} from '../../common/ThemeProvider';
-import {facilities} from '../../common/consts';
+import {DEL, GND, TWR_ATIS, APP, CTR, FSS, facilities} from '../../common/consts';
 
 /* eslint-disable react-native/no-raw-text */
+
+const FACILITY_BADGE = {
+    [DEL]:     { letter: 'C', tokenKey: 'clearance' },
+    [GND]:     { letter: 'G', tokenKey: 'ground' },
+    [TWR_ATIS]:{ letter: 'T', tokenKey: 'tower' },
+    [APP]:     { letter: 'A', tokenKey: 'approach' },
+    [CTR]:     { letter: 'E', tokenKey: 'ctr' },
+    [FSS]:     { letter: 'F', tokenKey: 'fss' },
+};
 
 function LeftSlot({client, activeTheme}) {
     const isPilot = client.facility == null;
     if (isPilot) {
+        if (client.image) {
+            return (
+                <View style={styles.leftSlotInner}>
+                    <Image source={client.image} style={styles.aircraftIcon} resizeMode="contain" />
+                </View>
+            );
+        }
         return (
             <View style={styles.leftSlotInner}>
                 <ThemedText variant="body" color={activeTheme.accent.primary}>✈</ThemedText>
             </View>
         );
     }
-    const facilityShort = facilities[client.facility]?.short ?? '?';
+    const badge = FACILITY_BADGE[client.facility];
+    const letter = badge?.letter ?? '?';
+    const color = badge ? activeTheme.atc.badge[badge.tokenKey] : activeTheme.text.muted;
+    const facilityShort = facilities[client.facility]?.short ?? '';
     return (
         <View style={styles.leftSlotInner}>
-            <ThemedText variant="caption" color={activeTheme.text.muted}>{facilityShort}</ThemedText>
+            <View style={[styles.facilityBadge, {backgroundColor: color}]}>
+                <ThemedText variant="caption" color="#FFFFFF" style={styles.badgeLetter}>{letter}</ThemedText>
+            </View>
+            {facilityShort ? (
+                <ThemedText variant="caption" color={activeTheme.text.muted} style={styles.facilityLabel}>{facilityShort}</ThemedText>
+            ) : null}
         </View>
     );
 }
@@ -66,5 +90,26 @@ const styles = StyleSheet.create({
     leftSlotInner: {
         alignItems: 'center',
         justifyContent: 'center',
+        width: 40,
+        height: 40,
+    },
+    aircraftIcon: {
+        width: 28,
+        height: 28,
+    },
+    facilityBadge: {
+        borderRadius: 3,
+        paddingHorizontal: 5,
+        paddingVertical: 1,
+    },
+    badgeLetter: {
+        fontFamily: 'JetBrainsMono_500Medium',
+        fontSize: 9,
+        fontWeight: '700',
+        lineHeight: 14,
+    },
+    facilityLabel: {
+        marginTop: 2,
+        fontSize: 8,
     },
 });
