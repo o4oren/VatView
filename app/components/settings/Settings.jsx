@@ -159,31 +159,31 @@ const Settings = () => {
                 <ThemedText variant="heading" style={styles.sectionHeader}>Version</ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'App: '}
-                    <ThemedText variant="data">{Constants.expoConfig?.version || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{Constants.expoConfig?.version || 'N/A'}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'Expo SDK: '}
-                    <ThemedText variant="data">{Constants.expoConfig?.sdkVersion || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{Constants.expoConfig?.sdkVersion || 'N/A'}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'React Native: '}
-                    <ThemedText variant="data">{rnStr}</ThemedText>
+                    <ThemedText variant="data-sm">{rnStr}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'Update Channel: '}
-                    <ThemedText variant="data">{Updates.channel || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{Updates.channel || 'N/A'}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'Update ID: '}
-                    <ThemedText variant="data">{Updates.updateId || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{Updates.updateId || 'N/A'}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'VATSpy Boundaries: '}
-                    <ThemedText variant="data">{firGeoJsonReleaseTag || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{firGeoJsonReleaseTag || 'N/A'}</ThemedText>
                 </ThemedText>
                 <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.versionRow}>
                     {'TRACON Boundaries: '}
-                    <ThemedText variant="data">{traconReleaseTag || 'N/A'}</ThemedText>
+                    <ThemedText variant="data-sm">{traconReleaseTag || 'N/A'}</ThemedText>
                 </ThemedText>
 
                 <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
