@@ -48,6 +48,7 @@
 
 - [Development Guide](./development-guide.md) — Setup, run, lint, build (EAS), deploy
 - [Asset Inventory](./asset-inventory.md) — Aircraft icons, ATC icons, app store graphics
+- [Release Notes](./release-notes.md) — Version history and changelogs
 
 ### AI Agent Rules
 
