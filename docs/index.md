@@ -1,90 +1,60 @@
-# VatView — Documentation Index
+---
+layout: default
+title: VatView — Live VATSIM Tracker
+---
 
-> **Primary entry point for AI-assisted development.**
-> Read this index before implementing any feature.
+# VatView
+
+**Live VATSIM tracking for pilots and aviation enthusiasts.**
+
+VatView is a free mobile app for iOS and Android that shows you live [VATSIM](https://vatsim.net) traffic on an interactive map — pilots, ATC controllers, airports, events, and more.
+
+<div align="center">
+  <a href="https://apps.apple.com/us/app/vatview/id1562497035">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" width="200">
+  </a>
+  <br>
+  <a href="https://play.google.com/store/apps/details?id=com.gevahim.vatview">
+    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="230">
+  </a>
+</div>
 
 ---
 
-## Project Overview
+## Features
 
-- **Type:** Monolith mobile app (iOS + Android)
-- **Primary Language:** JavaScript (JSX) — no TypeScript
-- **Architecture:** Component-Redux-Thunk (unidirectional data flow)
-- **App Version:** 1.9.1
-
-## Quick Reference
-
-- **Framework:** React Native 0.74.5 + Expo SDK 51
-- **UI:** react-native-paper v4 (Material Design v2)
-- **State:** Redux 4 + redux-thunk (NOT Redux Toolkit)
-- **Maps:** react-native-maps 1.14.0 (Google Maps)
-- **Database:** expo-sqlite 14
-- **Primary color:** `#2a5d99`
-- **Data refresh:** VATSIM API polled every 20s
-- **Entry point:** `App.js` → `MainApp.jsx` → `MainTabNavigator.jsx`
+- **Live map** — pilots and ATC updated every 20 seconds
+- **Type-specific aircraft icons** — 50+ aircraft types with accurate silhouettes
+- **Real airspace boundaries** — FIR, UIR, and TRACON polygons
+- **Airport detail** — staffed ATC positions and traffic count badges
+- **Progressive disclosure panels** — tap any marker for full flight and ATC info
+- **Events and bookings** — upcoming VATSIM events and ATC schedules
+- **METAR weather** — search any airport for current weather
+- **Light and dark themes**
+- **Landscape orientation support**
 
 ---
 
-## Generated Documentation
+## Screenshots
 
-### Core
-
-- [Project Overview](./project-overview.md) — What the app is and does
-- [Architecture](./architecture.md) — Full architecture: patterns, navigation, data flow, domain model
-- [Technology Stack](./technology-stack.md) — All dependencies with exact versions
-
-### Data & State
-
-- [State Management](./state-management.md) — Redux slices, actions, data flow diagrams
-- [Data Models](./data-models.md) — SQLite schema, AsyncStorage, FileSystem, Redux store shape
-- [API Contracts](./api-contracts.md) — All external VATSIM APIs consumed
-
-### Code Organization
-
-- [Component Inventory](./component-inventory.md) — All 28 UI components + utilities
-- [Source Tree Analysis](./source-tree-analysis.md) — Annotated directory tree with entry points
-
-### Development
-
-- [Development Guide](./development-guide.md) — Setup, run, lint, build (EAS), deploy
-- [Asset Inventory](./asset-inventory.md) — Aircraft icons, ATC icons, app store graphics
-- [Release Notes](./release-notes.md) — Version history and changelogs
-
-### AI Agent Rules
-
-- [Project Context](../_bmad-output/project-context.md) — Critical implementation rules for AI agents
+*Screenshots coming soon.*
 
 ---
 
-## Existing Documentation
+## What is VATSIM?
 
-- [README](../README.md) — Project intro + TODO list
-- [CLAUDE.md](../CLAUDE.md) — Claude Code AI agent instructions
-- [Privacy Policy](./privacy.md) — App privacy policy
+[VATSIM](https://vatsim.net) (Virtual Air Traffic Simulation Network) is a free online platform where flight simulation enthusiasts fly and control air traffic together in real time. VatView lets you watch the network live — even if you're not flying.
 
 ---
 
-## Getting Started
+## Source Available
 
-```bash
-npm install
-npm run android    # or: npm run ios
-npm run lint       # check code style
-```
+VatView's source code is publicly available on GitHub. Contributions are welcome — bug fixes, aircraft type mappings, and other improvements.
 
-For full setup instructions see [Development Guide](./development-guide.md).
+[View on GitHub](https://github.com/o4oren/VatView) · [Release Notes](./release-notes) · [Contributing](https://github.com/o4oren/VatView/blob/master/CONTRIBUTING.md)
 
 ---
 
-## Key Files to Know
+## Privacy & Contact
 
-- `app/common/theme.js` — ALL colors + map style — must use this, never hardcode
-- `app/common/consts.js` — `STATIC_DATA_VERSION` + facility codes — bump version on schema change
-- `app/common/staticDataAcessLayer.js` — SQLite singleton — only DB access layer (note typo in name)
-- `app/redux/actions/index.js` — `allActions` aggregator — import this in components
-- `app/components/mainApp/MainApp.jsx` — Data orchestration + navigation root
-
----
-
-Documentation generated: 2026-03-10 | Scan level: deep
-
+[Privacy Policy](./privacy) · [Contact](mailto:o4orendev@gmail.com)

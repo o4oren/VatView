@@ -1,2 +1,11 @@
-theme: jekyll-theme-minimal
-logo: https://raw.githubusercontent.com/o4oren/VatView/master/graphics/icons/icon-512.png?raw=true
+title: VatView
+description: Live VATSIM tracking on an interactive map — for iOS and Android.
+url: "https://o4oren.github.io"
+baseurl: "/VatView"
+
+theme: jekyll-theme-cayman
+
+logo: /VatView/graphics/icons/icon-512.png
+
+plugins:
+  - jekyll-seo-tag
