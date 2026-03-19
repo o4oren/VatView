@@ -1,3 +1,8 @@
+---
+layout: default
+title: Release Notes — VatView
+---
+
 # VatView Release Notes
 
 ---
