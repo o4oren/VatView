@@ -13,12 +13,12 @@ const AIRCRAFT_TYPES = {
     A320: {
         svgFile: require('../../assets/svg/a320.svg'),
         scale: 0.75,
-        candidates: ['A318', 'A319', 'A320', 'A321', 'A20N', 'A21N', 'A32F', 'A32L', 'A32N', 'A32S', 'T204'],
+        candidates: ['A318', 'A319', 'A320', 'A321', 'A20N', 'A21N', 'A32F', 'A32L', 'A32N', 'A32S', 'T204', 'B752', 'B753', 'B75F'],
     },
     C172: {
         svgFile: require('../../assets/svg/c172.svg'),
         scale: 0.55,
-        candidates: ['C172', 'C182', 'C152', 'C206', 'C208', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40'],
+        candidates: ['C172', 'C182', 'C152', 'C206', 'C208', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
     },
     B747: {
         svgFile: require('../../assets/svg/b747.svg'),
@@ -58,17 +58,22 @@ const AIRCRAFT_TYPES = {
     ERJ: {
         svgFile: require('../../assets/svg/erj.svg'),
         scale: 0.6,
-        candidates: ['E170', 'E175', 'E190', 'CRJ1', 'CRJ2', 'CRJX', 'CR9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'C700', 'F2TH', 'FA50', 'F27', 'F28', 'B721', 'B722'],
+        candidates: ['CRJ1', 'CRJ2', 'CRJ7', 'CRJX', 'CRJ9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'C700', 'C750', 'C650','F2TH', 'FA50', 'F27', 'F28', 'CL60'],
+    },
+    727: {
+        svgFile: require('../../assets/svg/erj.svg'),
+        scale: 0.75,
+        candidates: ['B721', 'B722','T134']
     },
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
         scale: 0.65,
-        candidates: ['E195', 'E95'],
+        candidates: ['E195', 'E95', 'E170', 'E175', 'E190'],
     },
     DC3: {
         svgFile: require('../../assets/svg/dc3.svg'),
         scale: 0.6,
-        candidates: ['DC3', 'C47', 'PA34', 'B300', 'B200'],
+        candidates: ['DC3', 'C47', 'PA34', 'B300', 'B200', 'BE58', 'DH8D', 'DH8A'],
     },
     Helicopter: {
         svgFile: require('../../assets/svg/helicopter.svg'),

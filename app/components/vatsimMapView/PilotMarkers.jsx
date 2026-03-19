@@ -9,6 +9,15 @@ import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
 const isAndroid = Platform.OS === 'android';
 
+// ANDROID WORKAROUND: Native Google Maps markers can leave ghost bitmaps at
+// old positions when react-native-maps updates coordinates with
+// tracksViewChanges={false}. Including a coarse coordinate hash in the React
+// key forces a full native remount only when the pilot has moved ≥ ~1 km,
+// clearing any stale overlay without the cost of remounting every frame.
+const coordKey = isAndroid
+    ? (lat, lng) => `${Math.round(lat * 100)}_${Math.round(lng * 100)}`
+    : () => '';
+
 export const pilotMarkerItemPropsEqual = (prev, next) =>
     prev.pilot.key === next.pilot.key &&
     prev.pilot.latitude === next.pilot.latitude &&
@@ -86,8 +95,12 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
             const pilotImage = pilot.image || mapIcons.B737;
             const pilotImageSize = pilot.image ? pilot.imageSize : defaultImageSize;
 
+            const markerKey = isAndroid
+                ? `${pilot.key}_${coordKey(pilot.latitude, pilot.longitude)}`
+                : pilot.key;
+
             return <PilotMarkerItem
-                key={pilot.key}
+                key={markerKey}
                 pilot={pilot}
                 pilotImage={pilotImage}
                 pilotImageSize={pilotImageSize}
