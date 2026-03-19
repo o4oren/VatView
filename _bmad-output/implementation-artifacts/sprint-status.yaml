@@ -97,5 +97,5 @@ development_status:
   epic-7: in-progress
   7-1-unlock-orientation-and-responsive-detection: done
   7-2-sidepanel-landscape-detail-container: done
-  7-3-responsive-mapoverlaygroup-and-floating-elements: ready-for-dev
+  7-3-responsive-mapoverlaygroup-and-floating-elements: done
   epic-7-retrospective: optional

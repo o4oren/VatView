@@ -147,6 +147,9 @@ export const invalidateCache = () => {
     currentThemeKey = null;
 };
 
+// Test-only export
+export const _testGetCacheSize = () => Object.keys(cache).length;
+
 export const getStaffedMarkerImage = (icao, zoomBand, activeTheme, trafficInfo = null) => {
     const themeKey = getThemeKey(activeTheme);
     if (themeKey !== currentThemeKey) {

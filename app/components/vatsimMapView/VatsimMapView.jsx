@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import MapComponent from './MapComponent';
 import MapOverlayGroup from '../mapOverlay/MapOverlayGroup';
 import DetailPanelProvider, {requestDismiss} from '../detailPanel/DetailPanelProvider';
+import {useOrientation} from '../../common/useOrientation';
 
 function getDataStatus(general) {
     if (!general || !general.update_timestamp) {
@@ -22,6 +23,9 @@ export default function VatsimMapView() {
     const dataStatus = useMemo(() => getDataStatus(general), [general]);
     const dispatch = useDispatch();
     const [sheetState, setSheetState] = useState('closed');
+    const orientation = useOrientation();
+
+    const sidePanelVisible = orientation === 'landscape' && sheetState !== 'closed';
 
     const handleMapPress = useCallback((event) => {
         if (event?.nativeEvent?.action === 'marker-press') {
@@ -39,7 +43,12 @@ export default function VatsimMapView() {
                 <View style={StyleSheet.absoluteFillObject} nativeID='map-content'>
                     <MapComponent onMapPress={handleMapPress} />
                 </View>
-                <MapOverlayGroup dataStatus={dataStatus} sheetState={sheetState} />
+                <MapOverlayGroup
+                    dataStatus={dataStatus}
+                    sheetState={sheetState}
+                    orientation={orientation}
+                    sidePanelVisible={sidePanelVisible}
+                />
             </DetailPanelProvider>
         </View>
     );
