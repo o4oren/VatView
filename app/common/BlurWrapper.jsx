@@ -4,15 +4,15 @@ import {BlurView} from 'expo-blur';
 import {useTheme} from './ThemeProvider';
 import {tokens} from './themeTokens';
 
-function getBgColor(opacity, activeTheme) {
+function getBgColor(opacity, activeTheme, isAndroid) {
     switch (opacity) {
         case 'surface-dense':
-            return activeTheme.surface.elevatedDense;
+            return isAndroid ? activeTheme.surface.elevatedDenseAndroid : activeTheme.surface.elevatedDense;
         case 'overlay':
             return activeTheme.surface.overlay;
         case 'surface':
         default:
-            return activeTheme.surface.elevated;
+            return isAndroid ? activeTheme.surface.elevatedAndroid : activeTheme.surface.elevated;
     }
 }
 
@@ -29,7 +29,7 @@ export default function BlurWrapper({
     ...props
 }) {
     const {isDark, activeTheme} = useTheme();
-    const backgroundColor = getBgColor(opacity, activeTheme);
+    const backgroundColor = getBgColor(opacity, activeTheme, Platform.OS === 'android');
 
     if (Platform.OS === 'ios') {
         return (

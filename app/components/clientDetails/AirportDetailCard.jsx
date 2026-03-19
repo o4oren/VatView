@@ -166,6 +166,16 @@ export default function AirportDetailCard({
                         <ThemedText variant="data-sm">{metar}</ThemedText>
                     </View>
                 )}
+                {showAtc && atisEntries.map(a => {
+                    const parts = a.callsign.split('_');
+                    const label = parts.length >= 3 ? parts[1] + ' ATIS' : 'ATIS';
+                    return (
+                        <View key={a.key || a.callsign} style={styles.atisSection}>
+                            <ThemedText variant="caption" color={activeTheme.text.secondary}>{label}</ThemedText>
+                            <ThemedText variant="data-sm">{a.text_atis.join('\n')}</ThemedText>
+                        </View>
+                    );
+                })}
                 {showAtc && nonAtisControllers.map(c => (
                     <View key={(c.key || c.callsign) + '_detail'} style={styles.controllerDetail}>
                         <View style={styles.controllerNameRow}>
@@ -173,6 +183,10 @@ export default function AirportDetailCard({
                             <ThemedText variant="caption" color={activeTheme.text.muted}>{' (' + c.cid + ')'}</ThemedText>
                         </View>
                         <View style={styles.dataGrid}>
+                            <View style={styles.dataField}>
+                                <ThemedText variant="caption" color={activeTheme.text.secondary}>{'CALLSIGN'}</ThemedText>
+                                <ThemedText variant="data">{c.callsign}</ThemedText>
+                            </View>
                             {ATC_RATINGS[c.rating] && (
                                 <View style={styles.dataField}>
                                     <ThemedText variant="caption" color={activeTheme.text.secondary}>{'RATING'}</ThemedText>
@@ -186,18 +200,14 @@ export default function AirportDetailCard({
                                 </View>
                             )}
                         </View>
+                        {c.text_atis && c.text_atis.length > 0 && (
+                            <View style={styles.atisSection}>
+                                <ThemedText variant="caption" color={activeTheme.text.secondary}>{'ATIS'}</ThemedText>
+                                <ThemedText variant="data-sm">{c.text_atis.join('\n')}</ThemedText>
+                            </View>
+                        )}
                     </View>
                 ))}
-                {showAtc && atisEntries.map(a => {
-                    const parts = a.callsign.split('_');
-                    const label = parts.length >= 3 ? parts[1] + ' ATIS' : 'ATIS';
-                    return (
-                        <View key={a.key || a.callsign} style={styles.atisSection}>
-                            <ThemedText variant="caption" color={activeTheme.text.secondary}>{label}</ThemedText>
-                            <ThemedText variant="data-sm">{a.text_atis.join('\n')}</ThemedText>
-                        </View>
-                    );
-                })}
             </View>
         </View>
     );
