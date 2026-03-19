@@ -8,6 +8,8 @@ const lightTheme = {
         elevatedDense: 'rgba(255, 255, 255, 0.70)',
         overlay: 'rgba(255, 255, 255, 0.90)',
         border: 'rgba(0, 0, 0, 0.08)',
+        elevatedAndroid: 'rgba(255, 255, 255, 0.82)',
+        elevatedDenseAndroid: 'rgba(255, 255, 255, 0.92)',
     },
     text: {
         primary: '#1F2328',
@@ -59,6 +61,8 @@ const darkTheme = {
         elevatedDense: 'rgba(22, 27, 34, 0.65)',
         overlay: 'rgba(22, 27, 34, 0.85)',
         border: 'rgba(255, 255, 255, 0.08)',
+        elevatedAndroid: 'rgba(22, 27, 34, 0.82)',
+        elevatedDenseAndroid: 'rgba(22, 27, 34, 0.92)',
     },
     text: {
         primary: '#E6EDF3',
