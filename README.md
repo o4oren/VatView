@@ -54,7 +54,13 @@ This app uses Firebase (Crashlytics, Analytics) and Google Maps. The config file
 - `GoogleService-Info.plist` — iOS Firebase config (place in project root)
 - A Google Maps API key configured in `app.config.js`
 
-For contributors: create a free Firebase project at [console.firebase.google.com](https://console.firebase.google.com), download the config files for your app, and place them in the project root. They are gitignored and will not be committed.
+For contributors: create a free Firebase project at [console.firebase.google.com](https://console.firebase.google.com), download the config files for your app, and place them in the project root. Also create a `.env.local` file in the project root with your Google Maps API key:
+
+```
+GOOGLE_MAPS_API_KEY=your_key_here
+```
+
+All these files are gitignored and will not be committed.
 
 ### Production Builds (EAS)
 
