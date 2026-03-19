@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Linking, Image, Platform} from 'react-native';
+import {View, ScrollView, StyleSheet, Linking, Image, Platform, Pressable} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 import Constants from 'expo-constants';
@@ -8,11 +8,12 @@ import * as Updates from 'expo-updates';
 import {useTheme} from '../../common/ThemeProvider';
 import ThemedText from '../shared/ThemedText';
 import ThemePicker from '../shared/ThemePicker';
+import {tokens} from '../../common/themeTokens';
 import {getReleaseTag, FIR_GEOJSON_RELEASE_TAG_KEY, TRACON_RELEASE_TAG_KEY} from '../../common/storageService';
 
 const Settings = () => {
     const insets = useSafeAreaInsets();
-    const {activeTheme} = useTheme();
+    const {activeTheme, largeFonts, toggleLargeFonts} = useTheme();
     const liveData = useSelector(state => state.vatsimLiveData);
     const [firGeoJsonReleaseTag, setFirGeoJsonReleaseTag] = useState(null);
     const [traconReleaseTag, setTraconReleaseTag] = useState(null);
@@ -73,6 +74,35 @@ const Settings = () => {
                 {/* Appearance section */}
                 <ThemedText variant="heading" style={styles.sectionHeader}>Appearance</ThemedText>
                 <ThemePicker />
+
+                <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.fontSizeLabel}>
+                    Font size
+                </ThemedText>
+                <View style={styles.chipRow}>
+                    {[{label: 'Default', value: false}, {label: 'Larger', value: true}].map(opt => {
+                        const isActive = opt.value === largeFonts;
+                        const borderColor = isActive ? activeTheme.accent.primary : activeTheme.surface.border;
+                        const textColor = isActive ? activeTheme.text.primary : activeTheme.text.secondary;
+                        return (
+                            <Pressable
+                                key={opt.label}
+                                onPress={() => toggleLargeFonts(opt.value)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`${opt.label} font size`}
+                                accessibilityState={{selected: isActive}}
+                                style={[
+                                    styles.chipBase,
+                                    isActive ? styles.chipActive : styles.chipInactive,
+                                    {borderColor},
+                                ]}
+                            >
+                                <ThemedText variant="body-sm" color={textColor}>
+                                    {opt.label}
+                                </ThemedText>
+                            </Pressable>
+                        );
+                    })}
+                </View>
 
                 <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
@@ -224,6 +254,27 @@ const styles = StyleSheet.create({
     },
     sectionHeader: {
         marginBottom: 12,
+    },
+    fontSizeLabel: {
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    chipRow: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    chipBase: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: tokens.radius.md,
+    },
+    chipActive: {
+        borderWidth: 1.5,
+        backgroundColor: 'transparent',
+    },
+    chipInactive: {
+        borderWidth: 1,
+        opacity: 0.6,
     },
     description: {
         marginBottom: 8,

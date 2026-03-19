@@ -60,14 +60,28 @@ const VARIANT_STYLES = StyleSheet.create({
     },
 });
 
+const FONT_SCALE = 1.20;
+
+const LARGE_VARIANT_STYLES = StyleSheet.create(
+    Object.fromEntries(
+        Object.entries(VARIANT_STYLES).map(([key, val]) => [
+            key,
+            {fontSize: Math.round(val.fontSize * FONT_SCALE), lineHeight: Math.round(val.lineHeight * FONT_SCALE)},
+        ])
+    )
+);
+
 export default function ThemedText({variant = 'body', color, style, ...props}) {
-    const {activeTheme} = useTheme();
+    const {activeTheme, largeFonts} = useTheme();
     const resolvedColor = color ?? activeTheme.text.primary;
     const variantStyle = VARIANT_STYLES[variant] || VARIANT_STYLES.body;
+    const scaledOverride = largeFonts
+        ? LARGE_VARIANT_STYLES[variant] || LARGE_VARIANT_STYLES.body
+        : undefined;
 
     return (
         <Text
-            style={[variantStyle, {color: resolvedColor}, style]}
+            style={[variantStyle, scaledOverride, {color: resolvedColor}, style]}
             accessibilityRole="text"
             {...props}
         />
