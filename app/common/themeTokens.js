@@ -47,6 +47,9 @@ const lightTheme = {
         offline: '#8B949E',
         stale: '#BF8700',
     },
+    pilot: {
+        listIcon: '#2A6BC4',
+    },
 };
 
 const darkTheme = {
@@ -94,6 +97,9 @@ const darkTheme = {
         online: '#3FB950',
         offline: '#484F58',
         stale: '#D29922',
+    },
+    pilot: {
+        listIcon: '#5BA0E6',
     },
 };
 

@@ -14,25 +14,33 @@ import ClientCard from './ClientCard';
 import ScheduledCard from './ScheduledCard';
 import DatePickerModal from '../shared/DatePickerModal';
 import allActions from '../../redux/actions';
-import {CTR} from '../../common/consts';
+import {CTR, getFacilityRank} from '../../common/consts';
 
 const aggregatedClients = (clients, filters) => {
-    let result = [];
+    const atc = [];
+    const pilots = [];
 
     if (filters.atc) {
         if (clients.airportAtc) {
-            Object.values(clients.airportAtc).forEach(arr => result.push(...arr));
+            Object.values(clients.airportAtc).forEach(arr => atc.push(...arr));
         }
         if (clients.ctr) {
-            Object.values(clients.ctr).forEach(arr => result.push(...arr));
+            Object.values(clients.ctr).forEach(arr => atc.push(...arr));
         }
     }
 
     if (filters.pilots) {
-        result.push(...clients.pilots);
+        pilots.push(...clients.pilots);
     }
 
-    result.sort((a, b) => (a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0));
+    atc.sort((a, b) => {
+        const rankDiff = getFacilityRank(a) - getFacilityRank(b);
+        if (rankDiff !== 0) return rankDiff;
+        return a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0;
+    });
+    pilots.sort((a, b) => (a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0));
+
+    const result = [...atc, ...pilots];
 
     if (filters.searchQuery.trim()) {
         const q = filters.searchQuery.toLowerCase().trim();
