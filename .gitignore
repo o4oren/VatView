@@ -17,6 +17,8 @@ app.json.prod
 # app.json
 
 vatviewanalytics-9902e6a01566.json
+google-services.json
+GoogleService-Info.plist
 /.java-version
 /amazon-corretto-11-x64-linux-jdk.tar.gz
 
