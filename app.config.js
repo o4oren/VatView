@@ -1,5 +1,16 @@
-const { writeFileSync } = require('fs');
+const { writeFileSync, existsSync } = require('fs');
 const { resolve } = require('path');
+
+// Load local env file for development (gitignored, not present in CI/EAS)
+const envLocalPath = resolve(__dirname, '.env.local');
+if (existsSync(envLocalPath)) {
+    require('fs').readFileSync(envLocalPath, 'utf8')
+        .split('\n')
+        .forEach(line => {
+            const [key, ...rest] = line.split('=');
+            if (key && rest.length) process.env[key.trim()] = rest.join('=').trim();
+        });
+}
 
 // Write Firebase config files from EAS secrets at build time.
 // Locally, fall back to the files on disk if env vars are not set.
