@@ -6,6 +6,7 @@ import {lightTheme, darkTheme} from './themeTokens';
 import {lightMapStyle, darkMapStyle} from './theme';
 
 const THEME_PREFERENCE_KEY = 'themePreference';
+const LARGE_FONTS_KEY = 'largeFonts';
 
 const ThemeContext = createContext(null);
 
@@ -13,12 +14,19 @@ export default function ThemeProvider({children}) {
     const systemColorScheme = useColorScheme();
     const {setColorScheme} = useNativeWindColorScheme();
     const [themePreference, setThemePreference] = useState('system');
+    const [largeFonts, setLargeFonts] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         async function loadPreference() {
             try {
-                const saved = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
+                const [saved, savedLargeFonts] = await Promise.all([
+                    AsyncStorage.getItem(THEME_PREFERENCE_KEY),
+                    AsyncStorage.getItem(LARGE_FONTS_KEY),
+                ]);
+                if (savedLargeFonts === 'true') {
+                    setLargeFonts(true);
+                }
                 if (saved === 'light' || saved === 'dark' || saved === 'system') {
                     setThemePreference(saved);
                     const resolvedIsDark = saved === 'system'
@@ -60,13 +68,25 @@ export default function ThemeProvider({children}) {
         }
     }, []);
 
+    const toggleLargeFonts = useCallback(async (enabled) => {
+        if (typeof enabled !== 'boolean') return;
+        setLargeFonts(enabled);
+        try {
+            await AsyncStorage.setItem(LARGE_FONTS_KEY, enabled ? 'true' : 'false');
+        } catch (err) {
+            // Persistence failed — setting still works in memory
+        }
+    }, []);
+
     const value = useMemo(() => ({
         isDark,
         activeTheme: isDark ? darkTheme : lightTheme,
         activeMapStyle: isDark ? darkMapStyle : lightMapStyle,
         themePreference,
         toggleTheme,
-    }), [isDark, themePreference, toggleTheme]);
+        largeFonts,
+        toggleLargeFonts,
+    }), [isDark, themePreference, toggleTheme, largeFonts, toggleLargeFonts]);
 
     return (
         <ThemeContext.Provider value={value}>
