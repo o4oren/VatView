@@ -28,7 +28,7 @@ function LeftSlot({client, activeTheme}) {
         }
         return (
             <View style={styles.leftSlotInner}>
-                <ThemedText variant="body" color={activeTheme.accent.primary}>✈</ThemedText>
+                <ThemedText variant="body" color={activeTheme.pilot.listIcon}>✈</ThemedText>
             </View>
         );
     }

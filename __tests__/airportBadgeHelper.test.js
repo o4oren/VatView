@@ -66,11 +66,11 @@ describe('getAtcBadges', () => {
         ];
         const badges = getAtcBadges(atcList, darkTheme);
         expect(badges).toHaveLength(2);
-        expect(badges[0]).toEqual({ letter: 'T', color: '#d29922', key: 'tower' });
-        expect(badges[1]).toEqual({ letter: 'A', color: '#0ea5e9', key: 'atis' });
+        expect(badges[0]).toEqual({ letter: 'A', color: '#0ea5e9', key: 'atis' });
+        expect(badges[1]).toEqual({ letter: 'T', color: '#d29922', key: 'tower' });
     });
 
-    it('returns badges in facility hierarchy order (C, G, T, A-approach, A-atis)', () => {
+    it('returns badges in display order (ATIS, DEL, GND, TWR, APP)', () => {
         const atcList = [
             makeController('EGLL_APP', 5),
             makeController('EGLL_ATIS', 4),
@@ -80,7 +80,7 @@ describe('getAtcBadges', () => {
         ];
         const badges = getAtcBadges(atcList, darkTheme);
         expect(badges.map(b => b.key)).toEqual([
-            'clearance', 'ground', 'tower', 'approach', 'atis',
+            'atis', 'clearance', 'ground', 'tower', 'approach',
         ]);
     });
 

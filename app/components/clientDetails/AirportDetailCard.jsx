@@ -4,6 +4,7 @@ import ThemedText from '../shared/ThemedText';
 import {useTheme} from '../../common/ThemeProvider';
 import {useSelector} from 'react-redux';
 import {getAtcBadges} from '../../common/airportBadgeHelper';
+import {getFacilityRank} from '../../common/consts';
 
 /* eslint-disable react-native/no-raw-text */
 
@@ -50,10 +51,9 @@ export default function AirportDetailCard({
     const rawControllers = showAtc ? (airportAtc[airport.icao] || []) : [];
 
     const controllers = [...rawControllers].sort((a, b) => {
-        if (a.callsign.endsWith('ATIS')) {
-            return 1;
-        }
-        return b.facility - a.facility;
+        const rankDiff = getFacilityRank(a) - getFacilityRank(b);
+        if (rankDiff !== 0) return rankDiff;
+        return a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0;
     });
 
     const nonAtisControllers = controllers.filter(c => !c.callsign.endsWith('ATIS'));
