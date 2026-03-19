@@ -68,7 +68,7 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Progressive Disclosure Detail Panels
-  epic-4: in-progress
+  epic-4: done
   4-1-detailpanelprovider-bottom-sheet-abstraction: done
   4-2-pilot-detail-three-level-progressive-disclosure: done
   4-2-1-refactor-pilot-detail-single-card: done
@@ -78,14 +78,14 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: List, Airport & Search Views
-  epic-5: in-progress
+  epic-5: done
   5-1-pilot-and-controller-list-view: done
   5-2-airport-search-and-details-view: done
   5-3-metar-weather-view: done
   epic-5-retrospective: optional
 
   # Epic 6: Events, Bookings & Secondary Screens
-  epic-6: in-progress
+  epic-6: done
   6-1-events-list-and-event-details: done
   6-2-atc-bookings-list-and-details: done
   6-3-settings-with-theme-picker: done
@@ -94,7 +94,7 @@ development_status:
   epic-6-retrospective: optional
 
   # Epic 7: Landscape Orientation & Responsive Layout
-  epic-7: in-progress
+  epic-7: done
   7-1-unlock-orientation-and-responsive-detection: done
   7-2-sidepanel-landscape-detail-container: done
   7-3-responsive-mapoverlaygroup-and-floating-elements: done
