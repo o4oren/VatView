@@ -4,9 +4,9 @@ import {useReducedMotion} from 'react-native-reanimated';
 import TranslucentSurface from '../../common/TranslucentSurface';
 import {tokens} from '../../common/themeTokens';
 
-const PANEL_WIDTH_PHONE = 360;
-const PANEL_WIDTH_TABLET = 400;
-const TABLET_WIDTH_THRESHOLD = 768;
+export const PANEL_WIDTH_PHONE = 360;
+export const PANEL_WIDTH_TABLET = 400;
+export const TABLET_WIDTH_THRESHOLD = 768;
 
 export default function SidePanel({visible, children}) {
     const {width} = useWindowDimensions();
