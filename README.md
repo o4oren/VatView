@@ -27,9 +27,7 @@ VatView is a cross-platform mobile app for tracking live [VATSIM](https://vatsim
 
 ## Documentation
 
-See the [docs folder](./docs/index.md) for full architecture, component inventory, and development guide.
-
-[Release Notes](./docs/release-notes.md)
+[Release Notes](./docs/release-notes.md) · [Privacy Policy](./docs/privacy.md)
 
 ---
 
