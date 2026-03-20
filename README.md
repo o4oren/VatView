@@ -87,6 +87,12 @@ npx eas-cli@latest update --branch production --message "Description of fix"
 
 ---
 
+## License
+
+This project is source-available under a custom license. You may view, run, and contribute to the code for personal, non-commercial use. Redistribution as a standalone app is not permitted. See [LICENSE](./LICENSE) for full terms.
+
+---
+
 ## Assets Attribution
 
 Aircraft SVG icons from [FSTrAk](https://github.com/NickSwardh/FSTrAk).

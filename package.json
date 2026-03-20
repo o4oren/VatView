@@ -1,4 +1,5 @@
 {
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "npx expo run:android",
