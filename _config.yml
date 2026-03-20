@@ -1,0 +1,40 @@
+title: VatView
+description: Live VATSIM tracking on an interactive map — for iOS and Android.
+url: "https://o4oren.github.io"
+baseurl: "/VatView"
+
+theme: jekyll-theme-cayman
+
+logo: /VatView/graphics/icons/icon-512.png
+
+plugins:
+  - jekyll-seo-tag
+
+include:
+  - graphics
+
+exclude:
+  - __mocks__
+  - __tests__
+  - _bmad-output
+  - _bmad
+  - android
+  - app
+  - assets
+  - dist
+  - docs
+  - ios
+  - node_modules
+  - plugins
+  - "*.js"
+  - "*.json"
+  - "*.lock"
+  - babel.config.js
+  - metro.config.js
+  - eas.json
+  - package.json
+  - package-lock.json
+  - CLAUDE.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - README.md
