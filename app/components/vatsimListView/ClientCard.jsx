@@ -34,10 +34,13 @@ function LeftSlot({client, activeTheme}) {
     }
     let badge = FACILITY_BADGE[client.facility];
     let facilityShort = facilities[client.facility]?.short ?? '';
-    
+
     if (client.facility === TWR_ATIS && typeof client.callsign === 'string' && client.callsign.toUpperCase().endsWith('ATIS')) {
         badge = { letter: 'A', tokenKey: 'atis' };
         facilityShort = 'ATIS';
+    } else if (client.facility === APP && typeof client.callsign === 'string' && client.callsign.toUpperCase().endsWith('DEP')) {
+        badge = { letter: 'D', tokenKey: 'departure' };
+        facilityShort = 'DEP';
     }
     
     const letter = badge?.letter ?? '?';
