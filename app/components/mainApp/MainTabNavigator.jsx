@@ -1,8 +1,9 @@
-import React, {useRef, useCallback} from 'react';
+import React, {useRef, useCallback, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useFocusEffect} from '@react-navigation/native';
 import {tokens} from '../../common/themeTokens';
+import {useTheme} from '../../common/ThemeProvider';
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
 import VatsimListView from '../vatsimListView/VatsimListView';
 import AirportDetailsView from '../airportView/AirportDetailsView';
@@ -21,9 +22,6 @@ function FadeScreen({children}) {
                 duration: tokens.animation.duration.normal,
                 useNativeDriver: true,
             }).start();
-            return () => {
-                opacity.setValue(0);
-            };
         }, [opacity])
     );
 
@@ -43,8 +41,11 @@ function MetarTab() { return <FadeScreen><MetarView route={{params: {}}} /></Fad
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
+    const {activeTheme} = useTheme();
+    const sceneStyle = useMemo(() => ({backgroundColor: activeTheme.surface.base}), [activeTheme.surface.base]);
     return <tab.Navigator
         tabBar={(props) => <FloatingNavIsland {...props} />}
+        sceneContainerStyle={sceneStyle}
         screenOptions={{
             headerShown: false,
             tabBarStyle: { position: 'absolute', backgroundColor: 'transparent', borderTopWidth: 0, elevation: 0 },

@@ -56,7 +56,7 @@ const MapComponent = ({onMapPress}) => {
     const ref = useRef(null);
     const isFocused = useIsFocused();
     const mapKey = useMapRemountKey(isFocused);
-    const {activeMapStyle} = useTheme();
+    const {activeMapStyle, activeTheme} = useTheme();
     const cachedAirports = useSelector(state => state.vatsimLiveData.cachedAirports);
     const selectedClient = useSelector(state => state.app.selectedClient);
     const initialRegion = useSelector(state => state.app.initialRegion);
@@ -85,10 +85,12 @@ const MapComponent = ({onMapPress}) => {
         return () => clearTimeout(timer);
     }, [pendingFlyTo, dispatch]);
 
+    const mapBg = activeTheme.surface.base;
+
     return <MapView
         key={mapKey}
         ref={ref}
-        style={styles.mapStyle}
+        style={[styles.mapStyle, {backgroundColor: mapBg}]}
         customMapStyle={activeMapStyle}
         // provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
@@ -160,8 +162,8 @@ const renderFromToPath = (selectedClient, airports, pilotsVisible) => {
 
 const styles = StyleSheet.create({
     mapStyle: {
-        flex:1
-    }
+        flex: 1,
+    },
 });
 
 export default MapComponent;
