@@ -14,6 +14,9 @@ const BADGE_DEFS = [
 const isAtisCallsign = (callsign) =>
     typeof callsign === 'string' && callsign.toUpperCase().endsWith('ATIS');
 
+const isDepCallsign = (callsign) =>
+    typeof callsign === 'string' && callsign.toUpperCase().endsWith('DEP');
+
 export const getAtcBadges = (atcList, activeTheme) => {
     if (!atcList || atcList.length === 0) return [];
 
@@ -24,6 +27,22 @@ export const getAtcBadges = (atcList, activeTheme) => {
     for (const def of BADGE_DEFS) {
         const badgeKey = `${def.letter}-${def.tokenKey}`;
         if (seen.has(badgeKey)) continue;
+
+        // APP facility: split into approach (A) vs departure (D)
+        if (def.facility === APP) {
+            const hasApp = atcList.some(c => c.facility === APP && !isDepCallsign(c.callsign));
+            const hasDep = atcList.some(c => c.facility === APP && isDepCallsign(c.callsign));
+
+            if (hasApp && !seen.has('A-approach')) {
+                seen.add('A-approach');
+                badges.push({ letter: 'A', color: badgeColors.approach, key: 'approach' });
+            }
+            if (hasDep && !seen.has('D-departure')) {
+                seen.add('D-departure');
+                badges.push({ letter: 'D', color: badgeColors.departure, key: 'departure' });
+            }
+            continue;
+        }
 
         const match = atcList.some((controller) => {
             if (controller.facility !== def.facility) return false;

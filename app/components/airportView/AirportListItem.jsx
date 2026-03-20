@@ -24,12 +24,14 @@ function BadgeRow({airportAtc, activeTheme}) {
         );
     }
     return (
-        <View style={styles.badgeRow}>
-            {badgeStyles.map(badge => (
-                <View key={badge.key} style={badge.style}>
-                    <ThemedText variant="caption" color="#FFFFFF">{badge.letter}</ThemedText>
-                </View>
-            ))}
+        <View style={styles.badgeRowWrapper}>
+            <View style={styles.badgeRow}>
+                {badgeStyles.map(badge => (
+                    <View key={badge.key} style={badge.style}>
+                        <ThemedText variant="caption" color="#FFFFFF">{badge.letter}</ThemedText>
+                    </View>
+                ))}
+            </View>
         </View>
     );
 }
@@ -111,6 +113,12 @@ const styles = StyleSheet.create({
         width: 10,
         height: 10,
         borderRadius: 5,
+    },
+    badgeRowWrapper: {
+        flex: 1,
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
     },
     badgeRow: {
         flexDirection: 'row',

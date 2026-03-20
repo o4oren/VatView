@@ -14,7 +14,7 @@ import ClientCard from './ClientCard';
 import ScheduledCard from './ScheduledCard';
 import DatePickerModal from '../shared/DatePickerModal';
 import allActions from '../../redux/actions';
-import {CTR, getFacilityRank} from '../../common/consts';
+import {CTR} from '../../common/consts';
 
 const aggregatedClients = (clients, filters) => {
     const atc = [];
@@ -33,11 +33,7 @@ const aggregatedClients = (clients, filters) => {
         pilots.push(...clients.pilots);
     }
 
-    atc.sort((a, b) => {
-        const rankDiff = getFacilityRank(a) - getFacilityRank(b);
-        if (rankDiff !== 0) return rankDiff;
-        return a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0;
-    });
+    atc.sort((a, b) => (a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0));
     pilots.sort((a, b) => (a.callsign < b.callsign ? -1 : a.callsign > b.callsign ? 1 : 0));
 
     const result = [...atc, ...pilots];
