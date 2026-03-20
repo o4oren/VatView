@@ -31,7 +31,7 @@ const lightTheme = {
         uirFill: 'rgba(130, 80, 223, 0.15)',
         traconFill: 'rgba(26, 127, 55, 0.08)',
         firStrokeWidth: 1,
-        uirStrokeWidth: 1.5,
+        uirStrokeWidth: 1,
         traconStrokeWidth: 1,
         badge: {
             clearance: '#8b949e',
