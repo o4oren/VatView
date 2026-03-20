@@ -64,7 +64,3 @@ yarn-error.*
 *.tsbuildinfo
 
 # @end expo-cli
-
-# Jekyll
-_site/
-.sass-cache/
