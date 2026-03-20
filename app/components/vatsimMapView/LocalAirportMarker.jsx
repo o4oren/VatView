@@ -75,6 +75,7 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
             coordinate={{ latitude: airport.latitude, longitude: airport.longitude }}
             title={airport.icao}
             anchor={anchor}
+            calloutAnchor={anchor}
             onPress={() => onPress(airport)}
             tracksViewChanges={tracksViewChanges}
             tracksInfoWindowChanges={false}

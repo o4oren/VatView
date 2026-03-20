@@ -25,6 +25,7 @@ const AirportMarkerItem = React.memo(({airport, markerImage, onPress}) => isAndr
         coordinate={{latitude: airport.latitude, longitude: airport.longitude}}
         title={airport.icao}
         anchor={markerImage.anchor}
+        calloutAnchor={markerImage.anchor}
         onPress={() => onPress(airport)}
         tracksViewChanges={false}
         tracksInfoWindowChanges={false}
