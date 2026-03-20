@@ -8,15 +8,17 @@ import {AppState, Platform, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAirportByCode} from '../../common/airportTools';
+import {useIsFocused} from '@react-navigation/native';
 
-// ANDROID WORKAROUND: When the app resumes from background, the native
-// Google Maps view can retain stale marker overlays from its saved instance
-// state. React's reconciliation updates its own markers correctly, but the
-// native ghosts persist outside React's control. Incrementing the MapView
-// key forces a full native remount, clearing all ghost overlays.
-const useMapRemountKey = () => {
+// ANDROID WORKAROUND: When the app resumes from background or the Map tab
+// regains focus, the native Google Maps view can show default red pins for
+// markers that mounted while the surface was not actively drawing (with
+// tracksViewChanges={false}, the native layer never re-snapshots). Incrementing
+// the MapView key forces a full native remount, clearing stale overlays.
+const useMapRemountKey = (isTabFocused) => {
     const [mapKey, setMapKey] = useState(0);
     const appStateRef = useRef(AppState.currentState);
+    const wasUnfocusedRef = useRef(false);
 
     useEffect(() => {
         if (Platform.OS !== 'android') return;
@@ -30,6 +32,17 @@ const useMapRemountKey = () => {
         return () => sub.remove();
     }, []);
 
+    useEffect(() => {
+        if (Platform.OS !== 'android') return;
+
+        if (!isTabFocused) {
+            wasUnfocusedRef.current = true;
+        } else if (wasUnfocusedRef.current) {
+            wasUnfocusedRef.current = false;
+            setMapKey(k => k + 1);
+        }
+    }, [isTabFocused]);
+
     return mapKey;
 };
 
@@ -41,7 +54,8 @@ const computeZoomLevel = (latitudeDelta) => {
 const MapComponent = ({onMapPress}) => {
     const dispatch = useDispatch();
     const ref = useRef(null);
-    const mapKey = useMapRemountKey();
+    const isFocused = useIsFocused();
+    const mapKey = useMapRemountKey(isFocused);
     const {activeMapStyle} = useTheme();
     const cachedAirports = useSelector(state => state.vatsimLiveData.cachedAirports);
     const selectedClient = useSelector(state => state.app.selectedClient);
