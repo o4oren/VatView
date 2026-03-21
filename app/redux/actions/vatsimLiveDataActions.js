@@ -27,7 +27,6 @@ const eventsUpdated = (data) => {
 };
 
 const updateData = async (dispatch, getState) => {
-    console.log('fetching vatsim data feed');
     try {
         const response = await fetch(
             'https://data.vatsim.net/v3/vatsim-data.json'
@@ -58,14 +57,19 @@ const updateData = async (dispatch, getState) => {
             return client.callsign.split('_')[0];
         });
 
+        json.atis.forEach(atis => {
+            const prefix = atis.callsign.split('_')[0];
+            if(!prefixes.includes(prefix)) {
+                prefixes.push(prefix);
+            }
+        });
+
         json.pilots.forEach(p => {
-            if(p.flight_plan && p.flight_plan.departure) {
-                if(!prefixes.includes(p.flight_plan.departure)) {
-                    prefixes.push(p.flight_plan.departure);
-                }
-                if(!prefixes.includes(p.flight_plan.arrival)) {
-                    prefixes.push(p.flight_plan.arrival);
-                }
+            if (p.flight_plan?.departure && !prefixes.includes(p.flight_plan.departure)) {
+                prefixes.push(p.flight_plan.departure);
+            }
+            if (p.flight_plan?.arrival && !prefixes.includes(p.flight_plan.arrival)) {
+                prefixes.push(p.flight_plan.arrival);
             }
         });
 
@@ -74,10 +78,6 @@ const updateData = async (dispatch, getState) => {
 
         // generate the json
         const createJsonObject = (json, clients, airports) => {
-            // console.log('c', clients);
-            // console.log('j', json);
-            // console.log('a', airports);
-
             if(Object.keys(airports).length > 0) {
                 airports.forEach(airport => {
                     if(!json.cachedAirports.icao[airport.icao]) {
@@ -89,6 +89,24 @@ const updateData = async (dispatch, getState) => {
                 });
             }
 
+
+            // Compute traffic counts per airport (departures/arrivals)
+            const trafficCounts = {};
+            json.pilots.forEach((pilot) => {
+                if (pilot.flight_plan) {
+                    const dep = pilot.flight_plan.departure;
+                    const arr = pilot.flight_plan.arrival;
+                    if (dep) {
+                        if (!trafficCounts[dep]) trafficCounts[dep] = {departures: 0, arrivals: 0};
+                        trafficCounts[dep].departures++;
+                    }
+                    if (arr) {
+                        if (!trafficCounts[arr]) trafficCounts[arr] = {departures: 0, arrivals: 0};
+                        trafficCounts[arr].arrivals++;
+                    }
+                }
+            });
+            clients.trafficCounts = trafficCounts;
 
             json.pilots.forEach((pilot) => {
                 const [image, imageSize] = pilot.flight_plan ? getAircraftIcon(pilot.flight_plan.aircraft) : getAircraftIcon('b733');
@@ -182,18 +200,39 @@ const updateData = async (dispatch, getState) => {
                     json.cachedFirBoundaries[icao] = firBoundaryLookup[icao];
                 }
             });
+
+            // Assign FIR center coordinates to CTR clients using the same resolution
+            // logic as cachedFirBoundaries: direct key → UIR firs → fir prefix match.
+            const {uirs, firs} = getState().staticAirspaceData;
+            Object.entries(clients.ctr).forEach(([prefix, ctrs]) => {
+                let center = firBoundaryLookup[prefix]?.[0]?.center;
+                if (!center && uirs[prefix]) {
+                    const resolvedIcao = uirs[prefix].firs.find(icao => firBoundaryLookup[icao]);
+                    center = resolvedIcao ? firBoundaryLookup[resolvedIcao][0]?.center : null;
+                }
+                if (!center) {
+                    const matched = firs.find(fir => fir.prefix === prefix && firBoundaryLookup[fir.icao]);
+                    center = matched ? firBoundaryLookup[matched.icao][0]?.center : null;
+                }
+                if (center) {
+                    ctrs.forEach(client => {
+                        if (client.latitude == null) {
+                            client.latitude = center.latitude;
+                            client.longitude = center.longitude;
+                        }
+                    });
+                }
+            });
             dispatch(dataUpdated(json));
         };
 
     } catch (error) {
-        console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };
 
 
 const updateEvents = async (dispatch) => {
-    console.log('fetching events feed');
     try {
         const response = await fetch(
             'https://my.vatsim.net/api/v1/events/all'
@@ -207,7 +246,6 @@ const updateEvents = async (dispatch) => {
 };
 
 const updateBookings = async (dispatch) => {
-    console.log('fetching bookings');
     try {
         // old 'http://vatbook.euroutepro.com/xml2.php'
         const response = await fetch(
@@ -225,7 +263,6 @@ const updateBookings = async (dispatch) => {
         });
         dispatch(bookingsUpdated(atcBookings));
     } catch (error) {
-        console.log(error);
         dispatch({type: DATA_FETCH_ERROR});
     }
 };

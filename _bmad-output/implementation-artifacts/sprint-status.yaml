@@ -1,0 +1,101 @@
+# generated: 2026-03-15
+# project: VatView
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-15
+project: VatView
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 1: Foundation — Theme System & Design Tokens
+  epic-1: done
+  1-1-nativewind-infrastructure-and-design-token-system: done
+  1-2-theme-provider-and-dual-map-styling: done
+  1-3-blurwrapper-and-translucentsurface-components: done
+  1-4-themedtext-and-shared-typography-components: done
+  1-5-listitem-base-component-and-staleindicator: done
+  epic-1-retrospective: done
+
+  # Epic 2: Immersive Map & Floating Navigation
+  epic-2: done
+  2-1-full-bleed-map-and-remove-chrome: done
+  2-2-floating-navigation-island: done
+  2-3-floating-filter-chips: done
+  2-4-mapoverlaygroup-floating-element-orchestrator: done
+  epic-2-retrospective: done
+
+  # Epic 3: Map Data Layers — Pilots, ATC & Airports
+  epic-3: done
+  3-1-aircrafticonservice-svg-to-bitmap-pipeline: done
+  3-2-pilot-markers-with-svg-aircraft-icons: done
+  3-3-atc-polygon-overlays-fir-and-tracon: done
+  3-4-zoom-aware-airport-markers-infrastructure-and-image-markers: done
+  3-5-airport-markers-local-zoom-atc-badges-and-traffic-counts: done
+  3-6-ground-aircraft-zoom-dependent-visibility: done
+  epic-3-retrospective: optional
+
+  # Epic 4: Progressive Disclosure Detail Panels
+  epic-4: done
+  4-1-detailpanelprovider-bottom-sheet-abstraction: done
+  4-2-pilot-detail-three-level-progressive-disclosure: done
+  4-2-1-refactor-pilot-detail-single-card: done
+  4-3-atc-and-ctr-detail-three-level-progressive-disclosure: done
+  4-4-airport-detail-three-level-progressive-disclosure: done
+  4-5-list-view-client-card-polish: done
+  epic-4-retrospective: optional
+
+  # Epic 5: List, Airport & Search Views
+  epic-5: done
+  5-1-pilot-and-controller-list-view: done
+  5-2-airport-search-and-details-view: done
+  5-3-metar-weather-view: done
+  epic-5-retrospective: optional
+
+  # Epic 6: Events, Bookings & Secondary Screens
+  epic-6: done
+  6-1-events-list-and-event-details: done
+  6-2-atc-bookings-list-and-details: done
+  6-3-settings-with-theme-picker: done
+  6-4-network-status-about-and-loadingview: done
+  6-5-remove-react-native-paper-dependency: done
+  epic-6-retrospective: optional
+
+  # Epic 7: Landscape Orientation & Responsive Layout
+  epic-7: done
+  7-1-unlock-orientation-and-responsive-detection: done
+  7-2-sidepanel-landscape-detail-container: done
+  7-3-responsive-mapoverlaygroup-and-floating-elements: done
+  epic-7-retrospective: optional

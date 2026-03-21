@@ -1,117 +1,143 @@
-import {Card, List, Avatar, Button} from 'react-native-paper';
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import theme from '../../common/theme';
-import {StyleSheet} from 'react-native';
-import {addTimeToDate, getDateFromString, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
-import { useNavigation } from '@react-navigation/native';
-import {airlineLogos} from "../../common/airlineLogos";
-import {Image} from "react-native";
+import {StyleSheet, View} from 'react-native';
+import {useTheme} from '../../common/ThemeProvider';
+import {getAtcBadges} from '../../common/airportBadgeHelper';
+import ListItem from '../shared/ListItem';
+import ThemedText from '../shared/ThemedText';
+import AirportDetailCard from '../clientDetails/AirportDetailCard';
 
-const generateAtcList = (airportAtc) => {
-    return airportAtc.map(atc =>
-        <List.Item
-            key={atc.callsign + '_' + atc.cid}
-            title={atc.callsign + ' - ' + atc.name}
-            description={'Frequency: ' + atc.frequency}
-            left={() => <Avatar.Image source={atc.image} size={32} style={styles.avatar}/>}
-        />);
-};
+/* eslint-disable react-native/no-raw-text */
 
-const generateFlightsList = (flights) => {
-    return flights.map(flight => {
-        const depTime = getDateFromString(flight.flight_plan.deptime);
-        const eta = addTimeToDate(depTime, flight.flight_plan.enroute_time);
-        return <List.Item
-            key={flight.callsign + '_' + flight.cid}
-            title={flight.callsign + ' - ' + flight.name}
-            left={() => <Avatar.Image source={flight.image} size={flight.imageSize} style={styles.avatar}/>}
-            right={() => <Image source={airlineLogos[flight.callsign.substr(0,3)]}  style={styles.logo} />}
-            description={
-                flight.flight_plan.aircraft_short + ' from ' + flight.flight_plan.departure + ' to ' + flight.flight_plan.arrival + '\n'
-                + 'Departure time: ' + getZuluTimeFromDate(depTime) + '   ETA: ' + getZuluTimeFromDate(eta)
-            }
-        />;
-    });
-};
+function BadgeRow({airportAtc, activeTheme}) {
+    const badges = getAtcBadges(airportAtc, activeTheme);
+    const badgeStyles = badges.map(badge => ({
+        ...badge,
+        style: [styles.badge, {backgroundColor: badge.color}],
+    }));
+    const unstaffedDotStyle = React.useMemo(() => (
+        [styles.dot, {backgroundColor: activeTheme.atc.airportDotUnstaffed}]
+    ), [activeTheme.atc.airportDotUnstaffed]);
 
-export default function AirportListItem({airport, country, airportAtc, flights}) {
-    const [expandedArrivals, setExpandedArrivals] = React.useState(false);
-    const [expandedDepartures, setExpandedDepartures] = React.useState(false);
-    const [expandedAtc, setExpandedAtc] = React.useState(false);
-    const navigation = useNavigation();
-
-    const pressArrivals = () => {
-        // Analytics.logEvent('ExpandedArrivals', {
-        //     action: expandedArrivals ? 'close' : 'open',
-        //     airport: airport,
-        // });
-        setExpandedArrivals(!expandedArrivals);
-    };
-    const pressDepartures = () => {
-        // Analytics.logEvent('ExpandedDepartures', {
-        //     action: expandedDepartures ? 'close' : 'open',
-        //     airport: airport,
-        // });
-        setExpandedDepartures(!expandedDepartures);
-    };
-    const pressAtc = () => {
-        // Analytics.logEvent('ExpandedAtc', {
-        //     action: expandedAtc ? 'close' : 'open',
-        //     airport: airport,
-        // });
-        setExpandedAtc(!expandedAtc);
-    };
-
-    return <Card>
-        <Card.Title
-            title={airport.icao}
-            subtitle={airport.name +', ' + country}
-            right =   {() => <Button
-                icon="weather-partly-snowy-rainy"
-                textColor={theme.blueGrey.theme.colors.onSurfaceVariant}
-                onPress={() => {
-                    navigation.navigate('Metar', {
-                        icao: airport.icao
-                    })
-                }}
-            >METAR</Button>}
-        />
-        <Card.Content>
-            <List.Accordion
-                key={1}
-                title={(airportAtc ? airportAtc.length : 0) + ' ATC positions'}
-                left={props => <MaterialIcons name={'flight-takeoff'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
-                expanded={expandedAtc}
-                onPress={pressAtc}>
-                {airportAtc ? generateAtcList(airportAtc) : null}
-            </List.Accordion>
-            <List.Accordion
-                key={2}
-                title={flights.departures.length + ' Departing flights'}
-                left={props => <MaterialIcons name={'flight-takeoff'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
-                expanded={expandedDepartures}
-                onPress={pressDepartures}>
-                {generateFlightsList(flights.departures)}
-            </List.Accordion>
-            <List.Accordion
-                key={3}
-                title={flights.arrivals.length + ' Arriving flights'}
-                left={props => <MaterialIcons name={'flight-land'} size={24} color={theme.blueGrey.theme.colors.primary}/>}
-                expanded={expandedArrivals}
-                onPress={pressArrivals}>
-                {generateFlightsList(flights.arrivals)}
-            </List.Accordion>
-        </Card.Content>
-    </Card>;
+    if (badges.length === 0) {
+        return (
+            <View style={unstaffedDotStyle} />
+        );
+    }
+    return (
+        <View style={styles.badgeRowWrapper}>
+            <View style={styles.badgeRow}>
+                {badgeStyles.map(badge => (
+                    <View key={badge.key} style={badge.style}>
+                        <ThemedText variant="caption" color="#FFFFFF">{badge.letter}</ThemedText>
+                    </View>
+                ))}
+            </View>
+        </View>
+    );
 }
 
-const styles = StyleSheet.create({
-    avatar: {
-        backgroundColor: 'transparent'
-    },
-    logo: {
-        width: 60,
-        height: 60
+function TrafficTrailing({flights}) {
+    const {activeTheme} = useTheme();
+    if (!flights) {
+        return (
+            <View style={styles.trafficTrailing}>
+                <ThemedText variant="data-sm" color={activeTheme.text.muted}>{'▲ —'}</ThemedText>
+                <ThemedText variant="data-sm" color={activeTheme.text.muted}>{'▼ —'}</ThemedText>
+            </View>
+        );
     }
+    const dep = flights.departures.length;
+    const arr = flights.arrivals.length;
+    return (
+        <View style={styles.trafficTrailing}>
+            <ThemedText variant="data-sm" color="#1A7F37">{'▲ ' + dep}</ThemedText>
+            <ThemedText variant="data-sm" color="#CF222E">{'▼ ' + arr}</ThemedText>
+        </View>
+    );
+}
+
+export default function AirportListItem({
+    airport,
+    airportAtc,
+    flights,
+    isExpanded,
+    onToggle,
+    showAtc = true,
+    showTraffic = true,
+}) {
+    const {activeTheme} = useTheme();
+    const expandedContainerStyle = React.useMemo(() => (
+        [styles.expandedContainer, {backgroundColor: activeTheme.surface.base}]
+    ), [activeTheme.surface.base]);
+
+    const leftSlot = showAtc ? (
+        <BadgeRow airportAtc={airportAtc || []} activeTheme={activeTheme} />
+    ) : null;
+
+    const trailingSlot = showTraffic ? (
+        <TrafficTrailing flights={flights} />
+    ) : null;
+
+    return (
+        <View>
+            <ListItem
+                leftSlot={leftSlot}
+                title={airport.icao}
+                titleVariant="callsign"
+                subtitle={airport.name}
+                trailingSlot={trailingSlot}
+                onPress={onToggle}
+                accessibilityLabel={airport.icao + ' ' + airport.name}
+            />
+            {isExpanded && (
+                <View style={expandedContainerStyle}>
+                    <AirportDetailCard
+                        airport={airport}
+                        showAtc={showAtc}
+                        showTraffic={showTraffic}
+                        trafficCounts={flights ? {
+                            departures: flights.departures.length,
+                            arrivals: flights.arrivals.length,
+                        } : null}
+                    />
+                </View>
+            )}
+        </View>
+    );
+}
+
+/* eslint-enable react-native/no-raw-text */
+
+const styles = StyleSheet.create({
+    dot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    badgeRowWrapper: {
+        flex: 1,
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+    },
+    badgeRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 3,
+    },
+    badge: {
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    trafficTrailing: {
+        alignItems: 'flex-end',
+        gap: 2,
+    },
+    expandedContainer: {
+        paddingHorizontal: 16,
+        paddingBottom: 8,
+    },
 });
