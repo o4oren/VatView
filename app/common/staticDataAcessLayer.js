@@ -9,7 +9,6 @@ export const getDb = async () => {
 };
 
 export const initDb = () => {
-    console.log('Initializing db');
     getDb().then(async (tx) => {
         await tx.runAsync('drop table if exists airports');
         await tx.runAsync('drop table if exists fir_boundaries');
@@ -39,6 +38,9 @@ export const insertAirports = (airportTokens, callback) => {
 };
 
 export const getAirportsByICAOAsync = (codes) => {
+    if (!codes || codes.length === 0) {
+        return Promise.resolve([]);
+    }
     const placeholders = codes.map(() => ('?')).join(',');
     return new Promise((resolve, reject) => {
         getDb().then((tx) => {
@@ -55,19 +57,15 @@ export const getAirportsByICAOAsync = (codes) => {
     });
 };
 
-//returns a promise of all the airports whose icao or IATA equals or name starts with the searchTerm
+//returns a promise of all airports whose icao, iata, or name contains the searchTerm
 export const findAirportsByCodeOrNamePrefixAsync = (searchTerm) => {
+    const pattern = '%' + searchTerm + '%';
     return new Promise((resolve, reject) => {
         getDb().then((tx) => {
             try {
                 let res = tx.getAllSync(
-                    `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
-                    [searchTerm.toUpperCase(), searchTerm.toUpperCase()]);
-                // console.log('query', {
-                //     searchTerm: searchTerm,
-                //     q: `select * from airports where icao = ? or iata = ? or name like '${searchTerm}%' COLLATE NOCASE;`,
-                //     res: res,
-                // });
+                    'select * from airports where icao like ? or iata like ? or name like ? COLLATE NOCASE;',
+                    [pattern, pattern, pattern]);
                 resolve(res);
             } catch(err) {
                 console.log('error', err);
@@ -94,6 +92,7 @@ export const getAirportsByCodesArray = (codes, callback) => {
                 err: err,
                 q: `select * from airports where icao in (${mappedCodes});`
             });
+            callback([]);
         }
     });
 };

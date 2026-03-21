@@ -1,84 +1,79 @@
-import theme from '../../common/theme';
+import React, {useRef, useCallback, useMemo} from 'react';
+import {Animated} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {useFocusEffect} from '@react-navigation/native';
+import {tokens} from '../../common/themeTokens';
+import {useTheme} from '../../common/ThemeProvider';
 import VatsimMapView from '../vatsimMapView/VatsimMapView';
 import VatsimListView from '../vatsimListView/VatsimListView';
-import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AirportDetailsView from '../airportView/AirportDetailsView';
 import VatsimEventsView from '../EventsView/VatsimEventsView';
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-import analytics from '../../common/analytics';
+import Settings from '../settings/Settings';
+import MetarView from '../MetarView/MetarView';
+import FloatingNavIsland from '../navigation/FloatingNavIsland';
+
+function FadeScreen({children}) {
+    const opacity = useRef(new Animated.Value(0)).current;
+
+    useFocusEffect(
+        useCallback(() => {
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: tokens.animation.duration.normal,
+                useNativeDriver: true,
+            }).start();
+        }, [opacity])
+    );
+
+    return (
+        <Animated.View style={{flex: 1, opacity}}>
+            {children}
+        </Animated.View>
+    );
+}
+
+function MapTab() { return <FadeScreen><VatsimMapView /></FadeScreen>; }
+function ListTab() { return <FadeScreen><VatsimListView /></FadeScreen>; }
+function AirportsTab() { return <FadeScreen><AirportDetailsView /></FadeScreen>; }
+function EventsTab() { return <FadeScreen><VatsimEventsView /></FadeScreen>; }
+function SettingsTab() { return <FadeScreen><Settings /></FadeScreen>; }
+function MetarTab() { return <FadeScreen><MetarView route={{params: {}}} /></FadeScreen>; }
 
 export default function MainTabNavigator() {
     const tab = createBottomTabNavigator();
+    const {activeTheme} = useTheme();
+    const sceneStyle = useMemo(() => ({backgroundColor: activeTheme.surface.base}), [activeTheme.surface.base]);
     return <tab.Navigator
-        screenListeners={({ route }) => ({
-            tabPress: () => {
-                analytics.logEvent('nav_tab_switch', { tab_name: route.name });
-            },
-        })}
+        tabBar={(props) => <FloatingNavIsland {...props} />}
+        sceneContainerStyle={sceneStyle}
         screenOptions={{
-            tabBarActiveTintColor: theme.blueGrey.theme.colors.onPrimary,
-            tabBarInactiveTintColor: theme.blueGrey.inactiveTabTint,
             headerShown: false,
-            tabBarStyle: {
-                backgroundColor: theme.blueGrey.theme.colors.primary,
-                height: 75,
-                paddingTop: 10,
-                paddingBottom: 15,
-            }
-    }}
+            tabBarStyle: { position: 'absolute', backgroundColor: 'transparent', borderTopWidth: 0, elevation: 0 },
+        }}
     >
         <tab.Screen
             name="Map"
-            component={VatsimMapView}
-            options={{
-                tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons
-                        name="map"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
+            component={MapTab}
         />
         <tab.Screen
             name="List"
-            component={VatsimListView}
-            options={{
-                tabBarIcon: ({color, size}) => (
-                    <MaterialCommunityIcons
-                        name="format-list-bulleted"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
+            component={ListTab}
         />
         <tab.Screen
             name="Airports"
-            component={AirportDetailsView}
-            options={{
-                tabBarIcon: ({color, size}) => (
-                    <MaterialCommunityIcons
-                        name="airport"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
+            component={AirportsTab}
+        />
+        <tab.Screen
+            name="Metar"
+            component={MetarTab}
         />
         <tab.Screen
             name="Events"
-            component={VatsimEventsView}
-            options={{
-                tabBarIcon: ({color, size}) => (
-                    <MaterialCommunityIcons
-                        name="calendar"
-                        size={size}
-                        color={color}
-                    />
-                ),
-            }}
+            component={EventsTab}
+        />
+        <tab.Screen
+            name="Settings"
+            component={SettingsTab}
         />
     </tab.Navigator>;
 }

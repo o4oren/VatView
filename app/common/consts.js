@@ -65,5 +65,43 @@ export const facilities = [
 
 export const APP_RADIUS = 80 * 1000;
 
+// Facility sort rank: ATIS first, then DEL → GND → TWR → APP → CTR → FSS last
+// Lower rank = appears first. ATIS is detected by callsign, not facility code.
+const FACILITY_RANK = {
+    [DEL]: 1,
+    [GND]: 2,
+    [TWR_ATIS]: 3,  // TWR (non-ATIS callsigns)
+    [APP]: 4,
+    [CTR]: 5,
+    [FSS]: 6,
+};
+const ATIS_RANK = 0;
+
+export const getFacilityRank = (controller) => {
+    const isAtis = typeof controller.callsign === 'string' && controller.callsign.toUpperCase().endsWith('ATIS');
+    if (isAtis) return ATIS_RANK;
+    return FACILITY_RANK[controller.facility] ?? 99;
+};
+
+// Zoom band thresholds — AIRPORT > 10, LOCAL > 8, REGIONAL > 6, CONTINENTAL > 4, GLOBAL > 0
+export const ZOOM_GLOBAL_MAX = 4;
+export const ZOOM_CONTINENTAL_MAX = 6;
+export const ZOOM_REGIONAL_MAX = 8;
+export const ZOOM_LOCAL_MAX = 10;
+
+export const AIRPORT_MARKER_FONT_CONTINENTAL = 13;
+export const AIRPORT_MARKER_FONT_REGIONAL = 15;
+
+// Ground aircraft (≤ this speed in knots) hidden below Airport zoom
+export const GROUND_SPEED_THRESHOLD = 5;
+
+export const getZoomBand = (zoomLevel) => {
+    if (zoomLevel <= ZOOM_GLOBAL_MAX) return 'global';
+    if (zoomLevel <= ZOOM_CONTINENTAL_MAX) return 'continental';
+    if (zoomLevel <= ZOOM_REGIONAL_MAX) return 'regional';
+    if (zoomLevel <= ZOOM_LOCAL_MAX) return 'local';
+    return 'airport';
+};
+
 
 

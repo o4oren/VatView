@@ -1,332 +1,304 @@
-import {MD3LightTheme} from 'react-native-paper';
+import {lightTheme, darkTheme, tokens} from './themeTokens';
 
-const blueGreyNew = [
+// ============================================================
+// Google Maps JSON Styles
+// ============================================================
+
+const lightMapStyle = [
     {
         'elementType': 'labels.text.fill',
-        'stylers': [
-            {
-                'color': '#616161'
-            }
-        ]
+        'stylers': [{ 'color': '#616161' }]
     },
     {
         'elementType': 'labels.text.stroke',
-        'stylers': [
-            {
-                'color': '#f5f5f5'
-            }
-        ]
+        'stylers': [{ 'color': '#f5f5f5' }]
     },
     {
         'featureType': 'administrative',
-        'stylers': [
-            {
-                'visibility': 'simplified'
-            }
-        ]
+        'stylers': [{ 'visibility': 'simplified' }]
     },
     {
         'featureType': 'administrative.country',
-        'stylers': [
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'visibility': 'on' }]
     },
     {
         'featureType': 'administrative.country',
         'elementType': 'geometry.stroke',
-        'stylers': [
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'visibility': 'on' }]
     },
     {
         'featureType': 'administrative.land_parcel',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.land_parcel',
         'elementType': 'geometry.stroke',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.land_parcel',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.locality',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.locality',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'color': '#a3a3a3'
-            },
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'color': '#a3a3a3' }, { 'visibility': 'on' }]
     },
     {
         'featureType': 'administrative.locality',
         'elementType': 'labels.text.fill',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.neighborhood',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.neighborhood',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.province',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'administrative.province',
         'elementType': 'geometry.stroke',
-        'stylers': [
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'visibility': 'on' }]
     },
     {
         'featureType': 'administrative.province',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'color': '#a3a3a3'
-            },
-            {
-                'visibility': 'simplified'
-            }
-        ]
+        'stylers': [{ 'color': '#a3a3a3' }, { 'visibility': 'simplified' }]
     },
     {
         'featureType': 'landscape',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#f5f5f5'
-            }
-        ]
+        'stylers': [{ 'color': '#f5f5f5' }]
     },
     {
         'featureType': 'landscape.natural.landcover',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#f5f5f5'
-            }
-        ]
+        'stylers': [{ 'color': '#f5f5f5' }]
     },
     {
         'featureType': 'landscape.natural.terrain',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#f5f5f5'
-            }
-        ]
+        'stylers': [{ 'color': '#f5f5f5' }]
     },
     {
         'featureType': 'poi',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'poi.business',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'poi.park',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#e8e8e8'
-            }
-        ]
+        'stylers': [{ 'color': '#e8e8e8' }]
     },
     {
         'featureType': 'poi.park',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'road',
         'elementType': 'labels',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'road.arterial',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'road.highway',
-        'stylers': [
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'visibility': 'on' }]
     },
     {
         'featureType': 'road.highway',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#e8e8e8'
-            }
-        ]
+        'stylers': [{ 'color': '#e8e8e8' }]
     },
     {
         'featureType': 'road.highway',
         'elementType': 'geometry.stroke',
-        'stylers': [
-            {
-                'color': '#c7c7c7'
-            }
-        ]
+        'stylers': [{ 'color': '#c7c7c7' }]
     },
     {
         'featureType': 'road.highway',
         'elementType': 'labels',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'road.highway.controlled_access',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'road.local',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'transit.station',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     },
     {
         'featureType': 'transit.station.airport',
-        'stylers': [
-            {
-                'visibility': 'on'
-            }
-        ]
+        'stylers': [{ 'visibility': 'on' }]
     },
     {
         'featureType': 'water',
         'elementType': 'geometry.fill',
-        'stylers': [
-            {
-                'color': '#b8daff'
-            }
-        ]
+        'stylers': [{ 'color': '#b8daff' }]
     },
     {
         'featureType': 'water',
         'elementType': 'labels.text',
-        'stylers': [
-            {
-                'visibility': 'off'
-            }
-        ]
+        'stylers': [{ 'visibility': 'off' }]
     }
 ];
 
+const darkMapStyle = [
+    {
+        'elementType': 'geometry',
+        'stylers': [{ 'color': '#0D1117' }]
+    },
+    {
+        'elementType': 'labels.text.fill',
+        'stylers': [{ 'color': '#484F58' }]
+    },
+    {
+        'elementType': 'labels.text.stroke',
+        'stylers': [{ 'color': '#0D1117' }]
+    },
+    {
+        'featureType': 'administrative',
+        'stylers': [{ 'visibility': 'simplified' }]
+    },
+    {
+        'featureType': 'administrative.country',
+        'elementType': 'geometry.stroke',
+        'stylers': [{ 'color': '#30363D' }, { 'visibility': 'on' }]
+    },
+    {
+        'featureType': 'administrative.land_parcel',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'administrative.locality',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'administrative.locality',
+        'elementType': 'labels.text',
+        'stylers': [{ 'color': '#484F58' }, { 'visibility': 'on' }]
+    },
+    {
+        'featureType': 'administrative.locality',
+        'elementType': 'labels.text.fill',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'administrative.neighborhood',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'administrative.province',
+        'elementType': 'geometry.stroke',
+        'stylers': [{ 'color': '#30363D' }, { 'visibility': 'on' }]
+    },
+    {
+        'featureType': 'administrative.province',
+        'elementType': 'labels.text',
+        'stylers': [{ 'color': '#484F58' }, { 'visibility': 'simplified' }]
+    },
+    {
+        'featureType': 'landscape',
+        'elementType': 'geometry.fill',
+        'stylers': [{ 'color': '#0D1117' }]
+    },
+    {
+        'featureType': 'landscape.natural.landcover',
+        'elementType': 'geometry.fill',
+        'stylers': [{ 'color': '#0D1117' }]
+    },
+    {
+        'featureType': 'landscape.natural.terrain',
+        'elementType': 'geometry.fill',
+        'stylers': [{ 'color': '#0D1117' }]
+    },
+    {
+        'featureType': 'poi',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'road',
+        'elementType': 'labels',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'road.arterial',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'road.highway',
+        'elementType': 'geometry.fill',
+        'stylers': [{ 'color': '#21262D' }]
+    },
+    {
+        'featureType': 'road.highway',
+        'elementType': 'geometry.stroke',
+        'stylers': [{ 'color': '#21262D' }]
+    },
+    {
+        'featureType': 'road.highway',
+        'elementType': 'labels',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'road.highway.controlled_access',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'road.local',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'transit.station',
+        'stylers': [{ 'visibility': 'off' }]
+    },
+    {
+        'featureType': 'transit.station.airport',
+        'stylers': [{ 'visibility': 'on' }]
+    },
+    {
+        'featureType': 'water',
+        'elementType': 'geometry.fill',
+        'stylers': [{ 'color': '#161B22' }]
+    },
+    {
+        'featureType': 'water',
+        'elementType': 'labels.text',
+        'stylers': [{ 'visibility': 'off' }]
+    }
+];
+
+// ============================================================
+// Legacy default export — backward compatible
+// ============================================================
+
 export default {
     blueGrey: {
-        customMapStyle: blueGreyNew,
-        theme: {
-            ...MD3LightTheme,
-            roundness: 2,
-            colors: {
-                ...MD3LightTheme.colors,
-                primary: '#2a5d99',
-                secondary: '#2a5d99',
-                onSurface: '#000000',
-                outline: 'transparent',
-                onPrimary: '#ffffff',
-                onSurfaceVariant: '#808080',
-                secondaryContainer: '#e3f2fd',
-                surface: '#ffffff',
-            },
-        },
+        customMapStyle: lightMapStyle,
         inactiveTabTint: 'rgba(255,255,255,0.6)',
         bottomBarIconSize: 32,
         appCircleStroke: 'rgb(159,8,8)',
@@ -356,3 +328,6 @@ export default {
     },
     googleDefault: {customMapStyle: []}
 };
+
+// Named exports for new theme system
+export { lightTheme, darkTheme, lightMapStyle, darkMapStyle, tokens };

@@ -65,8 +65,7 @@ const getBoundaryData = async (dispatch) => {
     }
 };
 
-// eslint-disable-next-line no-unused-vars
-const checkBoundaryUpdates = async (dispatch) => {
+const checkBoundaryUpdates = async () => {
     try {
         const [currentFirTag, currentTraconTag] = await Promise.all([
             getReleaseTag(FIR_GEOJSON_RELEASE_TAG_KEY),
@@ -88,8 +87,8 @@ const checkBoundaryUpdates = async (dispatch) => {
             await storeTraconBoundaries(await resp.text());
             await storeReleaseTag(TRACON_RELEASE_TAG_KEY, traconRelease.tag);
         }
-    } catch (err) {
-        console.log('Background boundary update check failed:', err);
+    } catch {
+        // Background update failure is non-critical; new boundaries will be fetched on next startup
     }
 };
 
@@ -105,7 +104,6 @@ function insertAirportIntoDb(airportTokens, dispatch) {
         (_, index) => airportTokens.slice(index * AIRPORTS_CHUNK_SIZE, (index + 1) * AIRPORTS_CHUNK_SIZE)
     ).forEach(async (chunk, index) => {
         await insertAirports(chunk, () => {
-            // console.log('inserting airports count ' + lastRowId);
             if ((index * AIRPORTS_CHUNK_SIZE) + chunk.length === airportTokens.length) {
                 dispatch(appActions.saveAirportsLoaded(true));
             }
@@ -169,7 +167,7 @@ const getVATSpyData = async (dispatch) => {
             case IDL:
                 break;
             default:
-                console.log('error. Line is ', line);
+                break;
             }
         }
     });
@@ -185,7 +183,6 @@ const getVATSpyData = async (dispatch) => {
         lastUpdated: lastUpdated,
         version: STATIC_DATA_VERSION
     });
-    console.log('vatspyDataUpdated', vatspyDataUpdated);
     await countAirports();
     dispatch(vatspyDataUpdated(countries, airports, firs, uirs, lastUpdated, STATIC_DATA_VERSION));
 };

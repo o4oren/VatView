@@ -1,19 +1,21 @@
+import './global.css';
 import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
 import {applyMiddleware, legacy_createStore as createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
-import {Provider as PaperProvider} from 'react-native-paper';
 import {retrieveSavedState} from './app/common/storageService';
 import {parseFirGeoJson, parseTraconJson} from './app/common/boundaryService';
 import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
 import {INITIAL_REGION} from './app/common/consts';
-import theme from './app/common/theme';
 import {StyleSheet, Text, View} from 'react-native';
-import {StatusBar} from 'expo-status-bar';
+
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import analyticsMiddleware from './app/common/analyticsMiddleware';
+import {useFonts, JetBrainsMono_400Regular, JetBrainsMono_500Medium, JetBrainsMono_700Bold} from '@expo-google-fonts/jetbrains-mono';
+import ThemeProvider from './app/common/ThemeProvider';
+import StatusBarController from './app/common/StatusBarController';
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, analyticsMiddleware));
 
@@ -68,9 +70,13 @@ if (isHermesEnabled || isAndroid) {
 }
 
 export default function App() {
+    const [fontsLoaded] = useFonts({
+        JetBrainsMono_400Regular,
+        JetBrainsMono_500Medium,
+        JetBrainsMono_700Bold,
+    });
     const [state, setState] = useState({isReady: false});
 
-    // clearStorage();
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();
@@ -96,7 +102,7 @@ export default function App() {
         loadStateFromStorage();
     }, []);
 
-    if(!state.isReady) {
+    if(!state.isReady || !fontsLoaded) {
         return (
             <View><Text>Loading</Text></View>
         );
@@ -127,19 +133,15 @@ export default function App() {
             traconBoundaryLookup: state.traconBoundaryLookup
         }
     };
-    // console.log(preloadedState);
     const store = createStore(combineReducers, preloadedState, composedEnhancer);
     return (
         <GestureHandlerRootView style={styles.root}>
-            <Provider store={store}>
-                <PaperProvider theme={theme.blueGrey.theme}>
-                    <StatusBar
-                        backgroundColor={theme.blueGrey.theme.colors.primary}
-                        style="light"
-                    />
+            <ThemeProvider>
+                <Provider store={store}>
+                    <StatusBarController />
                     <MainApp />
-                </PaperProvider>
-            </Provider>
+                </Provider>
+            </ThemeProvider>
         </GestureHandlerRootView>
     );
 }

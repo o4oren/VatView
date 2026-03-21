@@ -51,7 +51,6 @@ export const getReleaseTag = async (key) => {
 
 export const storeStaticAirspaceData = async (staticAirspaceData) => {
     try {
-        console.log('storing STATIC_AIRSPACE_DATA');
         await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + STATIC_AIRSPACE_DATA, JSON.stringify(staticAirspaceData));
     } catch (err) {
         console.log('Error storing static airspace data', err);
@@ -66,17 +65,7 @@ export const storeInitialRegion = async (region) => {
     }
 };
 
-export const storeSelectedAirport = async (selectedAirport) => {
-    try {
-        await AsyncStorage.setItem(SELECTED_AIRPORT, JSON.stringify(selectedAirport));
-    } catch (err) {
-        console.log('Error storing selected Airport', err);
-    }
-};
-
 export const storeAirportsLoaded = async (isAirportsLoaded) => {
-    console.log('storing AIRPORTS_LOADED');
-
     try {
         await AsyncStorage.setItem(AIRPORTS_LOADED, JSON.stringify(isAirportsLoaded));
         
@@ -86,8 +75,6 @@ export const storeAirportsLoaded = async (isAirportsLoaded) => {
 };
 
 export const storeFirBoundariesLoaded = async (isFirBoundariesLoaded) => {
-    console.log('storing FIR_BOUNDARIES_LOADED', isFirBoundariesLoaded);
-
     try {
         await AsyncStorage.setItem(FIR_BOUNDARIES_LOADED, JSON.stringify(isFirBoundariesLoaded));
     } catch (err) {
@@ -111,7 +98,7 @@ export const retrieveSavedState = async () => {
         const selectedAirport = await AsyncStorage.getItem(SELECTED_AIRPORT);
 
         if (selectedAirport !== null) {
-            retrievedData.initialRegion = JSON.parse(selectedAirport);
+            retrievedData.selectedAirport = JSON.parse(selectedAirport);
         }
     } catch (err) {
         console.log('Error retrieving selectedAirport', err);

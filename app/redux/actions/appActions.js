@@ -3,7 +3,6 @@ import {
     storeFirBoundariesLoaded,
     storeInitialRegion
 } from '../../common/storageService';
-export const INITIAL_REGION_LOADED = 'INITIAL_REGION_LOADED';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
 export const ATC_FILTER_CLICKED = 'ATC_FILTER_CLICKED';
@@ -13,6 +12,8 @@ export const AIRPORT_SELECTED = 'AIRPORT_SELECTED';
 export const AIRPORTS_LOADED = 'AIRPORTS_LOADED';
 export const FIR_BOUNDARIES_LOADED = 'FIR_BOUNDARIES_LOADED';
 export const LOADING_DB = 'LOADING_DB';
+export const FLY_TO_CLIENT = 'FLY_TO_CLIENT';
+export const FLY_TO_CONSUMED = 'FLY_TO_CONSUMED';
 
 export const saveAirportsLoaded = (isAirportsLoaded) => {
     return async (dispatch) => {
@@ -49,13 +50,6 @@ const loadingDb = (loadingDb) => {
             airports: loadingDb.airports,
             firs: loadingDb.firs
         }}
-    };
-};
-
-const initialRegionLoaded = (region) => {
-    return {
-        type: INITIAL_REGION_LOADED,
-        payload: {initialRegion: region}
     };
 };
 
@@ -99,6 +93,17 @@ const searchQueryChanged = (searchQuery) => {
     };
 };
 
+const flyToClient = (coordinate) => {
+    return {
+        type: FLY_TO_CLIENT,
+        payload: coordinate,
+    };
+};
+
+const flyToConsumed = () => {
+    return {type: FLY_TO_CONSUMED};
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch) {
         const initialRegion = { region };
@@ -111,12 +116,13 @@ export default {
     saveFirBoundariesLoaded: saveFirBoundariesLoaded,
     saveAirportsLoaded: saveAirportsLoaded,
     loadingDb: loadingDb,
-    initialRegionLoaded: initialRegionLoaded,
     regionUpdated: regionUpdated,
     saveInitialRegion: saveInitialRegion,
     clientSelected: clientSelected,
     airportSelected: airportSelected,
     atcFilterClicked: atcFilterClicked,
     pilotsFilterClicked: pilotsFilterClicked,
-    searchQueryChanged: searchQueryChanged
+    searchQueryChanged: searchQueryChanged,
+    flyToClient: flyToClient,
+    flyToConsumed: flyToConsumed,
 };

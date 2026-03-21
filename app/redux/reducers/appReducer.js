@@ -1,6 +1,7 @@
 import {
-    CLIENT_SELECTED, INITIAL_REGION_LOADED, AIRPORT_SELECTED,
-    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED
+    CLIENT_SELECTED, REGION_UPDATED, AIRPORT_SELECTED,
+    ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED,
+    FLY_TO_CLIENT, FLY_TO_CONSUMED,
 } from '../actions/appActions';
 
 const appReducer = (state = {
@@ -11,15 +12,14 @@ const appReducer = (state = {
         firs: 0
     },
     initialRegion: {},
-    theme: {},
-    navigation: {},
     selectedClient: undefined,
     selectedAirport: undefined,
+    pendingFlyTo: null,
     filters: {pilots: true, atc: true, searchQuery: ''}
 }, action) => {
     switch (action.type) {
-    case INITIAL_REGION_LOADED:
-        return {...state, initialRegion: action.payload.initialRegion};
+    case REGION_UPDATED:
+        return {...state, initialRegion: action.payload.region.region};
     case CLIENT_SELECTED:
         return {...state, selectedClient: action.payload.selectedClient};
     case AIRPORT_SELECTED:
@@ -48,6 +48,10 @@ const appReducer = (state = {
         return {...state, airportsLoaded: action.payload.airportsLoaded};
     case FIR_BOUNDARIES_LOADED:
         return {...state, firBoundariesLoaded: action.payload.firBoundariesLoaded};
+    case FLY_TO_CLIENT:
+        return {...state, pendingFlyTo: action.payload};
+    case FLY_TO_CONSUMED:
+        return {...state, pendingFlyTo: null};
     default:
         return state;
     }

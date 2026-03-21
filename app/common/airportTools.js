@@ -12,7 +12,6 @@ export const findAirportByCodeInAptList = (code, airports) => {
     const airport = airports.find(airport => airport.icao == code || airport.iata == code);
     if(airport)
         return airport;
-    console.log('null airport', code);
     return null;
 };
 
@@ -24,14 +23,12 @@ export const findAirportByCodeInAptList = (code, airports) => {
  */
 export const getAirportByCode = (code, airports) => {
     if(!code || !airports) {
-        console.log('null airport', code);
         return null;
     }
     if (airports.iata[code] !== undefined)
         return (airports.icao[airports.iata[code].icao]);
     if (airports.icao[code] !== undefined)
         return airports.icao[code];
-    console.log('null airport', code);
     return null;
 };
 
@@ -68,21 +65,8 @@ export const getAirportNameByCode = (code, airports) => {
         return airports.icao[code].name;
     if (airports.iata[code] !== undefined)
         return airports.icao[airports.iata[code]].name;
-    console.log('null airport', code);
     return '';
 };
-
-/**
- * Finds the airport's country for code
- * @param icao
- * @param countries
- * @returns {null|*}
- */
-export function getAirportCountryFromIcao(icao, countries) {
-    if(!icao || !countries)
-        return null;
-    return countries[icao.substr(0,2)];
-}
 
 /**
  * Gets pilot and airport objects and calculates distance in NM
