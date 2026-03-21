@@ -33,6 +33,7 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
     const hasBadges = badges.length > 0;
 
     const [anchor, setAnchor] = useState({ x: 0, y: hasBadges ? 0.3 : 0.5 });
+    const [centerOffset, setCenterOffset] = useState({ x: 0, y: 0 });
     const [tracksViewChanges, setTracksViewChanges] = useState(true);
     const layoutCountRef = useRef(0);
     const containerSizeRef = useRef({ width: 0, height: 0 });
@@ -46,6 +47,12 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
         const dotCenterX = DOT_SIZE / 2;
         const dotCenterY = topY + topH / 2;
         setAnchor({ x: dotCenterX / width, y: dotCenterY / height });
+        if (!isAndroid) {
+            setCenterOffset({
+                x: width / 2 - dotCenterX,
+                y: height / 2 - dotCenterY,
+            });
+        }
         setTracksViewChanges(false);
     }, []);
 
@@ -76,6 +83,7 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
             title={airport.icao}
             anchor={anchor}
             calloutAnchor={anchor}
+            centerOffset={isAndroid ? undefined : centerOffset}
             onPress={() => onPress(airport)}
             tracksViewChanges={tracksViewChanges}
             tracksInfoWindowChanges={false}
