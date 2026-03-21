@@ -17,6 +17,7 @@ app.json.prod
 # app.json
 
 vatviewanalytics-9902e6a01566.json
+credentials.json
 google-services.json
 GoogleService-Info.plist
 /.java-version
@@ -64,3 +65,11 @@ yarn-error.*
 *.tsbuildinfo
 
 # @end expo-cli
+
+# BMAD
+_bmad/
+_bmad-output/
+.windsurf/
+
+# Jekyll build output
+docs/_site/
