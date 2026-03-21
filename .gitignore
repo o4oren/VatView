@@ -66,10 +66,18 @@ yarn-error.*
 
 # @end expo-cli
 
-# BMAD
+# AI tools / editor configs
+.claude/
+.windsurf/
+.cursor/
+.vscode/
 _bmad/
 _bmad-output/
-.windsurf/
+
+# Test output
+coverage/
+jest-results/
+.nyc_output/
 
 # Jekyll build output
 docs/_site/
