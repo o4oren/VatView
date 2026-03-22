@@ -9,6 +9,7 @@ const TRACON_BOUNDARIES = 'TRACON_BOUNDARIES';
 const FIR_GEOJSON = 'FIR_GEOJSON';
 export const TRACON_RELEASE_TAG_KEY = 'TRACON_RELEASE_TAG';
 export const FIR_GEOJSON_RELEASE_TAG_KEY = 'FIR_GEOJSON_RELEASE_TAG';
+const POLLING_INTERVAL = 'POLLING_INTERVAL';
 
 export const clearStorage = () => {
     AsyncStorage.clear();
@@ -79,6 +80,24 @@ export const storeFirBoundariesLoaded = async (isFirBoundariesLoaded) => {
         await AsyncStorage.setItem(FIR_BOUNDARIES_LOADED, JSON.stringify(isFirBoundariesLoaded));
     } catch (err) {
         console.log('Error storing db state', err);
+    }
+};
+
+export const storePollingInterval = async (intervalMs) => {
+    try {
+        await AsyncStorage.setItem(POLLING_INTERVAL, String(intervalMs));
+    } catch (err) {
+        console.log('Error storing polling interval', err);
+    }
+};
+
+export const getPollingInterval = async () => {
+    try {
+        const val = await AsyncStorage.getItem(POLLING_INTERVAL);
+        return val !== null ? Number(val) : null;
+    } catch (err) {
+        console.log('Error retrieving polling interval', err);
+        return null;
     }
 };
 

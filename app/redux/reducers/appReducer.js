@@ -1,7 +1,7 @@
 import {
     CLIENT_SELECTED, REGION_UPDATED, AIRPORT_SELECTED,
     ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED,
-    FLY_TO_CLIENT, FLY_TO_CONSUMED,
+    FLY_TO_CLIENT, FLY_TO_CONSUMED, POLLING_INTERVAL_CHANGED,
 } from '../actions/appActions';
 
 const appReducer = (state = {
@@ -15,6 +15,7 @@ const appReducer = (state = {
     selectedClient: undefined,
     selectedAirport: undefined,
     pendingFlyTo: null,
+    pollingInterval: 60000,
     filters: {pilots: true, atc: true, searchQuery: ''}
 }, action) => {
     switch (action.type) {
@@ -52,6 +53,8 @@ const appReducer = (state = {
         return {...state, pendingFlyTo: action.payload};
     case FLY_TO_CONSUMED:
         return {...state, pendingFlyTo: null};
+    case POLLING_INTERVAL_CHANGED:
+        return {...state, pollingInterval: action.payload};
     default:
         return state;
     }

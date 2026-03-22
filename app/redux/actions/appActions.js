@@ -1,7 +1,8 @@
 import {
     storeAirportsLoaded,
     storeFirBoundariesLoaded,
-    storeInitialRegion
+    storeInitialRegion,
+    storePollingInterval,
 } from '../../common/storageService';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
@@ -14,6 +15,7 @@ export const FIR_BOUNDARIES_LOADED = 'FIR_BOUNDARIES_LOADED';
 export const LOADING_DB = 'LOADING_DB';
 export const FLY_TO_CLIENT = 'FLY_TO_CLIENT';
 export const FLY_TO_CONSUMED = 'FLY_TO_CONSUMED';
+export const POLLING_INTERVAL_CHANGED = 'POLLING_INTERVAL_CHANGED';
 
 export const saveAirportsLoaded = (isAirportsLoaded) => {
     return async (dispatch) => {
@@ -104,6 +106,20 @@ const flyToConsumed = () => {
     return {type: FLY_TO_CONSUMED};
 };
 
+const pollingIntervalChanged = (intervalMs) => {
+    return {
+        type: POLLING_INTERVAL_CHANGED,
+        payload: intervalMs,
+    };
+};
+
+export const savePollingInterval = (intervalMs) => {
+    return async (dispatch) => {
+        await storePollingInterval(intervalMs);
+        dispatch(pollingIntervalChanged(intervalMs));
+    };
+};
+
 export function saveInitialRegion(region) {
     return async function saveRegion(dispatch) {
         const initialRegion = { region };
@@ -125,4 +141,5 @@ export default {
     searchQueryChanged: searchQueryChanged,
     flyToClient: flyToClient,
     flyToConsumed: flyToConsumed,
+    savePollingInterval: savePollingInterval,
 };

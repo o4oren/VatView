@@ -21,6 +21,7 @@ export default function mainApp() {
     const staticAirspaceData = useSelector(state => state.staticAirspaceData);
     const airportsLoaded = useSelector(state => state.app.airportsLoaded);
     const firBoundariesLoaded = useSelector(state => state.app.firBoundariesLoaded);
+    const pollingInterval = useSelector(state => state.app.pollingInterval);
     const {activeTheme} = useTheme();
     const [iconsReady, setIconsReady] = useState(false);
 
@@ -81,12 +82,12 @@ export default function mainApp() {
     useEffect(() => {
         if(isReady()) {
             dispatch(allActions.vatsimLiveDataActions.updateData);
-            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), 20 * 1000);
+            const interval = setInterval(() => dispatch(allActions.vatsimLiveDataActions.updateData), pollingInterval);
             return () => {
                 clearInterval(interval);
             };
         }
-    }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded, iconsReady]);
+    }, [staticAirspaceData, airportsLoaded, firBoundariesLoaded, iconsReady, pollingInterval]);
 
     const Stack = createNativeStackNavigator();
     const navigationRef = useRef();
