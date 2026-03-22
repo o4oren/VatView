@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, ScrollView, StyleSheet, Linking, Image, Platform, Pressable} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import {useTheme} from '../../common/ThemeProvider';
@@ -10,11 +10,24 @@ import ThemedText from '../shared/ThemedText';
 import ThemePicker from '../shared/ThemePicker';
 import {tokens} from '../../common/themeTokens';
 import {getReleaseTag, FIR_GEOJSON_RELEASE_TAG_KEY, TRACON_RELEASE_TAG_KEY} from '../../common/storageService';
+import allActions from '../../redux/actions';
+
+const POLLING_OPTIONS = [
+    {label: '15s', value: 15000},
+    {label: '20s', value: 20000},
+    {label: '30s', value: 30000},
+    {label: '45s', value: 45000},
+    {label: '60s', value: 60000},
+    {label: '2m', value: 120000},
+    {label: '5m', value: 300000},
+];
 
 const Settings = () => {
     const insets = useSafeAreaInsets();
+    const dispatch = useDispatch();
     const {activeTheme, largeFonts, toggleLargeFonts} = useTheme();
     const liveData = useSelector(state => state.vatsimLiveData);
+    const pollingInterval = useSelector(state => state.app.pollingInterval);
     const [firGeoJsonReleaseTag, setFirGeoJsonReleaseTag] = useState(null);
     const [traconReleaseTag, setTraconReleaseTag] = useState(null);
 
@@ -89,6 +102,35 @@ const Settings = () => {
                                 onPress={() => toggleLargeFonts(opt.value)}
                                 accessibilityRole="button"
                                 accessibilityLabel={`${opt.label} font size`}
+                                accessibilityState={{selected: isActive}}
+                                style={[
+                                    styles.chipBase,
+                                    isActive ? styles.chipActive : styles.chipInactive,
+                                    {borderColor},
+                                ]}
+                            >
+                                <ThemedText variant="body-sm" color={textColor}>
+                                    {opt.label}
+                                </ThemedText>
+                            </Pressable>
+                        );
+                    })}
+                </View>
+
+                <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.fontSizeLabel}>
+                    Data refresh interval
+                </ThemedText>
+                <View style={styles.chipRow}>
+                    {POLLING_OPTIONS.map(opt => {
+                        const isActive = opt.value === pollingInterval;
+                        const borderColor = isActive ? activeTheme.accent.primary : activeTheme.surface.border;
+                        const textColor = isActive ? activeTheme.text.primary : activeTheme.text.secondary;
+                        return (
+                            <Pressable
+                                key={opt.value}
+                                onPress={() => dispatch(allActions.appActions.savePollingInterval(opt.value))}
+                                accessibilityRole="button"
+                                accessibilityLabel={`${opt.label} refresh interval`}
                                 accessibilityState={{selected: isActive}}
                                 style={[
                                     styles.chipBase,
@@ -261,6 +303,7 @@ const styles = StyleSheet.create({
     },
     chipRow: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         gap: 8,
     },
     chipBase: {

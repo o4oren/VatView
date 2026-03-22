@@ -4,7 +4,7 @@ import {Provider} from 'react-redux';
 import {applyMiddleware, legacy_createStore as createStore} from 'redux';
 import combineReducers from './app/redux/reducers/rootReducer';
 import MainApp from './app/components/mainApp/MainApp';
-import {retrieveSavedState} from './app/common/storageService';
+import {retrieveSavedState, getPollingInterval} from './app/common/storageService';
 import {parseFirGeoJson, parseTraconJson} from './app/common/boundaryService';
 import { thunk as thunkMiddleware } from 'redux-thunk';
 import { composeWithDevTools } from '@redux-devtools/extension';
@@ -80,6 +80,7 @@ export default function App() {
     useEffect(() => {
         async function loadStateFromStorage() {
             const savedState = await retrieveSavedState();
+            const savedPollingInterval = await getPollingInterval();
             let firBoundaryLookup = {};
             let traconBoundaryLookup = {};
             try {
@@ -96,7 +97,8 @@ export default function App() {
                 isReady: true,
                 savedState: savedState,
                 firBoundaryLookup: firBoundaryLookup,
-                traconBoundaryLookup: traconBoundaryLookup
+                traconBoundaryLookup: traconBoundaryLookup,
+                pollingInterval: savedPollingInterval,
             });
         }
         loadStateFromStorage();
@@ -121,6 +123,7 @@ export default function App() {
                 airports: 0,
                 firs: 0
             },
+            pollingInterval: state.pollingInterval || 60000,
         },
         staticAirspaceData: {
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
