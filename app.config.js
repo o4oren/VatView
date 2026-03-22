@@ -28,7 +28,7 @@ module.exports = {
         name: 'VatView',
         slug: 'vatview',
         platforms: ['ios', 'android'],
-        version: '2.0.1',
+        version: '2.0.0',
         orientation: 'default',
         userInterfaceStyle: 'automatic',
         icon: './graphics/icons/icon-1024-background.png',

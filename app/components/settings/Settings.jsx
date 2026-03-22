@@ -14,7 +14,6 @@ import allActions from '../../redux/actions';
 
 const POLLING_OPTIONS = [
     {label: '15s', value: 15000},
-    {label: '20s', value: 20000},
     {label: '30s', value: 30000},
     {label: '45s', value: 45000},
     {label: '60s', value: 60000},
@@ -84,8 +83,10 @@ const Settings = () => {
 
                 <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
-                {/* Appearance section */}
-                <ThemedText variant="heading" style={styles.sectionHeader}>Appearance</ThemedText>
+                {/* Settings section */}
+                <ThemedText variant="heading" style={styles.sectionHeader}>Settings</ThemedText>
+
+                <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.fontSizeLabel}>Appearance</ThemedText>
                 <ThemePicker />
 
                 <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.fontSizeLabel}>
@@ -296,6 +297,10 @@ const styles = StyleSheet.create({
     },
     sectionHeader: {
         marginBottom: 12,
+    },
+    subSectionHeader: {
+        marginBottom: 8,
+        fontWeight: '500',
     },
     fontSizeLabel: {
         marginTop: 16,
