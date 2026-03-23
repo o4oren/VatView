@@ -18,7 +18,7 @@ const AIRCRAFT_TYPES = {
     C172: {
         svgFile: require('../../assets/svg/c172.svg'),
         scale: 0.55,
-        candidates: ['C172', 'C182', 'C152', 'C206', 'C208', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
+        candidates: ['C172', 'C182', 'C152', 'C206', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
     },
     B747: {
         svgFile: require('../../assets/svg/b747.svg'),
@@ -100,6 +100,11 @@ const AIRCRAFT_TYPES = {
         svgFile: require('../../assets/svg/f35.svg'),
         scale: 0.75,
         candidates: ['F35', 'F22'],
+    },
+    C208: {
+        svgFile: require('../../assets/svg/c208.svg'),
+        scale: 0.75,
+        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P'],
     },
 };
 
