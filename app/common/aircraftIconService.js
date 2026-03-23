@@ -64,7 +64,7 @@ const AIRCRAFT_TYPES = {
     727: {
         svgFile: require('../../assets/svg/erj.svg'),
         scale: 0.78,
-        candidates: ['B721', 'B722','R722', 'T134']
+        candidates: ['B721', 'B722','R722', 'T134', 'MD80', 'MD81', 'MD82', 'MD83', 'MD87', 'MD88', 'DC91', 'B717', 'DC92', 'DC93', 'DC94', 'DC95']
     },
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
