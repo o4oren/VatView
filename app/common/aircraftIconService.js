@@ -22,7 +22,7 @@ const AIRCRAFT_TYPES = {
     },
     B747: {
         svgFile: require('../../assets/svg/b747.svg'),
-        scale: 1.1,
+        scale: 1.2,
         candidates: ['B741', 'B742', 'B744', 'B748', 'B74R', 'B74S', 'B74L'],
     },
     B767: {
@@ -48,7 +48,7 @@ const AIRCRAFT_TYPES = {
     A330: {
         svgFile: require('../../assets/svg/a330.svg'),
         scale: 1.0,
-        candidates: ['A332', 'A333', 'A339', 'A310', 'A306', 'A300', 'A33X', 'A33Y', 'A359', 'A35K', 'A350', 'A351'],
+        candidates: ['A332', 'A333', 'A338', 'A339', 'A310', 'A306', 'A300', 'A33X', 'A33Y', 'A359', 'A35K', 'A350', 'A351'],
     },
     A380: {
         svgFile: require('../../assets/svg/a380.svg'),
@@ -57,13 +57,14 @@ const AIRCRAFT_TYPES = {
     },
     ERJ: {
         svgFile: require('../../assets/svg/erj.svg'),
-        scale: 0.6,
-        candidates: ['CRJ1', 'CRJ2', 'CRJ7', 'CRJX', 'CRJ9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'C700', 'C750', 'C650','F2TH', 'FA50', 'F27', 'F28', 'CL60'],
+        scale: 0.65,
+        candidates: ['CRJ1', 'CRJ2', 'CRJ7', 'CRJX', 'CRJ9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 
+            'C25B', 'C56X', 'C500', 'C700', 'C750', 'C650','F2TH', 'FA50', 'F27', 'F28', 'CL60', 'HDJT'],
     },
     727: {
         svgFile: require('../../assets/svg/erj.svg'),
-        scale: 0.75,
-        candidates: ['B721', 'B722','T134']
+        scale: 0.78,
+        candidates: ['B721', 'B722','R722', 'T134']
     },
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
@@ -72,7 +73,7 @@ const AIRCRAFT_TYPES = {
     },
     DC3: {
         svgFile: require('../../assets/svg/dc3.svg'),
-        scale: 0.6,
+        scale: 0.65,
         candidates: ['DC3', 'C47', 'PA34', 'B300', 'B200', 'BE58', 'DH8D', 'DH8A'],
     },
     Helicopter: {
@@ -89,6 +90,11 @@ const AIRCRAFT_TYPES = {
         svgFile: require('../../assets/svg/conc.svg'),
         scale: 1.3,
         candidates: ['CONC'],
+    },
+    F16: {
+        svgFile: require('../../assets/svg/f16.svg'),
+        scale: 0.75,
+        candidates: ['F16', 'F15', 'F18', 'F18S', 'F35', 'C17'],
     },
 };
 
