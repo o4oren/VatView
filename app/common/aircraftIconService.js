@@ -5,6 +5,11 @@ import { PixelRatio } from 'react-native';
 
 // 15 aircraft icon keys with SVG asset, scale factor, and type-code candidates
 const AIRCRAFT_TYPES = {
+    B707: {
+        svgFile: require('../../assets/svg/a340.svg'),
+        scale: 0.75,
+        candidates: ['B720', 'K35R', 'B701', 'B703', 'KC37R', 'KC35E', 'E3TF'],
+    },
     B737: {
         svgFile: require('../../assets/svg/b737.svg'),
         scale: 0.75,
@@ -69,7 +74,7 @@ const AIRCRAFT_TYPES = {
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
         scale: 0.65,
-        candidates: ['E195', 'E95', 'E170', 'E175', 'E190'],
+        candidates: ['E195', 'E95', 'E170', 'E175', 'E190', 'E75L', 'E75X'],
     },
     DC3: {
         svgFile: require('../../assets/svg/dc3.svg'),
