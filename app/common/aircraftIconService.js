@@ -84,7 +84,7 @@ const AIRCRAFT_TYPES = {
     A400: {
         svgFile: require('../../assets/svg/a400.svg'),
         scale: 0.75,
-        candidates: ['A400', 'C130', 'C30J'],
+        candidates: ['A400', 'C130', 'C30J', 'C17'],
     },
     Conc: {
         svgFile: require('../../assets/svg/conc.svg'),
@@ -94,7 +94,7 @@ const AIRCRAFT_TYPES = {
     F16: {
         svgFile: require('../../assets/svg/f16.svg'),
         scale: 0.75,
-        candidates: ['F16', 'F15', 'F18', 'F18S', 'F35', 'C17'],
+        candidates: ['F16', 'F15', 'F18', 'F18S', 'F35'],
     },
 };
 
