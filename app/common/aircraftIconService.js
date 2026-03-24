@@ -22,7 +22,7 @@ const AIRCRAFT_TYPES = {
     },
     C172: {
         svgFile: require('../../assets/svg/c172.svg'),
-        scale: 0.55,
+        scale: 0.6,
         candidates: ['C172', 'C182', 'C152', 'C206', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
     },
     B747: {
@@ -74,12 +74,19 @@ const AIRCRAFT_TYPES = {
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
         scale: 0.65,
-        candidates: ['E195', 'E95', 'E170', 'E175', 'E190', 'E75L', 'E75X'],
+        candidates: ['E195', 'E95', 'E170', 'E175', 'E190', 'E75L'],
+    },
+    B200: {
+        svgFile: require('../../assets/svg/b200.svg'),
+        scale: 0.75,
+        candidates: ['B200', 'B300', 'BE58', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
+            'DH8D', 'DH8A', 'DH8B', 'DH8C', 'AT43', 'AT45', 'AT72', 'AT73', 'AT75', 'AT76',
+            'JS31', 'JS32', 'JS41', 'SF34', 'SW4', 'E110', 'L410', 'DHC6', 'BN2P'],
     },
     DC3: {
         svgFile: require('../../assets/svg/dc3.svg'),
         scale: 0.65,
-        candidates: ['DC3', 'C47', 'PA34', 'B300', 'B200', 'BE58', 'DH8D', 'DH8A'],
+        candidates: ['DC3', 'C47', 'BE18'],
     },
     Helicopter: {
         svgFile: require('../../assets/svg/helicopter.svg'),
