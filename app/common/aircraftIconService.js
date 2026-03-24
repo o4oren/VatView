@@ -5,6 +5,11 @@ import { PixelRatio } from 'react-native';
 
 // 15 aircraft icon keys with SVG asset, scale factor, and type-code candidates
 const AIRCRAFT_TYPES = {
+    B707: {
+        svgFile: require('../../assets/svg/a340.svg'),
+        scale: 0.75,
+        candidates: ['B720', 'K35R', 'B701', 'B703', 'KC37R', 'KC35E', 'E3TF'],
+    },
     B737: {
         svgFile: require('../../assets/svg/b737.svg'),
         scale: 0.75,
@@ -17,12 +22,12 @@ const AIRCRAFT_TYPES = {
     },
     C172: {
         svgFile: require('../../assets/svg/c172.svg'),
-        scale: 0.55,
-        candidates: ['C172', 'C182', 'C152', 'C206', 'C208', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
+        scale: 0.6,
+        candidates: ['C172', 'C182', 'C152', 'C206', 'P206', 'SR20', 'SR22', 'PA22', 'PA28', 'PA31', 'PA44', 'C210', 'DA40', 'DA42', 'DR40', 'BE36'],
     },
     B747: {
         svgFile: require('../../assets/svg/b747.svg'),
-        scale: 1.1,
+        scale: 1.2,
         candidates: ['B741', 'B742', 'B744', 'B748', 'B74R', 'B74S', 'B74L'],
     },
     B767: {
@@ -48,7 +53,7 @@ const AIRCRAFT_TYPES = {
     A330: {
         svgFile: require('../../assets/svg/a330.svg'),
         scale: 1.0,
-        candidates: ['A332', 'A333', 'A339', 'A310', 'A306', 'A300', 'A33X', 'A33Y', 'A359', 'A35K', 'A350', 'A351'],
+        candidates: ['A332', 'A333', 'A338', 'A339', 'A310', 'A306', 'A300', 'A33X', 'A33Y', 'A359', 'A35K', 'A350', 'A351'],
     },
     A380: {
         svgFile: require('../../assets/svg/a380.svg'),
@@ -57,33 +62,61 @@ const AIRCRAFT_TYPES = {
     },
     ERJ: {
         svgFile: require('../../assets/svg/erj.svg'),
-        scale: 0.6,
-        candidates: ['CRJ1', 'CRJ2', 'CRJ7', 'CRJX', 'CRJ9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 'C25B', 'C56X', 'C500', 'C700', 'C750', 'C650','F2TH', 'FA50', 'F27', 'F28', 'CL60'],
+        scale: 0.65,
+        candidates: ['CRJ1', 'CRJ2', 'CRJ7', 'CRJX', 'CRJ9', 'CJ', 'GLF5', 'LJ35', 'C25C', 'C510', 'C550', 'C560', 
+            'C25B', 'C56X', 'C500', 'C700', 'C750', 'C650','F2TH', 'FA50', 'F27', 'F28', 'CL60', 'HDJT'],
     },
     727: {
         svgFile: require('../../assets/svg/erj.svg'),
-        scale: 0.75,
-        candidates: ['B721', 'B722','T134']
+        scale: 0.78,
+        candidates: ['B721', 'B722','R722', 'T134', 'MD80', 'MD81', 'MD82', 'MD83', 'MD87', 'MD88', 'DC91', 'B717', 'DC92', 'DC93', 'DC94', 'DC95']
     },
     E195: {
         svgFile: require('../../assets/svg/e195.svg'),
         scale: 0.65,
-        candidates: ['E195', 'E95', 'E170', 'E175', 'E190'],
+        candidates: ['E195', 'E95', 'E170', 'E175', 'E190', 'E75L'],
+    },
+    B200: {
+        svgFile: require('../../assets/svg/b200.svg'),
+        scale: 0.75,
+        candidates: ['B200', 'B300', 'BE58', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
+            'DH8D', 'DH8A', 'DH8B', 'DH8C', 'AT43', 'AT45', 'AT72', 'AT73', 'AT75', 'AT76',
+            'JS31', 'JS32', 'JS41', 'SF34', 'SW4', 'E110', 'L410', 'DHC6', 'BN2P'],
     },
     DC3: {
         svgFile: require('../../assets/svg/dc3.svg'),
-        scale: 0.6,
-        candidates: ['DC3', 'C47', 'PA34', 'B300', 'B200', 'BE58', 'DH8D', 'DH8A'],
+        scale: 0.65,
+        candidates: ['DC3', 'C47', 'BE18'],
     },
     Helicopter: {
         svgFile: require('../../assets/svg/helicopter.svg'),
         scale: 0.6,
         candidates: ['R22', 'R44', 'R66', 'AS50', 'AS60', 'H125', 'EC45', 'B06', 'H500', 'H135'],
     },
+    A400: {
+        svgFile: require('../../assets/svg/a400.svg'),
+        scale: 0.75,
+        candidates: ['A400', 'C130', 'C30J', 'C17'],
+    },
     Conc: {
         svgFile: require('../../assets/svg/conc.svg'),
         scale: 1.3,
         candidates: ['CONC'],
+    },
+    F16: {
+        svgFile: require('../../assets/svg/f16.svg'),
+        scale: 0.75,
+        candidates: ['F16', 'F15', 'F18', 'F18S'],
+    },
+    F35: {
+        svgFile: require('../../assets/svg/f35.svg'),
+        scale: 0.75,
+        candidates: ['F35', 'F22'],
+    },
+    C208: {
+        svgFile: require('../../assets/svg/c208.svg'),
+        scale: 0.75,
+        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P'],
     },
 };
 
