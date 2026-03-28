@@ -4,7 +4,7 @@ import ThemedText from '../shared/ThemedText';
 import {useTheme} from '../../common/ThemeProvider';
 import {airlineLogos} from '../../common/airlineLogos';
 import {getAirportsByICAOAsync} from '../../common/staticDataAcessLayer';
-import {getDistanceFromLatLonInNm} from '../../common/timeDIstanceTools';
+import {getDistanceFromLatLonInNm, getZuluTimeFromDate} from '../../common/timeDIstanceTools';
 
 const PILOT_RATINGS = {
     0: 'NEW',
@@ -27,13 +27,23 @@ function formatAltitude(alt) {
     return alt.toLocaleString('en-US');
 }
 
-function formatEnrouteTime(minutes) {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    if (h > 0) {
-        return h + 'h ' + m + 'm';
+// enrouteTime is VATSIM HHMM format (e.g. 130 = 1h 30m)
+function etaFromFiledEnroute(enrouteTime) {
+    const h = Math.floor(enrouteTime / 100);
+    const m = enrouteTime % 100;
+    const eta = new Date();
+    eta.setUTCHours(eta.getUTCHours() + h, eta.getUTCMinutes() + m);
+    return getZuluTimeFromDate(eta);
+}
+
+function etaFromRemainingAndSpeed(remainingNm, groundspeed) {
+    if (!groundspeed || groundspeed < 30) {
+        return null;
     }
-    return m + 'm';
+    const minutesRemaining = (remainingNm / groundspeed) * 60;
+    const eta = new Date();
+    eta.setUTCMinutes(eta.getUTCMinutes() + Math.round(minutesRemaining));
+    return getZuluTimeFromDate(eta);
 }
 
 function formatTimeOnline(logonTime) {
@@ -109,9 +119,11 @@ export default function PilotDetailCard({pilot}) {
         percentage = totalDist > 0 ? Math.min(100, Math.round((flownDist / totalDist) * 100)) : 0;
     }
 
-    const enrouteTime = fp?.enroute_time != null
-        ? formatEnrouteTime(fp.enroute_time)
-        : null;
+    // Airborne: use remaining distance + current groundspeed
+    // Pre-departure/on-ground: fall back to filed enroute time
+    const eta = remaining != null && pilot.groundspeed >= 30
+        ? etaFromRemainingAndSpeed(remaining, pilot.groundspeed)
+        : (fp?.enroute_time != null ? etaFromFiledEnroute(fp.enroute_time) : null);
 
     const timeOnline = formatTimeOnline(pilot.logon_time);
     const ratingLabel = PILOT_RATINGS[pilot.pilot_rating] || 'Unknown';
@@ -186,7 +198,7 @@ export default function PilotDetailCard({pilot}) {
                         `Route ${fp.route || 'not available'}, ` +
                         `heading ${pilot.heading} degrees` +
                         (totalDist != null ? `, distance ${totalDist} nautical miles, ${remaining} remaining` : '') +
-                        (enrouteTime ? `, time enroute ${enrouteTime}` : '')
+                        (eta ? `, ETA ${eta}` : '')
                     }
                 >
                     <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
@@ -208,10 +220,10 @@ export default function PilotDetailCard({pilot}) {
                                 <ThemedText variant="data">{remaining + ' nm'}</ThemedText>
                             </View>
                         )}
-                        {enrouteTime && (
+                        {eta && (
                             <View style={styles.dataItem}>
-                                <ThemedText variant="caption" color={activeTheme.text.secondary}>{'ETE'}</ThemedText>
-                                <ThemedText variant="data">{enrouteTime}</ThemedText>
+                                <ThemedText variant="caption" color={activeTheme.text.secondary}>{'ETA'}</ThemedText>
+                                <ThemedText variant="data">{eta}</ThemedText>
                             </View>
                         )}
                     </View>
