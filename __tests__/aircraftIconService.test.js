@@ -67,7 +67,7 @@ describe('resolveIconKey', () => {
     });
 
     it('matches ERJ/bizjet codes', () => {
-        expect(resolveIconKey('E170').iconKey).toBe('ERJ');
+        expect(resolveIconKey('E170').iconKey).toBe('E195'); // E170 is Embraer E-Jet family
         expect(resolveIconKey('CRJ1').iconKey).toBe('ERJ');
         expect(resolveIconKey('GLF5').iconKey).toBe('ERJ');
     });
@@ -78,7 +78,7 @@ describe('resolveIconKey', () => {
 
     it('matches DC3 variants', () => {
         expect(resolveIconKey('DC3').iconKey).toBe('DC3');
-        expect(resolveIconKey('B300').iconKey).toBe('DC3');
+        expect(resolveIconKey('B300').iconKey).toBe('B200'); // B300 is King Air 300, same family as B200
     });
 
     it('matches B767 variants', () => {

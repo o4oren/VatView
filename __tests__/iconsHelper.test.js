@@ -23,13 +23,13 @@ describe('getAircraftIcon (legacy wrapper)', () => {
     it('returns valid result for null code (C172 fallback)', () => {
         const [imageSource, sizeDp] = getAircraftIcon(null);
         expect(imageSource).not.toBeNull();
-        expect(sizeDp).toBe(18); // C172 scale
+        expect(sizeDp).toBe(19); // C172 scale 0.6 → round(32*0.6) = 19
     });
 
     it('returns valid result for unknown code (C172 fallback)', () => {
         const [imageSource, sizeDp] = getAircraftIcon('ZZZZ');
         expect(imageSource).not.toBeNull();
-        expect(sizeDp).toBe(18);
+        expect(sizeDp).toBe(19); // C172 scale 0.6 → round(32*0.6) = 19
     });
 });
 
