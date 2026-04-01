@@ -1,6 +1,11 @@
 import React from 'react';
 import renderer, {act} from 'react-test-renderer';
 
+const mockNavigate = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+    useNavigation: () => ({ navigate: mockNavigate }),
+}));
+
 const mockToggleTheme = jest.fn();
 
 jest.mock('../app/common/ThemeProvider', () => ({
@@ -22,7 +27,9 @@ jest.mock('react-redux', () => ({
             clients: {pilots: [{callsign: 'TEST123'}], controllerCount: 3},
             servers: [{name: 'USA-EAST', location: 'New York', hostname_or_ip: '192.0.2.1'}],
         },
+        app: { pollingInterval: 60000, myCid: '', friendCids: [] },
     })),
+    useDispatch: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('expo-constants', () => ({
@@ -154,5 +161,11 @@ describe('Settings', () => {
         expect(json).toContain('2.0.0');
         expect(json).toContain('52.0.0');
         expect(json).toContain('production');
+    });
+
+    test('renders "My VATSIM" row that navigates to MyVatsimSettings', async () => {
+        const tree = await renderSettings();
+        const json = JSON.stringify(tree.toJSON());
+        expect(json).toContain('My VATSIM');
     });
 });
