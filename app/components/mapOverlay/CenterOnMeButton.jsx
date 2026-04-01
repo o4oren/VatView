@@ -34,7 +34,7 @@ const CenterOnMeButton = () => {
             {({pressed}) => (
                 <MaterialCommunityIcons
                     name="crosshairs-gps"
-                    size={14}
+                    size={22}
                     color={activeTheme.accent.primary}
                     style={{opacity: pressed ? 0.5 : 1}}
                 />
