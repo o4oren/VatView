@@ -3,6 +3,8 @@ import {
     storeFirBoundariesLoaded,
     storeInitialRegion,
     storePollingInterval,
+    storeMyCid,
+    storeFriendCids,
 } from '../../common/storageService';
 export const REGION_UPDATED = 'REGION_UPDATED';
 export const CLIENT_SELECTED = 'CLIENT_SELECTED';
@@ -16,6 +18,8 @@ export const LOADING_DB = 'LOADING_DB';
 export const FLY_TO_CLIENT = 'FLY_TO_CLIENT';
 export const FLY_TO_CONSUMED = 'FLY_TO_CONSUMED';
 export const POLLING_INTERVAL_CHANGED = 'POLLING_INTERVAL_CHANGED';
+export const MY_CID_CHANGED = 'MY_CID_CHANGED';
+export const FRIEND_CIDS_CHANGED = 'FRIEND_CIDS_CHANGED';
 
 export const saveAirportsLoaded = (isAirportsLoaded) => {
     return async (dispatch) => {
@@ -128,6 +132,26 @@ export function saveInitialRegion(region) {
     };
 }
 
+const myCidChanged = (cid) => ({
+    type: MY_CID_CHANGED,
+    payload: cid,
+});
+
+const friendCidsChanged = (cids) => ({
+    type: FRIEND_CIDS_CHANGED,
+    payload: cids,
+});
+
+export const saveMyCid = (cid) => async (dispatch) => {
+    await storeMyCid(cid);
+    dispatch(myCidChanged(cid));
+};
+
+export const saveFriendCids = (cids) => async (dispatch) => {
+    await storeFriendCids(cids);
+    dispatch(friendCidsChanged(cids));
+};
+
 export default {
     saveFirBoundariesLoaded: saveFirBoundariesLoaded,
     saveAirportsLoaded: saveAirportsLoaded,
@@ -142,4 +166,6 @@ export default {
     flyToClient: flyToClient,
     flyToConsumed: flyToConsumed,
     savePollingInterval: savePollingInterval,
+    saveMyCid: saveMyCid,
+    saveFriendCids: saveFriendCids,
 };

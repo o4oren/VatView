@@ -124,6 +124,8 @@ export default function App() {
                 firs: 0
             },
             pollingInterval: state.pollingInterval || 60000,
+            myCid: state.savedState.myCid || '',
+            friendCids: state.savedState.friendCids || [],
         },
         staticAirspaceData: {
             countries: state.savedState.staticAirspaceData != null ? state.savedState.staticAirspaceData.countries : {},
