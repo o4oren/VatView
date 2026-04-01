@@ -116,7 +116,7 @@ const AIRCRAFT_TYPES = {
     C208: {
         svgFile: require('../../assets/svg/c208.svg'),
         scale: 0.75,
-        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P'],
+        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P', 'PC12'],
     },
 };
 
