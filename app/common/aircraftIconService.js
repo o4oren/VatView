@@ -79,7 +79,7 @@ const AIRCRAFT_TYPES = {
     B200: {
         svgFile: require('../../assets/svg/b200.svg'),
         scale: 0.75,
-        candidates: ['B200', 'B300', 'BE58', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
+        candidates: ['B200', 'B300', 'BE58', 'BE60', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
             'DH8D', 'DH8A', 'DH8B', 'DH8C', 'AT43', 'AT45', 'AT72', 'AT73', 'AT75', 'AT76',
             'JS31', 'JS32', 'JS41', 'SF34', 'SW4', 'E110', 'L410', 'DHC6', 'BN2P'],
     },
