@@ -3,6 +3,21 @@ import renderer, {act} from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 
+const mockGoBack = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+    useNavigation: () => ({goBack: mockGoBack}),
+}));
+
+jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
+
+jest.mock('../app/common/aircraftIconService', () => ({
+    PILOT_ROLE_COLORS: {
+        me:     {dark: '#C0C8D0', light: '#E53935'},
+        friend: {dark: '#00BFA5', light: '#00BFA5'},
+        other:  null,
+    },
+}));
+
 jest.mock('../app/common/ThemeProvider', () => ({
     useTheme: () => ({
         activeTheme: {
@@ -52,12 +67,22 @@ const renderScreen = (myCid = '', friendCids = []) => {
     return tree;
 };
 
-afterEach(() => jest.clearAllMocks());
+afterEach(() => {
+    jest.clearAllMocks();
+    mockGoBack.mockClear();
+});
 
 describe('MyVatsimSettings', () => {
     it('renders without crashing', () => {
         const tree = renderScreen();
         expect(tree.toJSON()).not.toBeNull();
+    });
+
+    it('pressing back button calls navigation.goBack', () => {
+        const tree = renderScreen();
+        const backBtn = tree.root.find(n => n.props.accessibilityLabel === 'Go back');
+        act(() => { backBtn.props.onPress(); });
+        expect(mockGoBack).toHaveBeenCalled();
     });
 
     it('renders CID input pre-filled with myCid from Redux', () => {

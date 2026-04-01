@@ -163,9 +163,12 @@ describe('Settings', () => {
         expect(json).toContain('production');
     });
 
-    test('renders "My VATSIM" row that navigates to MyVatsimSettings', async () => {
+    test('renders "My VATSIM" row and navigates to MyVatsimSettings on press', async () => {
         const tree = await renderSettings();
         const json = JSON.stringify(tree.toJSON());
         expect(json).toContain('My VATSIM');
+        const navRow = tree.root.find(n => n.props.accessibilityLabel === 'My VATSIM settings');
+        await act(async () => { navRow.props.onPress(); });
+        expect(mockNavigate).toHaveBeenCalledWith('MyVatsimSettings');
     });
 });

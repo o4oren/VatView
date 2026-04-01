@@ -1,23 +1,33 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, ScrollView, TextInput, Pressable, StyleSheet} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTheme} from '../../common/ThemeProvider';
 import ThemedText from '../shared/ThemedText';
 import {tokens} from '../../common/themeTokens';
 import allActions from '../../redux/actions';
+import {PILOT_ROLE_COLORS} from '../../common/aircraftIconService';
 
 const MyVatsimSettings = () => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
     const {activeTheme} = useTheme();
+    const navigation = useNavigation();
     const myCid = useSelector(state => state.app.myCid);
     const friendCids = useSelector(state => state.app.friendCids);
     const [cidInput, setCidInput] = useState(myCid);
     const [friendInput, setFriendInput] = useState('');
 
+    useEffect(() => {
+        setCidInput(myCid);
+    }, [myCid]);
+
     const handleCidBlur = () => {
-        dispatch(allActions.appActions.saveMyCid(cidInput.trim()));
+        const trimmed = cidInput.trim();
+        if (trimmed && !/^\d+$/.test(trimmed)) return; // ignore non-numeric
+        dispatch(allActions.appActions.saveMyCid(trimmed));
     };
 
     const handleAddFriend = () => {
@@ -37,6 +47,14 @@ const MyVatsimSettings = () => {
                 contentContainerStyle={[styles.scrollContent, {paddingTop: insets.top + 12}]}
                 keyboardShouldPersistTaps="handled"
             >
+                <Pressable
+                    onPress={() => navigation.goBack()}
+                    style={styles.backBtn}
+                    accessibilityLabel="Go back"
+                    accessibilityRole="button"
+                >
+                    <MaterialCommunityIcons name="chevron-left" size={28} color={activeTheme.text.primary} />
+                </Pressable>
                 <ThemedText variant="heading" style={styles.sectionHeader}>My VATSIM</ThemedText>
 
                 <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.label}>
@@ -71,7 +89,7 @@ const MyVatsimSettings = () => {
                 {friendCids.map(cid => (
                     <View key={cid} style={styles.pillRow}>
                         <View style={styles.pill}>
-                            <ThemedText variant="body-sm" color="#00BFA5">{cid}</ThemedText>
+                            <ThemedText variant="body-sm" color={PILOT_ROLE_COLORS.friend.dark}>{cid}</ThemedText>
                         </View>
                         <Pressable
                             onPress={() => handleRemoveFriend(cid)}
@@ -115,6 +133,11 @@ const MyVatsimSettings = () => {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     scrollContent: { paddingHorizontal: 16, paddingBottom: 32 },
+    backBtn: {
+        alignSelf: 'flex-start',
+        marginBottom: 8,
+        padding: 4,
+    },
     sectionHeader: { marginBottom: 16 },
     label: { marginBottom: 8 },
     hint: { marginTop: 4, marginBottom: 12 },
@@ -129,7 +152,7 @@ const styles = StyleSheet.create({
     pillRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 10 },
     pill: {
         borderWidth: 1,
-        borderColor: '#00BFA5',
+        borderColor: PILOT_ROLE_COLORS.friend.dark,
         borderRadius: tokens.radius.xl,
         paddingHorizontal: 12,
         paddingVertical: 4,
