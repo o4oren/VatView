@@ -21,6 +21,7 @@ jest.mock('../app/common/useOrientation', () => ({
 
 jest.mock('../app/components/mapOverlay/FloatingFilterChips', () => 'FloatingFilterChips');
 jest.mock('../app/components/shared/StaleIndicator', () => 'StaleIndicator');
+jest.mock('../app/components/mapOverlay/CenterOnMeButton', () => 'CenterOnMeButton');
 jest.mock('../app/components/detailPanel/SidePanel', () => ({
     PANEL_WIDTH_PHONE: 360,
     PANEL_WIDTH_TABLET: 400,
@@ -101,7 +102,7 @@ describe('MapOverlayGroup', () => {
         });
 
         const style = flattenStyle(getStaleIndicatorContainerStyle(tree));
-        expect(style.top).toBe(60); // 44 + 16
+        expect(style.top).toBe(71); // 44 + 27 (vertically centers with filter chip minHeight 44)
     });
 
     it('landscape + sidePanelVisible=true + phone: StaleIndicator right offset includes 360px panel', () => {
@@ -268,5 +269,31 @@ describe('MapOverlayGroup', () => {
 
         const style = flattenStyle(getStaleIndicatorContainerStyle(tree));
         expect(style.right).toBe(16); // no landscape panel offset
+    });
+
+    it('renders CenterOnMeButton inside the top-right row alongside the stale indicator', () => {
+        mockWidth = 844;
+        mockOrientation = 'landscape';
+
+        let tree;
+        act(() => {
+            tree = renderer.create(
+                <MapOverlayGroup
+                    dataStatus="live"
+                    sheetState="half"
+                    orientation="landscape"
+                    sidePanelVisible={true}
+                />
+            );
+        });
+
+        // CenterOnMeButton is now a child of the topRightRow container (children[1])
+        const json = tree.toJSON();
+        const topRightRow = json.children[1];
+        const centerBtn = topRightRow.children.find(c => c.type === 'CenterOnMeButton');
+        expect(centerBtn).toBeTruthy();
+        // Row itself carries the panelOffset via its right style
+        const style = flattenStyle(topRightRow.props.style);
+        expect(style.right).toBe(416); // insets.right(0) + 16 + panelOffset(400)
     });
 });

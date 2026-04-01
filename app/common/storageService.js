@@ -101,6 +101,25 @@ export const getPollingInterval = async () => {
     }
 };
 
+const MY_CID = 'MY_CID';
+const FRIEND_CIDS = 'FRIEND_CIDS';
+
+export const storeMyCid = async (cid) => {
+    try {
+        await AsyncStorage.setItem(MY_CID, cid);
+    } catch (err) {
+        console.log('Error storing myCid', err);
+    }
+};
+
+export const storeFriendCids = async (cids) => {
+    try {
+        await AsyncStorage.setItem(FRIEND_CIDS, JSON.stringify(cids));
+    } catch (err) {
+        console.log('Error storing friendCids', err);
+    }
+};
+
 export const retrieveSavedState = async () => {
     const retrievedData = {};
     try {
@@ -167,5 +186,22 @@ export const retrieveSavedState = async () => {
     } catch (err) {
         console.log('Error retrieving static airspace data', err);
     }
+
+    try {
+        const myCid = await AsyncStorage.getItem(MY_CID);
+        retrievedData.myCid = myCid !== null ? myCid : '';
+    } catch (err) {
+        console.log('Error retrieving myCid', err);
+        retrievedData.myCid = '';
+    }
+
+    try {
+        const friendCids = await AsyncStorage.getItem(FRIEND_CIDS);
+        retrievedData.friendCids = friendCids !== null ? JSON.parse(friendCids) : [];
+    } catch (err) {
+        console.log('Error retrieving friendCids', err);
+        retrievedData.friendCids = [];
+    }
+
     return retrievedData;
 };

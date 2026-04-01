@@ -3,6 +3,7 @@ import {View, StyleSheet, useWindowDimensions} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FloatingFilterChips from './FloatingFilterChips';
 import StaleIndicator from '../shared/StaleIndicator';
+import CenterOnMeButton from './CenterOnMeButton';
 import {PANEL_WIDTH_PHONE, PANEL_WIDTH_TABLET, TABLET_WIDTH_THRESHOLD} from '../detailPanel/SidePanel';
 
 export default function MapOverlayGroup({
@@ -42,13 +43,14 @@ export default function MapOverlayGroup({
             </View>
             <View
                 style={[
-                    styles.staleIndicatorContainer,
-                    {top: insets.top + 16, right: insets.right + 16 + panelOffset},
+                    styles.topRightRow,
+                    {top: insets.top + 27, right: insets.right + 16 + panelOffset},
                 ]}
                 pointerEvents="box-none"
                 importantForAccessibility="yes"
                 nativeID='stale-indicator-container'
             >
+                <CenterOnMeButton />
                 <StaleIndicator status={dataStatus} />
             </View>
         </View>
@@ -56,8 +58,11 @@ export default function MapOverlayGroup({
 }
 
 const styles = StyleSheet.create({
-    staleIndicatorContainer: {
+    topRightRow: {
         position: 'absolute',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
         zIndex: 10,
     },
 });

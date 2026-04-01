@@ -7,6 +7,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTabNavigator from './MainTabNavigator';
 import EventDetailsView from '../EventsView/EventDetailsView';
 import MetarView from '../MetarView/MetarView';
+import MyVatsimSettings from '../settings/MyVatsimSettings';
 import {initDb} from '../../common/staticDataAcessLayer';
 import LoadingView from '../LoadingView/LoadingView';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -28,6 +29,9 @@ export default function mainApp() {
     // Initialize aircraft icon cache with current theme
     useEffect(() => {
         initAircraftIcons(activeTheme)
+            .then(() => {
+                dispatch(allActions.appActions.iconCacheUpdated());
+            })
             .catch((error) => {
                 // Keep app startup non-blocking: PilotMarkers has a PNG fallback path.
                 console.warn('Aircraft icon init failed, using fallback icons:', error);
@@ -130,6 +134,10 @@ export default function mainApp() {
             <Stack.Screen
                 name="Metar"
                 component={MetarView}
+            />
+            <Stack.Screen
+                name="MyVatsimSettings"
+                component={MyVatsimSettings}
             />
         </Stack.Navigator>
     </NavigationContainer>;

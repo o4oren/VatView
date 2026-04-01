@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react';
 import {View, ScrollView, StyleSheet, Linking, Image, Platform, Pressable} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import {useTheme} from '../../common/ThemeProvider';
@@ -24,6 +25,7 @@ const POLLING_OPTIONS = [
 const Settings = () => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     const {activeTheme, largeFonts, toggleLargeFonts} = useTheme();
     const liveData = useSelector(state => state.vatsimLiveData);
     const pollingInterval = useSelector(state => state.app.pollingInterval);
@@ -85,6 +87,19 @@ const Settings = () => {
 
                 {/* Settings section */}
                 <ThemedText variant="heading" style={styles.sectionHeader}>Settings</ThemedText>
+
+                <Pressable
+                    onPress={() => navigation.navigate('MyVatsimSettings')}
+                    accessibilityRole="button"
+                    accessibilityLabel="My VATSIM settings"
+                    style={[styles.navRow, {borderColor: activeTheme.surface.border}]}
+                >
+                    <View style={styles.navRowContent}>
+                        <ThemedText variant="body">My VATSIM</ThemedText>
+                        <ThemedText variant="caption" color={activeTheme.text.secondary}>CID &amp; friends list</ThemedText>
+                    </View>
+                    <ThemedText variant="body" color={activeTheme.text.secondary}>›</ThemedText>
+                </Pressable>
 
                 <ThemedText variant="body-sm" color={activeTheme.text.secondary} style={styles.fontSizeLabel}>Appearance</ThemedText>
                 <ThemePicker />
@@ -342,6 +357,20 @@ const styles = StyleSheet.create({
     copyright: {
         textAlign: 'center',
         marginTop: 8,
+    },
+    navRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderRadius: tokens.radius.md,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        marginBottom: 16,
+    },
+    navRowContent: {
+        flex: 1,
+        gap: 2,
     },
 });
 

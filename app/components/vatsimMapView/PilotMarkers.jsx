@@ -4,7 +4,8 @@ import React, {useCallback, useRef, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {markNewSelection} from '../detailPanel/DetailPanelProvider';
-import {mapIcons} from '../../common/iconsHelper';
+import {mapIcons, getPilotMarkerRole} from '../../common/iconsHelper';
+import {getMarkerImage, getCacheVersion} from '../../common/aircraftIconService';
 import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
 const isAndroid = Platform.OS === 'android';
@@ -24,9 +25,10 @@ export const pilotMarkerItemPropsEqual = (prev, next) =>
     prev.pilot.longitude === next.pilot.longitude &&
     prev.pilot.heading === next.pilot.heading &&
     prev.pilotImage === next.pilotImage &&
+    prev.pilotRole === next.pilotRole &&
     prev.onPress === next.onPress;
 
-const PilotMarkerItem = React.memo(({pilot, pilotImage, pilotImageSize, onPress}) => {
+const PilotMarkerItem = React.memo(({pilot, pilotImage, pilotImageSize, onPress, pilotRole: _pilotRole}) => {
     return isAndroid ? (
         <Marker
             coordinate={{latitude: pilot.latitude, longitude: pilot.longitude}}
@@ -62,6 +64,10 @@ const defaultImageSize = isAndroid ? 64 : 32;
 const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
     const selectedClient = useSelector(state => state.app.selectedClient);
     const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
+    const myCid = useSelector(state => state.app.myCid);
+    const friendCids = useSelector(state => state.app.friendCids);
+    // Re-render when the icon cache is rebuilt (theme change) so role colors update
+    useSelector(state => state.app.iconCacheVersion);
 
     const dispatch = useDispatch();
     const selectedClientRef = useRef(selectedClient);
@@ -92,8 +98,10 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
             );
         })
         .map(pilot => {
-            const pilotImage = pilot.image || mapIcons.B737;
-            const pilotImageSize = pilot.image ? pilot.imageSize : defaultImageSize;
+            const role = getPilotMarkerRole(pilot, myCid, friendCids);
+            const entry = getMarkerImage(pilot.flight_plan?.aircraft || null, role);
+            const pilotImage = entry ? entry.image : (pilot.image || mapIcons.B737);
+            const pilotImageSize = entry ? entry.sizeDp : (pilot.image ? pilot.imageSize : defaultImageSize);
 
             const markerKey = isAndroid
                 ? `${pilot.key}_${coordKey(pilot.latitude, pilot.longitude)}`
@@ -104,6 +112,7 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
                 pilot={pilot}
                 pilotImage={pilotImage}
                 pilotImageSize={pilotImageSize}
+                pilotRole={role}
                 onPress={onPress}
             />;
         });

@@ -79,7 +79,7 @@ const AIRCRAFT_TYPES = {
     B200: {
         svgFile: require('../../assets/svg/b200.svg'),
         scale: 0.75,
-        candidates: ['B200', 'B300', 'BE58', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
+        candidates: ['B200', 'B300', 'BE58', 'BE60', 'BE20', 'BE9L', 'BE99', 'BE10', 'PA34', 'PA42',
             'DH8D', 'DH8A', 'DH8B', 'DH8C', 'AT43', 'AT45', 'AT72', 'AT73', 'AT75', 'AT76',
             'JS31', 'JS32', 'JS41', 'SF34', 'SW4', 'E110', 'L410', 'DHC6', 'BN2P'],
     },
@@ -116,7 +116,7 @@ const AIRCRAFT_TYPES = {
     C208: {
         svgFile: require('../../assets/svg/c208.svg'),
         scale: 0.75,
-        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P'],
+        candidates: ['C208', 'K100', 'K900', 'PC6T', 'PC6P', 'PC12'],
     },
 };
 
@@ -131,9 +131,16 @@ const pixelRatio = PixelRatio.get();
 
 const cacheDir = new Directory(Paths.cache, 'aircraft-icons');
 
-// In-memory cache: { 'B737': { uri: 'file:///...' }, ... }
-let cache = {};
+export const PILOT_ROLE_COLORS = {
+    me:     { dark: '#C0C8D0', light: '#E53935' },
+    friend: { dark: '#00BFA5', light: '#00BFA5' },
+    other:  null,
+};
+
+// In-memory cache per role: { me: {}, friend: {}, other: {} }
+let caches = { me: {}, friend: {}, other: {} };
 let currentAccentColor = null;
+let cacheVersion = 0;
 
 /**
  * Resolve a VATSIM type code to an icon key and scale.
@@ -202,42 +209,54 @@ const renderSvgToBitmap = (svgXml, fillColor, widthPx, heightPx, filename) => {
  */
 export const init = async (theme) => {
     const accentColor = theme.accent.primary;
+    const themeKey = theme.surface.base === '#0D1117' ? 'dark' : 'light';
 
-    // Clean up and recreate cache directory
     if (cacheDir.exists) {
         cacheDir.delete();
     }
     cacheDir.create({ intermediates: true });
 
     const svgSources = await loadSvgSources();
-    const newCache = {};
+    const newCaches = { me: {}, friend: {}, other: {} };
 
-    for (const [iconKey, svgXml] of Object.entries(svgSources)) {
-        const typeInfo = AIRCRAFT_TYPES[iconKey];
-        const targetDp = getTargetDp(typeInfo.scale);
-        const renderPx = Math.round(targetDp * pixelRatio);
-        const filename = `${iconKey}.png`;
-        newCache[iconKey] = {
-            image: renderSvgToBitmap(svgXml, accentColor, renderPx, renderPx, filename),
-            sizeDp: targetDp,
-        };
+    const roleColors = {
+        me: PILOT_ROLE_COLORS.me[themeKey],
+        friend: PILOT_ROLE_COLORS.friend[themeKey],
+        other: accentColor,
+    };
+
+    for (const role of ['me', 'friend', 'other']) {
+        const fillColor = roleColors[role];
+        for (const [iconKey, svgXml] of Object.entries(svgSources)) {
+            const typeInfo = AIRCRAFT_TYPES[iconKey];
+            const targetDp = getTargetDp(typeInfo.scale);
+            const renderPx = Math.round(targetDp * pixelRatio);
+            const filename = `${role}-${iconKey}.png`;
+            newCaches[role][iconKey] = {
+                image: renderSvgToBitmap(svgXml, fillColor, renderPx, renderPx, filename),
+                sizeDp: targetDp,
+            };
+        }
     }
 
-    cache = newCache;
+    caches = newCaches;
     currentAccentColor = accentColor;
+    cacheVersion += 1;
 };
 
 /**
  * Get a cached marker image for an aircraft type.
  * Returns { image: { uri }, sizeDp } synchronously from cache.
  */
-export const getMarkerImage = (aircraftType) => {
+export const getMarkerImage = (aircraftType, role = 'other') => {
     const { iconKey } = resolveIconKey(aircraftType);
-    return cache[iconKey] || null;
+    const roleCache = caches[role] || caches.other;
+    return roleCache[iconKey] || null;
 };
 
 export const getCurrentAccentColor = () => currentAccentColor;
-export const isInitialized = () => Object.keys(cache).length > 0;
+export const getCacheVersion = () => cacheVersion;
+export const isInitialized = () => Object.keys(caches.other).length > 0;
 export { AIRCRAFT_TYPES };
 
 // Test-only exports (prefixed with _test)

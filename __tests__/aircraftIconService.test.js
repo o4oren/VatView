@@ -7,6 +7,7 @@ import {
     isInitialized,
     getCurrentAccentColor,
     AIRCRAFT_TYPES,
+    PILOT_ROLE_COLORS,
 } from '../app/common/aircraftIconService';
 
 describe('resolveIconKey', () => {
@@ -66,7 +67,7 @@ describe('resolveIconKey', () => {
     });
 
     it('matches ERJ/bizjet codes', () => {
-        expect(resolveIconKey('E170').iconKey).toBe('ERJ');
+        expect(resolveIconKey('E170').iconKey).toBe('E195'); // E170 is Embraer E-Jet family
         expect(resolveIconKey('CRJ1').iconKey).toBe('ERJ');
         expect(resolveIconKey('GLF5').iconKey).toBe('ERJ');
     });
@@ -77,7 +78,7 @@ describe('resolveIconKey', () => {
 
     it('matches DC3 variants', () => {
         expect(resolveIconKey('DC3').iconKey).toBe('DC3');
-        expect(resolveIconKey('B300').iconKey).toBe('DC3');
+        expect(resolveIconKey('B300').iconKey).toBe('B200'); // B300 is King Air 300, same family as B200
     });
 
     it('matches B767 variants', () => {
@@ -134,8 +135,8 @@ describe('injectFillColor', () => {
 });
 
 describe('init and getMarkerImage (integration)', () => {
-    const lightTheme = { accent: { primary: '#2A6BC4' } };
-    const darkTheme = { accent: { primary: '#3B7DD8' } };
+    const lightTheme = { accent: { primary: '#2A6BC4' }, surface: { base: '#FFFFFF' } };
+    const darkTheme = { accent: { primary: '#3B7DD8' }, surface: { base: '#0D1117' } };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -148,10 +149,10 @@ describe('init and getMarkerImage (integration)', () => {
         expect(getCurrentAccentColor()).toBe('#2A6BC4');
 
         const iconKeys = Object.keys(AIRCRAFT_TYPES);
-        expect(iconKeys).toHaveLength(15);
+        expect(iconKeys).toHaveLength(22);
 
         for (const iconKey of iconKeys) {
-            const result = getMarkerImage(iconKey);
+            const result = getMarkerImage(iconKey, 'other');
             expect(result).not.toBeNull();
             expect(result.image).toBeDefined();
             expect(result.image.uri).toBeDefined();
@@ -171,7 +172,7 @@ describe('init and getMarkerImage (integration)', () => {
 
         const result = getMarkerImage('ZZZZ');
         expect(result).not.toBeNull();
-        expect(result.sizeDp).toBe(18); // C172 scale 0.55 → round(32*0.55) = 18
+        expect(result.sizeDp).toBe(19); // C172 scale 0.6 → round(32*0.6) = 19
     });
 
     it('cache regenerates on theme change with different accent color', async () => {
@@ -184,5 +185,61 @@ describe('init and getMarkerImage (integration)', () => {
 
         const result = getMarkerImage('B738');
         expect(result).not.toBeNull();
+    });
+});
+
+describe('PILOT_ROLE_COLORS', () => {
+    it('exports me colors for dark and light', () => {
+        expect(PILOT_ROLE_COLORS.me.dark).toBe('#C0C8D0');
+        expect(PILOT_ROLE_COLORS.me.light).toBe('#E53935');
+    });
+
+    it('exports friend colors for dark and light', () => {
+        expect(PILOT_ROLE_COLORS.friend.dark).toBe('#00BFA5');
+        expect(PILOT_ROLE_COLORS.friend.light).toBe('#00BFA5');
+    });
+
+    it('exports null for other (uses theme accent)', () => {
+        expect(PILOT_ROLE_COLORS.other).toBeNull();
+    });
+});
+
+describe('getMarkerImage with role', () => {
+    const darkTheme = { accent: { primary: '#5BA0E6' }, surface: { base: '#0D1117' } };
+    const lightTheme = { accent: { primary: '#2A6BC4' }, surface: { base: '#FFFFFF' } };
+
+    it('returns a valid entry for role "me" on dark theme', async () => {
+        await init(darkTheme);
+        const result = getMarkerImage('B738', 'me');
+        expect(result).not.toBeNull();
+        expect(result.image.uri).toBeDefined();
+        expect(result.sizeDp).toBeGreaterThan(0);
+    });
+
+    it('returns a valid entry for role "friend" on dark theme', async () => {
+        await init(darkTheme);
+        const result = getMarkerImage('B738', 'friend');
+        expect(result).not.toBeNull();
+        expect(result.image.uri).toBeDefined();
+    });
+
+    it('returns a valid entry for role "other" on dark theme', async () => {
+        await init(darkTheme);
+        const result = getMarkerImage('B738', 'other');
+        expect(result).not.toBeNull();
+        expect(result.image.uri).toBeDefined();
+    });
+
+    it('returns a valid entry for role "me" on light theme', async () => {
+        await init(lightTheme);
+        const result = getMarkerImage('B738', 'me');
+        expect(result).not.toBeNull();
+    });
+
+    it('falls back to "other" cache when role is undefined', async () => {
+        await init(darkTheme);
+        const withRole = getMarkerImage('B738', 'other');
+        const withoutRole = getMarkerImage('B738', undefined);
+        expect(withoutRole.sizeDp).toBe(withRole.sizeDp);
     });
 });

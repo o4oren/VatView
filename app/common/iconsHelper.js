@@ -59,3 +59,10 @@ export const getAtcIcon = (name) => {
     }
     return iconSet[64];
 };
+
+export const getPilotMarkerRole = (pilot, myCid, friendCids) => {
+    const cidStr = String(pilot.cid);
+    if (myCid && cidStr === myCid) return 'me';
+    if (friendCids.includes(cidStr)) return 'friend';
+    return 'other';
+};

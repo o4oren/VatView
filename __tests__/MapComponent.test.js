@@ -12,6 +12,10 @@ const mockSaveInitialRegion = jest.fn(region => ({
 let capturedAirportMarkersProps = null;
 let capturedPilotMarkersProps = null;
 
+jest.mock('@react-navigation/native', () => ({
+    useIsFocused: jest.fn(() => true),
+}));
+
 jest.mock('react-redux', () => ({
     useDispatch: jest.fn(),
     useSelector: jest.fn(),
@@ -20,6 +24,7 @@ jest.mock('react-redux', () => ({
 jest.mock('../app/common/ThemeProvider', () => ({
     useTheme: () => ({
         activeMapStyle: [],
+        activeTheme: {surface: {base: '#0D1117'}},
     }),
 }));
 
