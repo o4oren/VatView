@@ -1,7 +1,7 @@
 import {
     CLIENT_SELECTED, REGION_UPDATED, AIRPORT_SELECTED,
     ATC_FILTER_CLICKED, PILOTS_FILTER_CLICKED, SEARCH_QUERY_CHANGED, LOADING_DB, AIRPORTS_LOADED, FIR_BOUNDARIES_LOADED,
-    FLY_TO_CLIENT, FLY_TO_CONSUMED, POLLING_INTERVAL_CHANGED, MY_CID_CHANGED, FRIEND_CIDS_CHANGED,
+    FLY_TO_CLIENT, FLY_TO_CONSUMED, POLLING_INTERVAL_CHANGED, MY_CID_CHANGED, FRIEND_CIDS_CHANGED, ICON_CACHE_UPDATED,
 } from '../actions/appActions';
 
 const appReducer = (state = {
@@ -18,6 +18,7 @@ const appReducer = (state = {
     pollingInterval: 60000,
     myCid: '',
     friendCids: [],
+    iconCacheVersion: 0,
     filters: {pilots: true, atc: true, searchQuery: ''}
 }, action) => {
     switch (action.type) {
@@ -61,6 +62,8 @@ const appReducer = (state = {
         return {...state, myCid: action.payload};
     case FRIEND_CIDS_CHANGED:
         return {...state, friendCids: action.payload};
+    case ICON_CACHE_UPDATED:
+        return {...state, iconCacheVersion: state.iconCacheVersion + 1};
     default:
         return state;
     }

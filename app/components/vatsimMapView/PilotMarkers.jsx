@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {markNewSelection} from '../detailPanel/DetailPanelProvider';
 import {mapIcons, getPilotMarkerRole} from '../../common/iconsHelper';
-import {getMarkerImage} from '../../common/aircraftIconService';
+import {getMarkerImage, getCacheVersion} from '../../common/aircraftIconService';
 import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
 const isAndroid = Platform.OS === 'android';
@@ -66,6 +66,8 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
     const pilots = useSelector(state => state.vatsimLiveData.clients.pilots);
     const myCid = useSelector(state => state.app.myCid);
     const friendCids = useSelector(state => state.app.friendCids);
+    // Re-render when the icon cache is rebuilt (theme change) so role colors update
+    useSelector(state => state.app.iconCacheVersion);
 
     const dispatch = useDispatch();
     const selectedClientRef = useRef(selectedClient);

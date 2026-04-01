@@ -29,6 +29,9 @@ export default function mainApp() {
     // Initialize aircraft icon cache with current theme
     useEffect(() => {
         initAircraftIcons(activeTheme)
+            .then(() => {
+                dispatch(allActions.appActions.iconCacheUpdated());
+            })
             .catch((error) => {
                 // Keep app startup non-blocking: PilotMarkers has a PNG fallback path.
                 console.warn('Aircraft icon init failed, using fallback icons:', error);

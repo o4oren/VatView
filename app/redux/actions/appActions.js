@@ -20,6 +20,7 @@ export const FLY_TO_CONSUMED = 'FLY_TO_CONSUMED';
 export const POLLING_INTERVAL_CHANGED = 'POLLING_INTERVAL_CHANGED';
 export const MY_CID_CHANGED = 'MY_CID_CHANGED';
 export const FRIEND_CIDS_CHANGED = 'FRIEND_CIDS_CHANGED';
+export const ICON_CACHE_UPDATED = 'ICON_CACHE_UPDATED';
 
 export const saveAirportsLoaded = (isAirportsLoaded) => {
     return async (dispatch) => {
@@ -152,6 +153,8 @@ export const saveFriendCids = (cids) => async (dispatch) => {
     dispatch(friendCidsChanged(cids));
 };
 
+export const iconCacheUpdated = () => ({ type: ICON_CACHE_UPDATED });
+
 export default {
     saveFirBoundariesLoaded: saveFirBoundariesLoaded,
     saveAirportsLoaded: saveAirportsLoaded,
@@ -168,4 +171,5 @@ export default {
     savePollingInterval: savePollingInterval,
     saveMyCid: saveMyCid,
     saveFriendCids: saveFriendCids,
+    iconCacheUpdated: iconCacheUpdated,
 };

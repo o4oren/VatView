@@ -6,8 +6,6 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useTheme} from '../../common/ThemeProvider';
 import allActions from '../../redux/actions';
 
-const STALE_INDICATOR_HEIGHT = 36;
-
 const CenterOnMeButton = ({panelOffset = 0}) => {
     const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
@@ -34,18 +32,18 @@ const CenterOnMeButton = ({panelOffset = 0}) => {
             testID="center-on-me-btn"
             onPress={handlePress}
             accessibilityLabel="Center map on my aircraft"
-            style={[
+            style={({pressed}) => [
                 styles.button,
                 {
-                    top: insets.top + 16 + STALE_INDICATOR_HEIGHT + 8,
+                    top: insets.top + 16,
                     right: insets.right + 16 + panelOffset,
-                    backgroundColor: activeTheme.surface.elevated,
+                    opacity: pressed ? 0.5 : 1,
                 },
             ]}
         >
             <MaterialCommunityIcons
                 name="crosshairs-gps"
-                size={20}
+                size={24}
                 color={activeTheme.accent.primary}
             />
         </Pressable>
@@ -55,11 +53,6 @@ const CenterOnMeButton = ({panelOffset = 0}) => {
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
         zIndex: 10,
     },
 });

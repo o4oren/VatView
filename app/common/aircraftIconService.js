@@ -140,6 +140,7 @@ export const PILOT_ROLE_COLORS = {
 // In-memory cache per role: { me: {}, friend: {}, other: {} }
 let caches = { me: {}, friend: {}, other: {} };
 let currentAccentColor = null;
+let cacheVersion = 0;
 
 /**
  * Resolve a VATSIM type code to an icon key and scale.
@@ -240,6 +241,7 @@ export const init = async (theme) => {
 
     caches = newCaches;
     currentAccentColor = accentColor;
+    cacheVersion += 1;
 };
 
 /**
@@ -253,6 +255,7 @@ export const getMarkerImage = (aircraftType, role = 'other') => {
 };
 
 export const getCurrentAccentColor = () => currentAccentColor;
+export const getCacheVersion = () => cacheVersion;
 export const isInitialized = () => Object.keys(caches.other).length > 0;
 export { AIRCRAFT_TYPES };
 
