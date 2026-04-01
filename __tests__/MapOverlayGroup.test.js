@@ -271,7 +271,7 @@ describe('MapOverlayGroup', () => {
         expect(style.right).toBe(16); // no landscape panel offset
     });
 
-    it('renders CenterOnMeButton with correct panelOffset in landscape with side panel', () => {
+    it('renders CenterOnMeButton inside the top-right row alongside the stale indicator', () => {
         mockWidth = 844;
         mockOrientation = 'landscape';
 
@@ -287,9 +287,13 @@ describe('MapOverlayGroup', () => {
             );
         });
 
+        // CenterOnMeButton is now a child of the topRightRow container (children[1])
         const json = tree.toJSON();
-        const centerBtn = json.children.find(c => c.type === 'CenterOnMeButton');
+        const topRightRow = json.children[1];
+        const centerBtn = topRightRow.children.find(c => c.type === 'CenterOnMeButton');
         expect(centerBtn).toBeTruthy();
-        expect(centerBtn.props.panelOffset).toBe(400); // PANEL_WIDTH_TABLET for width 844
+        // Row itself carries the panelOffset via its right style
+        const style = flattenStyle(topRightRow.props.style);
+        expect(style.right).toBe(416); // insets.right(0) + 16 + panelOffset(400)
     });
 });

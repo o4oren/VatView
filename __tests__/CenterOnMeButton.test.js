@@ -12,9 +12,6 @@ jest.mock('../app/common/ThemeProvider', () => ({
     }),
 }));
 
-jest.mock('react-native-safe-area-context', () => ({
-    useSafeAreaInsets: () => ({top: 44, bottom: 34, left: 0, right: 0}),
-}));
 
 jest.mock('@expo/vector-icons', () => ({
     MaterialCommunityIcons: 'MaterialCommunityIcons',
@@ -45,13 +42,13 @@ const makePilot = (cid) => ({
 
 import CenterOnMeButton from '../app/components/mapOverlay/CenterOnMeButton';
 
-const render = (myCid, pilots, panelOffset = 0) => {
+const render = (myCid, pilots) => {
     const store = makeStore(myCid, pilots);
     let tree;
     act(() => {
         tree = renderer.create(
             <Provider store={store}>
-                <CenterOnMeButton panelOffset={panelOffset} />
+                <CenterOnMeButton />
             </Provider>
         );
     });

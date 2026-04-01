@@ -43,23 +43,26 @@ export default function MapOverlayGroup({
             </View>
             <View
                 style={[
-                    styles.staleIndicatorContainer,
+                    styles.topRightRow,
                     {top: insets.top + 16, right: insets.right + 16 + panelOffset},
                 ]}
                 pointerEvents="box-none"
                 importantForAccessibility="yes"
                 nativeID='stale-indicator-container'
             >
+                <CenterOnMeButton />
                 <StaleIndicator status={dataStatus} />
             </View>
-            <CenterOnMeButton panelOffset={panelOffset} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    staleIndicatorContainer: {
+    topRightRow: {
         position: 'absolute',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
         zIndex: 10,
     },
 });
