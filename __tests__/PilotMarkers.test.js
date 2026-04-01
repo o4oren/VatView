@@ -10,9 +10,9 @@ jest.mock('../app/components/detailPanel/DetailPanelProvider', () => ({
 import PilotMarkers, {pilotMarkerItemPropsEqual} from '../app/components/vatsimMapView/PilotMarkers';
 
 // Build a minimal Redux store matching the app shape
-const makeStore = (pilots = [], selectedClient = null) => {
+const makeStore = (pilots = [], selectedClient = null, myCid = '', friendCids = []) => {
     return createStore(() => ({
-        app: { selectedClient },
+        app: { selectedClient, myCid, friendCids },
         vatsimLiveData: {
             clients: { pilots },
         },
@@ -39,8 +39,8 @@ const GLOBAL_ZOOM = 3;
 // Local zoom (9-10) — ground aircraft hidden
 const LOCAL_ZOOM = 10;
 
-const renderMarkers = (pilots, zoomLevel = AIRPORT_ZOOM, selectedClient = null) => {
-    const store = makeStore(pilots, selectedClient);
+const renderMarkers = (pilots, zoomLevel = AIRPORT_ZOOM, selectedClient = null, myCid = '', friendCids = []) => {
+    const store = makeStore(pilots, selectedClient, myCid, friendCids);
     let tree;
     act(() => {
         tree = renderer.create(
@@ -170,5 +170,44 @@ describe('PilotMarkerItem memo', () => {
                 onPress,
             }
         )).toBe(false);
+    });
+});
+
+describe('PilotMarkers role coloring', () => {
+    it('renders marker for "me" pilot when myCid matches', () => {
+        const pilot = makePilot({ key: 'p1', callsign: 'ME001', cid: 1234567 });
+        const markers = renderMarkers([pilot], AIRPORT_ZOOM, null, '1234567', []);
+        expect(markers).toHaveLength(1);
+    });
+
+    it('renders marker for friend pilot when cid in friendCids', () => {
+        const pilot = makePilot({ key: 'p1', callsign: 'FRD001', cid: 9999999 });
+        const markers = renderMarkers([pilot], AIRPORT_ZOOM, null, '', ['9999999']);
+        expect(markers).toHaveLength(1);
+    });
+
+    it('renders marker for other pilot when not me or friend', () => {
+        const pilot = makePilot({ key: 'p1', callsign: 'OTH001', cid: 1111111 });
+        const markers = renderMarkers([pilot], AIRPORT_ZOOM, null, '9999999', ['2222222']);
+        expect(markers).toHaveLength(1);
+    });
+});
+
+describe('PilotMarkerItem memo with pilotRole', () => {
+    it('returns false when pilotRole changes', () => {
+        const pilot = makePilot();
+        const onPress = jest.fn();
+        const base = { pilot, pilotImage: pilot.image, pilotImageSize: pilot.imageSize, onPress, pilotRole: 'other' };
+        expect(pilotMarkerItemPropsEqual(
+            { ...base, pilotRole: 'other' },
+            { ...base, pilotRole: 'me' }
+        )).toBe(false);
+    });
+
+    it('returns true when pilotRole is same', () => {
+        const pilot = makePilot();
+        const onPress = jest.fn();
+        const base = { pilot, pilotImage: pilot.image, pilotImageSize: pilot.imageSize, onPress, pilotRole: 'friend' };
+        expect(pilotMarkerItemPropsEqual(base, base)).toBe(true);
     });
 });
