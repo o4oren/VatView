@@ -102,7 +102,7 @@ describe('MapOverlayGroup', () => {
         });
 
         const style = flattenStyle(getStaleIndicatorContainerStyle(tree));
-        expect(style.top).toBe(60); // 44 + 16
+        expect(style.top).toBe(71); // 44 + 27 (vertically centers with filter chip minHeight 44)
     });
 
     it('landscape + sidePanelVisible=true + phone: StaleIndicator right offset includes 360px panel', () => {

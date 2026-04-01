@@ -44,7 +44,7 @@ export default function MapOverlayGroup({
             <View
                 style={[
                     styles.topRightRow,
-                    {top: insets.top + 16, right: insets.right + 16 + panelOffset},
+                    {top: insets.top + 27, right: insets.right + 16 + panelOffset},
                 ]}
                 pointerEvents="box-none"
                 importantForAccessibility="yes"
