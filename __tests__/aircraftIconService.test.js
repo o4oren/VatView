@@ -149,7 +149,7 @@ describe('init and getMarkerImage (integration)', () => {
         expect(getCurrentAccentColor()).toBe('#2A6BC4');
 
         const iconKeys = Object.keys(AIRCRAFT_TYPES);
-        expect(iconKeys).toHaveLength(15);
+        expect(iconKeys).toHaveLength(22);
 
         for (const iconKey of iconKeys) {
             const result = getMarkerImage(iconKey, 'other');
@@ -172,7 +172,7 @@ describe('init and getMarkerImage (integration)', () => {
 
         const result = getMarkerImage('ZZZZ');
         expect(result).not.toBeNull();
-        expect(result.sizeDp).toBe(18); // C172 scale 0.55 → round(32*0.55) = 18
+        expect(result.sizeDp).toBe(19); // C172 scale 0.6 → round(32*0.6) = 19
     });
 
     it('cache regenerates on theme change with different accent color', async () => {
