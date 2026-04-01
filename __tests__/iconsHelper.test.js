@@ -54,3 +54,43 @@ describe('iconSizes', () => {
         expect(iconSizes.EXTRA_SMALL_SIZE).toBe(16);
     });
 });
+
+describe('getPilotMarkerRole', () => {
+    // Import added separately since it doesn't exist yet
+    const makePilot = (cid) => ({ cid });
+
+    it('returns "me" when myCid matches pilot cid', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(1234567), '1234567', [])).toBe('me');
+    });
+
+    it('returns "me" when pilot cid is a number matching string myCid', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(999), '999', [])).toBe('me');
+    });
+
+    it('returns "friend" when pilot cid is in friendCids', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(555), '', ['555', '666'])).toBe('friend');
+    });
+
+    it('returns "other" when pilot matches neither', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(111), '999', ['555'])).toBe('other');
+    });
+
+    it('returns "other" when myCid is empty string', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(999), '', [])).toBe('other');
+    });
+
+    it('"me" takes priority over "friend" if same CID in both', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(111), '111', ['111'])).toBe('me');
+    });
+
+    it('returns "other" when friendCids is empty and myCid does not match', () => {
+        const { getPilotMarkerRole } = require('../app/common/iconsHelper');
+        expect(getPilotMarkerRole(makePilot(123), '456', [])).toBe('other');
+    });
+});
