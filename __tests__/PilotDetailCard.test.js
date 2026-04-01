@@ -35,6 +35,11 @@ jest.mock('../app/common/timeDIstanceTools', () => ({
         }
         return 1500;
     }),
+    getZuluTimeFromDate: jest.fn((date) => {
+        const h = date.getUTCHours().toString().padStart(2, '0');
+        const m = date.getUTCMinutes().toString().padStart(2, '0');
+        return `${h}:${m}Z`;
+    }),
 }));
 
 import PilotDetailCard from '../app/components/clientDetails/PilotDetailCard';
@@ -171,8 +176,9 @@ describe('PilotDetailCard', () => {
         });
         const allText = JSON.stringify(tree.toJSON());
 
-        expect(allText).toContain('7h 0m');
-        expect(allText).toContain('ETE');
+        // ETE was replaced with ETA (zulu time); verify ETA label and format hh:mmZ
+        expect(allText).toContain('ETA');
+        expect(allText).toMatch(/\d{2}:\d{2}Z/);
     });
 
     // Section 3: Full content

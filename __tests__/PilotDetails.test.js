@@ -22,6 +22,11 @@ jest.mock('../app/common/staticDataAcessLayer', () => ({
 
 jest.mock('../app/common/timeDIstanceTools', () => ({
     getDistanceFromLatLonInNm: jest.fn(() => 0),
+    getZuluTimeFromDate: jest.fn((date) => {
+        const h = date.getUTCHours().toString().padStart(2, '0');
+        const m = date.getUTCMinutes().toString().padStart(2, '0');
+        return `${h}:${m}Z`;
+    }),
 }));
 
 import PilotDetails from '../app/components/clientDetails/PilotDetails';
