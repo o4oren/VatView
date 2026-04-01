@@ -1,7 +1,7 @@
 import { init } from '../app/common/aircraftIconService';
 import { getAircraftIcon, getPilotMarkerRole, iconSizes, mapIcons } from '../app/common/iconsHelper';
 
-const lightTheme = { accent: { primary: '#2A6BC4' } };
+const lightTheme = { accent: { primary: '#2A6BC4' }, surface: { base: '#FFFFFF' } };
 
 describe('getAircraftIcon (legacy wrapper)', () => {
     beforeAll(async () => {
