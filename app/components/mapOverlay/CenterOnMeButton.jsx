@@ -32,20 +32,22 @@ const CenterOnMeButton = ({panelOffset = 0}) => {
             testID="center-on-me-btn"
             onPress={handlePress}
             accessibilityLabel="Center map on my aircraft"
-            style={({pressed}) => [
+            style={[
                 styles.button,
                 {
                     top: insets.top + 16,
                     right: insets.right + 16 + panelOffset,
-                    opacity: pressed ? 0.5 : 1,
                 },
             ]}
         >
-            <MaterialCommunityIcons
-                name="crosshairs-gps"
-                size={24}
-                color={activeTheme.accent.primary}
-            />
+            {({pressed}) => (
+                <MaterialCommunityIcons
+                    name="crosshairs-gps"
+                    size={24}
+                    color={activeTheme.accent.primary}
+                    style={{opacity: pressed ? 0.5 : 1}}
+                />
+            )}
         </Pressable>
     );
 };
