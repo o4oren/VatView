@@ -3,6 +3,7 @@ import {View, StyleSheet, useWindowDimensions} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FloatingFilterChips from './FloatingFilterChips';
 import StaleIndicator from '../shared/StaleIndicator';
+import CenterOnMeButton from './CenterOnMeButton';
 import {PANEL_WIDTH_PHONE, PANEL_WIDTH_TABLET, TABLET_WIDTH_THRESHOLD} from '../detailPanel/SidePanel';
 
 export default function MapOverlayGroup({
@@ -51,6 +52,7 @@ export default function MapOverlayGroup({
             >
                 <StaleIndicator status={dataStatus} />
             </View>
+            <CenterOnMeButton panelOffset={panelOffset} />
         </View>
     );
 }

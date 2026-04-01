@@ -21,6 +21,7 @@ jest.mock('../app/common/useOrientation', () => ({
 
 jest.mock('../app/components/mapOverlay/FloatingFilterChips', () => 'FloatingFilterChips');
 jest.mock('../app/components/shared/StaleIndicator', () => 'StaleIndicator');
+jest.mock('../app/components/mapOverlay/CenterOnMeButton', () => 'CenterOnMeButton');
 jest.mock('../app/components/detailPanel/SidePanel', () => ({
     PANEL_WIDTH_PHONE: 360,
     PANEL_WIDTH_TABLET: 400,
@@ -268,5 +269,27 @@ describe('MapOverlayGroup', () => {
 
         const style = flattenStyle(getStaleIndicatorContainerStyle(tree));
         expect(style.right).toBe(16); // no landscape panel offset
+    });
+
+    it('renders CenterOnMeButton with correct panelOffset in landscape with side panel', () => {
+        mockWidth = 844;
+        mockOrientation = 'landscape';
+
+        let tree;
+        act(() => {
+            tree = renderer.create(
+                <MapOverlayGroup
+                    dataStatus="live"
+                    sheetState="half"
+                    orientation="landscape"
+                    sidePanelVisible={true}
+                />
+            );
+        });
+
+        const json = tree.toJSON();
+        const centerBtn = json.children.find(c => c.type === 'CenterOnMeButton');
+        expect(centerBtn).toBeTruthy();
+        expect(centerBtn.props.panelOffset).toBe(400); // PANEL_WIDTH_TABLET for width 844
     });
 });
