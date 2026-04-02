@@ -7,6 +7,18 @@ title: Release Notes — VatView
 
 ---
 
+## 2.0.1
+
+### What's New
+
+**My VATSIM Identity**
+- Enter your VATSIM CID in Settings → My VATSIM to highlight your own flights on the map with a distinct marker color
+- Add friends by CID to track them — friends' markers appear in a separate color from yours and the general traffic
+- A "Center on Me" button appears on the map when you are online, jumping directly to your position
+- Colors update in real time as pilots connect and disconnect from the network
+
+---
+
 ## 2.0.0
 
 VatView 2.0 is a complete visual redesign — rebuilt from the ground up with an immersive, full-bleed map experience, a modern floating UI, and landscape orientation support.
