@@ -1,0 +1,76 @@
+/* Hero header — overrides Cayman's .page-header for the homepage */
+.page-header {
+  position: relative;
+  overflow: hidden;
+  padding: 4rem 2rem 3rem;
+  background-image: url('../../screenshots/FAA.png');
+  background-size: cover;
+  background-position: center;
+  background-color: #0a1825;
+  text-align: center;
+}
+
+/* Dark overlay so FAA chart bleeds through subtly */
+.page-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 18, 35, 0.70);
+  z-index: 0;
+}
+
+/* All header content sits above the overlay */
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.project-name {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  margin-bottom: 0.5rem;
+}
+
+.project-tagline {
+  font-size: 1rem;
+  color: #b8d0e8;
+  font-weight: 400;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  margin-bottom: 1.8rem;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-image {
+  max-width: 820px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  display: block;
+  margin: 0 auto 1.8rem;
+}
+
+/* Store badge row */
+.store-badges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.store-badges a {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 2px 4px;
+  transition: background 0.2s;
+}
+
+.store-badges a:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
