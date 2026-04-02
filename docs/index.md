@@ -24,6 +24,7 @@ VatView is a free mobile app for iOS and Android that shows you live [VATSIM](ht
 ## Features
 
 - **Live map** — pilots and ATC updated every 20 seconds
+- **Track yourself and friends** — enter your VATSIM CID and a friends list to highlight your flights and see friends' markers in distinct colors
 - **Type-specific aircraft icons** — 50+ aircraft types with accurate silhouettes
 - **Real airspace boundaries** — FIR, UIR, and TRACON polygons
 - **Airport detail** — staffed ATC positions and traffic count badges
@@ -42,22 +43,22 @@ VatView is a free mobile app for iOS and Android that shows you live [VATSIM](ht
 <h3>iPhone</h3>
 
 <p>
-  <img src="{{ '/screenshots/2.0.0/IPHONE-pilot-info.png' | relative_url }}" alt="iPhone — Pilot info" width="230">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-9-pilot-info.png' | relative_url }}" alt="iPhone — Pilot info" width="230">
   &nbsp;
-  <img src="{{ '/screenshots/2.0.0/IPHONE-airport-info.png' | relative_url }}" alt="iPhone — Airport info" width="230">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-9-airport-info.png' | relative_url }}" alt="iPhone — Airport info" width="230">
   &nbsp;
-  <img src="{{ '/screenshots/2.0.0/IPHONE-darkmode-pilot-info.png' | relative_url }}" alt="iPhone — Dark mode pilot info" width="230">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-9-darkmode-pilot-info.png' | relative_url }}" alt="iPhone — Dark mode pilot info" width="230">
 </p>
 <p>
-  <img src="{{ '/screenshots/2.0.0/IPHONE-darkmode-airport-list.png' | relative_url }}" alt="iPhone — Dark mode airport list" width="230">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-3-darkmode-airport-list.png' | relative_url }}" alt="iPhone — Dark mode airport list" width="230">
   &nbsp;
-  <img src="{{ '/screenshots/2.0.0/IPHONE-events-list.png' | relative_url }}" alt="iPhone — Events list" width="230">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-9-event-list.png' | relative_url }}" alt="iPhone — Events list" width="230">
 </p>
 
 <h3>iPhone Landscape</h3>
 
 <p>
-  <img src="{{ '/screenshots/2.0.0/IPHONE-landscape-pilot-info.png' | relative_url }}" alt="iPhone — Landscape pilot info" width="500">
+  <img src="{{ '/screenshots/2.0.0/IPHONE-6-9-pandscape-pilot-info.png' | relative_url }}" alt="iPhone — Landscape pilot info" width="500">
 </p>
 
 <h3>Android</h3>

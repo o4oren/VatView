@@ -213,6 +213,23 @@ const Settings = () => {
                         SimAware TRACON Project
                     </ThemedText>
                 </ThemedText>
+                <ThemedText variant="caption" color={activeTheme.text.secondary} style={styles.attributionRow}>
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://github.com/o4oren/VatView').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        GitHub
+                    </ThemedText>
+                    {' · '}
+                    <ThemedText
+                        variant="caption"
+                        color={activeTheme.accent.primary}
+                        onPress={() => Linking.openURL('https://o4oren.github.io/VatView').catch(err => console.warn('Failed to open URL', err))}
+                    >
+                        Website
+                    </ThemedText>
+                </ThemedText>
 
                 <View style={[styles.divider, {backgroundColor: activeTheme.surface.border}]} />
 
