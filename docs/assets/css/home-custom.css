@@ -48,29 +48,6 @@
 .hero-image {
   max-width: 820px;
   width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   display: block;
-  margin: 0 auto 1.8rem;
-}
-
-/* Store badge row */
-.store-badges {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.store-badges a {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 8px;
-  padding: 2px 4px;
-  transition: background 0.2s;
-}
-
-.store-badges a:hover {
-  background: rgba(0, 0, 0, 0.75);
+  margin: 0 auto;
 }

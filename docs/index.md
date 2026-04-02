@@ -7,6 +7,16 @@ title: VatView — Live VATSIM Tracker
 
 VatView is a free mobile app for iOS and Android that shows you live [VATSIM](https://vatsim.net) traffic on an interactive map — pilots, ATC controllers, airports, events, and more.
 
+<div align="center">
+  <a href="https://apps.apple.com/us/app/vatview/id1562497035">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" width="200">
+  </a>
+  <br>
+  <a href="https://play.google.com/store/apps/details?id=com.gevahim.vatview">
+    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="230">
+  </a>
+</div>
+
 ---
 
 ## Features
