@@ -19,8 +19,7 @@ const localAirportMarkerEqual = (prev, next) => {
     if (prev.airport.icao !== next.airport.icao) return false;
     if (prev.trafficInfo?.departures !== next.trafficInfo?.departures) return false;
     if (prev.trafficInfo?.arrivals !== next.trafficInfo?.arrivals) return false;
-    if (prev.activeTheme.atc.airportDot !== next.activeTheme.atc.airportDot) return false;
-    if (prev.activeTheme.atc.airportDotUnstaffed !== next.activeTheme.atc.airportDotUnstaffed) return false;
+    if (prev.activeTheme.atc !== next.activeTheme.atc) return false;
     if (prev.onPress !== next.onPress) return false;
     if ((prev.atcList?.length ?? 0) !== (next.atcList?.length ?? 0)) return false;
     if (prev.atcList && next.atcList) {
