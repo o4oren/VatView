@@ -15,6 +15,23 @@ const DOT_SIZE = 10;
 const DOT_GAP = 3;
 const BADGE_TEXT_COLOR = '#FFFFFF';
 
+const localAirportMarkerEqual = (prev, next) => {
+    if (prev.airport.icao !== next.airport.icao) return false;
+    if (prev.trafficInfo?.departures !== next.trafficInfo?.departures) return false;
+    if (prev.trafficInfo?.arrivals !== next.trafficInfo?.arrivals) return false;
+    if (prev.activeTheme.atc.airportDot !== next.activeTheme.atc.airportDot) return false;
+    if (prev.activeTheme.atc.airportDotUnstaffed !== next.activeTheme.atc.airportDotUnstaffed) return false;
+    if (prev.onPress !== next.onPress) return false;
+    if ((prev.atcList?.length ?? 0) !== (next.atcList?.length ?? 0)) return false;
+    if (prev.atcList && next.atcList) {
+        for (let i = 0; i < prev.atcList.length; i++) {
+            if (prev.atcList[i].callsign !== next.atcList[i].callsign) return false;
+            if (prev.atcList[i].facility !== next.atcList[i].facility) return false;
+        }
+    }
+    return true;
+};
+
 const LocalAirportMarker = React.memo(function LocalAirportMarker({
     airport,
     atcList,
@@ -123,7 +140,7 @@ const LocalAirportMarker = React.memo(function LocalAirportMarker({
             </View>
         </Marker>
     );
-});
+}, localAirportMarkerEqual);
 
 export default LocalAirportMarker;
 
