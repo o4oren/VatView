@@ -1,6 +1,6 @@
 import {Marker, Polygon} from 'react-native-maps';
 import {Text} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useRef, useCallback} from 'react';
 import {useTheme} from '../../common/ThemeProvider';
 import {EXCLUDED_CALLSIGNS} from '../../common/consts';
 import {useDispatch, useSelector} from 'react-redux';
@@ -77,10 +77,10 @@ const CTRPolygons = React.memo(function CTRPolygons({visible = true}) {
     const polygons = [];
     const activeKeys = new Set();
 
-    let onPress = (client) => {
+    const onPress = useCallback((client) => {
         markNewSelection();
         dispatch(allActions.appActions.clientSelected(client));
-    };
+    }, [dispatch]);
 
     const getAirspaceCoordinates = client => {
         let isOceanic = false;
