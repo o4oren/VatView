@@ -1,6 +1,6 @@
 import {Circle, Marker, Polygon} from 'react-native-maps';
 import {Image, Platform, StyleSheet} from 'react-native';
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import allActions from '../../redux/actions';
 import {APP, APP_RADIUS} from '../../common/consts';
@@ -67,74 +67,112 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
     const traconPolygonCacheRef = useRef(new Map());
     const appCircleCacheRef = useRef(new Map());
     const staleTallyRef = useRef(new Map());
-    const airportMarkers = [];
-    const visibleTraconKeys = new Set();
-    const visibleCircleKeys = new Set();
 
     const onPress = useCallback((airport) => {
         markNewSelection();
         dispatch(allActions.appActions.clientSelected(airport));
     }, [dispatch]);
 
-    const renderedTracons = new Set();
-    const zoomBand = getZoomBand(zoomLevel);
-    const renderedStaffedIcaos = new Set();
+    const markers = useMemo(() => {
+        const airportMarkers = [];
+        const visibleTraconKeys = new Set();
+        const visibleCircleKeys = new Set();
 
-    for (const icao in airportAtc) {
-        const airport = getAirportByCode(icao, airports);
+        const renderedTracons = new Set();
+        const zoomBand = getZoomBand(zoomLevel);
+        const renderedStaffedIcaos = new Set();
 
-        if (airport != null && airportAtc[airport.icao] && airportAtc[airport.icao].length > 0) {
-            airportAtc[airport.icao].forEach(atc => {
-                if (atc.facility === APP) {
-                    const callsignPrefix = atc.callsign.split('_')[0];
-                    const callsignSuffix = atc.callsign.split('_').pop();
-                    const tracon = lookupTracon(traconBoundaryLookup, callsignPrefix, callsignSuffix);
-                    if (tracon) {
-                        const traconKey = tracon.id;
-                        if (!renderedTracons.has(traconKey)) {
-                            renderedTracons.add(traconKey);
-                            tracon.polygons.forEach((poly, i) => {
-                                const overlayKey = `${traconKey}-polygon-${i}`;
-                                traconPolygonCacheRef.current.set(overlayKey, {
-                                    coordinates: poly.coordinates,
-                                    holes: poly.holes,
-                                    airport,
+        for (const icao in airportAtc) {
+            const airport = getAirportByCode(icao, airports);
+
+            if (airport != null && airportAtc[airport.icao] && airportAtc[airport.icao].length > 0) {
+                airportAtc[airport.icao].forEach(atc => {
+                    if (atc.facility === APP) {
+                        const callsignPrefix = atc.callsign.split('_')[0];
+                        const callsignSuffix = atc.callsign.split('_').pop();
+                        const tracon = lookupTracon(traconBoundaryLookup, callsignPrefix, callsignSuffix);
+                        if (tracon) {
+                            const traconKey = tracon.id;
+                            if (!renderedTracons.has(traconKey)) {
+                                renderedTracons.add(traconKey);
+                                tracon.polygons.forEach((poly, i) => {
+                                    const overlayKey = `${traconKey}-polygon-${i}`;
+                                    traconPolygonCacheRef.current.set(overlayKey, {
+                                        coordinates: poly.coordinates,
+                                        holes: poly.holes,
+                                        airport,
+                                    });
+                                    visibleTraconKeys.add(overlayKey);
                                 });
-                                visibleTraconKeys.add(overlayKey);
+                            }
+                        } else {
+                            const circleKey = `${atc.callsign}-app-circle`;
+                            appCircleCacheRef.current.set(circleKey, {
+                                center: {latitude: atc.latitude, longitude: atc.longitude},
+                                title: atc.callsign,
                             });
+                            visibleCircleKeys.add(circleKey);
                         }
+                    }
+                });
+
+                renderedStaffedIcaos.add(airport.icao);
+
+                if (visible) {
+                    const traffic = trafficCounts ? trafficCounts[airport.icao] : null;
+                    const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
+                    if (useViewMarker) {
+                        airportMarkers.push(
+                            <LocalAirportMarker
+                                key={airport.icao}
+                                airport={airport}
+                                atcList={airportAtc[airport.icao]}
+                                trafficInfo={traffic}
+                                activeTheme={activeTheme}
+                                onPress={onPress}
+                            />
+                        );
                     } else {
-                        const circleKey = `${atc.callsign}-app-circle`;
-                        appCircleCacheRef.current.set(circleKey, {
-                            center: {latitude: atc.latitude, longitude: atc.longitude},
-                            title: atc.callsign,
-                        });
-                        visibleCircleKeys.add(circleKey);
+                        const markerImage = getStaffedMarkerImage(airport.icao, zoomBand, activeTheme, null);
+                        airportMarkers.push(
+                            <AirportMarkerItem
+                                key={airport.icao}
+                                airport={airport}
+                                markerImage={markerImage}
+                                onPress={onPress}
+                            />
+                        );
                     }
                 }
-            });
+            }
+        }
 
-            renderedStaffedIcaos.add(airport.icao);
+        // Render unstaffed airports with traffic (hidden at global zoom)
+        if (visible && zoomBand !== 'global' && trafficCounts) {
+            const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
+            for (const icao in trafficCounts) {
+                if (renderedStaffedIcaos.has(icao)) continue;
+                const airport = getAirportByCode(icao, airports);
+                if (!airport) continue;
+                const traffic = trafficCounts[icao];
+                if (!traffic || (traffic.departures === 0 && traffic.arrivals === 0)) continue;
 
-            if (visible) {
-                const traffic = trafficCounts ? trafficCounts[airport.icao] : null;
-                const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
                 if (useViewMarker) {
                     airportMarkers.push(
                         <LocalAirportMarker
-                            key={airport.icao}
+                            key={`unstaffed-${icao}`}
                             airport={airport}
-                            atcList={airportAtc[airport.icao]}
+                            atcList={[]}
                             trafficInfo={traffic}
                             activeTheme={activeTheme}
                             onPress={onPress}
                         />
                     );
                 } else {
-                    const markerImage = getStaffedMarkerImage(airport.icao, zoomBand, activeTheme, null);
+                    const markerImage = getTrafficMarkerImage(icao, traffic.departures, traffic.arrivals, zoomBand, activeTheme);
                     airportMarkers.push(
                         <AirportMarkerItem
-                            key={airport.icao}
+                            key={`unstaffed-${icao}`}
                             airport={airport}
                             markerImage={markerImage}
                             onPress={onPress}
@@ -143,121 +181,89 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
                 }
             }
         }
-    }
 
-    // Render unstaffed airports with traffic (hidden at global zoom)
-    if (visible && zoomBand !== 'global' && trafficCounts) {
-        const useViewMarker = zoomBand === 'continental' || zoomBand === 'regional' || zoomBand === 'local' || zoomBand === 'airport';
-        for (const icao in trafficCounts) {
-            if (renderedStaffedIcaos.has(icao)) continue;
-            const airport = getAirportByCode(icao, airports);
-            if (!airport) continue;
-            const traffic = trafficCounts[icao];
-            if (!traffic || (traffic.departures === 0 && traffic.arrivals === 0)) continue;
-
-            if (useViewMarker) {
-                airportMarkers.push(
-                    <LocalAirportMarker
-                        key={`unstaffed-${icao}`}
-                        airport={airport}
-                        atcList={[]}
-                        trafficInfo={traffic}
-                        activeTheme={activeTheme}
-                        onPress={onPress}
-                    />
-                );
-            } else {
-                const markerImage = getTrafficMarkerImage(icao, traffic.departures, traffic.arrivals, zoomBand, activeTheme);
-                airportMarkers.push(
-                    <AirportMarkerItem
-                        key={`unstaffed-${icao}`}
-                        airport={airport}
-                        markerImage={markerImage}
-                        onPress={onPress}
-                    />
-                );
-            }
-        }
-    }
-
-    // Render cached TRACON polygons, evict stale ones
-    traconPolygonCacheRef.current.forEach((overlay, overlayKey) => {
-        if (visibleTraconKeys.has(overlayKey)) {
-            staleTallyRef.current.delete(overlayKey);
-            airportMarkers.push(
-                <Polygon
-                    key={overlayKey}
-                    coordinates={overlay.coordinates}
-                    holes={overlay.holes}
-                    strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
-                    fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
-                    strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
-                    geodesic={true}
-                    tappable={visible}
-                    onPress={() => onPress(overlay.airport)}
-                />
-            );
-        } else {
-            const tally = (staleTallyRef.current.get(overlayKey) || 0) + 1;
-            if (tally > STALE_EVICT_THRESHOLD) {
-                traconPolygonCacheRef.current.delete(overlayKey);
+        // Render cached TRACON polygons, evict stale ones
+        traconPolygonCacheRef.current.forEach((overlay, overlayKey) => {
+            if (visibleTraconKeys.has(overlayKey)) {
                 staleTallyRef.current.delete(overlayKey);
-            } else {
-                staleTallyRef.current.set(overlayKey, tally);
                 airportMarkers.push(
                     <Polygon
                         key={overlayKey}
                         coordinates={overlay.coordinates}
                         holes={overlay.holes}
-                        strokeColor={TRANSPARENT}
-                        fillColor={TRANSPARENT}
-                        strokeWidth={0}
+                        strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
+                        fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
+                        strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
                         geodesic={true}
-                        tappable={false}
+                        tappable={visible}
+                        onPress={() => onPress(overlay.airport)}
                     />
                 );
-            }
-        }
-    });
-
-    // Render cached APP circles, evict stale ones
-    appCircleCacheRef.current.forEach((circle, circleKey) => {
-        if (visibleCircleKeys.has(circleKey)) {
-            staleTallyRef.current.delete(circleKey);
-            airportMarkers.push(
-                <Circle
-                    key={circleKey}
-                    center={circle.center}
-                    radius={APP_RADIUS}
-                    title={circle.title}
-                    strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
-                    fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
-                    strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
-                />
-            );
-        } else {
-            const tally = (staleTallyRef.current.get(circleKey) || 0) + 1;
-            if (tally > STALE_EVICT_THRESHOLD) {
-                appCircleCacheRef.current.delete(circleKey);
-                staleTallyRef.current.delete(circleKey);
             } else {
-                staleTallyRef.current.set(circleKey, tally);
+                const tally = (staleTallyRef.current.get(overlayKey) || 0) + 1;
+                if (tally > STALE_EVICT_THRESHOLD) {
+                    traconPolygonCacheRef.current.delete(overlayKey);
+                    staleTallyRef.current.delete(overlayKey);
+                } else {
+                    staleTallyRef.current.set(overlayKey, tally);
+                    airportMarkers.push(
+                        <Polygon
+                            key={overlayKey}
+                            coordinates={overlay.coordinates}
+                            holes={overlay.holes}
+                            strokeColor={TRANSPARENT}
+                            fillColor={TRANSPARENT}
+                            strokeWidth={0}
+                            geodesic={true}
+                            tappable={false}
+                        />
+                    );
+                }
+            }
+        });
+
+        // Render cached APP circles, evict stale ones
+        appCircleCacheRef.current.forEach((circle, circleKey) => {
+            if (visibleCircleKeys.has(circleKey)) {
+                staleTallyRef.current.delete(circleKey);
                 airportMarkers.push(
                     <Circle
                         key={circleKey}
                         center={circle.center}
                         radius={APP_RADIUS}
                         title={circle.title}
-                        strokeColor={TRANSPARENT}
-                        fillColor={TRANSPARENT}
-                        strokeWidth={0}
+                        strokeColor={visible ? activeTheme.atc.tracon : TRANSPARENT}
+                        fillColor={visible ? activeTheme.atc.traconFill : TRANSPARENT}
+                        strokeWidth={visible ? activeTheme.atc.traconStrokeWidth : 0}
                     />
                 );
+            } else {
+                const tally = (staleTallyRef.current.get(circleKey) || 0) + 1;
+                if (tally > STALE_EVICT_THRESHOLD) {
+                    appCircleCacheRef.current.delete(circleKey);
+                    staleTallyRef.current.delete(circleKey);
+                } else {
+                    staleTallyRef.current.set(circleKey, tally);
+                    airportMarkers.push(
+                        <Circle
+                            key={circleKey}
+                            center={circle.center}
+                            radius={APP_RADIUS}
+                            title={circle.title}
+                            strokeColor={TRANSPARENT}
+                            fillColor={TRANSPARENT}
+                            strokeWidth={0}
+                        />
+                    );
+                }
             }
-        }
-    });
+        });
 
-    return <>{airportMarkers}</>;
+        return airportMarkers;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [airportAtc, airports, traconBoundaryLookup, trafficCounts, zoomLevel, visible, activeTheme, onPress]);
+
+    return <>{markers}</>;
 });
 
 export default AirportMarkers;
