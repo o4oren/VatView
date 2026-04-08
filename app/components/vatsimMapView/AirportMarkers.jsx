@@ -73,7 +73,6 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
         dispatch(allActions.appActions.clientSelected(airport));
     }, [dispatch]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const markers = useMemo(() => {
         const airportMarkers = [];
         const visibleTraconKeys = new Set();
@@ -261,6 +260,7 @@ const AirportMarkers = React.memo(function AirportMarkers({visible = true, zoomL
         });
 
         return airportMarkers;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [airportAtc, airports, traconBoundaryLookup, trafficCounts, zoomLevel, visible, activeTheme, onPress]);
 
     return <>{markers}</>;
