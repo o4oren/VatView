@@ -10,6 +10,8 @@ import {getZoomBand, GROUND_SPEED_THRESHOLD} from '../../common/consts';
 
 const isAndroid = Platform.OS === 'android';
 
+const selectIconCacheVersion = state => state.app.iconCacheVersion;
+
 // ANDROID WORKAROUND: Native Google Maps markers can leave ghost bitmaps at
 // old positions when react-native-maps updates coordinates with
 // tracksViewChanges={false}. Including a coarse coordinate hash in the React
@@ -80,7 +82,7 @@ const PilotMarkers = React.memo(function PilotMarkers({zoomLevel}) {
     const myCid = useSelector(state => state.app.myCid);
     const friendCids = useSelector(state => state.app.friendCids);
     // Re-render when the icon cache is rebuilt (theme change) so role colors update
-    const iconCacheVersion = useSelector(state => state.app.iconCacheVersion);
+    const iconCacheVersion = useSelector(selectIconCacheVersion);
 
     const dispatch = useDispatch();
     const selectedClientRef = useRef(selectedClient);
