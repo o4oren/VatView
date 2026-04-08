@@ -12,7 +12,7 @@ import PilotMarkers, {pilotMarkerItemPropsEqual} from '../app/components/vatsimM
 // Build a minimal Redux store matching the app shape
 const makeStore = (pilots = [], selectedClient = null, myCid = '', friendCids = []) => {
     return createStore(() => ({
-        app: { selectedClient, myCid, friendCids },
+        app: { selectedClient, myCid, friendCids, iconCacheVersion: 1 },
         vatsimLiveData: {
             clients: { pilots },
         },
@@ -193,21 +193,31 @@ describe('PilotMarkers role coloring', () => {
     });
 });
 
-describe('PilotMarkerItem memo with pilotRole', () => {
-    it('returns false when pilotRole changes', () => {
+describe('PilotMarkerItem memo equality', () => {
+    it('returns false when myCid changes (role input changed)', () => {
         const pilot = makePilot();
         const onPress = jest.fn();
-        const base = { pilot, pilotImage: pilot.image, pilotImageSize: pilot.imageSize, onPress, pilotRole: 'other' };
+        const base = { pilot, myCid: '', friendCids: [], iconCacheVersion: 1, onPress };
         expect(pilotMarkerItemPropsEqual(
-            { ...base, pilotRole: 'other' },
-            { ...base, pilotRole: 'me' }
+            { ...base, myCid: '' },
+            { ...base, myCid: String(pilot.cid) }
         )).toBe(false);
     });
 
-    it('returns true when pilotRole is same', () => {
+    it('returns false when iconCacheVersion changes (theme changed)', () => {
         const pilot = makePilot();
         const onPress = jest.fn();
-        const base = { pilot, pilotImage: pilot.image, pilotImageSize: pilot.imageSize, onPress, pilotRole: 'friend' };
+        const base = { pilot, myCid: '', friendCids: [], iconCacheVersion: 1, onPress };
+        expect(pilotMarkerItemPropsEqual(
+            { ...base, iconCacheVersion: 1 },
+            { ...base, iconCacheVersion: 2 }
+        )).toBe(false);
+    });
+
+    it('returns true when all inputs are identical', () => {
+        const pilot = makePilot();
+        const onPress = jest.fn();
+        const base = { pilot, myCid: '', friendCids: [], iconCacheVersion: 1, onPress };
         expect(pilotMarkerItemPropsEqual(base, base)).toBe(true);
     });
 });
