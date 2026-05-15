@@ -76,7 +76,7 @@ export default function mainApp() {
         if (isReady()) {
             dispatch(allActions.staticAirspaceDataActions.checkBoundaryUpdates);
         }
-    }, [airportsLoaded, firBoundariesLoaded]);
+    }, [airportsLoaded, firBoundariesLoaded, iconsReady]);
 
 
     function isReady() {
