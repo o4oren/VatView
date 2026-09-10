@@ -159,5 +159,6 @@ export const airlineLogos = {
     VOZ: require('../../assets/logos/VOZ.png'),
     VRD: require('../../assets/logos/VRD.png'),
     VRG: require('../../assets/logos/VRG.png'),
+    VSK: require('../../assets/logos/VSK.png'),
     WJA: require('../../assets/logos/WJA.png')
 };
