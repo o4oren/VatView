@@ -1,3 +1,4 @@
+import {fetch as expoFetch} from 'expo/fetch';
 import {getAircraftIcon, iconSizes, mapIcons} from '../../common/iconsHelper';
 import {GND, TWR_ATIS, DEL, CTR, APP, OBS, FSS} from '../../common/consts';
 import createKey from '../../common/createKey';
@@ -28,7 +29,11 @@ const eventsUpdated = (data) => {
 
 const updateData = async (dispatch, getState) => {
     try {
-        const response = await fetch(
+        // Uses expo/fetch (native, streaming) instead of the global RN fetch:
+        // the global fetch's networking bridge Base64-encodes the entire
+        // response body in one shot to cross to JS, which OOMs on this
+        // ~4-5MB payload when polled every 20s on lower-memory Android devices.
+        const response = await expoFetch(
             'https://data.vatsim.net/v3/vatsim-data.json'
         );
         let json = await response.json();
